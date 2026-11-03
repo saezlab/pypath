@@ -7,10 +7,10 @@ from biolink_model.datamodel.model import ChemicalEntity, MolecularActivity, slo
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.silver_schema import Entity, Identifier, Membership
-from pypath.inputs_v2 import (
+from omnipath_resources.inputs_v2 import (
     apo, bto, chemont, cl, doid, eco, go, hpo, mirbase, mondo, mp, omnipath_ontology, pato, psi_mi, uberon, wbphenotype,
 )
-from pypath.internals.tabular_builder import EntityBuilder, IdentifiersBuilder, CV, Member, MembersFromList, MembershipBuilder, FieldConfig
+from omnipath_resources.internals.tabular_builder import EntityBuilder, IdentifiersBuilder, CV, Member, MembersFromList, MembershipBuilder, FieldConfig
 
 
 def extract(record):

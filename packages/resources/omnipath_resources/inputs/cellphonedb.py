@@ -25,13 +25,13 @@ import csv
 import collections
 import itertools
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.utils.mapping as mapping
-import pypath.internals.intera as intera
-import pypath.share.common as common
-import pypath.share.session as session
-import pypath.inputs.uniprot_db as uniprot_db
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session
+import omnipath_resources.inputs.uniprot_db as uniprot_db
 
 _logger = session.Logger(name = 'cellphonedb_input')
 _log = _logger._log

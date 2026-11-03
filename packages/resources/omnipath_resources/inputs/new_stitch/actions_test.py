@@ -1,7 +1,7 @@
 from pprint import pprint
 
-import pypath.resources.urls as urls
-from pypath.inputs import new_stitch
+import omnipath_resources.resources.urls as urls
+from omnipath_resources.inputs import new_stitch
 
 
 def test_actions(mode_type = "activation"):

@@ -17,7 +17,7 @@ from __future__ import annotations
 from collections.abc import Generator, Iterable
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 # Columns of the edge table, in source order.
 EDGE_COLUMNS = (

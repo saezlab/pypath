@@ -21,9 +21,9 @@ from future.utils import iteritems
 
 import collections
 
-import pypath.inputs.common as inputs_common
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
+import omnipath_resources.inputs.common as inputs_common
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
 
 
 def ipi_uniprot():

@@ -91,7 +91,7 @@ def cached_records():
                 for row in con.execute(f'SELECT * FROM "{table}"'):
                     yield table, dict(row)
         return
-    from pypath.inputs_v2 import rampdb
+    from omnipath_resources.inputs_v2 import rampdb
 
     opener = rampdb.download.open()
     for table in ("analyte", "source", "metabolite_class", "chem_props", "analytehaspathway"):

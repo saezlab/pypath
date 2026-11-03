@@ -9,8 +9,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.source_attributes import PARTICIPANT_ROLE
 
-from pypath.inputs_v2 import baccin2019 as mod
-from pypath.inputs_v2.parsers import baccin2019 as parser
+from omnipath_resources.inputs_v2 import baccin2019 as mod
+from omnipath_resources.inputs_v2.parsers import baccin2019 as parser
 
 
 def row(*values, ligand=None, receptor=None):

@@ -19,9 +19,9 @@
 
 import collections
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.utils.taxonomy as taxonomy
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.utils.taxonomy as taxonomy
 
 
 def lncdisease_interactions():

@@ -33,10 +33,10 @@ from biolink_model.datamodel.model import MacromolecularComplex, Protein, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin
 
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.humap import iter_humap1, iter_humap_table
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.humap import iter_humap1, iter_humap_table
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.silver_schema import Annotation, Entity, Identifier, Membership
 
 config = ResourceConfig(
     id=ResourceCv.HUMAP,

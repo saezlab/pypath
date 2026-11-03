@@ -14,21 +14,21 @@ import re
 
 from bs4 import BeautifulSoup
 
-from pypath.inputs_v2.base import (
+from omnipath_resources.inputs_v2.base import (
     ResourceConfig,
     Download,
     Resource,
     Dataset,
 )
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.internals.cv_terms import LicenseCV, UpdateCategoryCV, ResourceCv
-from pypath.internals.silver_schema import Entity, Identifier, Membership
+from omnipath_resources.internals.cv_terms import LicenseCV, UpdateCategoryCV, ResourceCv
+from omnipath_resources.internals.silver_schema import Entity, Identifier, Membership
 
 # =================================== SET-UP ===================================
 

@@ -27,12 +27,12 @@ try:
 except:
     import pickle
 
-import pypath.share.curl as curl
-import pypath.share.common as common
-import pypath.resources.urls as urls
-from pypath.inputs import pubmed as pubmed_input
-import pypath.share.cache as cache
-import pypath.inputs.pubmed as pubmed
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.common as common
+import omnipath_resources.resources.urls as urls
+from omnipath_resources.inputs import pubmed as pubmed_input
+import omnipath_resources.share.cache as cache
+import omnipath_resources.inputs.pubmed as pubmed
 
 
 class Reference(object):
@@ -72,7 +72,7 @@ def get_pubmed_data(
     through NCBI E-utils.
 
     :param pp:
-        ``pypath.PyPath`` object
+        ``omnipath_resources.PyPath`` object
     :param htp_threshold:
         The number of interactions for one reference
         above the study considered to be high-throughput.

@@ -4,8 +4,8 @@ import json
 
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF
-from pypath.inputs_v2 import reactome
-from pypath.inputs_v2.parsers import reactome as parser
+from omnipath_resources.inputs_v2 import reactome
+from omnipath_resources.inputs_v2.parsers import reactome as parser
 
 BP = parser.BP
 

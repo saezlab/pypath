@@ -28,7 +28,7 @@ from typing import Callable, TypeVar, BinaryIO
 
 import pandas as pd
 from pypath_common import _misc
-from pypath.share import session, cache
+from omnipath_resources.share import session, cache
 
 __all__ = [
     'table_names',

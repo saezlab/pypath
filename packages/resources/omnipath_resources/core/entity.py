@@ -28,12 +28,12 @@ import itertools
 import importlib as imp
 import collections
 
-import pypath.share.common as common
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.share.session as session_mod
-import pypath.utils.mapping as mapping
-import pypath.share.settings as settings
-import pypath.core.attrs as attrs_mod
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.share.settings as settings
+import omnipath_resources.core.attrs as attrs_mod
 
 
 EntityKey = collections.namedtuple(
@@ -499,7 +499,7 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
 
         if cls._is_protein(identifier):
 
-            import pypath.utils.uniprot as uniprot
+            import omnipath_resources.utils.uniprot as uniprot
             return uniprot.info(identifier)
 
 

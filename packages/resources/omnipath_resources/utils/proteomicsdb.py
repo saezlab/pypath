@@ -39,9 +39,9 @@ except ImportError:
     sys.stdout.flush()
 
 # from this module:
-import pypath.share.curl as curl
-import pypath.share.progress as progress
-from pypath.share.common import *
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.progress as progress
+from omnipath_resources.share.common import *
 
 
 class ProteomicsDB(object):
@@ -249,7 +249,7 @@ class ProteomicsDB(object):
             pass
         except:
             sys.stdout.write(
-                'Error in pypath.proteomicsdb.py/get_expression():\n')
+                'Error in omnipath_resources.proteomicsdb.py/get_expression():\n')
             sys.stdout.write('Result type: %s\n' % str(type(self.result)))
             sys.stdout.write('Result mode: %s\n' % str(self.result.mode))
             sys.stdout.write('Result name: %s\n' % str(self.result.name))

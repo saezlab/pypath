@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_psimi_xml, read_bytes
+from omnipath_resources.inputs_v2.parsers.base import iter_psimi_xml, read_bytes
 
 
 # What a row states about a participant; two rows are mirrors only when all of

@@ -22,7 +22,7 @@ Classes for extracting values from network specific fields in a record (row)
 of raw or preprocessed data.
 """
 
-import pypath.reader.field as field
+import omnipath_resources.reader.field as field
 
 
 class DirectionBase(field.Field):

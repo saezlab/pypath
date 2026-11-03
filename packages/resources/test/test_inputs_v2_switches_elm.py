@@ -6,8 +6,8 @@ from types import SimpleNamespace
 import pytest
 from omnipath_build.silver import SilverExtractor
 
-from pypath.inputs_v2.parsers.switches_elm import iter_switches
-from pypath.inputs_v2.switches_elm import resource
+from omnipath_resources.inputs_v2.parsers.switches_elm import iter_switches
+from omnipath_resources.inputs_v2.switches_elm import resource
 
 HEADER = (
     'Switch ID\tStatus\tInteraction ID\tIntramolecular\tID A\tBindingsite A ID\t'

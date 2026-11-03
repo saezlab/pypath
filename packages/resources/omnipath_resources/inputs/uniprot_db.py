@@ -25,9 +25,9 @@ import datetime
 
 import timeloop
 
-import pypath.share.session as session_mod
-import pypath.share.settings as settings
-import pypath.inputs.uniprot as uniprot
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.settings as settings
+import omnipath_resources.inputs.uniprot as uniprot
 
 _logger = session_mod.Logger(name = 'uniprot_db')
 

@@ -19,8 +19,8 @@ from typing import Any
 
 import bs4
 
-from pypath.inputs_v2._publications import PMID_PATTERN
-from pypath.inputs_v2.parsers.base import content_text, iter_html_tables
+from omnipath_resources.inputs_v2._publications import PMID_PATTERN
+from omnipath_resources.inputs_v2.parsers.base import content_text, iter_html_tables
 
 __all__ = [
     'NON_GENE',

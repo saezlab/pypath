@@ -12,9 +12,9 @@ import re
 
 from omnipath_core.measurements import Measurement
 
-from pypath.inputs_v2.parsers.base import iter_tsv
-from pypath.inputs_v2.parsers.macdb import iter_associations
-from pypath.inputs_v2.base import (
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.macdb import iter_associations
+from omnipath_resources.inputs_v2.base import (
     ResourceConfig,
     Download,
     Resource,
@@ -25,7 +25,7 @@ from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.source_attributes import TRAIT_TYPE
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -33,7 +33,7 @@ from pypath.internals.tabular_builder import (
     IdentifiersBuilder,
     RelationBuilder,
 )
-from pypath.internals.cv_terms import LicenseCV, UpdateCategoryCV, ResourceCv
+from omnipath_resources.internals.cv_terms import LicenseCV, UpdateCategoryCV, ResourceCv
 
 # =================================== SET-UP ===================================
 

@@ -6,7 +6,7 @@ from collections.abc import Generator, Iterable
 import re
 from typing import Any
 
-from pypath.internals.ontology_schema import OntologyRelationship, OntologyTerm
+from omnipath_resources.internals.ontology_schema import OntologyRelationship, OntologyTerm
 
 _TRUE_VALUES = {'1', 'true', 'yes'}
 

@@ -1,4 +1,4 @@
-import pypath.share.settings as settings
+import omnipath_resources.share.settings as settings
 
 
 def test_get():

@@ -24,10 +24,10 @@ import collections
 
 import json
 
-import pypath.resources.urls as urls
-from pypath.share.downloads import dm
-import pypath.share.common as common
-import pypath.share.session as session
+import omnipath_resources.resources.urls as urls
+from omnipath_resources.share.downloads import dm
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session
 
 _logger = session.Logger(name = 'unichem_input')
 _log = _logger._log
@@ -114,7 +114,7 @@ def unichem_mapping(id_type_a, id_type_b):
             `id_type_a`, values are sets of IDs of `id_type_b`.
     """
 
-    from pypath.utils.metabo import normalise_hmdb
+    from omnipath_resources.utils.metabo import normalise_hmdb
 
     result = (
         _unichem_mapping(id_type_a, id_type_b) or

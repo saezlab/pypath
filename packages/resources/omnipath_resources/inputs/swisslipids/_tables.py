@@ -17,7 +17,7 @@
 #  Website: https://pypath.omnipathdb.org/
 
 
-import pypath.internals.intera as _intera
+import omnipath_resources.internals.intera as _intera
 from . import _raw, _records
 
 __all__ = [

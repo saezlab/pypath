@@ -24,8 +24,8 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.base import Download
-from pypath.inputs_v2.parsers.base import iter_tsv, read_text
+from omnipath_resources.inputs_v2.base import Download
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv, read_text
 
 _ENTRY = re.compile(r'^((?:--)*)(IPR\d{6})::(.*)::$')
 _GO = re.compile(r'^InterPro:(IPR\d{6}) .* > GO:.* ; (GO:\d{7})$')

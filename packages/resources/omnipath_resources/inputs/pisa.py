@@ -32,14 +32,14 @@ except:
 
 import bs4
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.common as common
-import pypath.share.cache as cache
-import pypath.share.progress as progress
-import pypath.utils.pdb as pdb_utils
-import pypath.inputs.pdb as pdb_input
-import pypath.internals.intera as intera
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.common as common
+import omnipath_resources.share.cache as cache
+import omnipath_resources.share.progress as progress
+import omnipath_resources.utils.pdb as pdb_utils
+import omnipath_resources.inputs.pdb as pdb_input
+import omnipath_resources.internals.intera as intera
 
 
 PisaBond = collections.namedtuple(
@@ -113,7 +113,7 @@ def pisa_interfaces(pdbs, return_unmapped = False):
     Returns
         A dict of dicts with interfaces. The upper level keys are PDB
         structure IDs, the lower level keys are tuples of UniProt IDs,
-        the values are ``pypath.internals.intera.Interface`` objects.
+        the values are ``omnipath_resources.internals.intera.Interface`` objects.
     """
 
     bond_types = {

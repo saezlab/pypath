@@ -21,10 +21,10 @@ import os
 
 from typing import List, Optional, Union
 
-import pypath.share.curl as curl
-import pypath.inputs.common as inputs_common
-import pypath.share.settings as settings
-import pypath.share.session as session
+import omnipath_resources.share.curl as curl
+import omnipath_resources.inputs.common as inputs_common
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.session as session
 
 _logger = session.Logger(name = 'inputs.embo')
 _log = _logger._log

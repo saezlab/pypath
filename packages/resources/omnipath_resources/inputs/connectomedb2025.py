@@ -35,9 +35,9 @@ import csv
 import re
 import itertools
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.session as session
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.session as session
 
 _log = session.Logger(name = 'connectomedb2025_input')._log
 
@@ -154,7 +154,7 @@ def connectomedb2025_annotations() -> dict:
     cellular `location`.
     """
 
-    import pypath.utils.mapping as mapping
+    import omnipath_resources.utils.mapping as mapping
 
     Connectomedb2025Annotation = collections.namedtuple(
         'Connectomedb2025Annotation',

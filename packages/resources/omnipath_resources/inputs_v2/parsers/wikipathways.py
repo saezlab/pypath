@@ -11,7 +11,7 @@ from typing import Any
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import DC, DCTERMS, FOAF, OWL, RDF, RDFS
 
-from pypath.share.downloads import download_and_open
+from omnipath_resources.share.downloads import download_and_open
 
 
 WP = Namespace('http://vocabularies.wikipathways.org/wp#')

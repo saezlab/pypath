@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-import pypath.share.session as session
+import omnipath_resources.share.session as session
 
 __all__ = ['_log']
 

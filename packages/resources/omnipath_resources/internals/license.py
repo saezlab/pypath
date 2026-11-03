@@ -23,7 +23,7 @@ import os
 import json
 import warnings
 
-import pypath.share.common as common
+import omnipath_resources.share.common as common
 
 
 # these are all ordinal scales from the smallest to the greatest freedom

@@ -27,8 +27,8 @@ import re
 from types import SimpleNamespace
 from typing import Any
 
-from pypath.inputs_v2._publications import is_pmid
-from pypath.inputs_v2.parsers.base import iter_excel, read_bytes
+from omnipath_resources.inputs_v2._publications import is_pmid
+from omnipath_resources.inputs_v2.parsers.base import iter_excel, read_bytes
 
 # Sheets holding the PubMed IDs a source database gives for a pair.
 PMID_SHEETS = ('HPMR', 'IUPHAR', 'HPRD')

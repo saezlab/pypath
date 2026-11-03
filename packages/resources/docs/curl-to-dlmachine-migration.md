@@ -1,10 +1,10 @@
-# Migrating from pypath.share.curl.Curl to dlmachine
+# Migrating from omnipath_resources.share.curl.Curl to dlmachine
 
 ## Overview
 
-The old `pypath.share.curl.Curl` class is being replaced by `dlmachine.DownloadManager` 
+The old `omnipath_resources.share.curl.Curl` class is being replaced by `dlmachine.DownloadManager` 
 for all HTTP downloads. A shared `DownloadManager` instance is available in 
-`pypath.share.downloads` as `dm`. For cases needing file opening/extraction, 
+`omnipath_resources.share.downloads` as `dm`. For cases needing file opening/extraction, 
 use `download_and_open()`.
 
 ## Quick Reference
@@ -13,14 +13,14 @@ use `download_and_open()`.
 
 **Before (Curl):**
 ```python
-from pypath.share import curl
+from omnipath_resources.share import curl
 c = curl.Curl(url, silent=False)
 data = c.result  # string
 ```
 
 **After (dlmachine):**
 ```python
-from pypath.share.downloads import dm
+from omnipath_resources.share.downloads import dm
 path = dm.download(url)
 with open(path) as f:
     data = f.read()
@@ -98,7 +98,7 @@ c = curl.Curl(url, large=True, files_needed=['data.txt'])
 
 **After:**
 ```python
-from pypath.share.downloads import download_and_open
+from omnipath_resources.share.downloads import download_and_open
 opener = download_and_open(url, 'archive.zip', 'resource_name', 
                            needed=['data.txt'])
 # opener.result is a dict for zip: {filename: file_handle}
@@ -216,7 +216,7 @@ with gzip.open(path, 'rt') as f:
 
 ## Notes
 
-- `dm` is the shared singleton from `pypath.share.downloads`
+- `dm` is the shared singleton from `omnipath_resources.share.downloads`
 - All downloads are cached by `cachedir` -- repeated calls return cached files
 - The `download_and_open()` helper handles archive extraction (zip, gz, tar.gz)
 - dlmachine uses `requests` backend by default (no pycurl needed)

@@ -20,9 +20,9 @@
 import re
 import collections
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.inputs.common as inputs_common
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.inputs.common as inputs_common
 
 
 def macrophage_interactions():

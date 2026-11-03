@@ -21,8 +21,8 @@ from typing import Optional
 
 import os
 
-import pypath.share.settings as settings
-import pypath.share.session as session
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.session as session
 
 _logger = session.Logger(name = 'credentials')
 _log = _logger._log

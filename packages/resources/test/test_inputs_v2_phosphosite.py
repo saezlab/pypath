@@ -8,8 +8,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import phosphosite
-from pypath.inputs_v2.parsers import phosphosite as phosphosite_parser
+from omnipath_resources.inputs_v2 import phosphosite
+from omnipath_resources.inputs_v2.parsers import phosphosite as phosphosite_parser
 
 # The lines above the table, as in the source file (license statement shortened
 # after its first sentences).

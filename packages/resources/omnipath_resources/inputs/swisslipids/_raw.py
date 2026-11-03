@@ -35,9 +35,9 @@ import functools
 import pandas as pd
 
 from pypath_common import _misc
-from pypath.share.downloads import dm
-from pypath.resources import urls as _urls
-from pypath.share import session as _session
+from omnipath_resources.share.downloads import dm
+from omnipath_resources.resources import urls as _urls
+from omnipath_resources.share import session as _session
 
 _logger = _session.Logger(name = 'swisslipids_input')
 _log = _logger._log

@@ -7,7 +7,7 @@ pypath already maintains next to its resource definitions.
 
 **Where the terms come from — two sources, one precedence.**
 
-``pypath/resources/data/resources.json`` names a license per resource — a
+``omnipath_resources/resources/data/resources.json`` names a license per resource — a
 *name*, such as ``CC BY 4.0``. It is hand-curated one resource at a time, with
 the grounds cited in its commit messages, so it is the original license
 curation rather than a derived artifact. It **wins wherever it has an entry**.
@@ -15,16 +15,16 @@ curation rather than a derived artifact. It **wins wherever it has an entry**.
 It covers pypath's *interaction* resources only, and the build has since loaded
 chemistry, ontology and single-cell resources it never described. Those are
 reached through the second source: every ``inputs_v2`` resource declares a
-:class:`pypath.internals.cv_terms.LicenseCV` term — ``license`` is a required
+:class:`omnipath_resources.internals.cv_terms.LicenseCV` term — ``license`` is a required
 field on ``ResourceConfig`` — and ``sync_resources_table`` already writes that
 term's accession into ``resources.license``. The CV term **fills the gaps** and
 never overrides a curated entry, because for a resource ``resources.json`` does
 not describe there is no competing curation to lose.
 
-Either way the name is resolved against ``pypath/data/licenses/*.json`` through
-:class:`pypath.resources.licenses.Licenses`, which is where the ordinal levels
+Either way the name is resolved against ``omnipath_resources/data/licenses/*.json`` through
+:class:`omnipath_resources.resources.licenses.Licenses`, which is where the ordinal levels
 live: ``purpose``, ``sharing`` and ``attrib``, each a point on a scale from the
-smallest to the greatest freedom (``pypath/internals/license.py``). The levels
+smallest to the greatest freedom (``omnipath_resources/internals/license.py``). The levels
 are read off that model rather than transcribed here, so a license whose terms
 are corrected in pypath is corrected in the build at the next load.
 
@@ -39,7 +39,7 @@ quietly.
 not invented here. Its keys are display names such as ``CellChatDB``, while
 ``data_source.name`` holds slugs such as ``cellchat``. The build already
 resolves the two through the three-name model
-(``pypath.inputs_v2.resource_names``), whose filter index maps every
+(``omnipath_resources.inputs_v2.resource_names``), whose filter index maps every
 {slug, slugified short name, slugified synonym} onto one canonical slug, and
 whose registry maps that slug back to the ``resources.json`` key. The candidate
 names a source offers the index are its own slug and the short/full/synonym
@@ -89,7 +89,7 @@ UNPLACEABLE_LEVEL = 99
 UNSPECIFIED_TERM = "OM:0599"
 
 # `LicenseCV` accession -> the key of the record in pypath's license database
-# (`pypath/data/licenses/*.json`, keyed by each file's `name`). This is an
+# (`omnipath_resources/data/licenses/*.json`, keyed by each file's `name`). This is an
 # identity mapping between two spellings of the same license and nothing more:
 # the levels are still read off the pypath record, never written here.
 #
@@ -104,7 +104,7 @@ UNSPECIFIED_TERM = "OM:0599"
 #   OM:0599 UNSPECIFIED   — the vocabulary's own word for unknown.
 #
 # A resource carrying one of these stays `is_known = false`. The fix belongs in
-# `pypath/data/licenses/`, not here.
+# `omnipath_resources/data/licenses/`, not here.
 CV_LICENSE_NAMES = {
     "OM:0501": "CC BY 4.0",
     "OM:0502": "CC0 1.0",
@@ -174,7 +174,7 @@ def _resources_json() -> dict:
     try:
         from importlib import resources as importlib_resources
 
-        path = importlib_resources.files("pypath.resources.data") / "resources.json"
+        path = importlib_resources.files("omnipath_resources.resources.data") / "resources.json"
         with path.open("r", encoding="utf-8") as handle:
             return json.load(handle)
     except Exception:  # noqa: BLE001 - metadata missing or unreadable
@@ -187,7 +187,7 @@ def _license_db() -> object | None:
     """The pypath license database: license name → :class:`License`."""
 
     try:
-        from pypath.resources.licenses import Licenses
+        from omnipath_resources.resources.licenses import Licenses
 
         return Licenses()
     except Exception:  # noqa: BLE001 - pypath without the license database
@@ -200,7 +200,7 @@ def _cv_terms() -> dict[str, object]:
     """The license vocabulary, as ``accession -> LicenseCV`` member."""
 
     try:
-        from pypath.internals.cv_terms import LicenseCV
+        from omnipath_resources.internals.cv_terms import LicenseCV
     except ImportError:  # pypath without the CV terms (older pin)
         logger.warning("pypath LicenseCV is unavailable; no CV term read")
         return {}
@@ -218,7 +218,7 @@ def _name_mapping() -> tuple[dict[str, str], dict[str, str]]:
     """
 
     try:
-        from pypath.inputs_v2.resource_names import (
+        from omnipath_resources.inputs_v2.resource_names import (
             resource_registry,
             build_filter_index,
         )
@@ -231,7 +231,7 @@ def _name_mapping() -> tuple[dict[str, str], dict[str, str]]:
 
 
 def _slugify(name: str) -> str:
-    from pypath.inputs_v2.resource_names import slugify
+    from omnipath_resources.inputs_v2.resource_names import slugify
 
     return slugify(name)
 

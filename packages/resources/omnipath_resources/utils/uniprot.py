@@ -33,12 +33,12 @@ import importlib as imp
 import collections
 import itertools
 
-import pypath.inputs.uniprot as uniprot_input
-import pypath.inputs.genecards as genecards_input
-import pypath.share.common as common
+import omnipath_resources.inputs.uniprot as uniprot_input
+import omnipath_resources.inputs.genecards as genecards_input
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.share.settings as settings
-import pypath.core.entity as entity
+import omnipath_resources.share.settings as settings
+import omnipath_resources.core.entity as entity
 
 
 class UniprotProtein(object):

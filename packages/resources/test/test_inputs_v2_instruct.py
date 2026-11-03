@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import instruct
-from pypath.inputs_v2.parsers.instruct import COLUMNS, parse_locations
+from omnipath_resources.inputs_v2 import instruct
+from omnipath_resources.inputs_v2.parsers.instruct import COLUMNS, parse_locations
 
 HEADER = '\t'.join(name for name, _ in COLUMNS) + '\n'
 # Lines copied from sapiens.sin: a protein kinase C with itself, a domain that

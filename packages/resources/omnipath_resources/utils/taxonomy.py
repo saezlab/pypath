@@ -28,13 +28,13 @@ import collections
 
 import timeloop
 
-import pypath.share.common as common
-import pypath.share.session as session
-import pypath.share.settings as settings
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session
+import omnipath_resources.share.settings as settings
 import pypath_common._constants as _const
-import pypath.inputs.uniprot as uniprot_input
-import pypath.inputs.ensembl as ensembl_input
-import pypath.inputs.mirbase as mirbase_input
+import omnipath_resources.inputs.uniprot as uniprot_input
+import omnipath_resources.inputs.ensembl as ensembl_input
+import omnipath_resources.inputs.mirbase as mirbase_input
 
 _logger = session.Logger(name = 'taxonomy')
 _log = _logger._log

@@ -19,9 +19,9 @@
 
 import os
 
-import pypath.share.common as common
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.internals.input_formats as input_formats
+import omnipath_resources.internals.input_formats as input_formats
 
 __all__ = ['uniprot', 'mirbase', 'basic']
 

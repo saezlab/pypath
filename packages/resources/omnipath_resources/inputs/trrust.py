@@ -21,10 +21,10 @@ from __future__ import annotations
 
 import collections
 
-from pypath.share import curl
-from pypath.resources.urls import urls
-from pypath.share import session
-from pypath.utils import taxonomy
+from omnipath_resources.share import curl
+from omnipath_resources.resources.urls import urls
+from omnipath_resources.share import session
+from omnipath_resources.utils import taxonomy
 
 _log = session.Logger(name = "trrust_input")._log
 

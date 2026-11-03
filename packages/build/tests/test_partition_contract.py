@@ -199,7 +199,7 @@ def test_pipeline_snapshots_parsed_rows_and_qualifies_locators(
     tmp_path, monkeypatch, mapper_module
 ):
     from omnipath_build import pipeline
-    from pypath.inputs_v2.base import Dataset
+    from omnipath_resources.inputs_v2.base import Dataset
 
     def parse(_opener, **kwargs):
         yield {"original": "before mapping"}
@@ -233,7 +233,7 @@ def test_pipeline_snapshots_parsed_rows_and_qualifies_locators(
 
 def test_repeated_endpoints_flush_by_records_and_bytes(tmp_path, monkeypatch, mapper_module):
     from omnipath_build import pipeline
-    from pypath.inputs_v2.base import Dataset
+    from omnipath_resources.inputs_v2.base import Dataset
 
     def parse(_opener, **kwargs):
         for i in range(31):

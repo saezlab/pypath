@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.collectri2 import resource
-from pypath.inputs_v2.parsers.collectri2 import iter_pairs
+from omnipath_resources.inputs_v2.collectri2 import resource
+from omnipath_resources.inputs_v2.parsers.collectri2 import iter_pairs
 
 COMMENT = '#: :filename=/home/mvazque2/.rbbt/var/jobs/ExTRI/pairs/Default.tsv#:namespace=Hsa/oct2016#:type=:double'
 # Header of CollecTRI2.tsv.gz.

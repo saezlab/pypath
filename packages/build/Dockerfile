@@ -9,12 +9,12 @@ WORKDIR /src
 COPY pyproject.toml uv.lock ./
 COPY packages ./packages
 COPY deploy/build-constraints.txt ./deploy/build-constraints.txt
-RUN uv export --frozen --package omnipath-api --extra build --no-dev --no-emit-workspace --no-emit-package pypath-omnipath --no-hashes -o /worker-requirements.txt \
+RUN uv export --frozen --package omnipath-api --extra build --no-dev --no-emit-workspace --no-emit-package omnipath-resources --no-hashes -o /worker-requirements.txt \
     && uv build --package omnipath-core --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels \
     && uv build --package omnipath-resolver --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels \
     && uv build --package omnipath-build --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels \
     && uv build --package omnipath-api --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels \
-    && uv build packages/omnipath-resources --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels
+    && uv build packages/resources --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels
 
 FROM python:3.12-slim-bookworm AS runtime
 COPY --from=uv /uv /usr/local/bin/uv

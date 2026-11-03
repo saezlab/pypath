@@ -22,8 +22,8 @@ import importlib as imp
 import collections
 import itertools
 
-import pypath.share.session as session
-from pypath.share.downloads import download_and_open
+import omnipath_resources.share.session as session
+from omnipath_resources.share.downloads import download_and_open
 
 
 

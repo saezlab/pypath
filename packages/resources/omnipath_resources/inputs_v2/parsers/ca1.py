@@ -23,7 +23,7 @@ from collections.abc import Generator
 import itertools
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_csv
+from omnipath_resources.inputs_v2.parsers.base import iter_csv
 
 # The header line of ``S1.txt``. The columns are separated by single spaces and
 # four names occur twice, so the shared readers cannot take the names from it.

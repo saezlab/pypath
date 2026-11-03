@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
     import pandas as pd
 
-import pypath.inputs.hmdb.common as hmdb_common
+import omnipath_resources.inputs.hmdb.common as hmdb_common
 
 
 
@@ -55,7 +55,7 @@ def raw(
             The schema defines the fields to be parsed. By default, a schema
             covering nearly all fields in the HMDB metabolites XML is used.
             Likely you don't need all the fields within one task: in this
-            case see `pypath.inputs.hmdb.METABOLITES_SCHEMA` to see the full
+            case see `omnipath_resources.inputs.hmdb.METABOLITES_SCHEMA` to see the full
             schema, and create your own that is restricted to your fields of
             interest.
         head:
@@ -108,7 +108,7 @@ def processed(
 
         ..code-block:: python
 
-           from pypath.inputs import hmdb
+           from omnipath_resources.inputs import hmdb
            mets = list(hmdb.metabolites_processed(
                'accession',
                'smiles',
@@ -169,7 +169,7 @@ def table(
 
         ..code-block:: python
 
-           from pypath.inputs import hmdb
+           from omnipath_resources.inputs import hmdb
            df = hmdb.metabolites_table(
                'accession',
                'smiles',
@@ -271,7 +271,7 @@ def synonyms_chebi() -> dict[str, str]:
         share a synonym, the first encountered mapping is kept.
     """
 
-    from pypath.inputs.hmdb.schema.metabolites import SCHEMA
+    from omnipath_resources.inputs.hmdb.schema.metabolites import SCHEMA
 
     _name_fields = ('name', 'iupac_name', 'traditional_iupac')
     sub_schema = {

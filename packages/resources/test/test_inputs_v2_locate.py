@@ -7,9 +7,9 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import locate
-from pypath.inputs_v2.locate import CLASS_NAMESPACE, ECO_OF_GO_EVIDENCE_CODE, resource
-from pypath.inputs_v2.parsers.locate import iter_localizations, iter_protein_classes
+from omnipath_resources.inputs_v2 import locate
+from omnipath_resources.inputs_v2.locate import CLASS_NAMESPACE, ECO_OF_GO_EVIDENCE_CODE, resource
+from omnipath_resources.inputs_v2.parsers.locate import iter_localizations, iter_protein_classes
 
 
 def protein(organism, cls, source_id, source_name, accn):

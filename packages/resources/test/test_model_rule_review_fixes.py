@@ -3,11 +3,11 @@
 import pytest
 
 from omnipath_build.silver import SilverExtractor
-from pypath.internals.silver_schema import format_term
+from omnipath_resources.internals.silver_schema import format_term
 
-from pypath.inputs_v2 import metatlas, recon3d
-from pypath.inputs_v2.parsers import metatlas as human_parser
-from pypath.inputs_v2.parsers import recon3d as recon_parser
+from omnipath_resources.inputs_v2 import metatlas, recon3d
+from omnipath_resources.inputs_v2.parsers import metatlas as human_parser
+from omnipath_resources.inputs_v2.parsers import recon3d as recon_parser
 
 
 @pytest.mark.parametrize('rule,expected', [

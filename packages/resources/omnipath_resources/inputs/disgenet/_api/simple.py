@@ -22,11 +22,11 @@ from __future__ import annotations
 import csv
 import collections
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.inputs.disgenet._auth as _auth
-import pypath.inputs.disgenet._records as _records
-import pypath.utils.mapping as mapping
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.inputs.disgenet._auth as _auth
+import omnipath_resources.inputs.disgenet._records as _records
+import omnipath_resources.utils.mapping as mapping
 
 
 def disgenet_variants() -> dict[str, _records.VariantGeneMapping]:

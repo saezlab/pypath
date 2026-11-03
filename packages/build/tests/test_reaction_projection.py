@@ -74,7 +74,7 @@ def recon3d_row(reaction, reactants, products, genes, sbo):
 
 
 def test_model_transport_projects_each_gene_onto_the_cargo(tmp_path):
-    from pypath.inputs_v2 import recon3d
+    from omnipath_resources.inputs_v2 import recon3d
 
     rows = [
         ("reactions:0", recon3d.reactions_schema(
@@ -133,8 +133,8 @@ def test_compartments_keep_resolved_variants_of_a_reaction_apart(tmp_path):
 
 
 def test_rhea_symport_moves_both_cargos_across_its_sides(tmp_path):
-    from pypath.inputs_v2 import rhea
-    from pypath.inputs_v2.parsers.rhea import _raw
+    from omnipath_resources.inputs_v2 import rhea
+    from omnipath_resources.inputs_v2.parsers.rhea import _raw
 
     tsv = (
         "Reaction identifier\tEquation\tChEBI name\tChEBI identifier\tUniProt\n"
@@ -154,7 +154,7 @@ def test_rhea_symport_moves_both_cargos_across_its_sides(tmp_path):
 
 
 def test_rhea_lists_each_equation_term_with_its_own_side():
-    from pypath.inputs_v2.parsers.rhea import _participant_fields
+    from omnipath_resources.inputs_v2.parsers.rhea import _participant_fields
 
     fields = _participant_fields(
         "sulfate(out) + ATP + H2O = sulfate(in) + ADP + phosphate + H(+)",
@@ -222,7 +222,7 @@ def test_catalysis_stated_apart_pairs_with_its_own_source_reaction(tmp_path):
 
 
 def test_pathwaycommons_transport_needs_a_catalysis_mediator():
-    from pypath.inputs_v2 import pathwaycommons as pc
+    from omnipath_resources.inputs_v2 import pathwaycommons as pc
 
     def participant(identifier, kind):
         return {"id": identifier, "types": [kind], "names": [identifier], "unification_xrefs": []}
@@ -252,7 +252,7 @@ def test_pathwaycommons_transport_needs_a_catalysis_mediator():
 
 
 def test_error_page_in_place_of_data_is_recognised(tmp_path):
-    from pypath.share.downloads import _is_error_page
+    from omnipath_resources.share.downloads import _is_error_page
 
     page = tmp_path / "substrates.tsv"
     page.write_text("<!DOCTYPE HTML PUBLIC>\n<html><title>500 Internal Server Error</title>")

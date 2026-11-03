@@ -7,8 +7,8 @@ from types import SimpleNamespace
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF
 
-from pypath.inputs_v2 import mirbase, uniprot
-from pypath.inputs_v2.parsers.reactome import BP, _participant_molecular_form
+from omnipath_resources.inputs_v2 import mirbase, uniprot
+from omnipath_resources.inputs_v2.parsers.reactome import BP, _participant_molecular_form
 
 PTMLIST = """ID   Phosphoserine
 AC   PTM-0253

@@ -26,7 +26,7 @@ Entrez Gene IDs in gene-reaction rules.
 
 The :func:`imm1415_network` and :func:`imm1415_transporter_network`
 functions yield :class:`GemInteraction` records compatible with
-``pypath.inputs.metatlas`` and the ``omnipath-metabo`` GEM processor.
+``omnipath_resources.inputs.metatlas`` and the ``omnipath-metabo`` GEM processor.
 
 References:
     Sigurdsson MI, Jamshidi N, Steingrimsson E, et al.  A detailed

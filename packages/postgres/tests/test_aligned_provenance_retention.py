@@ -364,7 +364,7 @@ def _pinned_fixture(root):
             target,
             resource.source,
             version,
-            provenance={"dependencies": {"pypath-omnipath": "fixture"}},
+            provenance={"dependencies": {"omnipath-resources": "fixture"}},
         )
     path = root / "release.json"
     path.write_text(json.dumps(dict(schema_version=1, version="2026.10.2", resources=versions)))

@@ -2,8 +2,8 @@
 
 
 def test_kegg_compound_names_parsing(monkeypatch):
-    from pypath.inputs import kegg
-    from pypath.inputs import kegg_api
+    from omnipath_resources.inputs import kegg
+    from omnipath_resources.inputs import kegg_api
 
     sample = [
         ['cpd:C00001', 'H2O; Water'],

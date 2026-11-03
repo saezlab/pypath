@@ -47,8 +47,8 @@ def test_registered_ramp_export_uses_native_cache(tmp_path, monkeypatch):
 
 def test_download_and_internal_cache_share_one_directory(tmp_path, monkeypatch):
     from omnipath_build.discovery import setup_pypath_cache
-    from pypath.share.cache import get_cachedir
-    from pypath.share import settings
+    from omnipath_resources.share.cache import get_cachedir
+    from omnipath_resources.share import settings
 
     previous = settings.get("cachedir")
     monkeypatch.setenv("PYPATH_DOWNLOAD_DATADIR", str(tmp_path / "cache"))

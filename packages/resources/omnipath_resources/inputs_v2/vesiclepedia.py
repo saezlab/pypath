@@ -21,14 +21,14 @@ from functools import partial
 
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
-from pypath.inputs_v2._vesicles import map_detection, map_vesicle_type
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.exocarta import (
+from omnipath_resources.inputs_v2._vesicles import map_detection, map_vesicle_type
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.exocarta import (
     VESICLEPEDIA,
     iter_detections,
     iter_vesicle_types,
 )
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 
 config = ResourceConfig(
     id=ResourceCv.VESICLEPEDIA,

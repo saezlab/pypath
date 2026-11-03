@@ -8,13 +8,13 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.cspa import (
+from omnipath_resources.inputs_v2.cspa import (
     CELL_TYPE_NAMESPACE,
     LIST_ID,
     LIST_NAMESPACE,
     resource,
 )
-from pypath.inputs_v2.parsers.cspa import (
+from omnipath_resources.inputs_v2.parsers.cspa import (
     PROTEIN_COLUMNS,
     iter_detections,
     iter_human_proteins,

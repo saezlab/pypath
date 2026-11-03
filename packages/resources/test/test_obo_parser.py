@@ -1,5 +1,5 @@
 """OBO tag values: qualifiers and comments are not part of the identifier."""
-from pypath.inputs_v2.parsers.obo import parse_obo_text
+from omnipath_resources.inputs_v2.parsers.obo import parse_obo_text
 
 STANZA = '''
 [Term]

@@ -31,16 +31,16 @@ import copy
 import collections
 import itertools
 
-import pypath.resources.network as netres
-from pypath.core import annot
-from pypath.core import intercell
-from pypath.core import complex
-from pypath.core import enz_sub
-from pypath.core import network
-from pypath.share import session as session_mod
+import omnipath_resources.resources.network as netres
+from omnipath_resources.core import annot
+from omnipath_resources.core import intercell
+from omnipath_resources.core import complex
+from omnipath_resources.core import enz_sub
+from omnipath_resources.core import network
+from omnipath_resources.share import session as session_mod
 
-import pypath.share.settings as settings
-import pypath.share.common as common
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.common as common
 
 
 class DatabaseManager(session_mod.Logger):
@@ -317,7 +317,7 @@ class DatabaseManager(session_mod.Logger):
         """
 
         mod_str = self.get_param('%s_mod' % dataset)
-        mod = sys.modules['pypath.core.%s' % mod_str]
+        mod = sys.modules['omnipath_resources.core.%s' % mod_str]
 
         if reset and hasattr(mod, 'db'):
 
@@ -329,7 +329,7 @@ class DatabaseManager(session_mod.Logger):
     def reload_module(self, dataset):
         """
         Reloads the module of the database object of a particular dataset.
-        E.g. in case of network datasets the ``pypath.network`` module
+        E.g. in case of network datasets the ``omnipath_resources.network`` module
         will be reloaded.
         """
 
@@ -385,7 +385,7 @@ class DatabaseManager(session_mod.Logger):
 
     # TODO
     # the get_args_* methods below will be replaced by the
-    # pypath.omnipath.databases module
+    # omnipath_resources.omnipath.databases module
 
     def get_args_curated(self):
         """

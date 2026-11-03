@@ -16,7 +16,7 @@ from __future__ import annotations
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_rdata
+from omnipath_resources.inputs_v2.parsers.base import iter_rdata
 
 # Columns of ``human_lr_pair.rds`` and ``mouse_lr_pair.rds``, in source order.
 COLUMNS = (

@@ -34,24 +34,24 @@ import dill as pickle
 import numpy as np
 import pandas as pd
 
-import pypath.inputs.cellphonedb as cellphonedb
-import pypath.inputs.lrdb as lrdb
-import pypath.inputs.uniprot_db as uniprot_db
-import pypath.share.common as common
+import omnipath_resources.inputs.cellphonedb as cellphonedb
+import omnipath_resources.inputs.lrdb as lrdb
+import omnipath_resources.inputs.uniprot_db as uniprot_db
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.share.settings as settings
-import pypath.utils.mapping as mapping
-import pypath.utils.reflists as reflists
-import pypath.utils.uniprot as utils_uniprot
-import pypath.internals.resource as resource
-import pypath.utils.go as go
-import pypath.core.intercell_annot as intercell_annot
-import pypath.core.common as core_common
-import pypath.share.session as session_mod
-import pypath.internals.annot_formats as annot_formats
-import pypath.core.complex as complex
-import pypath.internals.intera as intera
-import pypath.core.entity as entity
+import omnipath_resources.share.settings as settings
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.utils.reflists as reflists
+import omnipath_resources.utils.uniprot as utils_uniprot
+import omnipath_resources.internals.resource as resource
+import omnipath_resources.utils.go as go
+import omnipath_resources.core.intercell_annot as intercell_annot
+import omnipath_resources.core.common as core_common
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.internals.annot_formats as annot_formats
+import omnipath_resources.core.complex as complex
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.core.entity as entity
 
 #TODO this should be part of json files
 protein_sources_default = {
@@ -201,7 +201,7 @@ class CustomAnnotation(session_mod.Logger):
         """
         :param tuple class_definitions:
             A series of annotation class definitions, each represented by
-            an instance of ``pypath.internals.annot_formats.AnnotDef``.
+            an instance of ``omnipath_resources.internals.annot_formats.AnnotDef``.
             These definitions carry the attributes and instructions to
             populate the classes.
         :param dict excludes:
@@ -1444,8 +1444,8 @@ class CustomAnnotation(session_mod.Logger):
         Creates a ``pandas.DataFrame`` where each record is an interaction
         between a pair of molecular enitities labeled by their annotations.
 
-        network : pypath.network.Network,pandas.DataFrame
-            A ``pypath.network.Network`` object or a data frame with network
+        network : omnipath_resources.network.Network,pandas.DataFrame
+            A ``omnipath_resources.network.Network`` object or a data frame with network
             data.
         combined_df : pandas.DataFrame
             Optional, a network data frame already combined with annotations
@@ -2521,7 +2521,7 @@ class CustomAnnotation(session_mod.Logger):
         proceeding to the next one once you hit return. If no classes
         provided goes through all classes.
 
-        ``kwargs`` passed to ``pypath.utils.uniprot.info``.
+        ``kwargs`` passed to ``omnipath_resources.utils.uniprot.info``.
         """
 
         classes = dict(
@@ -2576,7 +2576,7 @@ class AnnotationBase(resource.AbstractResource):
             NCBI Taxonomy identifier.
         :arg callable,str input_method:
             Either a callable or the name of a method in any submodules of
-            the ``pypath.inputs``  module. Should return a dict with
+            the ``omnipath_resources.inputs``  module. Should return a dict with
             UniProt IDs as keys or an object suitable for ``process_method``.
         :arg dict input_args:
             Arguments for the ``input_method``.
@@ -2732,7 +2732,7 @@ class AnnotationBase(resource.AbstractResource):
 
         if not complexes:
 
-            import pypath.core.complex as complex
+            import omnipath_resources.core.complex as complex
 
             complexdb = complex.get_db()
 
@@ -2879,7 +2879,7 @@ class AnnotationBase(resource.AbstractResource):
 
         if use_complexes:
 
-            import pypath.core.complex as complex
+            import omnipath_resources.core.complex as complex
 
             complexes = (
                 complexes or
@@ -3683,7 +3683,7 @@ class AnnotationBase(resource.AbstractResource):
                 categories and start is 250 it will skip everything before the
                 250th.
             kwargs:
-                Passed to ``pypath.utils.uniprot.info``.
+                Passed to ``omnipath_resources.utils.uniprot.info``.
         """
 
         if not field and not self.primary_field:
@@ -4927,9 +4927,9 @@ class GOCustomIntercell(go.GOCustomAnnotation):
             **kwargs
         ):
         """
-        Same as :class:``pypath.go.GOCustomAnnotation``
+        Same as :class:``omnipath_resources.go.GOCustomAnnotation``
         initialized with the categories defined in
-        ``pypath.intercell_annot.intercell_categories``.
+        ``omnipath_resources.intercell_annot.intercell_categories``.
         """
 
         categories = categories or intercell_annot.go_combined_classes

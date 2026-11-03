@@ -17,10 +17,10 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.inputs.mitab as mitab
-import pypath.share.cache as _cache
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.inputs.mitab as mitab
+import omnipath_resources.share.cache as _cache
 
 
 def dip_interactions(

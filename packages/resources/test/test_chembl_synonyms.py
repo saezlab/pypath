@@ -2,7 +2,7 @@
 
 
 def test_molecules_parser_splits_synonyms(monkeypatch, tmp_path):
-    from pypath.inputs_v2.parsers import chembl as cp
+    from omnipath_resources.inputs_v2.parsers import chembl as cp
 
     dbfile = tmp_path / 'fake.sqlite'
     dbfile.write_bytes(b'')  # exists -> parser skips extraction
@@ -44,8 +44,8 @@ def test_molecules_parser_splits_synonyms(monkeypatch, tmp_path):
 
 
 def test_molecules_schema_exposes_synonym():
-    from pypath.inputs_v2 import chembl
-    from pypath.internals.cv_terms.identifiers import IdentifierNamespaceCv
+    from omnipath_resources.inputs_v2 import chembl
+    from omnipath_resources.internals.cv_terms.identifiers import IdentifierNamespaceCv
 
     # the SYNONYM identifier CV must be wired into the molecules schema
     assert hasattr(chembl, 'molecules_schema')

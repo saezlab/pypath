@@ -29,10 +29,10 @@ from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.cpad import iter_entries, iter_terms
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.tabular_builder import (
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.cpad import iter_entries, iter_terms
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -76,7 +76,7 @@ download_entries = Download(
     # The file is in the GBK encoding; the legacy module read it as ISO-8859-1,
     # which turns the Greek letters of the names into two Latin ones.
     encoding='gb18030',
-    download_kwargs={'headers': ['User-Agent: pypath-omnipath (+https://omnipathdb.org/)']},
+    download_kwargs={'headers': ['User-Agent: omnipath-resources (+https://omnipathdb.org/)']},
 )
 
 # Source-owned vocabularies of the pathways and the cancers, as the file names them.

@@ -23,7 +23,7 @@ import importlib as imp
 
 import tqdm
 
-import pypath.share.settings as settings
+import omnipath_resources.share.settings as settings
 
 __all__ = ['Progress']
 

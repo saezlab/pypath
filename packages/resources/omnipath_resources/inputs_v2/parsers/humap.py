@@ -37,7 +37,7 @@ from collections.abc import Generator
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_csv, read_text
+from omnipath_resources.inputs_v2.parsers.base import iter_csv, read_text
 
 _UNIPROT = re.compile(
     r'(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-\d+)?'

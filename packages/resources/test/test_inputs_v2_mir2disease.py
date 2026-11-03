@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import mir2disease as mod
-from pypath.inputs_v2.parsers.mir2disease import iter_targets
+from omnipath_resources.inputs_v2 import mir2disease as mod
+from omnipath_resources.inputs_v2.parsers.mir2disease import iter_targets
 
 # The start of miRtar.txt and lines from further down (ISO-8859-1, CRLF). The
 # title of the MET line is broken over two lines in the source, and the title

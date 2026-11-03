@@ -19,9 +19,9 @@
 
 import collections
 
-from pypath.resources import urls
-from pypath.share import curl
-from pypath.utils import taxonomy
+from omnipath_resources.resources import urls
+from omnipath_resources.share import curl
+from omnipath_resources.utils import taxonomy
 
 HintInteraction = collections.namedtuple(
     'HintInteraction',

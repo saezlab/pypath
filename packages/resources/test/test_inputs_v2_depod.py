@@ -9,8 +9,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import depod
-from pypath.inputs_v2.parsers import depod as depod_parser
+from omnipath_resources.inputs_v2 import depod
+from omnipath_resources.inputs_v2.parsers import depod as depod_parser
 
 PROTEIN_HEADER = list(depod_parser.PROTEIN_COLUMNS)
 # Rows copied from PPase_protSubtrates_201903.xls (a single PubMed ID is a

@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.ca1 import resource
-from pypath.inputs_v2.parsers.ca1 import COLUMNS, HEADER, iter_links
+from omnipath_resources.inputs_v2.ca1 import resource
+from omnipath_resources.inputs_v2.parsers.ca1 import COLUMNS, HEADER, iter_links
 
 # Lines of S1.txt.
 INHIBITION = 'CAMKII Q9UQM7 P11798 Kinase Cytosol SYNAPSIN P17600 O88935 Vesicle Vesicles _ Phosphorylation 7890745'

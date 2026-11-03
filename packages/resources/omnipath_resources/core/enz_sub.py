@@ -29,19 +29,19 @@ import traceback
 
 import pandas as pd
 
-import pypath.share.common as common
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.utils.mapping as mapping
-import pypath.utils.orthology as orthology
-import pypath.inputs.uniprot as uniprot_input
-import pypath.internals.intera as intera
-import pypath.share.progress as progress
-import pypath.share.session as session_mod
-import pypath.utils.taxonomy as taxonomy
-import pypath.inputs as inputs
-import pypath.core.evidence as evidence
-import pypath.core.entity as entity
-import pypath.resources as resources
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.utils.orthology as orthology
+import omnipath_resources.inputs.uniprot as uniprot_input
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.utils.taxonomy as taxonomy
+import omnipath_resources.inputs as inputs
+import omnipath_resources.core.evidence as evidence
+import omnipath_resources.core.entity as entity
+import omnipath_resources.resources as resources
 
 
 class EnzymeSubstrateProcessor(
@@ -76,7 +76,7 @@ class EnzymeSubstrateProcessor(
         :param int ncbi_tax_id: NCBI Taxonomy ID used at the database lookups.
         :param bool trace: Keep data about ambiguous ID mappings and PTM data
                            in mismatch with UniProt sequences.
-        :param pypath.mapping.Mapper: A `Mapper` instance. If `None` a new
+        :param omnipath_resources.mapping.Mapper: A `Mapper` instance. If `None` a new
                                       instance will be created.
         :param str id_type_enzyme: The ID type of the enzyme in the database.
         :param str id_type_substrate: The ID type of the substrate in the
@@ -567,8 +567,8 @@ class EnzymeSubstrateOrthologyProcessor(
             **kwargs
         ):
         """
-        Unifies a `pypath.core.enz_sub.EnzymeSubstrateProcessor` and
-        a `pypath.utils.orthology.PtmOrthology` object to build
+        Unifies a `omnipath_resources.core.enz_sub.EnzymeSubstrateProcessor` and
+        a `omnipath_resources.utils.orthology.PtmOrthology` object to build
         a set of enzyme-substrate interactions from a database and
         subsequently translate them by orthology to one different organism.
         Multiple organism can be chosen as the source of the
@@ -1089,7 +1089,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
     def assign_to_network(self, pa):
         """
         Assigns enzyme-substrate interactions to the edges of a
-        network in a py:class:``pypath.legacy.main.PyPath`` instance.
+        network in a py:class:``omnipath_resources.legacy.main.PyPath`` instance.
         """
 
         pa.update_vname()

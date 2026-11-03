@@ -24,7 +24,7 @@ from collections.abc import Generator
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 COLUMNS = ('gene', 'gene_acc', 'kinase', 'position', 'flank', 'npmid', 'source')
 REFSEQ_REGEX = re.compile(r'^NM_\d+$')

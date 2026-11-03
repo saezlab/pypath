@@ -6,7 +6,7 @@ Companion: [mapping design](inputs-v2-legacy-adapter-mapping.md).
 
 ## Scope and counting
 
-“Missing” means that the resource has no corresponding resource module in `pypath/inputs_v2`, after resolving the aliases below. Existing v2 resources are excluded from the main backlog even when a particular legacy dataset has not been reproduced. A resource can occur in multiple categories. Network labels and versioned datasets are retained rather than counted as independent upstream databases.
+“Missing” means that the resource has no corresponding resource module in `omnipath_resources/inputs_v2`, after resolving the aliases below. Existing v2 resources are excluded from the main backlog even when a particular legacy dataset has not been reproduced. A resource can occur in multiple categories. Network labels and versioned datasets are retained rather than counted as independent upstream databases.
 
 The inventory combines: all complex input registrations in `core/complex.py`; all enzyme–substrate registrations in `resources/data/resources.json`; every literal `NetworkInput` definition in `resources/data_formats.py`; and a recursive scan of legacy functions, supplemented with nonstandard structural-interaction entry points. Private parsers, annotations-only functions, ontology/ID mapping and general disease-association APIs are not treated as ordinary molecular network resources. Exceptions and related APIs appear below so they do not disappear behind this boundary.
 
@@ -219,7 +219,7 @@ Same-name v2 modules exclude, among others, CORUM, CellPhoneDB, Cellinker, ICELL
 
 ## Repeating the inventory
 
-1. Enumerate `pypath/inputs/**/*.py` and `pypath/inputs_v2/*.py` without importing modules or downloading data.
+1. Enumerate `omnipath_resources/inputs/**/*.py` and `omnipath_resources/inputs_v2/*.py` without importing modules or downloading data.
 2. Parse the complex class `input_method` definitions, the JSON `inputs.enzyme_substrate` entries, and all `NetworkInput(...)` calls; retain labels, functions, arguments and source locations.
 3. Compare by resource identity using the alias table, not only filename equality.
 4. Supplement with public complex, enzyme–substrate and interaction functions and the structural APIs listed above; separate generic helpers, derived analyses and incomplete functions.

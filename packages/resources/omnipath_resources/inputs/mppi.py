@@ -19,8 +19,8 @@
 
 import xml.etree.cElementTree as ET
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
 
 
 def mppi_interactions(organism = 9606):

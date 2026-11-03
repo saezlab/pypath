@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     BiologicalEffectCv,
     BiologicalRoleCv,
     CausalStatementCv,

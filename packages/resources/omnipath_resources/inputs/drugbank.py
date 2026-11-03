@@ -29,12 +29,12 @@ import base64
 from lxml import etree
 from zipfile import ZipFile
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.common as common
-import pypath.share.session as session
-import pypath.share.settings as settings
-import pypath.inputs.credentials as credentials
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session
+import omnipath_resources.share.settings as settings
+import omnipath_resources.inputs.credentials as credentials
 
 _logger = session.Logger(name = 'drugbank_input')
 _log = _logger._log

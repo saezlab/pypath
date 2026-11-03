@@ -21,7 +21,7 @@ two entries for an item, the PubMed ID and a DIP record of the article
 (``pubmed:DIP-17838S``). Terms of the PSI-MI ontology are written without the
 database name ``psi-mi`` (``MI:0114(x-ray crystallography)``), and the DIP
 identifiers without a database name. The cells of other PSI-MI TAB sources are
-read by ``pypath.inputs_v2._mitab``.
+read by ``omnipath_resources.inputs_v2._mitab``.
 """
 
 from __future__ import annotations
@@ -29,8 +29,8 @@ from __future__ import annotations
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2 import _mitab
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2 import _mitab
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 # Header of the file and the field each column is read into, in file order.
 COLUMNS = (

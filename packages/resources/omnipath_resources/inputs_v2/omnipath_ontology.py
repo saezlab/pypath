@@ -13,10 +13,10 @@ import inspect
 from collections.abc import Generator
 from typing import Any
 
-from pypath.internals import cv_terms
-from pypath.internals.cv_terms import CvEnum, LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.ontology_schema import OntologyTerm
-from pypath.inputs_v2.base import Dataset, Resource, ResourceConfig, ontology_entity_mapper
+from omnipath_resources.internals import cv_terms
+from omnipath_resources.internals.cv_terms import CvEnum, LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.ontology_schema import OntologyTerm
+from omnipath_resources.inputs_v2.base import Dataset, Resource, ResourceConfig, ontology_entity_mapper
 
 
 config = ResourceConfig(

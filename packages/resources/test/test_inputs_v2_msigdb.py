@@ -7,10 +7,10 @@ from types import SimpleNamespace
 import pytest
 from omnipath_build.silver import SilverExtractor
 
-from pypath.internals.cv_terms import LicenseCV, ResourceCv
-from pypath.inputs_v2 import msigdb
-from pypath.inputs_v2.msigdb import COLLECTION, COLLECTIONS, GENE_SET, resource, source_xref
-from pypath.inputs_v2.parsers.msigdb import iter_genes, iter_terms
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv
+from omnipath_resources.inputs_v2 import msigdb
+from omnipath_resources.inputs_v2.msigdb import COLLECTION, COLLECTIONS, GENE_SET, resource, source_xref
+from omnipath_resources.inputs_v2.parsers.msigdb import iter_genes, iter_terms
 
 # Entries of the JSON files of release 2026.1.Hs (name, fields): the gene sets of
 # the files read, copied from the data server. BIOCARTA is from a file that the

@@ -26,7 +26,7 @@ import sqlite3
 
 import tqdm
 
-import pypath.share.common as common
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
 
 

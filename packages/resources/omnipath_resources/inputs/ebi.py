@@ -27,10 +27,10 @@ from typing import Callable, List, Optional, Union
 
 import glom
 
-import pypath.share.curl as curl
+import omnipath_resources.share.curl as curl
 import pypath_common._constants as _const
-import pypath.share.session as session
-import pypath.inputs.common as inputs_common
+import omnipath_resources.share.session as session
+import omnipath_resources.inputs.common as inputs_common
 
 _logger = session.Logger(name = 'inputs.ebi')
 _log = _logger._log

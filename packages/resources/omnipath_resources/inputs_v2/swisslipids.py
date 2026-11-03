@@ -2,7 +2,7 @@
 Parse SwissLipids data and emit Entity records.
 
 This module converts SwissLipids lipid data into Entity records using
-the schema defined in pypath.internals.silver_schema.
+the schema defined in omnipath_resources.internals.silver_schema.
 """
 
 from __future__ import annotations
@@ -13,16 +13,16 @@ from biolink_model.datamodel.model import ChemicalEntity, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.base import iter_tsv
-from pypath.internals.cv_terms import (
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.silver_schema import Annotation, EntityRef, OntologyRelation
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.silver_schema import Annotation, EntityRef, OntologyRelation
+from omnipath_resources.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
     EntityBuilder,

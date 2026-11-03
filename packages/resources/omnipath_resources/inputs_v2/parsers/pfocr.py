@@ -6,7 +6,7 @@ from collections.abc import Generator
 import re
 from typing import Any
 
-from pypath.share.downloads import download_and_open
+from omnipath_resources.share.downloads import download_and_open
 
 
 _CURRENT_PFOCR_URL = 'https://data.wikipathways.org/pfocr/current/'

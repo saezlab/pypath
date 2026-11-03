@@ -23,7 +23,7 @@
 
 """
 Here we take a snapshot from the current tip of the master branch of pypath,
-collect all functions from the pypath.inputs module and run them with an
+collect all functions from the omnipath_resources.inputs module and run them with an
 empty cache directory. Basic metrics about the returned values and errors
 are presented. This simple and automatized procedure is able to reveal the
 most common errors: if a server is down, if the URL, format or access
@@ -279,7 +279,7 @@ def _log(*args, **kwargs):
 
 class StatusReport(object):
     """
-    Calls all functions defined in the submodules of the `pypath.inputs`
+    Calls all functions defined in the submodules of the `omnipath_resources.inputs`
     module and reports about their runtime, result and errors.
 
     Args:
@@ -453,11 +453,11 @@ class StatusReport(object):
 
     def test_inputs(self):
         """
-        Iterates over all functions defined in `pypath.inputs`, calls
+        Iterates over all functions defined in `omnipath_resources.inputs`, calls
         them one by one, saves data about the returned values and errors.
         """
 
-        _log('Testing functions from `pypath.inputs`.')
+        _log('Testing functions from `omnipath_resources.inputs`.')
 
         for i, fun in enumerate(self.functions):
 
@@ -472,24 +472,24 @@ class StatusReport(object):
     @property
     def module_names(self):
         """
-        Iterate module names in the `pypath.inputs` module.
+        Iterate module names in the `omnipath_resources.inputs` module.
         """
 
         for mod in pkgutil.iter_modules(inputs.__path__):
 
             if mod.name in EXCLUDE:
 
-                _log('Ignoring module `pypath.inputs.%s`.' % mod.name)
+                _log('Ignoring module `omnipath_resources.inputs.%s`.' % mod.name)
 
             else:
 
-                yield 'pypath.inputs.%s' % mod.name
+                yield 'omnipath_resources.inputs.%s' % mod.name
 
 
     @property
     def modules(self):
         """
-        Iterate submodules in the `pypath.inputs` module.
+        Iterate submodules in the `omnipath_resources.inputs` module.
         """
 
         for mod_name in self.module_names:
@@ -794,16 +794,16 @@ class StatusReport(object):
 
             sys.path.insert(0, os.getcwd())
 
-        import pypath.share.session as session
+        import omnipath_resources.share.session as session
         _logger = session.Logger(name = 'status_report')
         globals()['_logger'] = _logger
         globals()['_log'] = _logger._log
         _log('Loading pypath modules')
 
-        import pypath.inputs as inputs
-        import pypath.share.settings as settings
-        import pypath.omnipath.server.build as build
-        import pypath.omnipath as omnipath
+        import omnipath_resources.inputs as inputs
+        import omnipath_resources.share.settings as settings
+        import omnipath_resources.omnipath.server.build as build
+        import omnipath_resources.omnipath as omnipath
 
         globals()['inputs'] = inputs
         globals()['session'] = session
@@ -1076,7 +1076,7 @@ class StatusReport(object):
                 'pypath version: %s (from %s%s' % (
                     time.strftime(REPORT_TIME_F, self.start_time),
                     time.strftime(REPORT_TIME_F, self.end_time),
-                    sys.modules['pypath'].__version__,
+                    sys.modules['omnipath_resources'].__version__,
                     self.pypath_from,
                     '; <a href="%s/tree/%s">%s</a>)' % (
                         PYPATH_GIT_URL,
@@ -1194,7 +1194,7 @@ class StatusReport(object):
         Copies the logfile to the reporting directory.
         """
 
-        path = os.path.join(self.reportdir, 'pypath.log')
+        path = os.path.join(self.reportdir, 'omnipath_resources.log')
         _log('Copying log file to `%s`.' % path)
         time.sleep(5)
 

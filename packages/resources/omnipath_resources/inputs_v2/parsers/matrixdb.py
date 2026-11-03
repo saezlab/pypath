@@ -23,7 +23,7 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_csv, iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_csv, iter_tsv
 
 # The 42 columns of the file, in order, and the field each is read into.
 INTERACTION_COLUMNS = (

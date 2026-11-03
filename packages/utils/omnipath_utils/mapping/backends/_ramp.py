@@ -23,7 +23,7 @@ class RampBackend(MappingBackend):
             return {}
 
     def _read_via_pypath(self, id_type, target_id_type, ncbi_tax_id, **kwargs):
-        from pypath.inputs.ramp import ramp_mapping, ramp_synonym_mapping
+        from omnipath_resources.inputs.ramp import ramp_mapping, ramp_synonym_mapping
 
         _log.info('RaMP: %s -> %s', id_type, target_id_type)
 

@@ -31,14 +31,14 @@ try:
 except:
     import urllib.request as urllib2
 
-import pypath.inputs.uniprot_db as uniprot_db
-import pypath.share.progress as progress
-import pypath.share.curl as curl
-import pypath.share.common as common
-import pypath.share.cache as cache
-import pypath.share.session as session
-import pypath.resources.urls as urls
-import pypath.utils.taxonomy as taxonomy
+import omnipath_resources.inputs.uniprot_db as uniprot_db
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.common as common
+import omnipath_resources.share.cache as cache
+import omnipath_resources.share.session as session
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.taxonomy as taxonomy
 
 _logger = session.Logger(name = 'pfam_input')
 _log = _logger._log

@@ -21,9 +21,9 @@ from __future__ import annotations
 
 from collections.abc import Generator
 
-import pypath.resources.urls as urls
-import pypath.utils.taxonomy as taxonomy
-from pypath.share.downloads import dm
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.taxonomy as taxonomy
+from omnipath_resources.share.downloads import dm
 from ..mitab import MitabInteraction
 
 __all__ = [

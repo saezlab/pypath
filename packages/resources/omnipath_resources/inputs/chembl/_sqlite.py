@@ -21,10 +21,10 @@ import sqlite3
 from typing import Callable
 from pathlib import Path
 
-import pypath.share.cache as cache
-from pypath.share import curl, cache
-from pypath.formats import sqlite as _sqlite
-from pypath.resources import urls
+import omnipath_resources.share.cache as cache
+from omnipath_resources.share import curl, cache
+from omnipath_resources.formats import sqlite as _sqlite
+from omnipath_resources.resources import urls
 
 from ._common import _log, _show_tables
 

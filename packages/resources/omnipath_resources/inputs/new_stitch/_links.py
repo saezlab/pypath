@@ -4,7 +4,7 @@ from collections.abc import Generator
 import itertools
 import re
 
-import pypath.resources.urls as urls
+import omnipath_resources.resources.urls as urls
 from ._records import StitchLinks
 from ._raw import tables
 

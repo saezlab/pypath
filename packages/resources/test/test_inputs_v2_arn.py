@@ -7,7 +7,7 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.arn import resource
+from omnipath_resources.inputs_v2.arn import resource
 
 # Lines of arn_curated.csv: a directed link without effect, a stimulation with
 # four references, an inhibition, an undirected link and an undirected link

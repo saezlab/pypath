@@ -29,9 +29,9 @@ from __future__ import annotations
 from collections.abc import Callable, Generator
 from typing import Any
 
-from pypath.inputs_v2._publications import is_pmid
-from pypath.inputs_v2.parsers.base import iter_tsv
-from pypath.inputs_v2.parsers.mirdeathdb import (
+from omnipath_resources.inputs_v2._publications import is_pmid
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.mirdeathdb import (
     cell,
     gene_fields,
     each_product,

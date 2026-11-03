@@ -300,7 +300,7 @@ METALINKSDB = NetworkDefinition(
 # For this preset it returns empty either way, and that is worth keeping on the
 # record rather than in the defaults. ConnectomeDB2025 does publish PubMed ids,
 # but the loader that produced this build
-# (`pypath/inputs_v2/connectomedb.py`) never reads the `AI summary` column they
+# (`omnipath_resources/inputs_v2/connectomedb.py`) never reads the `AI summary` column they
 # sit in, so there is no reference annotation for the projection to collect and
 # nothing to serve. That is an ingest gap, tracked as a follow-up in this
 # cycle's task list, not a property of the dataset, and it fills in once the

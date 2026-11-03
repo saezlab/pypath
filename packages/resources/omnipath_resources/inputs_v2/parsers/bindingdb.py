@@ -27,7 +27,7 @@ _BINDINGDB_AFFINITY_COLUMNS = (
 BINDINGDB_MIN_PCHEMBL = 5.0
 
 # Keep the raw parser schema narrow. These are the only BindingDB columns used by
-# pypath.inputs_v2.bindingdb.interactions_schema.
+# omnipath_resources.inputs_v2.bindingdb.interactions_schema.
 _BINDINGDB_COLUMNS = [
     'BindingDB Reactant_set_id',
     'Number of Protein Chains in Target (>1 implies a multichain complex)',

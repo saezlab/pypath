@@ -44,8 +44,8 @@ from collections.abc import Generator
 import json
 from typing import Any
 
-from pypath.inputs_v2.base import Download
-from pypath.inputs_v2.parsers.base import iter_csv, read_text
+from omnipath_resources.inputs_v2.base import Download
+from omnipath_resources.inputs_v2.parsers.base import iter_csv, read_text
 
 MEMBRANE_COLUMNS = ('id', 'name', 'topology_in', 'topology_out', 'abbreviation')
 PROTEIN_COLUMNS = (

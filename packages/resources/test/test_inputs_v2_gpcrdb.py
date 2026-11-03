@@ -9,8 +9,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import gpcrdb
-from pypath.inputs_v2.parsers import gpcrdb as gpcrdb_parser
+from omnipath_resources.inputs_v2 import gpcrdb
+from omnipath_resources.inputs_v2.parsers import gpcrdb as gpcrdb_parser
 
 # The first receptor, the angiotensin AT1 receptor (rat and mouse have two
 # genes, a bar separates their accessions) and the CRF1 receptor (an isoform

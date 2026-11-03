@@ -22,10 +22,10 @@ from typing import Union
 import re
 import collections
 
-import pypath.utils.mapping as mapping
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.formats.obo as obo
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.formats.obo as obo
 
 
 def hpo_annotations() -> dict[str, set[tuple]]:

@@ -26,9 +26,9 @@ from pypath_common import data as _data
 
 _METHODS = ('load', 'path', 'builtins')
 _MODULES = {
-    'pypath': '',
+    'omnipath_resources': '',
     'pypath_common': 'common_',
-    'pypath.resources': 'resources_',
+    'omnipath_resources.resources': 'resources_',
 }
 
 for method, (module, prefix) in itertools.product(_METHODS, _MODULES.items()):

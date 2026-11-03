@@ -71,7 +71,7 @@ def test_quantity_cannot_replace_qualifier_enum():
 
 
 def test_bindingdb_ic50_reaches_final_typed_parquet(tmp_path):
-    from pypath.inputs_v2.bindingdb import interactions_schema
+    from omnipath_resources.inputs_v2.bindingdb import interactions_schema
 
     row = {
         "BindingDB MonomerID": "1",

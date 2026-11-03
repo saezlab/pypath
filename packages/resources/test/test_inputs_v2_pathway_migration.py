@@ -9,7 +9,7 @@ from omnipath_build.silver import SilverExtractor
 
 def extract(module, schema, row):
     record = getattr(
-        importlib.import_module('pypath.inputs_v2.' + module), schema
+        importlib.import_module('omnipath_resources.inputs_v2.' + module), schema
     )(row)
     assert record is not None
     output = SilverExtractor(module, schema)
@@ -200,7 +200,7 @@ def test_macdb_numeric_fields_are_not_narrative_or_causal():
 
 
 def test_unknown_direction_not_guessed():
-    from pypath.inputs_v2 import reactome, wikipathways
+    from omnipath_resources.inputs_v2 import reactome, wikipathways
 
     assert reactome._control_effect({'control_type': 'ACTIVATION-LIKE'}) is None
     assert (
@@ -212,7 +212,7 @@ def test_unknown_direction_not_guessed():
 
 
 def test_pfocr_mentions_and_invalid_identifier():
-    from pypath.inputs_v2 import pfocr
+    from omnipath_resources.inputs_v2 import pfocr
 
     out = extract(
         'pfocr',
@@ -283,7 +283,7 @@ def test_kegg_pubchem_ids_are_substances_not_compounds():
 
 
 def test_brenda_obsolete_term_is_excluded():
-    from pypath.inputs_v2.brenda import enzyme_ontology_schema
+    from omnipath_resources.inputs_v2.brenda import enzyme_ontology_schema
 
     assert (
         enzyme_ontology_schema(
@@ -322,7 +322,7 @@ def test_wikipathways_missing_taxonomy_and_version_identifier():
 
 def test_reactome_parser_uses_source_type_tokens():
     from rdflib import Graph, RDF, URIRef, Literal
-    from pypath.inputs_v2.parsers import reactome
+    from omnipath_resources.inputs_v2.parsers import reactome
 
     graph = Graph()
     reaction = URIRef('urn:test:reaction')
@@ -375,7 +375,7 @@ def test_macdb_measurements_preserve_arm_and_comparator_without_inventing_units(
 
 
 def test_intact_malformed_accessions_not_reassigned_to_genbank():
-    from pypath.inputs_v2.intact import _parse_identifier_pairs
+    from omnipath_resources.inputs_v2.intact import _parse_identifier_pairs
 
     assert (
         _parse_identifier_pairs(
@@ -386,7 +386,7 @@ def test_intact_malformed_accessions_not_reassigned_to_genbank():
 
 
 def test_names_and_synonyms_are_supplemental_identifiers():
-    from pypath.inputs_v2 import reactome
+    from omnipath_resources.inputs_v2 import reactome
 
     record = reactome.reactions_schema(
         {
@@ -419,7 +419,7 @@ def test_names_and_synonyms_are_supplemental_identifiers():
 
 
 def test_pfocr_caption_is_name_identifier_after_figure_id():
-    from pypath.inputs_v2.pfocr import association_to_entity
+    from omnipath_resources.inputs_v2.pfocr import association_to_entity
 
     record = association_to_entity(
         {'identifier': '12', 'pfocr_id': 'PMC123__fig1', 'caption': 'Caption'}

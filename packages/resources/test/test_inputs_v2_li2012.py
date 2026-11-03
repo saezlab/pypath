@@ -9,8 +9,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import entity_type, slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import li2012
-from pypath.inputs_v2.parsers import li2012 as li2012_parser
+from omnipath_resources.inputs_v2 import li2012
+from omnipath_resources.inputs_v2.parsers import li2012 as li2012_parser
 
 S1_TITLE = ['File S1: A literature-derived human TK circuit dataset ']
 S1_HEADER = [

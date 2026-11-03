@@ -17,7 +17,7 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import pypath.share.session as session
+import omnipath_resources.share.session as session
 
 
 _log = session.Logger(name = 'hmdb_input')._log

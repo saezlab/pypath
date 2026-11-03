@@ -25,9 +25,9 @@ from __future__ import annotations
 
 import json
 
-from pypath.share.curl import Curl
-from pypath.resources.urls import urls
-import pypath.share.session as session
+from omnipath_resources.share.curl import Curl
+from omnipath_resources.resources.urls import urls
+import omnipath_resources.share.session as session
 
 _logger = session.Logger(name = 'pharos_input')
 _log = _logger._log

@@ -8,9 +8,9 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.source_attributes import PARTICIPANT_ROLE
 
-from pypath.inputs_v2 import hpmr as mod
-from pypath.inputs_v2.parsers.base import iter_html_tables
-from pypath.inputs_v2.parsers.hpmr import (
+from omnipath_resources.inputs_v2 import hpmr as mod
+from omnipath_resources.inputs_v2.parsers.base import iter_html_tables
+from omnipath_resources.inputs_v2.parsers.hpmr import (
     iter_interactions,
     parse_receptor_page,
 )

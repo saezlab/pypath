@@ -27,9 +27,9 @@ import io
 import shutil
 import struct
 
-import pypath.share.settings as settings
-import pypath.share.session as session_mod
-import pypath.share.cache as cache_mod
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.cache as cache_mod
 
 import pycurl
 try:
@@ -91,10 +91,10 @@ import re
 
 from contextlib import closing
 
-import pypath.share.progress as progress
-import pypath.share.common as common
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.share.settings as settings
+import omnipath_resources.share.settings as settings
 
 try:
     basestring
@@ -186,19 +186,19 @@ class _global_context_off(_global_context):
 
 class cache_on(_global_context_on):
     """
-    This is a context handler to turn on pypath.curl.Curl() cache.
+    This is a context handler to turn on omnipath_resources.curl.Curl() cache.
     As most of the methods use cache as their default behaviour,
     probably it won't change anything.
 
-    Behind the scenes it sets the value of the `pypath.curl.CACHE`
+    Behind the scenes it sets the value of the `omnipath_resources.curl.CACHE`
     module level variable to `True` (by default it is `None`).
 
     Example: ::
 
-        import pypath
-        from pypath import curl, data_formats
+        import omnipath_resources
+        from omnipath_resources import curl, data_formats
 
-        pa = pypath.PyPath()
+        pa = omnipath_resources.PyPath()
 
         print('`curl.CACHE` is ', curl.CACHE)
 
@@ -213,18 +213,18 @@ class cache_on(_global_context_on):
 
 class cache_off(_global_context_off):
     """
-    This is a context handler to turn off pypath.curl.Curl() cache.
+    This is a context handler to turn off omnipath_resources.curl.Curl() cache.
     Data will be downloaded even if it exists in cache.
 
-    Behind the scenes it sets the value of the `pypath.curl.CACHE`
+    Behind the scenes it sets the value of the `omnipath_resources.curl.CACHE`
     module level variable to `False` (by default it is `None`).
 
     Example: ::
 
-        import pypath
-        from pypath import curl, data_formats
+        import omnipath_resources
+        from omnipath_resources import curl, data_formats
 
-        pa = pypath.PyPath()
+        pa = omnipath_resources.PyPath()
 
         print('`curl.CACHE` is ', curl.CACHE)
 
@@ -239,18 +239,18 @@ class cache_off(_global_context_off):
 
 class cache_print_on(_global_context_on):
     """
-    This is a context handler which makes pypath.curl.Curl() print
+    This is a context handler which makes omnipath_resources.curl.Curl() print
     verbose messages about its cache.
 
-    Behind the scenes it sets the value of the `pypath.curl.CACHEPRINT`
+    Behind the scenes it sets the value of the `omnipath_resources.curl.CACHEPRINT`
     module level variable to `True` (by default it is `False`).
 
     Example: ::
 
-        import pypath
-        from pypath import curl, data_formats
+        import omnipath_resources
+        from omnipath_resources import curl, data_formats
 
-        pa = pypath.PyPath()
+        pa = omnipath_resources.PyPath()
 
         with curl.cache_print_on():
             pa.load_resources({'signor': data_formats.pathway['signor']})
@@ -262,19 +262,19 @@ class cache_print_on(_global_context_on):
 
 class cache_print_off(_global_context_off):
     """
-    This is a context handler which stops pypath.curl.Curl() to print
+    This is a context handler which stops omnipath_resources.curl.Curl() to print
     verbose messages about its cache.
 
-    Behind the scenes it sets the value of the `pypath.curl.CACHEPRINT`
+    Behind the scenes it sets the value of the `omnipath_resources.curl.CACHEPRINT`
     module level variable to `False`. As by default it is `False`, this
     context won't modify the default behaviour.
 
     Example: ::
 
-        import pypath
-        from pypath import curl, data_formats
+        import omnipath_resources
+        from omnipath_resources import curl, data_formats
 
-        pa = pypath.PyPath()
+        pa = omnipath_resources.PyPath()
 
         with curl.cache_print_off():
             pa.load_resources({'signor': data_formats.pathway['signor']})
@@ -286,21 +286,21 @@ class cache_print_off(_global_context_off):
 
 class cache_delete_on(_global_context_on):
     """
-    This is a context handler which results pypath.curl.Curl() deleting the
+    This is a context handler which results omnipath_resources.curl.Curl() deleting the
     cache files instead of reading it. Then it downloads the data again,
     or does nothing if the `DRYRUN` context is turned on. Upon deleting
     cache files console messages will let you know which files have been
     deleted.
 
-    Behind the scenes it sets the value of the `pypath.curl.CACHEDEL`
+    Behind the scenes it sets the value of the `omnipath_resources.curl.CACHEDEL`
     module level variable to `True` (by default it is `False`).
 
     Example: ::
 
-        import pypath
-        from pypath import curl, data_formats
+        import omnipath_resources
+        from omnipath_resources import curl, data_formats
 
-        pa = pypath.PyPath()
+        pa = omnipath_resources.PyPath()
 
         with curl.cache_delete_on():
             pa.load_resources({'signor': data_formats.pathway['signor']})
@@ -312,19 +312,19 @@ class cache_delete_on(_global_context_on):
 
 class cache_delete_off(_global_context_off):
     """
-    This is a context handler which stops pypath.curl.Curl() deleting the
+    This is a context handler which stops omnipath_resources.curl.Curl() deleting the
     cache files. This is the default behaviour, so this context won't
     change anything by default.
 
-    Behind the scenes it sets the value of the `pypath.curl.CACHEDEL`
+    Behind the scenes it sets the value of the `omnipath_resources.curl.CACHEDEL`
     module level variable to `False`.
 
     Example: ::
 
-        import pypath
-        from pypath import curl, data_formats
+        import omnipath_resources
+        from omnipath_resources import curl, data_formats
 
-        pa = pypath.PyPath()
+        pa = omnipath_resources.PyPath()
 
         with curl.cache_delete_off():
             pa.load_resources({'signor': data_formats.pathway['signor']})
@@ -336,18 +336,18 @@ class cache_delete_off(_global_context_off):
 
 class dryrun_on(_global_context_on):
     """
-    This is a context handler which results pypath.curl.Curl() to do all
+    This is a context handler which results omnipath_resources.curl.Curl() to do all
     setup steps, but do not perform download or cache read.
 
-    Behind the scenes it sets the value of the `pypath.curl.DRYRUN`
+    Behind the scenes it sets the value of the `omnipath_resources.curl.DRYRUN`
     module level variable to `True` (by default it is `False`).
 
     Example: ::
 
-        import pypath
-        from pypath import curl, data_formats
+        import omnipath_resources
+        from omnipath_resources import curl, data_formats
 
-        pa = pypath.PyPath()
+        pa = omnipath_resources.PyPath()
 
         with curl.cache_dryrun_on():
             pa.load_resources({'signor': data_formats.pathway['signor']})
@@ -359,19 +359,19 @@ class dryrun_on(_global_context_on):
 
 class dryrun_off(_global_context_off):
     """
-    This is a context handler which results pypath.curl.Curl() to
+    This is a context handler which results omnipath_resources.curl.Curl() to
     perform download or cache read. This is the default behaviour,
     so applying this context restores the default.
 
-    Behind the scenes it sets the value of the `pypath.curl.DRYRUN`
+    Behind the scenes it sets the value of the `omnipath_resources.curl.DRYRUN`
     module level variable to `False`.
 
     Example: ::
 
-        import pypath
-        from pypath import curl, data_formats
+        import omnipath_resources
+        from omnipath_resources import curl, data_formats
 
-        pa = pypath.PyPath()
+        pa = omnipath_resources.PyPath()
 
         with curl.cache_dryrun_off():
             pa.load_resources({'signor': data_formats.pathway['signor']})
@@ -383,20 +383,20 @@ class dryrun_off(_global_context_off):
 
 class preserve_on(_global_context_on):
     """
-    This is a context handler which results pypath.curl.Curl() to make
+    This is a context handler which results omnipath_resources.curl.Curl() to make
     a reference to itself in the module level variable `LASTCURL`. This
     is useful if you have some issue with `Curl`, and you want to access
     the instance for debugging.
 
-    Behind the scenes it sets the value of the `pypath.curl.PRESERVE`
+    Behind the scenes it sets the value of the `omnipath_resources.curl.PRESERVE`
     module level variable to `True` (by default it is `False`).
 
     Example: ::
 
-        import pypath
-        from pypath import curl, data_formats
+        import omnipath_resources
+        from omnipath_resources import curl, data_formats
 
-        pa = pypath.PyPath()
+        pa = omnipath_resources.PyPath()
 
         with curl.cache_preserve_on():
             pa.load_resources({'signor': data_formats.pathway['signor']})
@@ -408,20 +408,20 @@ class preserve_on(_global_context_on):
 
 class preserve_off(_global_context_off):
     """
-    This is a context handler which avoids pypath.curl.Curl() to make
+    This is a context handler which avoids omnipath_resources.curl.Curl() to make
     a reference to itself in the module level variable `LASTCURL`. By
     default it does not do this, so this context only restores the
     default.
 
-    Behind the scenes it sets the value of the `pypath.curl.PRESERVE`
+    Behind the scenes it sets the value of the `omnipath_resources.curl.PRESERVE`
     module level variable to `False`.
 
     Example: ::
 
-        import pypath
-        from pypath import curl, data_formats
+        import omnipath_resources
+        from omnipath_resources import curl, data_formats
 
-        pa = pypath.PyPath()
+        pa = omnipath_resources.PyPath()
 
         with curl.cache_preserve_off():
             pa.load_resources({'signor': data_formats.pathway['signor']})
@@ -432,20 +432,20 @@ class preserve_off(_global_context_off):
 
 class debug_on(_global_context_on):
     """
-    This is a context handler which results pypath.curl.Curl() to print
+    This is a context handler which results omnipath_resources.curl.Curl() to print
     debug information.
     This is useful if you have some issue with `Curl`, and you want to
     see what`s going on.
 
-    Behind the scenes it sets the value of the `pypath.curl.DEBUG`
+    Behind the scenes it sets the value of the `omnipath_resources.curl.DEBUG`
     module level variable to `True` (by default it is `False`).
 
     Example: ::
 
-        import pypath
-        from pypath import curl, data_formats
+        import omnipath_resources
+        from omnipath_resources import curl, data_formats
 
-        pa = pypath.PyPath()
+        pa = omnipath_resources.PyPath()
 
         with curl.cache_debug_on():
             pa.load_resources({'signor': data_formats.pathway['signor']})
@@ -457,20 +457,20 @@ class debug_on(_global_context_on):
 
 class debug_off(_global_context_off):
     """
-    This is a context handler which avoids pypath.curl.Curl() to print
+    This is a context handler which avoids omnipath_resources.curl.Curl() to print
     debug information.
     By default it does not do this, so this context only restores the
     default.
 
-    Behind the scenes it sets the value of the `pypath.curl.DEBUG`
+    Behind the scenes it sets the value of the `omnipath_resources.curl.DEBUG`
     module level variable to `False`.
 
     Example: ::
 
-        import pypath
-        from pypath import curl, data_formats
+        import omnipath_resources
+        from omnipath_resources import curl, data_formats
 
-        pa = pypath.PyPath()
+        pa = omnipath_resources.PyPath()
 
         with curl.cache_debug_off():
             pa.load_resources({'signor': data_formats.pathway['signor']})
@@ -963,7 +963,7 @@ class Curl(FileOpener):
 
         if PRESERVE:
             self.print_debug_info('INFO', 'PRESERVING Curl() INSTANCE '
-                                  'IN pypath.curl.LASTCURL')
+                                  'IN omnipath_resources.curl.LASTCURL')
             setattr(sys.modules[__name__], 'LASTCURL', self)
 
 
@@ -1311,7 +1311,7 @@ class Curl(FileOpener):
 
                     self.print_debug_info(
                         'INFO',
-                        'pypath.curl.Curl().curl_call() :: attempt #%u'
+                        'omnipath_resources.curl.Curl().curl_call() :: attempt #%u'
                         % attempt
                     )
 

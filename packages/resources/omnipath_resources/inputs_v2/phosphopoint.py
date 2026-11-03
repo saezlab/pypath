@@ -17,7 +17,7 @@ table has no phosphorylation sites and no references.
 from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import (
     DirectionQualifierEnum,
     GeneOrGeneProductOrChemicalEntityAspectEnum,
@@ -26,7 +26,7 @@ from biolink_model.datamodel.model import (
 )
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -34,8 +34,8 @@ from pypath.internals.tabular_builder import (
     IdentifiersBuilder,
     RelationBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.phosphopoint import iter_pairs
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.phosphopoint import iter_pairs
 
 config = ResourceConfig(
     id=ResourceCv.PHOSPHOPOINT,

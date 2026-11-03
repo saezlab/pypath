@@ -21,12 +21,12 @@ from omnipath_core.measurements import Measurement
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
-from pypath.inputs_v2._measurements import measurement
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.panglaodb import iter_markers, iter_terms
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.silver_schema import EntityRef, OntologyRelation, Relation
-from pypath.internals.tabular_builder import (
+from omnipath_resources.inputs_v2._measurements import measurement
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.panglaodb import iter_markers, iter_terms
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.silver_schema import EntityRef, OntologyRelation, Relation
+from omnipath_resources.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,

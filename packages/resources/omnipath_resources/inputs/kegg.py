@@ -25,13 +25,13 @@ import collections
 import bs4
 import warnings
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.share.progress as progress
-import pypath.share.common as common
-import pypath.utils.mapping as mapping
-import pypath.internals.intera as intera
-import pypath.core.entity as entity
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.common as common
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.core.entity as entity
 
 
 KeggPathway = collections.namedtuple(
@@ -821,7 +821,7 @@ def kegg_compound_chebi() -> dict[str, str]:
         entries the first encountered is kept.
     """
 
-    from pypath.inputs.kegg_api import _kegg_conv
+    from omnipath_resources.inputs.kegg_api import _kegg_conv
 
     raw = _kegg_conv('compound', 'chebi', source_split=True, target_split=True)
 
@@ -846,7 +846,7 @@ def kegg_compound_names() -> dict[str, list[str]]:
         names KEGG records for the compound (e.g. ``['H2O', 'Water']``).
     """
 
-    from pypath.inputs.kegg_api import _kegg_list
+    from omnipath_resources.inputs.kegg_api import _kegg_list
 
     result: dict[str, list[str]] = {}
 

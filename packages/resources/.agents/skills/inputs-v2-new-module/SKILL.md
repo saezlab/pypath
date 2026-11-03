@@ -6,7 +6,7 @@ compatibility: Requires the pypath repository with uv and the inputs_v2 framewor
 
 # inputs-v2-new-module
 
-Create a new `pypath.inputs_v2` module in a small number of explicit steps.
+Create a new `omnipath_resources.inputs_v2` module in a small number of explicit steps.
 
 ## Rules
 
@@ -20,9 +20,9 @@ Create a new `pypath.inputs_v2` module in a small number of explicit steps.
 
 ### 1. Research the source
 Read:
-- `pypath/inputs_v2/README.md`
-- related modules in `pypath/inputs_v2/`
-- relevant entries in `pypath/resources/urls.py`, `pypath/resources/descriptions.py`, and `pypath/resources/data/resources.json`
+- `omnipath_resources/inputs_v2/README.md`
+- related modules in `omnipath_resources/inputs_v2/`
+- relevant entries in `omnipath_resources/resources/urls.py`, `omnipath_resources/resources/descriptions.py`, and `omnipath_resources/resources/data/resources.json`
 
 Then inspect current upstream data.
 
@@ -35,10 +35,10 @@ Decide:
 
 ### 2. Design the semantic mapping
 Read:
-- `pypath/inputs_v2/base.py`
-- `pypath/internals/tabular_builder.py`
-- `pypath/internals/silver_schema.py`
-- one similar module, e.g. `pypath/inputs_v2/signor.py`
+- `omnipath_resources/inputs_v2/base.py`
+- `omnipath_resources/internals/tabular_builder.py`
+- `omnipath_resources/internals/silver_schema.py`
+- one similar module, e.g. `omnipath_resources/inputs_v2/signor.py`
 
 Decide:
 - dataset names
@@ -51,7 +51,7 @@ Keep the plan simple and explicit.
 **Checkpoint:** state the dataset plan and CV changes before coding.
 
 ### 3. Design raw parser output
-If base parsers are enough, use them. Otherwise create `pypath/inputs_v2/parsers/<resource>.py`.
+If base parsers are enough, use them. Otherwise create `omnipath_resources/inputs_v2/parsers/<resource>.py`.
 
 Raw records should be:
 - flat
@@ -69,8 +69,8 @@ Prefer helpers for:
 ### 4. Implement
 Create or update:
 - CV files if needed
-- `pypath/inputs_v2/parsers/<resource>.py`
-- `pypath/inputs_v2/<resource>.py`
+- `omnipath_resources/inputs_v2/parsers/<resource>.py`
+- `omnipath_resources/inputs_v2/<resource>.py`
 
 Use:
 - `ResourceConfig`
@@ -84,15 +84,15 @@ Start with the highest-value dataset(s). Do not overbuild v1.
 Run, when possible:
 
 ```bash
-python -m py_compile pypath/inputs_v2/<resource>.py pypath/inputs_v2/parsers/<resource>.py
+python -m py_compile omnipath_resources/inputs_v2/<resource>.py omnipath_resources/inputs_v2/parsers/<resource>.py
 ```
 
 ```bash
-uv run python -c "from pypath.inputs_v2.<resource> import resource; print(next(resource.<dataset>.raw()))"
+uv run python -c "from omnipath_resources.inputs_v2.<resource> import resource; print(next(resource.<dataset>.raw()))"
 ```
 
 ```bash
-uv run python -c "from pypath.inputs_v2.<resource> import resource; print(next(resource.<dataset>()))"
+uv run python -c "from omnipath_resources.inputs_v2.<resource> import resource; print(next(resource.<dataset>()))"
 ```
 
 Repeat for each dataset.

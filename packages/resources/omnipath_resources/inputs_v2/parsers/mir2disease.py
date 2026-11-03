@@ -20,7 +20,7 @@ from collections.abc import Generator
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 COLUMNS = ('miRNA', 'Validated target', 'Pub Date', 'Reference')
 

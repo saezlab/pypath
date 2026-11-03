@@ -30,11 +30,11 @@ except:
 
 import bs4
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.progress as progress
-import pypath.share.cache as cache_mod
-import pypath.share.common as common
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.cache as cache_mod
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
 
 

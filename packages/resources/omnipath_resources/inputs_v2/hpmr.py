@@ -11,7 +11,7 @@ from __future__ import annotations
 from collections.abc import Callable
 import functools
 from typing import Any
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import (
     Protein,
     ChemicalEntity,
@@ -20,14 +20,14 @@ from biolink_model.datamodel.model import (
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.source_attributes import PARTICIPANT_ROLE
-from pypath.internals.silver_schema import (
+from omnipath_resources.internals.silver_schema import (
     Annotation,
     Entity,
     Identifier,
     Relation,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.hpmr import NON_GENE, iter_interactions, pubmed_ids
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.hpmr import NON_GENE, iter_interactions, pubmed_ids
 
 config = ResourceConfig(
     id=ResourceCv.HPMR,

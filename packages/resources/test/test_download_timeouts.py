@@ -4,7 +4,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
-from pypath.share import downloads
+from omnipath_resources.share import downloads
 
 
 def test_default_timeouts_and_explicit_override(monkeypatch):

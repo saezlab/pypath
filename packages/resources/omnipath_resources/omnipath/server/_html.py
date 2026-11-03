@@ -20,7 +20,7 @@
 import bs4
 import os
 
-from pypath.share.session import session
+from omnipath_resources.share.session import session
 
 _fonts = open('fonts.css', 'rb').read().decode('utf-8') \
     if os.path.exists('fonts.css') else ''

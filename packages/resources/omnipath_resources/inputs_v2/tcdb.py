@@ -22,14 +22,14 @@ from omnipath_core.interaction_profiles import TRANSPORT_QUALIFIERS
 
 import functools
 from pathlib import Path
-from pypath.inputs_v2.parsers import protein_ids
-from pypath.inputs_v2.parsers.protein_ids import accession_namespace as _accession_namespace
+from omnipath_resources.inputs_v2.parsers import protein_ids
+from omnipath_resources.inputs_v2.parsers.protein_ids import accession_namespace as _accession_namespace
 
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers import tcdb as _parsers
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.silver_schema import Entity, Identifier, Membership
-from pypath.internals.tabular_builder import (
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers import tcdb as _parsers
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.silver_schema import Entity, Identifier, Membership
+from omnipath_resources.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,

@@ -20,11 +20,11 @@
 from collections.abc import Generator
 import urllib
 
-from pypath.share import curl
-from pypath.inputs import uniprot
-import pypath.resources.urls as urls
-import pypath.utils.taxonomy as taxonomy
-import pypath.internals.intera as intera
+from omnipath_resources.share import curl
+from omnipath_resources.inputs import uniprot
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.taxonomy as taxonomy
+import omnipath_resources.internals.intera as intera
 from . import _records
 
 __all__ = [

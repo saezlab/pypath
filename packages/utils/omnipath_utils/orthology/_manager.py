@@ -135,7 +135,7 @@ class OrthologyManager:
         return None
 
     def _load_hcop(self, source, target, id_type, min_sources):
-        from pypath.inputs.hcop import hcop_orthologs
+        from omnipath_resources.inputs.hcop import hcop_orthologs
 
         # HCOP is human-centric: source must be 9606
         if source != 9606:
@@ -179,7 +179,7 @@ class OrthologyManager:
         )
 
     def _load_oma(self, source, target, id_type):
-        from pypath.inputs.oma import oma_orthologs
+        from omnipath_resources.inputs.oma import oma_orthologs
 
         records = oma_orthologs(
             source, target, id_type=id_type, return_df=False
@@ -216,7 +216,7 @@ class OrthologyManager:
         )
 
     def _load_ensembl(self, source, target, id_type):
-        from pypath.inputs.biomart import biomart_homology
+        from omnipath_resources.inputs.biomart import biomart_homology
 
         records = biomart_homology(source, target)
 
@@ -293,7 +293,7 @@ class OrthologyManager:
         )
 
     def _load_homologene(self, source, target, id_type):
-        from pypath.inputs.homologene import homologene_dict
+        from omnipath_resources.inputs.homologene import homologene_dict
 
         try:
             data = homologene_dict(source, target, id_type)
@@ -314,7 +314,7 @@ class OrthologyManager:
         )
 
     def _load_orthodb(self, source, target, id_type):
-        from pypath.inputs.orthodb import orthodb_orthologs
+        from omnipath_resources.inputs.orthodb import orthodb_orthologs
 
         data = orthodb_orthologs(
             source=source,
@@ -334,7 +334,7 @@ class OrthologyManager:
         )
 
     def _load_alliance(self, source, target, id_type):
-        from pypath.inputs.alliance import alliance_dict
+        from omnipath_resources.inputs.alliance import alliance_dict
 
         data = alliance_dict(
             source=source,

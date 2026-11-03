@@ -11,14 +11,14 @@ Every resource carries three names:
 
 Names are sourced from the **authoritative resource metadata**, not hand-curated:
 the resource registry (:func:`resource_registry`) is loaded from
-``pypath/resources/data/resources.json`` — the same file
-:class:`pypath.resources.controller.ResourceController` reads — where each entry
+``omnipath_resources/resources/data/resources.json`` — the same file
+:class:`omnipath_resources.resources.controller.ResourceController` reads — where each entry
 is keyed by the resource's **self-spelled short name** and carries ``full_name``
 / ``label`` / ``synonyms``. ``inputs_v2`` resources may additionally pin explicit
 ``slug``/``short``/``full`` on their :class:`ResourceConfig`. Resources not found
 derive a slug from their ``name`` and fall back to it for short/full; the
 build-time validator flags any rule violation. (The legacy
-``pypath.resources.descriptions`` module is NOT used.)
+``omnipath_resources.resources.descriptions`` module is NOT used.)
 """
 
 from __future__ import annotations
@@ -73,7 +73,7 @@ def _resources_json() -> dict:
     try:
         from importlib import resources as importlib_resources
 
-        path = importlib_resources.files('pypath.resources.data') / 'resources.json'
+        path = importlib_resources.files('omnipath_resources.resources.data') / 'resources.json'
         with path.open('r', encoding='utf-8') as handle:
             return json.load(handle)
     except Exception:  # pragma: no cover - missing/unreadable metadata

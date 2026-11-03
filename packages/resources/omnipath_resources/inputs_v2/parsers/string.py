@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_csv
+from omnipath_resources.inputs_v2.parsers.base import iter_csv
 
 __all__ = ['iter_links']
 

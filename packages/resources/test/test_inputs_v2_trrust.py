@@ -8,7 +8,7 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import trrust as mod
+from omnipath_resources.inputs_v2 import trrust as mod
 
 # Lines copied from trrust_rawdata.human.tsv.
 HUMAN = (

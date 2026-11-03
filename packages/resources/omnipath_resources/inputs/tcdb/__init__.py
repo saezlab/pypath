@@ -21,10 +21,10 @@ import re
 import collections
 import bs4
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.utils.mapping as mapping
-import pypath.utils.reflists as reflists
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.utils.reflists as reflists
 from ._substrates import *
 
 def tcdb_families():

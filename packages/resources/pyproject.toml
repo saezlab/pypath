@@ -11,7 +11,7 @@ requires = ["hatchling"]
 # ===================================
 
 [project]
-name = "pypath-omnipath"
+name = "omnipath-resources"
 version = "0.16.31"
 description = "Molecular signaling prior knowledge processing"
 license = "GPL-3.0-or-later"
@@ -87,7 +87,7 @@ dependencies = [
 
 [project.optional-dependencies]
 curl = ["pycurl>=7.45.3"]
-# pypath.inputs_v2 (Parquet migration) needs the shared OmniPath contracts.
+# omnipath_resources.inputs_v2 (Parquet migration) needs the shared OmniPath contracts.
 inputs-v2 = ["biolink-model==4.4.4", "omnipath-core>=0.1.0,<0.2", "polars"]
 vis = ["matplotlib"]
 graph = ["python-igraph"]
@@ -108,21 +108,21 @@ Repository = "https://github.com/saezlab/pypath"
 Issues = "https://github.com/saezlab/pypath/issues"
 
 [project.scripts]
-bio2bel_omnipath = "pypath.omnipath.bel:main"
+bio2bel_omnipath = "omnipath_resources.omnipath.bel:main"
 
 [project.entry-points."bio2bel"]
-omnipath = "pypath.omnipath.bel"
+omnipath = "omnipath_resources.omnipath.bel"
 
 # ===================================
 # =======        TOOL        ========
 # ===================================
 
 [tool.hatch.build.targets.wheel]
-packages = ["pypath"]
+packages = ["omnipath_resources"]
 
 # ---- Coverage
 [tool.coverage.run]
-source = ["pypath"]
+source = ["omnipath_resources"]
 omit = ["**/test_*.py"]
 
 # ---- Pytest
@@ -206,7 +206,7 @@ case-sensitive = false
 combine-as-imports = true
 force-sort-within-sections = true
 force-wrap-aliases = true
-known-first-party = ["pypath"]
+known-first-party = ["omnipath_resources"]
 known-third-party = ["numpy", "pandas"]
 length-sort = false
 no-lines-before = ["local-folder"]
@@ -230,5 +230,4 @@ section-order = [
 convention = "google"
 
 [tool.uv.sources]
-# omnipath-core is developed alongside this package in the monorepo.
-omnipath-core = { path = "../core", editable = true }
+omnipath-core = { workspace = true }

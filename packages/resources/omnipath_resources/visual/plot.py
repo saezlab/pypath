@@ -20,7 +20,7 @@
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
-from pypath.share import session as session_mod
+from omnipath_resources.share import session as session_mod
 _logger = session_mod.log()
 
 import re
@@ -56,13 +56,13 @@ import matplotlib.backends.backend_pdf
 from matplotlib import ticker
 from scipy import stats
 
-import pypath.share.common as common
-import pypath.share.session as session
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session
 import pypath_common._constants as _const
-from pypath.visual.igraph_drawing import DefaultGraphDrawerFFsupport
-import pypath.resources.descriptions
-import pypath.share.progress as progress
-import pypath.internals.refs as _refs
+from omnipath_resources.visual.igraph_drawing import DefaultGraphDrawerFFsupport
+import omnipath_resources.resources.descriptions
+import omnipath_resources.share.progress as progress
+import omnipath_resources.internals.refs as _refs
 
 
 def is_opentype_cff_font(filename):
@@ -2359,7 +2359,7 @@ class SimilarityGraph(object):
         ]
 
     def edge_sim(self):
-        self.edges = [(s1, s2, pypath.common.simpson_index(
+        self.edges = [(s1, s2, omnipath_resources.common.simpson_index(
             list(
                 map(lambda e: e.index,
                     filter(lambda e: s1 in e['sources'], self.graph.es))),
@@ -2371,7 +2371,7 @@ class SimilarityGraph(object):
         self.edges = [e for e in self.edges if e[2] > 0.0545 and e[0] != e[1]]
 
     def refs_sim(self):
-        self.edges = [(s1, s2, pypath.common.simpson_index([
+        self.edges = [(s1, s2, omnipath_resources.common.simpson_index([
             r.pmid
             for r in common.unique_list(
                 common.flat_list([[] if s1 not in e['refs_by_source'] else e[
@@ -2656,7 +2656,7 @@ class HistoryTree(object):
         self.run_latex()
 
     def get_years(self):
-        self.d = pypath.descriptions.descriptions
+        self.d = omnipath_resources.descriptions.descriptions
         self.firstyear = min(
             common.flat_list([
                 [r['year']] for r in self.d.values() if 'year' in r

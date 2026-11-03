@@ -1,8 +1,8 @@
 """Tests for controlled vocabulary terms."""
 
 import pytest
-from pypath.internals.cv_terms.core import CvEnum
-from pypath.internals import cv_terms
+from omnipath_resources.internals.cv_terms.core import CvEnum
+from omnipath_resources.internals import cv_terms
 
 
 def test_om_accession_uniqueness():
@@ -93,7 +93,7 @@ def test_signor_identifier_is_not_entrez():
     OM:0007 is the SIGNOR identifier accession; Entrez is MI:0477. These must
     stay distinct so complexes, phenotypes and stimuli keep namespace ``signor``.
     """
-    from pypath.internals.cv_terms import IdentifierNamespaceCv
+    from omnipath_resources.internals.cv_terms import IdentifierNamespaceCv
 
     assert IdentifierNamespaceCv.SIGNOR.value == 'OM:0007'
     assert IdentifierNamespaceCv.ENTREZ.value == 'MI:0477'

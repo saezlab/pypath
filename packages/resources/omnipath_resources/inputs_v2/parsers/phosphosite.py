@@ -35,8 +35,8 @@ from types import SimpleNamespace
 from typing import Any
 import xml.etree.ElementTree as ET
 
-from pypath.inputs_v2._publications import is_pmid
-from pypath.inputs_v2.parsers.base import iter_tsv, read_xml_root
+from omnipath_resources.inputs_v2._publications import is_pmid
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv, read_xml_root
 
 # Columns of the table, in source order.
 COLUMNS = (

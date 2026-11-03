@@ -12,7 +12,7 @@ from collections.abc import Generator
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 COLUMNS = ('enzyme', 'substrate_site', 'reference', 'source_database')
 # "<gene symbol>_<residue letter><position>", e.g. "HLA-A_Y344".

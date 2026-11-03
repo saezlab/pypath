@@ -4,9 +4,9 @@ import io
 from types import SimpleNamespace
 
 from omnipath_build.silver import SilverExtractor
-from pypath.inputs_v2 import brenda, intact, recon3d
-from pypath.inputs_v2.parsers import brenda as brenda_parser
-from pypath.inputs_v2.parsers import recon3d as recon3d_parser
+from omnipath_resources.inputs_v2 import brenda, intact, recon3d
+from omnipath_resources.inputs_v2.parsers import brenda as brenda_parser
+from omnipath_resources.inputs_v2.parsers import recon3d as recon3d_parser
 
 
 def opener(text):

@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.domino import exclusion_reason, modified_residue, resource
-from pypath.inputs_v2.parsers.domino import (
+from omnipath_resources.inputs_v2.domino import exclusion_reason, modified_residue, resource
+from omnipath_resources.inputs_v2.parsers.domino import (
     COLUMNS,
     FIELDS,
     iter_domino,

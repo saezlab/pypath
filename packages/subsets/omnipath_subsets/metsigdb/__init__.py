@@ -5,7 +5,7 @@ metabolite memberships in resource-native sets from KEGG, Reactome,
 WikiPathways, MACdb and ClassyFire.
 
 The step reads the build database, not the upstream resources. The core build
-already loaded all five through ``pypath.inputs_v2`` and already resolved their
+already loaded all five through ``omnipath_resources.inputs_v2`` and already resolved their
 entities, so the memberships sit in ``relation_evidence``,
 ``entity_evidence_resolution`` and ``entity_ontology_relation``. Reading those
 needs no network access, and it keeps the metabolite side identical to every

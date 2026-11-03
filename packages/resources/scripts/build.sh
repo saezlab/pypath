@@ -20,7 +20,7 @@
 
 rm *.pyc
 rm pypath/*.pyc
-rm -r pypath.egg-info
+rm -r omnipath_resources.egg-info
 
 sed -i 's/\([0-9]*\.[0-9]*\.\)\([0-9]*\)/echo \1$\(\(\2+1\)\)/ge' pypath/__version__
 

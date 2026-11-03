@@ -4,7 +4,7 @@ This module provides a declarative framework for downloading, parsing, and norma
 
 Read [Biolink modeling conventions](BIOLINK_MODELING.md) before changing an input module.
 
-`inputs_v2` needs the `inputs-v2` extra (`pypath-omnipath[inputs-v2]`), which adds
+`inputs_v2` needs the `inputs-v2` extra (`omnipath-resources[inputs-v2]`), which adds
 `biolink-model`, `polars` and `omnipath-core`. `omnipath-core` is not on PyPI yet:
 it lives in the [omnipath-build](https://github.com/saezlab/omnipath-build)
 superproject (`packages/core`), which contains pypath as its `pypath` submodule, and
@@ -51,8 +51,8 @@ Defines metadata about a data source:
 
 ```python
 from omnipath_core.resource_metadata import Content
-from pypath.inputs_v2.base import ResourceConfig
-from pypath.internals.cv_terms import ResourceCv, LicenseCV, UpdateCategoryCV
+from omnipath_resources.inputs_v2.base import ResourceConfig
+from omnipath_resources.internals.cv_terms import ResourceCv, LicenseCV, UpdateCategoryCV
 
 config = ResourceConfig(
     id=ResourceCv.UNIPROT,           # CV term identifying the resource
@@ -79,7 +79,7 @@ license and permitted use.
   resource itself and can be longer.
 - Academic and commercial use are not set per resource. Each `LicenseCV` term carries
   them (`LicenseCV.CC_BY_NC_4_0.commercial` is `LicenseUse.NOT_ALLOWED`); to classify a
-  new license, add a term with both uses in `pypath/internals/cv_terms/resource_metadata.py`.
+  new license, add a term with both uses in `omnipath_resources/internals/cv_terms/resource_metadata.py`.
 
 #### Tags
 
@@ -132,7 +132,7 @@ uv run python scripts/generate_resource_metadata.py
 Configures how to fetch remote data:
 
 ```python
-from pypath.inputs_v2.base import Download
+from omnipath_resources.inputs_v2.base import Download
 
 download = Download(
     url='https://example.com/data.tsv',  # URL (can be a callable for dynamic URLs)
@@ -151,7 +151,7 @@ download = Download(
 Functions that convert raw file data into dictionaries. Standard parsers are available in `parsers/base.py`:
 
 ```python
-from pypath.inputs_v2.parsers.base import iter_tsv, iter_csv, iter_json, iter_jsonl
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv, iter_csv, iter_json, iter_jsonl
 
 # Signature: (opener, **kwargs) -> Generator[dict[str, Any], None, None]
 def custom_parser(opener, **_kwargs):
@@ -167,7 +167,7 @@ def custom_parser(opener, **_kwargs):
 Declaratively map dictionary fields to Entity structure using `FieldConfig` and `CV`:
 
 ```python
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -206,7 +206,7 @@ schema = EntityBuilder(
 Combines download, parser, and schema:
 
 ```python
-from pypath.inputs_v2.base import Dataset
+from omnipath_resources.inputs_v2.base import Dataset
 
 dataset = Dataset(
     download=download,
@@ -238,7 +238,7 @@ rather than forcing downstream code to reinterpret broader entity datasets.
 Container for multiple related datasets:
 
 ```python
-from pypath.inputs_v2.base import Resource
+from omnipath_resources.inputs_v2.base import Resource
 
 resource = Resource(
     config,
@@ -265,8 +265,8 @@ download entry points and module-level `resource` definitions.
 
 | Resource | Download entry point | `inputs_v2` datasets | Legacy module |
 | --- | --- | --- | --- |
-| Cellinker | https://www.cellknowledge.com.cn/cellinker/Download.html | Human and mouse protein ligand-receptor, metabolite receptor, enzyme, and transporter datasets | `pypath.inputs.cellinker` |
-| DrugCentral | https://unmtid-dbs.net/download/DrugCentral/2021_09_01/drug.target.interaction.tsv.gz | Drug-target interaction dataset | `pypath.inputs.drugcentral` |
+| Cellinker | https://www.cellknowledge.com.cn/cellinker/Download.html | Human and mouse protein ligand-receptor, metabolite receptor, enzyme, and transporter datasets | `omnipath_resources.inputs.cellinker` |
+| DrugCentral | https://unmtid-dbs.net/download/DrugCentral/2021_09_01/drug.target.interaction.tsv.gz | Drug-target interaction dataset | `omnipath_resources.inputs.drugcentral` |
 
 ### Step 1: Define ResourceConfig
 
@@ -285,12 +285,12 @@ from __future__ import annotations
 from biolink_model.datamodel.model import Protein, MacromolecularComplex, slots
 from omnipath_core.naming import Namespace
 
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
 )
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -298,7 +298,7 @@ from pypath.internals.tabular_builder import (
     IdentifiersBuilder,
 )
 from omnipath_core.resource_metadata import Content, Topic
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 
 config = ResourceConfig(
     id=ResourceCv.MY_RESOURCE,  # Add to cv_terms.py if needed
@@ -382,7 +382,7 @@ Other readers take the opener, or content that the module has already read:
 
 ```python
 import functools
-from pypath.inputs_v2.parsers.base import iter_excel, iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_excel, iter_tsv
 
 raw_parser = iter_tsv
 raw_parser = functools.partial(iter_tsv, fieldnames=('gene', 'site'), strict=True)
@@ -397,7 +397,7 @@ mapper.
 #### PubMed identifiers
 
 A PubMed identifier is a whole number of one to eight digits with no leading zero.
-`pypath/inputs_v2/_publications.py` holds the rule: `PMID_EXTRACT` as a `FieldConfig`
+`omnipath_resources/inputs_v2/_publications.py` holds the rule: `PMID_EXTRACT` as a `FieldConfig`
 extract pattern for a column that holds one identifier, `is_pmid` and `pmid_curie`
 for parser and mapper functions, and `PMID_PATTERN` to build a pattern that tolerates
 what a source writes around the number. Two cases keep a stricter rule, each with a
@@ -550,7 +550,7 @@ download = Download(
 For entities with members (complexes, families, interactions):
 
 ```python
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     Member,
     MembershipBuilder,
     MembersFromList,
@@ -610,7 +610,7 @@ schema = RelationBuilder(
 ## Usage Example
 
 ```python
-from pypath.inputs_v2.uniprot import resource
+from omnipath_resources.inputs_v2.uniprot import resource
 
 # Get resource metadata
 for meta in resource.metadata():
@@ -630,7 +630,7 @@ for record in resource.proteins.raw():
 To print the first mapped Entity from the human MEBOCOST dataset:
 
 ```bash
-poetry run python -c "from pypath.inputs_v2.mebocost import resource; print(next(resource.human()))"
+poetry run python -c "from omnipath_resources.inputs_v2.mebocost import resource; print(next(resource.human()))"
 ```
 
 ## Discovery

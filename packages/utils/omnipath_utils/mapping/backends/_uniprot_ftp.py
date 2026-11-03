@@ -185,7 +185,7 @@ class UniProtFTPBackend(MappingBackend):
 
     @staticmethod
     def _load_mapping(ftp_type: str, ncbi_tax_id: int) -> dict[str, set[str]]:
-        from pypath.inputs.uniprot_ftp import idmapping
+        from omnipath_resources.inputs.uniprot_ftp import idmapping
 
         return idmapping(ftp_type, ncbi_tax_id)
 

@@ -35,17 +35,17 @@ from typing import Any
 from biolink_model.datamodel.model import slots
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
-from pypath.inputs_v2._almen_classes import (
+from omnipath_resources.inputs_v2._almen_classes import (
     map_class,
     protein_entity,
     surfaceome_table,
     term_entity,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.almen2009 import iter_classes
-from pypath.inputs_v2.parsers.surfaceome import iter_almen_classes
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.silver_schema import Relation
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.almen2009 import iter_classes
+from omnipath_resources.inputs_v2.parsers.surfaceome import iter_almen_classes
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.silver_schema import Relation
 
 config = ResourceConfig(
     id=ResourceCv.ALMEN2009,

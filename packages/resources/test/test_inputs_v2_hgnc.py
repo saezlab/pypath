@@ -8,8 +8,8 @@ from omnipath_core.biolink import entity_type, slot_name
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import KnowledgeOrigin
 
-from pypath.inputs_v2 import hgnc
-from pypath.inputs_v2.parsers import hgnc as parser
+from omnipath_resources.inputs_v2 import hgnc
+from omnipath_resources.inputs_v2.parsers import hgnc as parser
 
 # Rows copied from family.csv (the unread columns are not shown).
 FAMILY = (

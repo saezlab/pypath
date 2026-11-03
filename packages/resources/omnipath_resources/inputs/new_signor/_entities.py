@@ -22,8 +22,8 @@ from __future__ import annotations
 import csv
 from collections.abc import Generator
 
-import pypath.resources.urls as urls
-from pypath.share.downloads import dm
+import omnipath_resources.resources.urls as urls
+from omnipath_resources.share.downloads import dm
 from ._records import SignorComplex, SignorProteinFamily, SignorPhenotype, SignorStimulus
 
 __all__ = [

@@ -5,10 +5,10 @@ from types import SimpleNamespace
 import pytest
 from omnipath_build.silver import SilverExtractor
 
-from pypath.internals.cv_terms import LicenseCV, ResourceCv
-from pypath.inputs_v2 import progeny
-from pypath.inputs_v2.parsers import progeny as parser
-from pypath.inputs_v2.progeny import DESCRIPTIONS, PATHWAY, resource
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv
+from omnipath_resources.inputs_v2 import progeny
+from omnipath_resources.inputs_v2.parsers import progeny as parser
+from omnipath_resources.inputs_v2.progeny import DESCRIPTIONS, PATHWAY, resource
 
 # Rows of model_human_full in model_human_full.rda, as iter_rdata yields them.
 RFC2_EGFR = {'gene': 'RFC2', 'pathway': 'EGFR', 'weight': 1.4706466171905381, 'p.value': 0.0016552751715941223}

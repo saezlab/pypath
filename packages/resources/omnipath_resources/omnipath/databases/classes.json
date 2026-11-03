@@ -1,22 +1,22 @@
 {
     "network": {
-        "module": "pypath.core.network",
+        "module": "omnipath_resources.core.network",
         "method": "Network"
     },
     "enz_sub": {
-        "module": "pypath.core.enz_sub",
+        "module": "omnipath_resources.core.enz_sub",
         "method": "EnzymeSubstrateAggregator"
     },
     "complex": {
-        "module": "pypath.core.complex",
+        "module": "omnipath_resources.core.complex",
         "method": "ComplexAggregator"
     },
     "annotations": {
-        "module": "pypath.core.annot",
+        "module": "omnipath_resources.core.annot",
         "method": "AnnotationTable"
     },
     "intercell": {
-        "module": "pypath.core.intercell",
+        "module": "omnipath_resources.core.intercell",
         "method": "IntercellAnnotation"
     }
 }

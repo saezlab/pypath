@@ -18,7 +18,7 @@
 #
 
 """
-Methods working on objects from `pypath.core` which might be useful to access
+Methods working on objects from `omnipath_resources.core` which might be useful to access
 without importing the main modules.
 """
 
@@ -28,7 +28,7 @@ import re
 
 import pandas as pd
 
-import pypath.share.common as common
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
 
 

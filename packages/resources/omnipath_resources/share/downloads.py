@@ -28,7 +28,7 @@ from typing import Optional, List
 
 from dotenv import load_dotenv
 
-import pypath.share.settings as settings
+import omnipath_resources.share.settings as settings
 from dlmachine import DownloadManager
 from cachedir._open import Opener
 

@@ -42,23 +42,23 @@ import types as _types
 import timeloop
 import pandas as pd
 
-import pypath.utils.mapping as mapping
-import pypath.share.common as common
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.data as _data
-import pypath.internals.intera as intera
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.inputs.uniprot as uniprot_input
-import pypath.inputs.uniprot_db as uniprot_db
-import pypath.inputs.homologene as homologene_input
-import pypath.inputs.oma as oma_input
-import pypath.inputs.biomart as biomart
-import pypath.utils.seq as _se
-import pypath.share.session as session
-import pypath.share.settings as settings
-import pypath.utils.taxonomy as taxonomy
-import pypath.share.cache as cache_mod
+import omnipath_resources.data as _data
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.inputs.uniprot as uniprot_input
+import omnipath_resources.inputs.uniprot_db as uniprot_db
+import omnipath_resources.inputs.homologene as homologene_input
+import omnipath_resources.inputs.oma as oma_input
+import omnipath_resources.inputs.biomart as biomart
+import omnipath_resources.utils.seq as _se
+import omnipath_resources.share.session as session
+import omnipath_resources.share.settings as settings
+import omnipath_resources.utils.taxonomy as taxonomy
+import omnipath_resources.share.cache as cache_mod
 
 _orthology_cleanup_timeloop = timeloop.Timeloop()
 _orthology_cleanup_timeloop.logger.setLevel(9999)
@@ -1787,7 +1787,7 @@ class PtmOrthology(Proteomes, SequenceContainer):
 
         - one PTM provided as tuple of (UniProt, amino acid, offest)
         - one PTM provided as string (e.g. `P00533_S231`)
-        - instance from pypath.intera: DomainMotif, Domain or Ptm
+        - instance from omnipath_resources.intera: DomainMotif, Domain or Ptm
 
         Additional arguments can be isoform and typ (modification type).
         """

@@ -15,7 +15,7 @@ try:
 except ImportError:  # pragma: no cover - optional dependency
     duckdb = None
 
-from pypath.inputs_v2.parsers.base import (
+from omnipath_resources.inputs_v2.parsers.base import (
     _extract_sqlite_from_opener,
     iter_parquet,
     iter_sqlite,

@@ -9,7 +9,7 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import _mitab, innatedb
+from omnipath_resources.inputs_v2 import _mitab, innatedb
 
 HEADER = '\t'.join([
     '#unique_identifier_A', 'unique_identifier_B', 'alt_identifier_A',

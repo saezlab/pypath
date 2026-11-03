@@ -9,9 +9,9 @@ from types import SimpleNamespace
 import pytest
 from biolink_model.datamodel import model
 from omnipath_build.silver import SilverExtractor
-from pypath.inputs_v2 import brenda, chembl, mirbase, recon3d, uniprot
-from pypath.inputs_v2.parsers import brenda as bp, recon3d as rp
-from pypath.internals.tabular_builder import (
+from omnipath_resources.inputs_v2 import brenda, chembl, mirbase, recon3d, uniprot
+from omnipath_resources.inputs_v2.parsers import brenda as bp, recon3d as rp
+from omnipath_resources.internals.tabular_builder import (
     CV,
     EntityBuilder,
     IdentifiersBuilder,
@@ -357,7 +357,7 @@ def test_recon3d_transcript_labels_stay_in_the_source_rule():
 
 @pytest.mark.parametrize('accession', ['P04637-2', 'P04637-PRO_0000185703'])
 def test_other_resource_member_and_endpoint_suffixes_survive(accession):
-    from pypath.inputs_v2 import cellphonedb, corum, tcdb
+    from omnipath_resources.inputs_v2 import cellphonedb, corum, tcdb
 
     cpdb = cellphonedb.partner_a_builder({'partner_a': accession})
     assert cpdb.type == 'protein'
@@ -393,7 +393,7 @@ def test_recon3d_complex_catalogue_merges_transcript_alternatives():
 
 
 def test_conflicting_same_site_substitutions_keep_ambiguous_source_description():
-    from pypath.inputs_v2._molecular_forms import protein_variants
+    from omnipath_resources.inputs_v2._molecular_forms import protein_variants
     variant, = protein_variants('A2G/A2V')
     assert variant['description'] == 'A2G/A2V'
     assert variant['position'] is None

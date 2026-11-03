@@ -6,8 +6,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.alzpathway import MEMBER_TYPES, resource
-from pypath.inputs_v2.parsers.alzpathway import (
+from omnipath_resources.inputs_v2.alzpathway import MEMBER_TYPES, resource
+from omnipath_resources.inputs_v2.parsers.alzpathway import (
     iter_celldesigner_complexes,
     iter_complexes,
 )

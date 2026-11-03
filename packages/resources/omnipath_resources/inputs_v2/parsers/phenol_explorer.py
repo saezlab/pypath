@@ -18,7 +18,7 @@ import csv
 import io
 from typing import Any
 
-from pypath.share.downloads import download_and_open
+from omnipath_resources.share.downloads import download_and_open
 
 
 # Delimiter for member lists (using || as per reactome pattern)

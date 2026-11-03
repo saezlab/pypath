@@ -23,9 +23,9 @@ from typing import Generator
 
 import collections
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-from pypath.inputs.offsides import _sides_base
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+from omnipath_resources.inputs.offsides import _sides_base
 
 
 def twosides_interactions() -> Generator[tuple]:

@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import complexportal
-from pypath.inputs_v2.parsers.complexportal import COLUMNS, iter_complextab
+from omnipath_resources.inputs_v2 import complexportal
+from omnipath_resources.inputs_v2.parsers.complexportal import COLUMNS, iter_complextab
 
 # Rows of 9606.tsv (human, curated) and of 9606_predicted.tsv (human,
 # predicted) of the release of 14 January 2026, with the columns the parser

@@ -22,9 +22,9 @@ import warnings
 
 import bs4
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.settings as settings
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.settings as settings
 
 
 """

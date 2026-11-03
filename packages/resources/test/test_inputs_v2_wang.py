@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.parsers.wang import iter_network
-from pypath.inputs_v2.wang import resource
+from omnipath_resources.inputs_v2.parsers.wang import iter_network
+from omnipath_resources.inputs_v2.wang import resource
 
 # Lines of WangLab_HumanSignalingNetwork_v6-format2.csv: its head, the notes,
 # a few of its nodes and links.

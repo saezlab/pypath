@@ -5,7 +5,7 @@ from typing import Any
 
 from omnipath_core.source_attributes import CONVERSION_DIRECTION
 
-from pypath.internals.tabular_builder import CV
+from omnipath_resources.internals.tabular_builder import CV
 
 # Compartment codes of Recon3D and Human-GEM, which share them, as GO cellular
 # component names. [i] is the mitochondrial intermembrane space (Recon3D/BiGG:

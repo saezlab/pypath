@@ -29,12 +29,12 @@ import itertools
 
 import pandas as pd
 
-import pypath.inputs.hmdb.xml as hmdb_xml
-from pypath.inputs.hmdb.schema.common import XMLNS, Field
-from pypath.inputs.hmdb.schema.metabolites import SCHEMA as METABOLITES_SCHEMA
-from pypath.inputs.hmdb.schema.proteins import SCHEMA as PROTEINS_SCHEMA
-import pypath.share.common as common
-import pypath.formats.xml as xml
+import omnipath_resources.inputs.hmdb.xml as hmdb_xml
+from omnipath_resources.inputs.hmdb.schema.common import XMLNS, Field
+from omnipath_resources.inputs.hmdb.schema.metabolites import SCHEMA as METABOLITES_SCHEMA
+from omnipath_resources.inputs.hmdb.schema.proteins import SCHEMA as PROTEINS_SCHEMA
+import omnipath_resources.share.common as common
+import omnipath_resources.formats.xml as xml
 
 
 def iter(dataset: Literal['metabolites', 'proteins']):
@@ -62,8 +62,8 @@ def raw(
             The schema defines the fields to be parsed. By default, a schema
             covering nearly all fields in the HMDB XML is used.
             Likely you don't need all the fields within one task: in this
-            case see `pypath.inputs.hmdb.METABOLITE_SCHEMA` or
-            `pypath.inputs.hmdb.PROTEINS_SCHEMA` to see the full
+            case see `omnipath_resources.inputs.hmdb.METABOLITE_SCHEMA` or
+            `omnipath_resources.inputs.hmdb.PROTEINS_SCHEMA` to see the full
             schema, and create your own that is restricted to your fields of
             interest.
         head:

@@ -21,14 +21,14 @@ from biolink_model.datamodel.model import Gene, MicroRNA, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.mirtarbase import iter_interactions
-from pypath.internals.cv_terms import (
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.mirtarbase import iter_interactions
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
     EntityBuilder,

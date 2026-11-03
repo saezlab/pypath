@@ -34,7 +34,7 @@ import csv
 import io
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import read_bytes
+from omnipath_resources.inputs_v2.parsers.base import read_bytes
 
 NOTES_HEADER = 'Notes:'
 NODE_HEADER = (

@@ -21,8 +21,8 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2._publications import is_pmid
-from pypath.inputs_v2.parsers.base import read_xml_root
+from omnipath_resources.inputs_v2._publications import is_pmid
+from omnipath_resources.inputs_v2.parsers.base import read_xml_root
 
 # The source writes a missing value in several ways.
 _NULLS = frozenset({'', 'None', 'NULL', 'N/A', 'None known'})

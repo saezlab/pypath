@@ -58,8 +58,8 @@ build = [
     "pyarrow>=14.0",
     "pyyaml>=6.0",
 ]
-pypath = [
-    "pypath-omnipath>=0.16",
+resources = [
+    "omnipath-resources>=0.16",
 ]
 chem = [
     "rdkit>=2023.9",
@@ -175,4 +175,4 @@ order-by-type = true
 convention = "google"
 
 [tool.uv.sources]
-pypath-omnipath = { path = "../omnipath-resources", editable = true }
+omnipath-resources = { workspace = true }

@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import transmir as mod
-from pypath.inputs_v2.parsers.transmir import COLUMNS, iter_literature
+from omnipath_resources.inputs_v2 import transmir as mod
+from omnipath_resources.inputs_v2.parsers.transmir import COLUMNS, iter_literature
 
 # Lines copied from db_literaturev3.txt of TransmiR v3.0 (tab separated, no
 # header, the TSS and site columns empty).

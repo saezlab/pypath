@@ -23,7 +23,7 @@ iMM1415 parser: metabolites, reactions, genes, and interaction network.
 iMM1415 (Sigurdsson et al. 2010) is a genome-scale metabolic model of Mus
 musculus distributed via BiGG Models.  It uses the same JSON format as
 Recon3D; the BiGG-generic parsing helpers are imported directly from
-``pypath.inputs.recon3d._gem`` to avoid duplication.
+``omnipath_resources.inputs.recon3d._gem`` to avoid duplication.
 
 Gene identifiers in iMM1415 are NCBI Entrez Gene IDs for mouse (integer
 strings), analogous to Recon3D's human Entrez IDs.
@@ -51,10 +51,10 @@ __all__ = [
 from collections import defaultdict
 from collections.abc import Generator
 
-from pypath.inputs.metatlas._records import GemInteraction
+from omnipath_resources.inputs.metatlas._records import GemInteraction
 
 # Reuse the BiGG-generic parsing helpers from the Recon3D module.
-from pypath.inputs.recon3d._gem import (
+from omnipath_resources.inputs.recon3d._gem import (
     _annotation_list,
     _parse_gene_rule,
     _strip_compartment,
@@ -181,7 +181,7 @@ def imm1415_network(
     Yield iMM1415 metabolite-enzyme interactions as :class:`GemInteraction`
     records.
 
-    Same edge-building convention as :func:`pypath.inputs.recon3d.recon3d_network`:
+    Same edge-building convention as :func:`omnipath_resources.inputs.recon3d.recon3d_network`:
     reactants → enzyme and enzyme → products, with reversed pairs for
     reversible reactions.
 
@@ -192,7 +192,7 @@ def imm1415_network(
             If ``True``, yield reversed edges for reversible reactions.
 
     Yields:
-        :class:`~pypath.inputs.metatlas._records.GemInteraction` named tuples.
+        :class:`~omnipath_resources.inputs.metatlas._records.GemInteraction` named tuples.
         Gene IDs are mouse NCBI Entrez IDs (integer strings).
     """
 

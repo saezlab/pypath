@@ -19,7 +19,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from pypath.omnipath.server import run
+from omnipath_resources.omnipath.server import run
 
 run.Rest(33333, serverclass = run.TableServer)
 

@@ -7,10 +7,10 @@ import openpyxl
 import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
-from pypath.internals.cv_terms import LicenseCV
+from omnipath_resources.internals.cv_terms import LicenseCV
 
-from pypath.inputs_v2 import mirecords as mod
-from pypath.inputs_v2.parsers.mirecords import COLUMNS, iter_interactions, repair_encoding
+from omnipath_resources.inputs_v2 import mirecords as mod
+from omnipath_resources.inputs_v2.parsers.mirecords import COLUMNS, iter_interactions, repair_encoding
 
 N = len(COLUMNS)
 

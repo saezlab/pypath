@@ -28,7 +28,7 @@ import re
 from types import SimpleNamespace
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 ARCHIVE_DIRECTORY = 'FLAT_FILES_072010/'
 PTM_MEMBER = ARCHIVE_DIRECTORY + 'POST_TRANSLATIONAL_MODIFICATIONS.txt'

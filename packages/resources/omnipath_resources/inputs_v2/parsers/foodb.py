@@ -22,7 +22,7 @@ from typing import Protocol, TextIO
 
 import polars as pl
 
-from pypath.share.downloads import DATA_DIR
+from omnipath_resources.share.downloads import DATA_DIR
 
 # Delimiter for member lists (using || as per reactome pattern)
 MEMBER_DELIMITER = '||'

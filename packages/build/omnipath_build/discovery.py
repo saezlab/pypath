@@ -67,7 +67,7 @@ def setup_pypath_cache(cache_dir: str | Path | None = None) -> Path:
         path = Path.cwd() / "data" / "pypath-data"
     os.environ["PYPATH_DOWNLOAD_DATADIR"] = str(path)
     path.mkdir(parents=True, exist_ok=True)
-    from pypath.share import settings
+    from omnipath_resources.share import settings
 
     settings.setup(progressbars=False, cachedir=str(path))
     return path
@@ -80,7 +80,7 @@ def extract_resource_config(module_or_name: Any) -> dict[str, Any]:
             module = importlib.import_module(module_or_name)
         else:
             module = module_or_name
-        from pypath.inputs_v2.base import Resource
+        from omnipath_resources.inputs_v2.base import Resource
 
         resources = [v for v in vars(module).values() if isinstance(v, Resource)]
         if not resources:
@@ -115,7 +115,7 @@ def _collect_sources(
     all_sources: dict[str, list[DiscoveredDataset]] = {}
     config_by_source: dict[str, dict[str, Any]] = {}
 
-    from pypath.inputs_v2.base import ArtifactDataset, Dataset, Resource
+    from omnipath_resources.inputs_v2.base import ArtifactDataset, Dataset, Resource
 
     dataset_types = (Dataset, ArtifactDataset)
 
@@ -180,7 +180,7 @@ def _collect_sources(
 
 def list_sources(
     *,
-    inputs_package: str = "pypath.inputs_v2",
+    inputs_package: str = "omnipath_resources.inputs_v2",
     cache_dir: str | Path | None = None,
 ) -> list[dict[str, Any]]:
     """List discoverable inputs_v2 sources and their dataset names."""
@@ -197,7 +197,7 @@ def list_sources(
 def discover_datasets(
     source: str,
     *,
-    inputs_package: str = "pypath.inputs_v2",
+    inputs_package: str = "omnipath_resources.inputs_v2",
     datasets: Sequence[str] | None = None,
     cache_dir: str | Path | None = None,
 ) -> tuple[str, list[DiscoveredDataset], dict[str, Any]]:

@@ -3,7 +3,7 @@
 HMDB carries the richest per-metabolite cross-reference block in the field
 (ChEBI, KEGG, PubChem, DrugBank, FooDB), and cycle 005 recorded it as
 unreachable behind Cloudflare. The archive is now mirrored on the project's
-own host (``pypath.inputs_v2.hmdb``, ``rescued.omnipathdb.org``), so the load
+own host (``omnipath_resources.inputs_v2.hmdb``, ``rescued.omnipathdb.org``), so the load
 must actually reach every one of those namespaces, not just the narrow
 synonym-to-ChEBI slice the legacy path produced -- and a failure must fail
 the build, not warn and continue quietly.
@@ -52,7 +52,7 @@ _HMDB_ROW = {
 def test_long_hmdb_produces_every_required_cross_reference():
     """The native load reaches ChEBI, KEGG, PubChem, DrugBank and FooDB.
 
-    Not just the synonym-to-ChEBI slice the legacy ``pypath.inputs.hmdb``
+    Not just the synonym-to-ChEBI slice the legacy ``omnipath_resources.inputs.hmdb``
     path produced -- every namespace HMDB's own record carries.
     """
     builder = _builder()

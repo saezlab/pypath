@@ -12,8 +12,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_build.writer import ParquetWriter
 from tables_fixture import read_tables
 from omnipath_resolver.resolver import EntityResolver
-from pypath.inputs_v2 import bindingdb, brenda, chembl, mirbase, uniprot
-from pypath.inputs_v2.parsers import brenda as brenda_parser
+from omnipath_resources.inputs_v2 import bindingdb, brenda, chembl, mirbase, uniprot
+from omnipath_resources.inputs_v2.parsers import brenda as brenda_parser
 
 
 def opener(text):

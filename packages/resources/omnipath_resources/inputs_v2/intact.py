@@ -2,7 +2,7 @@
 Parse IntAct data and emit Entity records.
 
 This module converts IntAct MITAB data into Entity records using the schema
-defined in pypath.internals.silver_schema.
+defined in omnipath_resources.internals.silver_schema.
 """
 
 from __future__ import annotations
@@ -15,13 +15,13 @@ from omnipath_core.resource_metadata import Content, KnowledgeOrigin
 import csv
 import re
 
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
 )
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -29,8 +29,8 @@ from pypath.internals.tabular_builder import (
     IdentifiersBuilder,
     RelationBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2._molecular_forms import mitab_participant_form
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2._molecular_forms import mitab_participant_form
 from omnipath_core.biolink import entity_type as biolink_entity_type
 
 

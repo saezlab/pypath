@@ -6,7 +6,7 @@ from omnipath_build.silver import SilverExtractor
 
 
 def project(module, mapper, row):
-    module = importlib.import_module('pypath.inputs_v2.' + module)
+    module = importlib.import_module('omnipath_resources.inputs_v2.' + module)
     record = getattr(module, mapper)(row)
     assert record is not None
     ex = SilverExtractor(module.config.id.value, 'fixture')
@@ -33,7 +33,7 @@ def annotations(ex):
 
 
 def test_lipidmaps_classes_are_coded_terms_of_every_level():
-    from pypath.inputs_v2 import _class_terms, lipidmaps
+    from omnipath_resources.inputs_v2 import _class_terms, lipidmaps
 
     row = {
         'LM_ID': 'LMFA01010001',
@@ -56,7 +56,7 @@ def test_lipidmaps_classes_are_coded_terms_of_every_level():
 
 
 def test_class_term_is_below_its_parent():
-    from pypath.inputs_v2._class_terms import map_class_term
+    from omnipath_resources.inputs_v2._class_terms import map_class_term
 
     record = map_class_term(
         {
@@ -109,7 +109,7 @@ def test_swisslipids_class_components_and_level():
 
 
 def test_classyfire_names_are_chemont_terms_only_when_unambiguous(monkeypatch):
-    from pypath.inputs_v2 import _class_terms
+    from omnipath_resources.inputs_v2 import _class_terms
 
     monkeypatch.setattr(
         _class_terms,
@@ -212,7 +212,7 @@ def test_ptfi_categories_skip_uncategorized():
 
 
 def test_ramp_class_levels_and_hmdb_status():
-    from pypath.inputs_v2 import rampdb
+    from omnipath_resources.inputs_v2 import rampdb
 
     rows = list(
         rampdb._class_rows(
@@ -324,7 +324,7 @@ def test_guidetopharma_ligand_properties_and_antibacterial_role():
 
 
 def test_guidetopharma_family_has_its_targets():
-    from pypath.inputs_v2 import guidetopharma
+    from omnipath_resources.inputs_v2 import guidetopharma
 
     family = {
         'id': '1',
@@ -337,7 +337,7 @@ def test_guidetopharma_family_has_its_targets():
 
 
 def test_stitch_stereospecific_flag():
-    from pypath.inputs_v2 import stitch
+    from omnipath_resources.inputs_v2 import stitch
 
     cv = next(
         cv for cv in stitch.interactions_schema.annotations.cvs
@@ -347,7 +347,7 @@ def test_stitch_stereospecific_flag():
 
 
 def _record_statements(module, mapper, row, dataset='fixture'):
-    module = importlib.import_module('pypath.inputs_v2.' + module)
+    module = importlib.import_module('omnipath_resources.inputs_v2.' + module)
     ex = SilverExtractor(module.config.id.value, dataset)
     ex.process_record(getattr(module, mapper)(row), row, f'{dataset}:1', 1)
     return statements(ex)
@@ -391,7 +391,7 @@ def test_corum_funcat_categories():
         ('funcat', '10.01.09.05'),
         ('funcat', '42.10.03'),
     }
-    from pypath.inputs_v2 import corum
+    from omnipath_resources.inputs_v2 import corum
 
     assert [(str(i.type), i.value) for i in corum.map_funcat({'id': '42.10.03', 'name': 'organization of chromosome structure'}).identifiers] == [
         ('funcat', '42.10.03'),
@@ -439,14 +439,14 @@ def test_chembl_assay_and_mechanism_context():
 
 
 def test_intact_expansion_parameters_and_annotations():
-    from pypath.inputs_v2 import intact
+    from omnipath_resources.inputs_v2 import intact
 
     assert intact._mitab_items('kd:3.3x10^-6(molar)|-') == ['kd:3.3x10^-6(molar)']
     assert intact._mitab_items('-') == []
 
 
 def test_connectomedb_bindingdb_reactome_macdb_context():
-    from pypath.inputs_v2 import connectomedb, macdb, reactome
+    from omnipath_resources.inputs_v2 import connectomedb, macdb, reactome
 
     def cv_value(schema, term, row):
         cv = next(
@@ -502,7 +502,7 @@ def test_tcdb_families_skip_rows_without_an_accession(monkeypatch):
     import io
     from types import SimpleNamespace
 
-    from pypath.inputs_v2 import tcdb
+    from omnipath_resources.inputs_v2 import tcdb
 
     families = SimpleNamespace(result=io.StringIO('2.A.1\tThe Major Facilitator Superfamily (MFS)\n'))
     monkeypatch.setattr(tcdb, '_families_download', SimpleNamespace(open=lambda **kw: families))
@@ -513,7 +513,7 @@ def test_tcdb_families_skip_rows_without_an_accession(monkeypatch):
 
 
 def test_guidetopharma_ligand_type_at_its_target():
-    from pypath.inputs_v2 import guidetopharma
+    from omnipath_resources.inputs_v2 import guidetopharma
 
     cv = next(
         cv for cv in guidetopharma.interactions_schema.annotations.cvs
@@ -529,7 +529,7 @@ def test_guidetopharma_ligand_records_only_unlabelled_ligands_of_interactions(mo
     import io
     from types import SimpleNamespace
 
-    from pypath.inputs_v2 import guidetopharma
+    from omnipath_resources.inputs_v2 import guidetopharma
 
     def opener(text):
         return SimpleNamespace(result=io.StringIO('"# GtoPdb Version"\n' + text))

@@ -6,8 +6,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import entity_type, slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import matrixdb
-from pypath.inputs_v2.parsers import matrixdb as parser
+from omnipath_resources.inputs_v2 import matrixdb
+from omnipath_resources.inputs_v2.parsers import matrixdb as parser
 
 HEADER = ['#ID(s) interactor A', 'ID(s) interactor B', 'Alt. ID(s) interactor A', 'Alt. ID(s) interactor B', 'Alias(es) interactor A', 'Alias(es) interactor B', 'Interaction detection method(s)', 'Publication 1st author(s)', 'Publication Identifier(s)', 'Taxid interactor A', 'Taxid interactor B', 'Interaction type(s)', 'Source database(s)', 'Interaction identifier(s)', 'Confidence value(s)', 'Expansion method(s)', 'Biological role(s) interactor A', 'Biological role(s) interactor B', 'Experimental role(s) interactor A', 'Experimental role(s) interactor B', 'Type(s) interactor A', 'Type(s) interactor B', 'Xref(s) interactor A', 'Xref(s) interactor B', 'Interaction Xref(s)', 'Annotation(s) interactor A', 'Annotation(s) interactor B', 'Interaction annotation(s)', 'Host organism(s)', 'Interaction parameter(s)', 'Creation date', 'Update date', 'Checksum(s) interactor A', 'Checksum(s) interactor B', 'Interaction Checksum(s)', 'Negative', 'Feature(s) interactor A', 'Feature(s) interactor B', 'Stoichiometry(s) interactor A', 'Stoichiometry(s) interactor B', 'Identification method participant A', 'Identification method participant B']
 # Rows copied from matrixdb_CORE.tab, cell by cell and with the quoting of the

@@ -24,8 +24,8 @@ from collections.abc import Generator
 
 import csv
 
-from pypath.share.downloads import dm
-from pypath.resources import urls
+from omnipath_resources.share.downloads import dm
+from omnipath_resources.resources import urls
 
 __all__ = [
     'table',

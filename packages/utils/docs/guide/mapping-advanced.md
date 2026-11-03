@@ -381,7 +381,7 @@ returns non-empty data wins.
 
 - **Data:** UniProt AC, gene symbols, Entrez, HGNC, RefSeq, PDB, and
   all cross-references stored in UniProt entries.
-- **Access:** `pypath.inputs.uniprot` (preferred) or direct HTTP to the
+- **Access:** `omnipath_resources.inputs.uniprot` (preferred) or direct HTTP to the
   UniProt REST API.
 - **Organism-specific:** Yes. Queries are filtered by NCBI taxonomy ID.
 - **Caching:** Pickle file per `(source, target, organism)` triple.
@@ -391,7 +391,7 @@ returns non-empty data wins.
 
 - **Data:** Same scope as `uniprot`, but downloaded from UniProt FTP
   idmapping files (bulk, pre-computed).
-- **Access:** `pypath.inputs.uniprot_ftp` or direct HTTP to UniProt FTP.
+- **Access:** `omnipath_resources.inputs.uniprot_ftp` or direct HTTP to UniProt FTP.
 - **Organism-specific:** Yes, but only 12 model organisms have
   pre-computed files.
 - **Caching:** Same as `uniprot`.
@@ -410,7 +410,7 @@ returns non-empty data wins.
 #### biomart
 
 - **Data:** Ensembl gene/transcript/protein IDs, gene symbols, Entrez.
-- **Access:** `pypath.inputs.biomart` or direct HTTP to the Ensembl
+- **Access:** `omnipath_resources.inputs.biomart` or direct HTTP to the Ensembl
   BioMart XML service.
 - **Organism-specific:** Yes.
 - **Caching:** Pickle file per triple.
@@ -421,7 +421,7 @@ returns non-empty data wins.
 
 - **Data:** Precursor names (`mir-pre`), mature names (`mir-mat-name`),
   miRBase accessions (`mirbase`).
-- **Access:** `pypath.inputs.mirbase` (requires pypath).
+- **Access:** `omnipath_resources.inputs.mirbase` (requires pypath).
 - **Organism-specific:** Yes.
 - **When to force:** miRNA translations.
 
@@ -429,7 +429,7 @@ returns non-empty data wins.
 
 - **Data:** Cross-references between chemical databases (ChEMBL, ChEBI,
   DrugBank, PubChem, KEGG, etc.).
-- **Access:** `pypath.inputs.unichem` (requires pypath).
+- **Access:** `omnipath_resources.inputs.unichem` (requires pypath).
 - **Organism-specific:** No (chemicals are universal).
 - **When to force:** Chemical compound ID translation.
 
@@ -437,7 +437,7 @@ returns non-empty data wins.
 
 - **Data:** Metabolite cross-references and synonym mappings from
   RaMP-DB.
-- **Access:** `pypath.inputs.ramp` (requires pypath).
+- **Access:** `omnipath_resources.inputs.ramp` (requires pypath).
 - **Organism-specific:** No.
 - **When to force:** Metabolite ID translation, especially when you
   need common-name-to-database-ID resolution.
@@ -445,7 +445,7 @@ returns non-empty data wins.
 #### hmdb
 
 - **Data:** HMDB, PubChem, ChEBI, DrugBank, KEGG compound.
-- **Access:** `pypath.inputs.hmdb` (requires pypath).
+- **Access:** `omnipath_resources.inputs.hmdb` (requires pypath).
 - **Organism-specific:** Human-derived data, but identifiers are universal.
 - **When to force:** HMDB-centric metabolite lookups.
 
@@ -453,7 +453,7 @@ returns non-empty data wins.
 
 - **Data:** Pairwise metabolite ID cross-references from MNXref
   `chem_xref.tsv` (3.4M cross-reference entries).
-- **Access:** `pypath.inputs.metanetx.metanetx_mapping()` (requires pypath).
+- **Access:** `omnipath_resources.inputs.metanetx.metanetx_mapping()` (requires pypath).
 - **Organism-specific:** No (chemicals are universal).
 - **Supported pairs:** bigg↔chebi, kegg↔chebi, hmdb↔chebi,
   lipidmaps↔chebi, swisslipids↔chebi, and all metanetx↔*
@@ -468,7 +468,7 @@ returns non-empty data wins.
 
 - **Data:** BiGG Models universal metabolite TSV (9,090 universal
   metabolites across 85+ models).
-- **Access:** `pypath.inputs.bigg.bigg_metabolite_mapping()` (requires pypath).
+- **Access:** `omnipath_resources.inputs.bigg.bigg_metabolite_mapping()` (requires pypath).
 - **Organism-specific:** No (chemicals are universal).
 - **Supported pairs:** bigg↔chebi, bigg↔hmdb, bigg↔kegg,
   bigg↔metanetx.
@@ -499,7 +499,7 @@ To add a new data source:
             self, id_type, target_id_type, ncbi_tax_id,
             *, src_col, tgt_col, **kwargs,
         ):
-            import pypath.inputs.mybackend as mymod
+            import omnipath_resources.inputs.mybackend as mymod
             # ... fetch and return dict[str, set[str]]
             raise ImportError  # if pypath not available
 

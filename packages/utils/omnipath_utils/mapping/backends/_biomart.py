@@ -8,7 +8,7 @@ served by their own hosts and ``*_eg_gene`` datasets. Bacteria use per-genome
 so they are not routed here (their Entrez anchoring comes from NCBI
 gene_info/gene2accession/gene2ensembl instead).
 
-Prefers ``pypath.inputs.biomart`` for the main host; falls back to (and, for
+Prefers ``omnipath_resources.inputs.biomart`` for the main host; falls back to (and, for
 division organisms, always uses) direct HTTP against the appropriate martservice.
 """
 
@@ -131,7 +131,7 @@ class BioMartBackend(MappingBackend):
         )
 
     # ------------------------------------------------------------------
-    # pypath.inputs path (main/vertebrate host only)
+    # omnipath_resources.inputs path (main/vertebrate host only)
     # ------------------------------------------------------------------
 
     def _read_via_pypath(
@@ -144,7 +144,7 @@ class BioMartBackend(MappingBackend):
         tgt_col: str,
         **kwargs: object,
     ) -> dict[str, set[str]]:
-        """Read via ``pypath.inputs.biomart`` — main host only.
+        """Read via ``omnipath_resources.inputs.biomart`` — main host only.
 
         pypath's ``biomart_query`` hardwires the vertebrate martservice URL, so
         for Ensembl Genomes divisions we raise ``ImportError`` to make the base
@@ -160,7 +160,7 @@ class BioMartBackend(MappingBackend):
             # pypath cannot reach the genomes host — force the direct path.
             raise ImportError('division organism: use direct BioMart')
 
-        from pypath.inputs.biomart import biomart_query
+        from omnipath_resources.inputs.biomart import biomart_query
 
         attrs = [src_col, tgt_col] if src_col != tgt_col else [src_col]
 

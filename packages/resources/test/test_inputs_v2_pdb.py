@@ -6,8 +6,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.parsers.pdb import COLUMNS, iter_pdb_entries
-from pypath.inputs_v2.pdb import map_complex, resource
+from omnipath_resources.inputs_v2.parsers.pdb import COLUMNS, iter_pdb_entries
+from omnipath_resources.inputs_v2.pdb import map_complex, resource
 
 RELEASE = '# 2026/10/04 - 08:26 | PDB: 40.26 | UniProt: 2026.03'
 

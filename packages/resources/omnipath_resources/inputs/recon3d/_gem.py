@@ -29,7 +29,7 @@ Gene identifiers in Recon3D are NCBI Entrez Gene IDs (integers stored as
 strings in the ``gene_reaction_rule`` expressions).
 
 The :func:`recon3d_network` generator yields :class:`GemInteraction`
-records (same namedtuple used by ``pypath.inputs.metatlas``), making
+records (same namedtuple used by ``omnipath_resources.inputs.metatlas``), making
 Recon3D compatible with the ``omnipath-metabo`` GEM processor.
 """
 
@@ -47,7 +47,7 @@ import re
 from collections import defaultdict
 from collections.abc import Generator
 
-from pypath.inputs.metatlas._records import GemInteraction
+from omnipath_resources.inputs.metatlas._records import GemInteraction
 
 from ._common import _log
 from ._raw import gem_matlab_extract, recon3d_raw, recon3d_raw_vmh
@@ -353,7 +353,7 @@ def recon3d_network(
     records.
 
     Each reaction is decomposed into binary directed edges using the same
-    convention as :func:`pypath.inputs.metatlas.metatlas_gem_network`:
+    convention as :func:`omnipath_resources.inputs.metatlas.metatlas_gem_network`:
 
     - *metabolite → enzyme*: reactant consumed by the enzyme.
     - *enzyme → metabolite*: product released by the enzyme.
@@ -379,7 +379,7 @@ def recon3d_network(
             If ``True``, yield reversed edges for reversible reactions.
 
     Yields:
-        :class:`~pypath.inputs.metatlas._records.GemInteraction` named tuples.
+        :class:`~omnipath_resources.inputs.metatlas._records.GemInteraction` named tuples.
     """
 
     from collections import Counter

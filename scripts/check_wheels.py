@@ -70,7 +70,7 @@ def check(directory, packages, *, offline=False):
         if package in required:
             build_wheel(("--package", f"omnipath-{package}"), f"omnipath_{package}")
     if required & {"build", "postgres"}:
-        build_wheel(("packages/omnipath-resources",), "pypath_omnipath")
+        build_wheel(("packages/resources",), "omnipath_resources")
     for package in required:
         wheel = next(wheels.glob(f"omnipath_{package}-*.whl"))
         with zipfile.ZipFile(wheel) as archive:
@@ -114,7 +114,7 @@ def check(directory, packages, *, offline=False):
             "--no-dev",
             "--no-emit-workspace",
             "--no-emit-package",
-            "pypath-omnipath",
+            "omnipath-resources",
             "--no-hashes",
             "--output-file",
             str(requirements),
@@ -124,7 +124,7 @@ def check(directory, packages, *, offline=False):
             for name in (*DEPENDENCIES[package], package)
         ]
         if package in {"build", "postgres"}:
-            install.append(str(next(wheels.glob("pypath_omnipath-*.whl"))))
+            install.append(str(next(wheels.glob("omnipath_resources-*.whl"))))
         run(
             "uv",
             "pip",
@@ -143,21 +143,21 @@ def check(directory, packages, *, offline=False):
         code = f"import omnipath_{package}; import importlib.util\n"
         forbidden = {
             "core": ("omnipath_build", "omnipath_postgres", "omnipath_api"),
-            "resolver": ("omnipath_build", "pypath", "duckdb"),
+            "resolver": ("omnipath_build", "omnipath_resources", "duckdb"),
             "subsets": (
                 "omnipath_postgres",
                 "omnipath_build",
-                "pypath",
+                "omnipath_resources",
                 "psycopg",
                 "omnipath_subsets.compatibility",
             ),
             "postgres": ("omnipath_build", "omnipath_resolver", "psycopg"),
-            "api": ("omnipath_build", "omnipath_resolver", "pypath"),
+            "api": ("omnipath_build", "omnipath_resolver", "omnipath_resources"),
             "client": (
                 "omnipath_core",
                 "omnipath_build",
                 "omnipath_resolver",
-                "pypath",
+                "omnipath_resources",
                 "omnipath_api",
                 "fastapi",
                 "pyarrow",
@@ -179,9 +179,9 @@ def check(directory, packages, *, offline=False):
             code += (
                 "from omnipath_build.provenance import runtime_provenance\n"
                 "software = runtime_provenance()['software']['packages']\n"
-                "assert set(software) == {'omnipath-core', 'omnipath-build', 'omnipath-resolver', 'pypath-omnipath', 'biolink-model'}\n"
+                "assert set(software) == {'omnipath-core', 'omnipath-build', 'omnipath-resolver', 'omnipath-resources', 'biolink-model'}\n"
                 "assert software['omnipath-resolver']['native_files']\n"
-                "assert all(software[name]['vocabulary']['content_sha256'] for name in ('omnipath-core', 'pypath-omnipath', 'biolink-model'))\n"
+                "assert all(software[name]['vocabulary']['content_sha256'] for name in ('omnipath-core', 'omnipath-resources', 'biolink-model'))\n"
             )
         if package == "resolver":
             code += (

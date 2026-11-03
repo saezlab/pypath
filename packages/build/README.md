@@ -1,6 +1,6 @@
 # Resource build pipeline
 
-The resource builder streams `pypath.inputs_v2` datasets into the normalized
+The resource builder streams `omnipath_resources.inputs_v2` datasets into the normalized
 Parquet tables of `omnipath_core.schema`. It uses one implementation: batched
 entity resolution and flat DuckDB working tables, followed by one final aggregation
 into the published and serving tables.

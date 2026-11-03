@@ -22,7 +22,7 @@ from collections.abc import Generator
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_excel
+from omnipath_resources.inputs_v2.parsers.base import iter_excel
 
 # Column names of File S1 (circuits) and File S3 (families).
 SITE = 'protein/pY position'

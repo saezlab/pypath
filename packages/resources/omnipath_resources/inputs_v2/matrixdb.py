@@ -37,28 +37,28 @@ from omnipath_core.molecular_forms import molecular_form_from_identifiers
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
-from pypath.inputs_v2 import _mitab
-from pypath.inputs_v2._measurements import measurement
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.matrixdb import (
+from omnipath_resources.inputs_v2 import _mitab
+from omnipath_resources.inputs_v2._measurements import measurement
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.matrixdb import (
     iter_ecm_proteins,
     iter_interactions,
     iter_list_terms,
 )
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.silver_schema import (
+from omnipath_resources.internals.silver_schema import (
     Annotation,
     Entity,
     EntityRef,
     Identifier,
     Relation,
 )
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
     EntityBuilder,

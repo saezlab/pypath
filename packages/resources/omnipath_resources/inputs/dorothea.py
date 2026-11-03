@@ -26,10 +26,10 @@ import itertools
 import functools
 import pyreadr
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.share.session as session
-import pypath.utils.taxonomy as taxonomy
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.session as session
+import omnipath_resources.utils.taxonomy as taxonomy
 
 
 _logger = session.Logger(name = 'dorothea_input')

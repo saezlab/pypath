@@ -18,17 +18,17 @@ from biolink_model.datamodel.model import ChemicalEntity, OntologyClass, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 
-from pypath.inputs_v2._class_terms import chemont_download
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.hmdb import _raw, chemont_name_map, iter_terms
-from pypath.internals.silver_schema import Entity, Identifier
-from pypath.internals.cv_terms import (
+from omnipath_resources.inputs_v2._class_terms import chemont_download
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.hmdb import _raw, chemont_name_map, iter_terms
+from omnipath_resources.internals.silver_schema import Entity, Identifier
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
     AssociationBuilder,

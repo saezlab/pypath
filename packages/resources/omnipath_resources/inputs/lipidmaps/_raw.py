@@ -23,9 +23,9 @@ Structures from the LIPID MAPS Structure Database (LMSD).
 
 import zipfile
 
-import pypath.formats.sdf as sdfparser
-import pypath.resources.urls as urls
-from pypath.share.downloads import dm
+import omnipath_resources.formats.sdf as sdfparser
+import omnipath_resources.resources.urls as urls
+from omnipath_resources.share.downloads import dm
 
 
 __all__ = [

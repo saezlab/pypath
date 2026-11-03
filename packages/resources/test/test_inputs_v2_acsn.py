@@ -7,9 +7,9 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.acsn import INTERACTION_TYPES, STATEMENTS, resource
-from pypath.inputs_v2.parsers.acsn import COLUMNS, hugo_names, join_names
-from pypath.inputs_v2.parsers.base import iter_gmt
+from omnipath_resources.inputs_v2.acsn import INTERACTION_TYPES, STATEMENTS, resource
+from omnipath_resources.inputs_v2.parsers.acsn import COLUMNS, hugo_names, join_names
+from omnipath_resources.inputs_v2.parsers.base import iter_gmt
 
 # Lines of ACSN2_HUGO_Correspondence.gmt.
 GMT = [

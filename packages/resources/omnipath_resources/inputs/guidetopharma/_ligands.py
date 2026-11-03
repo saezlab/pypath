@@ -20,7 +20,7 @@
 from __future__ import annotations
 
 import pypath_common._constants as _const
-from pypath.utils import taxonomy
+from omnipath_resources.utils import taxonomy
 from ._records import G2PLigand, clean_dict
 from . import _raw
 

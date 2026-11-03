@@ -15,8 +15,8 @@ from collections.abc import Generator
 import functools
 from typing import Any
 
-from pypath.inputs_v2.base import Download
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.base import Download
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 __all__ = ['iter_categories', 'iter_category_terms', 'iter_interactions']
 

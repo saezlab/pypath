@@ -10,7 +10,7 @@ from collections.abc import Generator
 import functools
 import re
 from typing import Any
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import (
     ChemicalEntity,
     Protein,
@@ -23,15 +23,15 @@ from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.source_attributes import PARTICIPANT_ROLE
 from omnipath_core.silver_schema import format_term
-from pypath.internals.silver_schema import (
+from omnipath_resources.internals.silver_schema import (
     Annotation,
     Entity,
     Identifier,
     Membership,
     Relation,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.cellchat import (
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.cellchat import (
     NON_PROTEIN,
     iter_cellchat_cofactors,
     iter_cellchat_cofactor_interactions,

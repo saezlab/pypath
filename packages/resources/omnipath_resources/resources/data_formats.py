@@ -23,9 +23,9 @@ import os
 import copy
 
 # from pypath:
-import pypath.internals.input_formats as input_formats
-import pypath.resources.urls as urls
-import pypath.share.common as common
+import omnipath_resources.internals.input_formats as input_formats
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
 
 
@@ -2390,18 +2390,18 @@ has sufficient coverage.
 
 Example
 -------
-import pypath
+import omnipath_resources
 
 # load only `A` confidence level:
-pypath.data_formats.transcription['tfregulons'].input_args['levels'] = {'A'}
-pa = pypath.PyPath()
-pa.init_network(pypath.data_formats.transcription)
+omnipath_resources.data_formats.transcription['tfregulons'].input_args['levels'] = {'A'}
+pa = omnipath_resources.PyPath()
+pa.init_network(omnipath_resources.data_formats.transcription)
 
-pypath.data_formats.transcription['tfregulons'].input_args['levels'] = {
+omnipath_resources.data_formats.transcription['tfregulons'].input_args['levels'] = {
     'A', 'B', 'C', 'D'
 }
-pa = pypath.PyPath()
-pa.init_network(pypath.data_formats.transcription)
+pa = omnipath_resources.PyPath()
+pa.init_network(omnipath_resources.data_formats.transcription)
 
 """
 transcription_dorothea_old = {

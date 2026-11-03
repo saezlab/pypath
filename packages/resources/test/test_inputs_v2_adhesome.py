@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.adhesome import resource
-from pypath.inputs_v2.parsers.adhesome import (
+from omnipath_resources.inputs_v2.adhesome import resource
+from omnipath_resources.inputs_v2.parsers.adhesome import (
     INTERACTION,
     WEBSITE_COLUMNS,
     iter_interactions,
@@ -370,7 +370,7 @@ def test_accession_cell_is_split_and_only_accessions_are_kept():
 
 
 def test_dataset_joins_the_component_table_from_its_download():
-    from pypath.inputs_v2 import adhesome
+    from omnipath_resources.inputs_v2 import adhesome
 
     raw_parser = adhesome.resource.interactions._raw_parser
     assert raw_parser.func is iter_interactions

@@ -35,10 +35,10 @@ from biolink_model.datamodel.model import OntologyClass, Protein, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
-from pypath.inputs_v2._measurements import measurement
-from pypath.inputs_v2._publications import pmid_curie
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.locate import (
+from omnipath_resources.inputs_v2._measurements import measurement
+from omnipath_resources.inputs_v2._publications import pmid_curie
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.locate import (
     EXTERNAL,
     LITERATURE,
     PREDICTION,
@@ -46,8 +46,8 @@ from pypath.inputs_v2.parsers.locate import (
     iter_localizations,
     iter_protein_classes,
 )
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.silver_schema import Annotation, Entity, Identifier, Relation
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.silver_schema import Annotation, Entity, Identifier, Relation
 
 config = ResourceConfig(
     id=ResourceCv.LOCATE,

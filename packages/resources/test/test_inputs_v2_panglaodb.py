@@ -6,8 +6,8 @@ from types import SimpleNamespace
 import pytest
 from omnipath_build.silver import SilverExtractor
 
-from pypath.internals.cv_terms import LicenseCV, ResourceCv
-from pypath.inputs_v2.panglaodb import (
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv
+from omnipath_resources.inputs_v2.panglaodb import (
     CELL_TYPE,
     GERM_LAYER,
     ORGAN,
@@ -16,7 +16,7 @@ from pypath.inputs_v2.panglaodb import (
     map_term,
     resource,
 )
-from pypath.inputs_v2.parsers.panglaodb import iter_markers, iter_terms
+from omnipath_resources.inputs_v2.parsers.panglaodb import iter_markers, iter_terms
 
 HEADER = (
     'species\tofficial gene symbol\tcell type\tnicknames\tubiquitousness index\t'
@@ -267,7 +267,7 @@ def test_nothing_else_is_asserted():
 
 
 def test_resource_declares_its_datasets_and_license():
-    from pypath.inputs_v2 import panglaodb
+    from omnipath_resources.inputs_v2 import panglaodb
 
     assert panglaodb.config.id == ResourceCv.PANGLAODB
     assert panglaodb.config.license == LicenseCV.UNSPECIFIED
@@ -275,7 +275,7 @@ def test_resource_declares_its_datasets_and_license():
 
 
 def test_mouse_symbol_form():
-    from pypath.inputs_v2.parsers.panglaodb import mouse_symbol
+    from omnipath_resources.inputs_v2.parsers.panglaodb import mouse_symbol
 
     assert mouse_symbol('TRY4') == 'Try4'
     assert mouse_symbol('CD36') == 'Cd36'

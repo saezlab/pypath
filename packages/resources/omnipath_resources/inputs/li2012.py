@@ -20,13 +20,13 @@
 from future.utils import iteritems
 import re
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.share.common as common
-import pypath.inputs.common as inputs_common
-import pypath.utils.mapping as mapping
-import pypath.internals.intera as intera
-import pypath.utils.seq as seq
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.common as common
+import omnipath_resources.inputs.common as inputs_common
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.utils.seq as seq
 
 # Define regex pattern for extracting numbers
 non_digit = re.compile(r'[^\d.-]+')
@@ -49,7 +49,7 @@ def get_li2012():
 
 def li2012_interactions():
     """
-    Converts table read by ``pypath.inputs.li2012.get_li2012`` to
+    Converts table read by ``omnipath_resources.inputs.li2012.get_li2012`` to
     list of interactions.
     """
 
@@ -80,7 +80,7 @@ def li2012_interactions():
 
 def li2012_enzyme_substrate():
     """
-    Converts table read by ``pypath.inputs.li2012.get_li2012`` to
+    Converts table read by ``omnipath_resources.inputs.li2012.get_li2012`` to
     list of dicts of kinase-substrate interactions.
     """
 
@@ -143,8 +143,8 @@ def li2012_enzyme_substrate():
 
 def li2012_dmi():
     """
-    Converts table read by ``pypath.inputs.li2012.get_li2012`` to
-    list of ``pypath.internals.intera.DomainMotif`` objects.
+    Converts table read by ``omnipath_resources.inputs.li2012.get_li2012`` to
+    list of ``omnipath_resources.internals.intera.DomainMotif`` objects.
     Translates GeneSymbols to UniProt IDs.
     """
 

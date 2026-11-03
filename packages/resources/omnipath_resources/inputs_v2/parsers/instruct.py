@@ -25,7 +25,7 @@ import logging
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 __all__ = ['COLUMNS', 'iter_interactions', 'parse_locations']
 

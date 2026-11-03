@@ -30,14 +30,14 @@ import copy
 
 import pandas as pd
 
-import pypath.core.enz_sub as enz_sub
-import pypath.core.complex as complex
-import pypath.core.annot as annot
-import pypath.core.intercell as intercell
-import pypath.omnipath.export as export
-import pypath.resources.data_formats as data_formats
-import pypath.share.session as session_mod
-import pypath.omnipath as omnipath
+import omnipath_resources.core.enz_sub as enz_sub
+import omnipath_resources.core.complex as complex
+import omnipath_resources.core.annot as annot
+import omnipath_resources.core.intercell as intercell
+import omnipath_resources.omnipath.export as export
+import omnipath_resources.resources.data_formats as data_formats
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.omnipath as omnipath
 
 
 NO_HOMOLOGY_TRANSLATION = {
@@ -180,7 +180,7 @@ class WebserviceTables(session_mod.Logger):
             '`legacy.main.PyPath` object.'
         )
 
-        import pypath.legacy.main as main
+        import omnipath_resources.legacy.main as main
 
         dataframes = []
 

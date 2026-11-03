@@ -3,7 +3,7 @@
 from omnipath_core.naming import Namespace
 from omnipath_core.silver_schema import format_term
 from omnipath_build.silver import SilverExtractor
-from pypath.inputs_v2 import chebi, uniprot
+from omnipath_resources.inputs_v2 import chebi, uniprot
 
 
 def extract(record):

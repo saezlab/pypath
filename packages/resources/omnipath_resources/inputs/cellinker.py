@@ -21,13 +21,13 @@ import csv
 import itertools
 import collections
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.utils.taxonomy as taxonomy
-import pypath.utils.mapping as mapping
-import pypath.internals.intera as intera
-import pypath.share.session as session
-import pypath.core.entity as entity
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.utils.taxonomy as taxonomy
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.share.session as session
+import omnipath_resources.core.entity as entity
 
 _logger = session.Logger(name = 'cellinker_input')
 _log = _logger._log
@@ -125,7 +125,7 @@ def cellinker_complexes_raw(organism = 9606):
 
 def components_to_complex(components, organism = None):
     """
-    Converts a set of components to `pypath.internals.intera.Complex`
+    Converts a set of components to `omnipath_resources.internals.intera.Complex`
     objects.
 
     Args
@@ -136,7 +136,7 @@ def components_to_complex(components, organism = None):
             guessed from the identifiers.
 
     Returns
-        (set): A set of `pypath.internals.intera.Complex` objects.
+        (set): A set of `omnipath_resources.internals.intera.Complex` objects.
     """
 
     if not organism:
@@ -187,7 +187,7 @@ def cellinker_complexes(organism = 9606):
 
     Returns
         (dict): A dict of complexes, with string representations as keys and
-            `pypath.internals.intera.Complex` objects as values.
+            `omnipath_resources.internals.intera.Complex` objects as values.
     """
 
     result = {}

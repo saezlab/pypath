@@ -1,4 +1,4 @@
-.PHONY: help setup setup-python setup-web test test-pypath test-utils test-postgres test-subsets test-api check check-web build sample hubs reference publish-release api web dev load-postgres finish-postgres build-subsets serving-build serving-up serving-status serving-logs serving-stop worker-up docs
+.PHONY: help setup setup-python setup-web test test-resources test-utils test-postgres test-subsets test-api check check-web build sample hubs reference publish-release api web dev load-postgres finish-postgres build-subsets serving-build serving-up serving-status serving-logs serving-stop worker-up docs
 
 export PKG_INFRA_CONFIG ?= $(CURDIR)/config/pkg_infra_quiet.yaml
 SOURCE ?= signor
@@ -44,8 +44,8 @@ setup-web:
 test:
 	uv run --frozen pytest -m 'not integration' -n $(PYTEST_WORKERS) $(PYTEST_ARGS)
 # Offline inputs_v2 tests maintained with this workspace (no downloads).
-RESOURCES = packages/omnipath-resources
-PYPATH_TESTS = $(RESOURCES)/test/test_chembl_molecular_queries.py \
+RESOURCES = packages/resources
+RESOURCES_TESTS = $(RESOURCES)/test/test_chembl_molecular_queries.py \
 	$(RESOURCES)/test/test_cv_terms.py \
 	$(RESOURCES)/test/test_download_timeouts.py \
 	$(RESOURCES)/test/test_input_source_context.py \
@@ -63,11 +63,11 @@ PYPATH_TESTS = $(RESOURCES)/test/test_chembl_molecular_queries.py \
 	$(RESOURCES)/test/test_resource_representation_review.py \
 	$(RESOURCES)/test/test_signor_identifiers.py \
 	$(RESOURCES)/test/test_tabular_execution.py
-test-pypath:
-	uv run --frozen pytest $(PYPATH_TESTS) -q
+test-resources:
+	uv run --frozen pytest $(RESOURCES_TESTS) -q
 # omnipath-utils keeps its own pytest settings and needs its tests extra.
 test-utils:
-	uv run --frozen --package omnipath-utils --extra tests pytest packages/omnipath-utils/tests -q $(PYTEST_ARGS)
+	uv run --frozen --package omnipath-utils --extra tests pytest packages/utils/tests -q $(PYTEST_ARGS)
 test-postgres:
 	OMNIPATH_TEST_POSTGRES=1 uv run --frozen pytest packages/postgres/tests -q -n $(PYTEST_PG_WORKERS) $(PYTEST_ARGS)
 test-subsets:

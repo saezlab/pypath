@@ -12,7 +12,7 @@ a synonym of the receptor.
 
 from __future__ import annotations
 from typing import Any
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import (
     Protein,
     slots,
@@ -20,14 +20,14 @@ from biolink_model.datamodel.model import (
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.source_attributes import PARTICIPANT_ROLE
-from pypath.internals.silver_schema import (
+from omnipath_resources.internals.silver_schema import (
     Annotation,
     Entity,
     Identifier,
     Relation,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.kirouac2010 import iter_pairs
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.kirouac2010 import iter_pairs
 
 config = ResourceConfig(
     id=ResourceCv.KIROUAC2010,

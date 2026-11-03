@@ -26,7 +26,7 @@ import hashlib
 import pathlib as pl
 
 import pypath_common._misc as _common
-import pypath.share.settings as settings
+import omnipath_resources.share.settings as settings
 
 
 def get_cachedir(cachedir: str | pl.Path | None = None) -> pl.Path:

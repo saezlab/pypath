@@ -15,16 +15,16 @@ from biolink_model.datamodel.model import (
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 
-from pypath.inputs_v2._measurements import measurement as _measurement
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.base import iter_tsv
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.silver_schema import (
+from omnipath_resources.inputs_v2._measurements import measurement as _measurement
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.silver_schema import (
     Entity,
     Identifier,
     Membership,
 )
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
     EntityBuilder,
@@ -32,7 +32,7 @@ from pypath.internals.tabular_builder import (
     IdentifiersBuilder,
     RelationBuilder,
 )
-from pypath.share.downloads import download_and_open
+from omnipath_resources.share.downloads import download_and_open
 
 DRUGCENTRAL_STRUCTURES_URL = 'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/structures.smiles.tsv'
 config = ResourceConfig(

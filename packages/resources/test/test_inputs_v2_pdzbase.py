@@ -6,9 +6,9 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.parsers.base import iter_html_tables
-from pypath.inputs_v2.parsers.pdzbase import iter_pdzbase
-from pypath.inputs_v2.pdzbase import resource
+from omnipath_resources.inputs_v2.parsers.base import iter_html_tables
+from omnipath_resources.inputs_v2.parsers.pdzbase import iter_pdzbase
+from omnipath_resources.inputs_v2.pdzbase import resource
 
 
 FIELDS = (

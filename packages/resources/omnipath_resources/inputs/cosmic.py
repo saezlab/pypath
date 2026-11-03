@@ -22,12 +22,12 @@ import csv
 import collections
 import urllib
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.session as session_mod
-import pypath.share.settings as settings
-import pypath.utils.mapping as mapping
-import pypath.inputs.credentials as credentials
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.settings as settings
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.inputs.credentials as credentials
 
 _logger = session_mod.Logger(name = 'cosmic_input')
 _log = _logger._log
@@ -63,7 +63,7 @@ def _cosmic_cgc_download(
             'Either set the `cosmic_credentials` key in the `settings` '
             'module (e.g. `{\'user\': \'myuser\', '
             '\'passwd\': \'mypassword\'}`), or pass them directly to the '
-            '`pypath.inputs.cosmic.cancer_gene_census_annotations` '
+            '`omnipath_resources.inputs.cosmic.cancer_gene_census_annotations` '
             'method.'
         )
 

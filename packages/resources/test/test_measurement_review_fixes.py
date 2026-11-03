@@ -7,7 +7,7 @@ from omnipath_core.measurements import quantity_dict
 from omnipath_core.naming import Namespace
 import pytest
 
-from pypath.inputs_v2._measurements import measurement
+from omnipath_resources.inputs_v2._measurements import measurement
 
 
 @pytest.mark.parametrize('comparison', ['<', '>', '=', '<=', '>=', '~', '≈'])
@@ -52,13 +52,13 @@ def test_conflicting_comparisons_are_not_silently_overwritten():
 )
 def test_modules_use_shared_numeric_parser(module):
     assert (
-        importlib.import_module(f'pypath.inputs_v2.{module}')._measurement
+        importlib.import_module(f'omnipath_resources.inputs_v2.{module}')._measurement
         is measurement
     )
 
 
 def _extract(module, row):
-    module = importlib.import_module(f'pypath.inputs_v2.{module}')
+    module = importlib.import_module(f'omnipath_resources.inputs_v2.{module}')
     mapped = module.interactions_schema(row)
     assert mapped is not None
     result = SilverExtractor(module.config.id.value, 'fixture')
@@ -89,7 +89,7 @@ def test_bindingdb_retains_occurrence_id_and_approximate_measurement():
 
 
 def test_drugcentral_preserves_parallel_identifier_positions():
-    from pypath.inputs_v2.drugcentral import _target_entity
+    from omnipath_resources.inputs_v2.drugcentral import _target_entity
 
     target = _target_entity(
         {
@@ -187,7 +187,7 @@ def test_guidetopharma_invalid_quantity_does_not_drop_relation(raw):
     ],
 )
 def test_multicomponent_target_retains_taxon(module, row):
-    module = importlib.import_module(f'pypath.inputs_v2.{module}')
+    module = importlib.import_module(f'omnipath_resources.inputs_v2.{module}')
     target = getattr(
         module, '_target', getattr(module, '_target_entity', None)
     )(row)
@@ -200,7 +200,7 @@ def test_multicomponent_target_retains_taxon(module, row):
 def test_guidetopharma_group_accessions_do_not_alias_components(
     subunits, expected
 ):
-    from pypath.inputs_v2.guidetopharma import targets_schema
+    from omnipath_resources.inputs_v2.guidetopharma import targets_schema
 
     entity = targets_schema.build(
         {
@@ -221,7 +221,7 @@ def test_guidetopharma_group_accessions_do_not_alias_components(
 
 def test_bindingdb_download_does_not_use_logical_dataset_as_archive_name():
     import inspect
-    from pypath.inputs_v2.bindingdb import _bindingdb_url, _bindingdb_filename
+    from omnipath_resources.inputs_v2.bindingdb import _bindingdb_url, _bindingdb_filename
     # The archive is named by the pinned release, never by the logical dataset.
     release = inspect.signature(_bindingdb_filename).parameters['bindingdb_release'].default
     assert _bindingdb_filename(dataset='interactions') == f'BindingDB_All_{release}_tsv.zip'

@@ -46,7 +46,7 @@ def emit_build_manifest(
     conn: psycopg2.extensions.connection,
     *,
     schema: str = "public",
-    inputs_package: str = "pypath.inputs_v2",
+    inputs_package: str = "omnipath_resources.inputs_v2",
     partial_build: bool = False,
     derive_cost: Mapping[str, Any] | Sequence[Mapping[str, Any]] | None = None,
     scope_cost: Mapping[str, Any] | Sequence[Mapping[str, Any]] | None = None,
@@ -1219,7 +1219,7 @@ def _validate_resource_names(rows: list[dict[str, Any]]) -> None:
     three names; the slug must also be lowercase alphanumeric and space-free.
     """
     try:
-        from pypath.inputs_v2.resource_names import validate_resource_name
+        from omnipath_resources.inputs_v2.resource_names import validate_resource_name
     except ImportError:
         return  # pypath without the 3-name model (older pin); skip validation
 
@@ -1256,7 +1256,7 @@ def _resource_names(config: object, source: str):
     same registry / filter index.
     """
     try:
-        from pypath.inputs_v2.resource_names import resolve_filter, resolve_names
+        from omnipath_resources.inputs_v2.resource_names import resolve_filter, resolve_names
     except ImportError:
         # pypath without the 3-name model (older pin): short/full fall back to
         # the resource's existing name, no synonyms.

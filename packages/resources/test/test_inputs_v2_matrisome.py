@@ -9,8 +9,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import entity_type, slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import matrisome
-from pypath.inputs_v2.parsers import matrisome as parser
+from omnipath_resources.inputs_v2 import matrisome
+from omnipath_resources.inputs_v2.parsers import matrisome as parser
 
 HUMAN_TITLE = ['Homo sapiens matrisome masterlist']
 HUMAN_HEADER = [

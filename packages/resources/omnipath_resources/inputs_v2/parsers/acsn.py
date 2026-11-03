@@ -28,7 +28,7 @@ from __future__ import annotations
 from collections.abc import Collection, Generator, Iterable, Mapping
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_gmt, iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_gmt, iter_tsv
 
 # Columns of the relations table, in source order.
 COLUMNS = ('INTERACTOR1', 'INTERACTION_TYPE', 'INTERACTOR2', 'PMID')

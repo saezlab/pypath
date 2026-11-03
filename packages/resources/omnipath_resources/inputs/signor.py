@@ -26,15 +26,15 @@ import itertools
 import bs4
 import csv
 
-import pypath.inputs.common as inputs_common
-import pypath.share.common as common
-import pypath.share.progress as progress
-import pypath.utils.taxonomy as taxonomy
-import pypath.utils.mapping as mapping
-import pypath.internals.intera as intera
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.share.common as common
+import omnipath_resources.inputs.common as inputs_common
+import omnipath_resources.share.common as common
+import omnipath_resources.share.progress as progress
+import omnipath_resources.utils.taxonomy as taxonomy
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.common as common
 
 
 def signor_interactions(

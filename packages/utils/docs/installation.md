@@ -46,7 +46,7 @@ pip install "omnipath-utils[server]"
 ### With pypath backends (recommended for building)
 
 ```bash
-pip install "omnipath-utils[pypath]"
+pip install "omnipath-utils[resources]"
 ```
 
 ### Development

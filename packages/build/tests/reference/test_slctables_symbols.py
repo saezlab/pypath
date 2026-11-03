@@ -1,4 +1,4 @@
-from pypath.inputs_v2.slctables import _protein_gene_name
+from omnipath_resources.inputs_v2.slctables import _protein_gene_name
 
 
 def test_slc_symbol_evidence_is_exact_and_human_normalized():

@@ -18,7 +18,7 @@
 import time
 import pathlib as pl
 
-from pypath._metadata import __author__, __license__, __version__
+from omnipath_resources._metadata import __author__, __license__, __version__
 
 # -- Project information -----------------------------------------------------
 
@@ -135,7 +135,7 @@ html_theme_options = {
     'icon_links': [
         {
             'name': 'PyPI',
-            'url': 'https://pypi.org/project/pypath-omnipath',
+            'url': 'https://pypi.org/project/omnipath-resources',
             'icon': 'fa-solid fa-box',
         },
         {
@@ -209,7 +209,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'pypath.tex', u'pypath Documentation',
+    (master_doc, 'omnipath_resources.tex', u'pypath Documentation',
      u'Dénes Türei', 'manual'),
 ]
 

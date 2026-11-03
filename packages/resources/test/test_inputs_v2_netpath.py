@@ -6,9 +6,9 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import netpath as mod
-from pypath.inputs_v2.parsers import netpath as parser
-from pypath.inputs_v2.parsers.base import iter_psimi_xml
+from omnipath_resources.inputs_v2 import netpath as mod
+from omnipath_resources.inputs_v2.parsers import netpath as parser
+from omnipath_resources.inputs_v2.parsers.base import iter_psimi_xml
 
 MI = 'xmlns="net:sf:psidev:mi"'
 

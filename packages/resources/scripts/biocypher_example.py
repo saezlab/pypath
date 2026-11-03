@@ -40,7 +40,7 @@ import sys
 
 sys.path.append('') # fix weird poetry behaviour that I don't understand
 
-import pypath.biocypher.adapter as adapter
+import omnipath_resources.biocypher.adapter as adapter
 
 
 def bc_write_online():

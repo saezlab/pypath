@@ -22,13 +22,13 @@ from typing import List, Literal, Union
 import os
 import collections
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.settings as settings
-import pypath.inputs.embopress as embo
-import pypath.inputs.ca1 as ca1
-import pypath.utils.mapping as mapping
-import pypath.inputs.common as inputs_common
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.settings as settings
+import omnipath_resources.inputs.embopress as embo
+import omnipath_resources.inputs.ca1 as ca1
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.inputs.common as inputs_common
 
 
 KEY = {

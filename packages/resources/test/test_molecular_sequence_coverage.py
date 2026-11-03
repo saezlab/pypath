@@ -6,9 +6,9 @@ import io
 import pytest
 from types import SimpleNamespace
 
-from pypath.inputs_v2._molecular_forms import combine_forms, sequence_form
-from pypath.inputs_v2.bindingdb import _target
-from pypath.inputs_v2.parsers.bindingdb import (
+from omnipath_resources.inputs_v2._molecular_forms import combine_forms, sequence_form
+from omnipath_resources.inputs_v2.bindingdb import _target
+from omnipath_resources.inputs_v2.parsers.bindingdb import (
     _iter_csv_fallback,
     _iter_duckdb_tsv,
 )

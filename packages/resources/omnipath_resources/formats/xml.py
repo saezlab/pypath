@@ -37,9 +37,9 @@ import contextlib
 
 from lxml import etree
 
-import pypath.share.common as common
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.share.session as session
+import omnipath_resources.share.session as session
 
 TRACE: Annotated[
     bool,

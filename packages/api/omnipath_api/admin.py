@@ -62,7 +62,7 @@ def hub_names() -> tuple[str, ...]:
 
         return tuple(HUB_NAMES)
     except ModuleNotFoundError as exc:
-        if exc.name and (exc.name == "pypath" or exc.name.startswith("pypath.")):
+        if exc.name and (exc.name == "omnipath_resources" or exc.name.startswith("omnipath_resources.")):
             logger.info("Build parser dependency unavailable; using known hub names")
             return FALLBACK_HUB_NAMES
         raise

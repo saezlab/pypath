@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections.abc import Generator
 import csv
 
-import pypath.resources.urls as urls
-from pypath.share.downloads import download_and_open
+import omnipath_resources.resources.urls as urls
+from omnipath_resources.share.downloads import download_and_open
 from pypath_common import _misc
 
 __all__ = [

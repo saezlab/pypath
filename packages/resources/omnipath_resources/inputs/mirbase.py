@@ -23,9 +23,9 @@ import re
 import collections
 import itertools
 
-from pypath.share.downloads import dm
-import pypath.resources.urls as urls
-import pypath.share.common as common
+from omnipath_resources.share.downloads import dm
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.common as common
 
 
 def _mirbase_table(name: str):
@@ -74,14 +74,14 @@ def mirbase_organisms(
 
 def mirbase_taxid(organism = 9606):
 
-    import pypath.utils.taxonomy as taxonomy
+    import omnipath_resources.utils.taxonomy as taxonomy
 
     return taxonomy.ensure_mirbase_name(organism)
 
 
 def _latin_name(organism = 9606):
 
-    import pypath.utils.taxonomy as taxonomy
+    import omnipath_resources.utils.taxonomy as taxonomy
 
     return taxonomy.ensure_latin_name(organism)
 

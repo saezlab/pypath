@@ -40,7 +40,7 @@ Installation
 
 .. code:: bash
 
-    pip install pypath-omnipath
+    pip install omnipath-resources
 
 **From Git:**
 
@@ -87,13 +87,13 @@ communication roles.
 a number of submodules. Overall **pypath** consists of around 100 modules.
 The most important higher level submodules:
 
-* *pypath.core:* contains the database classes e.g. network, complex,
+* *omnipath_resources.core:* contains the database classes e.g. network, complex,
   annotations, etc
-* *pypath.inputs:* contains the resource specific methods which directly
+* *omnipath_resources.inputs:* contains the resource specific methods which directly
   downlad and preprocess data from the original sources
-* *pypath.omnipath:* higher level applications, e.g. a database manager, a
+* *omnipath_resources.omnipath:* higher level applications, e.g. a database manager, a
   web server
-* *pypath.utils:* stand alone useful utilities, e.g. identifier translator,
+* *omnipath_resources.utils:* stand alone useful utilities, e.g. identifier translator,
   Gene Ontology processor, BioPax processor, etc
 
 Integrated databases
@@ -105,7 +105,7 @@ data structure. From version 0.7 and 0.8 this design principle started to
 change. Today ``pypath`` builds a number of different databases, exposes them
 by a rich API and each of them can be converted to ``pandas.DataFrame``.
 The modules and classes responsible for the integrated databases are located
-in ``pypath.core``. The five main databases are the followings:
+in ``omnipath_resources.core``. The five main databases are the followings:
 
 * *network* - ``core.network``
 * *enzyme-substrate* - ``core.enz_sub``
@@ -125,7 +125,7 @@ building them more often than necessary or keeping more than one copies
 in the memory. Some of the modules listed above have a method ``get_db``
 which ensures only one instance of the database is loaded. But there is a
 more full featured database management system available in **pypath**,
-this is the **pypath.omnipath** module. This module is able to build the
+this is the **omnipath_resources.omnipath** module. This module is able to build the
 databases, automatically saves them to ``pickle`` files and loads them from
 there in subsequent sessions. **pypath** comes with a number of database
 definitions and users can add more. The ``pickle`` files are located by
@@ -135,7 +135,7 @@ module it's easy to get an instance of a database. For example to get the
 
 .. code:: python
 
-    from pypath import omnipath
+    from omnipath_resources import omnipath
     op = omnipath.db.get_db('omnipath')
 
 **Important:** Building the databases for the first time requires the
@@ -172,7 +172,7 @@ in the module ``input_formats``. An example how to translate identifiers:
 
 .. code:: python
 
-    from pypath.utils import mapping
+    from omnipath_resources.utils import mapping
     mapping.map_name('P00533', 'uniprot', 'genesymbol')
     # {'EGFR'}
 
@@ -180,17 +180,17 @@ in the module ``input_formats``. An example how to translate identifiers:
 Homology translation
 --------------------
 
-The ``pypath.utils.homology`` module is able to find the orthologs of genes
+The ``omnipath_resources.utils.homology`` module is able to find the orthologs of genes
 between two organisms. It uses data both from NCBI HomoloGene, Ensembl and
 UniProt. This module is really simple to use:
 
 .. code:: python
 
-    from pypath.utils import homology
+    from omnipath_resources.utils import homology
     homology.translate('P00533', 10090) # translating the human EGFR to mouse
     # ['Q01279'] # it returns the mouse Egfr UniProt AC
 
-It is able to handle any ID type supported by ``pypath.utils.mapping``.
+It is able to handle any ID type supported by ``omnipath_resources.utils.mapping``.
 Alternatively, you can access a complete dictionary of orthologous genes,
 or translate columns in a pandas data frame.
 

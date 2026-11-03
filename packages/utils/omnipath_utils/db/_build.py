@@ -260,7 +260,7 @@ class DatabaseBuilder:
             'not currently include a wikidata entry.'
         ),
         'recon3d': (
-            'pypath.inputs_v2.recon3d has a working schema (name/'
+            'omnipath_resources.inputs_v2.recon3d has a working schema (name/'
             'bigg_metabolite_id/hmdb/chebi/kegg_compound/metanetx), but '
             'its custom JSON raw_parser (data_type dispatch over the BiGG '
             'Models JSON export) returns zero rows through the generic '
@@ -645,7 +645,7 @@ class DatabaseBuilder:
         -- Utils owns normalization; the "uniprot cleanup" is always part of
         dealing with UniProts). Idempotent (DELETE + COPY the tax-0 slice).
         """
-        from pypath.inputs.uniprot import get_uniprot_sec
+        from omnipath_resources.inputs.uniprot import get_uniprot_sec
         from omnipath_utils.db._connection import get_connection
 
         with Session(self.engine) as session:
@@ -709,7 +709,7 @@ class DatabaseBuilder:
         recovery stage can report such an AC as explicitly *deleted* rather than
         returning an unexplained empty result (FR-008). Idempotent (DELETE + COPY).
         """
-        from pypath.inputs.uniprot import swissprot_deleted, trembl_deleted
+        from omnipath_resources.inputs.uniprot import swissprot_deleted, trembl_deleted
         from omnipath_utils.db._connection import get_connection
 
         with Session(self.engine) as session:
@@ -779,7 +779,7 @@ class DatabaseBuilder:
         ``organisms`` restricts to a scope's taxa (``None`` = all taxa, complete
         scope). Idempotent (DELETE the whole ``entrez-history`` source slice + COPY).
         """
-        from pypath.inputs.ncbi_gene import gene_history
+        from omnipath_resources.inputs.ncbi_gene import gene_history
         from omnipath_utils.db._connection import get_connection
 
         with Session(self.engine) as session:
@@ -870,7 +870,7 @@ class DatabaseBuilder:
         separate FTP and are skipped). Idempotent (DELETE the whole
         ``ensembl-history`` source slice + COPY). Honours ``MAX_RECORDS``.
         """
-        from pypath.inputs.ensembl import ensembl_id_history
+        from omnipath_resources.inputs.ensembl import ensembl_id_history
         from omnipath_utils.db._connection import get_connection
 
         with Session(self.engine) as session:
@@ -971,7 +971,7 @@ class DatabaseBuilder:
         (gene space), not through UniProt. Ensembl ids are stored versionless.
         Idempotent (DELETE + COPY the ``gene2ensembl`` backend slice).
         """
-        from pypath.inputs.ncbi_gene import gene2ensembl
+        from omnipath_resources.inputs.ncbi_gene import gene2ensembl
         from omnipath_utils.db._connection import get_connection
 
         with Session(self.engine) as session:
@@ -1054,7 +1054,7 @@ class DatabaseBuilder:
         gap. ``organisms`` limits the loaded taxa (``None`` = all, for the
         ``complete`` scope). Idempotent (DELETE + COPY the ``gene_info`` slice).
         """
-        from pypath.inputs.ncbi_gene import gene_info
+        from omnipath_resources.inputs.ncbi_gene import gene_info
         from omnipath_utils.db._connection import get_connection
 
         taxa = set(organisms) if organisms else None
@@ -1140,7 +1140,7 @@ class DatabaseBuilder:
         file repeats a gene per assembly, so pairs are de-duplicated on the wire.
         Idempotent (DELETE + COPY the ``gene2accession`` slice).
         """
-        from pypath.inputs.ncbi_gene import gene2accession
+        from omnipath_resources.inputs.ncbi_gene import gene2accession
         from omnipath_utils.db._connection import get_connection
 
         taxa = set(organisms) if organisms else None
@@ -1221,7 +1221,7 @@ class DatabaseBuilder:
         KEGG organism code. KEGG gene ids are stored in canonical ``<org>:<n>``
         form. Idempotent (DELETE the ``kegg_gene`` backend slice then COPY).
         """
-        from pypath.inputs.kegg import (
+        from omnipath_resources.inputs.kegg import (
             kegg_gene_to_ncbi_gene,
             kegg_gene_to_uniprot,
         )
@@ -1322,7 +1322,7 @@ class DatabaseBuilder:
             _log.info('load_mane: human (9606) not in scope; skipping')
             return
 
-        from pypath.inputs.mane import mane_summary
+        from omnipath_resources.inputs.mane import mane_summary
         from omnipath_utils.db._connection import get_connection
 
         with Session(self.engine) as session:
@@ -1420,7 +1420,7 @@ class DatabaseBuilder:
         on an old id still hit. Organism-agnostic (no scope). Idempotent (DELETE
         the whole derived table + COPY). Honours ``MAX_RECORDS``.
         """
-        from pypath.inputs.ncbi_taxonomy import taxonomy_nodes, taxonomy_merged
+        from omnipath_resources.inputs.ncbi_taxonomy import taxonomy_nodes, taxonomy_merged
         from omnipath_utils.db._connection import get_connection
 
         start = time.time()
@@ -1501,7 +1501,7 @@ class DatabaseBuilder:
         Stored under the ``rnacentral`` backend. Idempotent (DELETE the backend
         slice + COPY). Honours ``MAX_RECORDS``.
         """
-        from pypath.inputs.rnacentral import rnacentral_xref
+        from omnipath_resources.inputs.rnacentral import rnacentral_xref
         from omnipath_utils.db._connection import get_connection
 
         taxa = set(organisms) if organisms else None
@@ -1985,7 +1985,7 @@ class DatabaseBuilder:
         tail with no per-organism file) is loaded by **streaming it into a staging
         table and transforming in-database** — no per-row Python, no awk/split:
 
-        1. ``pypath.inputs.uniprot_ftp.stream_full_idmapping`` downloads (dlmachine,
+        1. ``omnipath_resources.inputs.uniprot_ftp.stream_full_idmapping`` downloads (dlmachine,
            cached) and streams the **decompressed** bytes; the build client pipes
            them straight into a client-side ``COPY … FROM STDIN`` of the raw
            ``(ac, id_type_label, id_value)`` rows into an UNLOGGED staging table
@@ -2002,7 +2002,7 @@ class DatabaseBuilder:
         (see ``omnipath-build/docs/build-tuning.md``).
         """
         from omnipath_utils.db._connection import SCHEMA, get_connection
-        from pypath.inputs.uniprot_ftp import IDTYPE_MAP, stream_full_idmapping
+        from omnipath_resources.inputs.uniprot_ftp import IDTYPE_MAP, stream_full_idmapping
 
         _log.info('Starting full FTP idmapping build (staging + in-DB transform)')
         start = time.time()
@@ -2628,8 +2628,8 @@ class DatabaseBuilder:
         field: ChEBI, KEGG, PubChem, DrugBank, FooDB and CAS, each on the
         same record, plus its own IUPAC name and traditional IUPAC name. The
         project mirrors the archive on its own host
-        (``pypath.inputs_v2.hmdb``). This reads it directly, unlike the
-        legacy ``pypath.inputs.hmdb`` path, which reached only a narrow
+        (``omnipath_resources.inputs_v2.hmdb``). This reads it directly, unlike the
+        legacy ``omnipath_resources.inputs.hmdb`` path, which reached only a narrow
         synonym-to-ChEBI slice and needed HMDB's site to stay up.
 
         T087 (spec 011): ``id_types.yaml`` also declares HMDB a backend for
@@ -2710,7 +2710,7 @@ class DatabaseBuilder:
 
     def _long_kegg(self):
         """KEGG compound names <-> kegg/chebi. US2 (T025)."""
-        from pypath.inputs.kegg import kegg_compound_chebi, kegg_compound_names
+        from omnipath_resources.inputs.kegg import kegg_compound_chebi, kegg_compound_names
 
         names = kegg_compound_names()      # {kegg_id: [names]}
         kc = kegg_compound_chebi()         # {kegg_id: 'CHEBI:nnn'}
@@ -2749,7 +2749,7 @@ class DatabaseBuilder:
         directions (synonym->hub and hub->synonym), normalising the hub id to the
         DB format.
         """
-        from pypath.inputs.ramp import ramp_synonym_mapping
+        from omnipath_resources.inputs.ramp import ramp_synonym_mapping
 
         total = 0
         for hub in ('chebi', 'hmdb'):
@@ -3050,7 +3050,7 @@ class DatabaseBuilder:
     def _populate_unichem(self):
         """Auto-discover and build all UniChem pairwise mappings."""
         try:
-            from pypath.inputs.unichem import (
+            from omnipath_resources.inputs.unichem import (
                 unichem_mapping,
                 unichem_sources,
             )
@@ -3257,8 +3257,8 @@ class DatabaseBuilder:
     def _populate_ramp(self):
         """Auto-discover and build RaMP pairwise mappings."""
         try:
-            from pypath.inputs.ramp import ramp_mapping
-            from pypath.inputs.ramp._sqlite import (
+            from omnipath_resources.inputs.ramp import ramp_mapping
+            from omnipath_resources.inputs.ramp._sqlite import (
                 id_types as ramp_id_types_fn,
             )
         except ImportError:
@@ -3653,7 +3653,7 @@ class DatabaseBuilder:
         just add orthologous-pathway noise for the same compound).
         """
         try:
-            from pypath.inputs.reactome_old import reactome_chebis
+            from omnipath_resources.inputs.reactome_old import reactome_chebis
         except ImportError:
             _log.warning('pypath not available for Reactome')
             return
@@ -3889,7 +3889,7 @@ class DatabaseBuilder:
         ``--pubchem-max-records`` (the per-backend effective limit). (T020/T021)
         """
         from itertools import islice
-        from pypath.inputs.pubchem import pubchem_mapping
+        from omnipath_resources.inputs.pubchem import pubchem_mapping
 
         with Session(self.engine) as session:
             src = session.query(IdType).filter_by(name="pubchem").first()

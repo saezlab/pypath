@@ -20,9 +20,9 @@
 import os
 import copy
 
-from pypath.share import session as _session_mod
-from pypath.share import settings as _settings_mod
-from pypath.omnipath import app as _app_mod
+from omnipath_resources.share import session as _session_mod
+from omnipath_resources.share import settings as _settings_mod
+from omnipath_resources.omnipath import app as _app_mod
 
 
 _logger = _session_mod.Logger(name = 'omnipath.init')
@@ -44,12 +44,12 @@ def init(**kwargs):
         'You can customize the database building process by '
         'setting parameters in the `OP_DB_ARGS` global variable '
         'or by calling `init` again with keyword arguments or after '
-        'setting values in the `pypath.share.settings` module.'
+        'setting values in the `omnipath_resources.share.settings` module.'
         'You can define your own databases following the examples in '
-        '`pypath/omnipath/databases/builtins.json`. '
-        'See more details in `pypath/omnipath/databases/db_template.json` '
+        '`omnipath_resources/omnipath/databases/builtins.json`. '
+        'See more details in `omnipath_resources/omnipath/databases/db_template.json` '
         'and the code of method '
-        '`pypath.omnipath.app.DatabaseManager.load_dataset`.'
+        '`omnipath_resources.omnipath.app.DatabaseManager.load_dataset`.'
     )
 
     param.update(kwargs)

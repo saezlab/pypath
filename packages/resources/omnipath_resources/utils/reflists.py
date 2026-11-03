@@ -32,12 +32,12 @@ except ImportError:
 
 import timeloop
 
-import pypath.inputs.uniprot_db as uniprot_input
-import pypath.inputs.mirbase as mirbase_input
-import pypath.share.common as common
-import pypath.share.session as session_mod
-import pypath.share.settings as settings
-import pypath.share.cache as cache_mod
+import omnipath_resources.inputs.uniprot_db as uniprot_input
+import omnipath_resources.inputs.mirbase as mirbase_input
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.cache as cache_mod
 
 
 # method names for ID types

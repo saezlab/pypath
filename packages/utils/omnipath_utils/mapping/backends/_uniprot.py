@@ -1,6 +1,6 @@
 """UniProt REST API mapping backend.
 
-Prefers pypath.inputs.uniprot when available; falls back to direct
+Prefers omnipath_resources.inputs.uniprot when available; falls back to direct
 HTTP requests against the UniProt REST API.
 """
 
@@ -24,7 +24,7 @@ _RE_MULTI_SEP = re.compile(r';\s*')
 class UniProtBackend(MappingBackend):
     """Fetch ID mappings from UniProt.
 
-    Uses pypath.inputs.uniprot (UniprotQuery) when pypath is available.
+    Uses omnipath_resources.inputs.uniprot (UniprotQuery) when pypath is available.
     Falls back to direct HTTP against the /uniprotkb/stream endpoint
     when pypath is not installed.
     """
@@ -33,7 +33,7 @@ class UniProtBackend(MappingBackend):
     yaml_key = 'uniprot'
 
     # ------------------------------------------------------------------
-    # pypath.inputs path
+    # omnipath_resources.inputs path
     # ------------------------------------------------------------------
 
     def _read_via_pypath(
@@ -46,10 +46,10 @@ class UniProtBackend(MappingBackend):
         tgt_col: str,
         **kwargs: object,
     ) -> dict[str, set[str]]:
-        """Read mapping data via pypath.inputs.uniprot.UniprotQuery."""
+        """Read mapping data via omnipath_resources.inputs.uniprot.UniprotQuery."""
 
         from pkg_infra.utils import to_set, swap_dict
-        from pypath.inputs.uniprot import UniprotQuery
+        from omnipath_resources.inputs.uniprot import UniprotQuery
 
         # UniprotQuery.perform() returns {accession: value} when exactly
         # one field is requested.  We need to figure out which side is

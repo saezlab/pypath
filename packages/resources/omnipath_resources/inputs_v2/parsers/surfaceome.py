@@ -37,13 +37,13 @@ from __future__ import annotations
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.parsers.almen2009 import (
+from omnipath_resources.inputs_v2.parsers.almen2009 import (
     CLASS,
     ENZYMES,
     class_nodes,
     statements,
 )
-from pypath.inputs_v2.parsers.base import iter_excel
+from omnipath_resources.inputs_v2.parsers.base import iter_excel
 
 SHEET = 'in silico surfaceome only'
 MASTER_SHEET = 'SurfaceomeMasterTable'

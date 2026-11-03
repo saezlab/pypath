@@ -7,9 +7,9 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import exocarta
-from pypath.inputs_v2.exocarta import TAXA, VESICLE_TYPE_NAMESPACE, resource
-from pypath.inputs_v2.parsers.exocarta import (
+from omnipath_resources.inputs_v2 import exocarta
+from omnipath_resources.inputs_v2.exocarta import TAXA, VESICLE_TYPE_NAMESPACE, resource
+from omnipath_resources.inputs_v2.parsers.exocarta import (
     EXOCARTA,
     iter_detections,
     iter_vesicle_types,

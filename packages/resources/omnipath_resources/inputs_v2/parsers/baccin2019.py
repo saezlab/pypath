@@ -26,7 +26,7 @@ import itertools
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_excel
+from omnipath_resources.inputs_v2.parsers.base import iter_excel
 
 SHEET = 'SuppTable3'
 # Columns of `SuppTable3`, in source order. The header is the sheet's third row.

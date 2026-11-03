@@ -23,9 +23,9 @@ import json
 import urllib.parse
 from typing import Iterable, Iterator, NamedTuple
 
-import pypath.resources.urls as urls
-import pypath.share.session as session
-from pypath.share.downloads import dm, download_and_open
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.session as session
+from omnipath_resources.share.downloads import dm, download_and_open
 
 _logger = session.Logger(name = 'pubchem_input')
 _log = _logger._log

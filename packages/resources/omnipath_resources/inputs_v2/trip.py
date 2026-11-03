@@ -28,16 +28,16 @@ from biolink_model.datamodel.model import (
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
-from pypath.inputs_v2._publications import pmid_curie
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.trip import iter_trip_observations
-from pypath.internals.cv_terms import (
+from omnipath_resources.inputs_v2._publications import pmid_curie
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.trip import iter_trip_observations
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.silver_schema import (
+from omnipath_resources.internals.silver_schema import (
     Annotation,
     Entity,
     Identifier,

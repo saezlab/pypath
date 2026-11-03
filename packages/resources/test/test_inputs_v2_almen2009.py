@@ -8,10 +8,10 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2._almen_classes import CLASS_NAMESPACE
-from pypath.inputs_v2.almen2009 import resource
-from pypath.inputs_v2.parsers.almen2009 import COLUMNS, class_nodes, iter_classes
-from pypath.inputs_v2.parsers.surfaceome import (
+from omnipath_resources.inputs_v2._almen_classes import CLASS_NAMESPACE
+from omnipath_resources.inputs_v2.almen2009 import resource
+from omnipath_resources.inputs_v2.parsers.almen2009 import COLUMNS, class_nodes, iter_classes
+from omnipath_resources.inputs_v2.parsers.surfaceome import (
     ALMEN_COLUMNS,
     MASTER_SHEET,
     iter_almen_classes,

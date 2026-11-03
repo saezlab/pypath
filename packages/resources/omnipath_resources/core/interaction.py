@@ -21,7 +21,7 @@
 Here we define one class, the :py:class:`Interaction`` which provides a
 rich API for representing and querying molecular interactions. The
 interactions serve as the building elements of the network and the
-:py:class:`pypath.network.Network` object largely relies on methods
+:py:class:`omnipath_resources.network.Network` object largely relies on methods
 of the :py:class:`Interaction`` objects.
 """
 
@@ -38,14 +38,14 @@ import itertools
 import functools
 import json
 
-import pypath.core.evidence as pypath_evidence
-import pypath.internals.resource as pypath_resource
-import pypath.share.session as session_mod
-import pypath.share.common as common
-import pypath.utils.mapping as mapping
-import pypath.core.entity as entity
-import pypath.core.attrs as attrs_mod
-import pypath.utils.orthology as orthology
+import omnipath_resources.core.evidence as pypath_evidence
+import omnipath_resources.internals.resource as pypath_resource
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.common as common
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.core.entity as entity
+import omnipath_resources.core.attrs as attrs_mod
+import omnipath_resources.utils.orthology as orthology
 
 _logger = session_mod.Logger(name = 'interaction')
 _log = _logger._log
@@ -86,8 +86,8 @@ class Interaction(attrs_mod.AttributeHandler):
     transcriptional regulation and post-translational regulation),
     each supported by different evidences.
 
-    :arg str,pypath.entity.Entity a,b:
-        The two interacting partners. If an :py:class:`pypath.entity.Entity`
+    :arg str,omnipath_resources.entity.Entity a,b:
+        The two interacting partners. If an :py:class:`omnipath_resources.entity.Entity`
         objects provided the other attributes (entity_type, id_type, taxon)
         will be ignored.
     :arg str id_type_a,id_type_b:
@@ -443,8 +443,8 @@ class Interaction(attrs_mod.AttributeHandler):
         :py:attr:`sources`.
 
         :arg resource.NetworkResource,evidence.Evidence evidence:
-            Either a ``pypath.evidence.Evidence`` object or a resource as
-            ``pypath.resource.NetworkResource`` object. In the latter case
+            Either a ``omnipath_resources.evidence.Evidence`` object or a resource as
+            ``omnipath_resources.resource.NetworkResource`` object. In the latter case
             the references can be provided in a separate argument.
         :arg tuple direction:
             Or [str], the directionality key for which the value on
@@ -1182,7 +1182,7 @@ class Interaction(attrs_mod.AttributeHandler):
             attrs:
                 Custom (resource specific) edge attributes.
             kwargs:
-                Passed to ``pypath.resource.NetworkResource`` if ``resource``
+                Passed to ``omnipath_resources.resource.NetworkResource`` if ``resource``
                 is not already a ``NetworkResource`` or ``Evidence``
                 instance.
         """
@@ -1929,7 +1929,7 @@ class Interaction(attrs_mod.AttributeHandler):
         same class and contain the same nodes). Updates the attributes
         :py:attr:`direction`, :py:attr:`positive` and :py:attr:`negative`.
 
-        :arg pypath.interaction.Interaction other:
+        :arg omnipath_resources.interaction.Interaction other:
             The new Interaction object to be merged with the current one.
         """
 
@@ -1973,7 +1973,7 @@ class Interaction(attrs_mod.AttributeHandler):
             new ID type for protein EGFR is Entrez Gene ID.
 
         :return:
-            (*pypath.main.Direction*) -- The copy of current edge object
+            (*omnipath_resources.main.Direction*) -- The copy of current edge object
             with translated node names.
         """
 
@@ -2208,7 +2208,7 @@ class Interaction(attrs_mod.AttributeHandler):
             `complex`, `mirna`, `small_molecule`.
         :arg str return_type:
             The type of values to return. Default is
-            py:class:``pypath.entity.Entity`` objects, alternatives are
+            py:class:``omnipath_resources.entity.Entity`` objects, alternatives are
             ``labels``  ``identifiers``.
         """
 

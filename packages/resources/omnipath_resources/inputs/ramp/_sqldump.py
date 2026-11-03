@@ -35,10 +35,10 @@ import pprint
 
 import pandas as pd
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.common as common
-import pypath.formats.sqldump as sqldump
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.common as common
+import omnipath_resources.formats.sqldump as sqldump
 from ._common import _log, _show_tables
 
 

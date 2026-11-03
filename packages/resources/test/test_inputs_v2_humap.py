@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import humap
-from pypath.inputs_v2.parsers.humap import iter_humap1, iter_humap_table
+from omnipath_resources.inputs_v2 import humap
+from omnipath_resources.inputs_v2.parsers.humap import iter_humap1, iter_humap_table
 
 # Lines of the three files (hu.MAP 1 clusters.txt, humap2_complexes_20200809.txt
 # and hu.MAP3.0_complexes_wConfidenceScores_total15326_wGenenames_20240922.csv).

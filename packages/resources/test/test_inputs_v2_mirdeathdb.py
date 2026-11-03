@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.mirdeathdb import resource
-from pypath.inputs_v2.parsers.mirdeathdb import COLUMNS, iter_interactions
+from omnipath_resources.inputs_v2.mirdeathdb import resource
+from omnipath_resources.inputs_v2.parsers.mirdeathdb import COLUMNS, iter_interactions
 
 
 def line(*values):

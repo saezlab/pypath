@@ -154,10 +154,10 @@ Python projects use `packages/<short-name>/omnipath_<name>/`, with explicit
 package discovery and wheel checks. Rust and Svelte keep their own `src` folders.
 See [current architecture](docs/architecture.md) and [refactoring log](docs/reviews/refactoring-progress-20261003.md).
 
-pypath lives in `packages/omnipath-resources` and omnipath-utils in
-`packages/omnipath-utils`; both keep their own lint and test settings (`make test-pypath`,
-`make test-utils`). The lockfile selects published cachedir and dlmachine releases;
-their optional checkouts are not installed, and omnipath-utils is not copied into images. The cachedir workaround remains scoped to the pinned release
+The resource inputs (formerly pypath) are `omnipath_resources` in `packages/resources`, and
+omnipath-utils is in `packages/utils`; both keep their own lint and test settings
+(`make test-resources`, `make test-utils`). The lockfile selects published cachedir and
+dlmachine releases, and omnipath-utils is not copied into images. The cachedir workaround remains scoped to the pinned release
 until its upstream fix is available in a selected version. Proxy settings are honored
 as supplied by the launcher; library calls do not rewrite the process environment.
 

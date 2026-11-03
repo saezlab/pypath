@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import dgidb
-from pypath.inputs_v2.parsers.dgidb import iter_categories, iter_category_terms, iter_interactions
+from omnipath_resources.inputs_v2 import dgidb
+from omnipath_resources.inputs_v2.parsers.dgidb import iter_categories, iter_category_terms, iter_interactions
 
 PREAMBLE = '# Data version: 2026-09\n# DGIdb version: v.5.0.13\n'
 CATEGORY_HEADER = 'gene_claim_name\tgene_category_name\tsource_db_name\tsource_db_version'

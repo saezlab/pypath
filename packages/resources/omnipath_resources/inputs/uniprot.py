@@ -33,15 +33,15 @@ import urllib.parse
 
 import pandas as pd
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-from pypath.share.downloads import dm
-import pypath.share.settings as settings
-import pypath.share.session as session_mod
-import pypath.share.common as common
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+from omnipath_resources.share.downloads import dm
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.utils.taxonomy as taxonomy
-from pypath.inputs.uniprot_idmapping import idtypes as idmapping_idtypes
+import omnipath_resources.utils.taxonomy as taxonomy
+from omnipath_resources.inputs.uniprot_idmapping import idtypes as idmapping_idtypes
 
 _logger = session_mod.Logger(name = 'uniprot_input')
 
@@ -345,7 +345,7 @@ def get_uniprot_sec(organism = 9606):
 
     if _organism:
 
-        from pypath.inputs import uniprot_db
+        from omnipath_resources.inputs import uniprot_db
         proteome = uniprot_db.all_uniprots(organism=organism)
         proteome = set(proteome)
 

@@ -14,7 +14,7 @@ MODULES = 'cellchat cellinker cellphonedb connectomedb guidetopharma icellnet im
 
 
 def extract(module, dataset, row):
-    resource = import_module('pypath.inputs_v2.' + module).resource
+    resource = import_module('omnipath_resources.inputs_v2.' + module).resource
     record = resource.datasets()[dataset].mapper(row)
     assert record is not None
     out = SilverExtractor(module, dataset)
@@ -24,7 +24,7 @@ def extract(module, dataset, row):
 
 @pytest.mark.parametrize('module', MODULES)
 def test_module_imports_with_native_schema(module):
-    assert import_module('pypath.inputs_v2.' + module).resource.datasets()
+    assert import_module('omnipath_resources.inputs_v2.' + module).resource.datasets()
 
 
 @pytest.mark.parametrize(
@@ -186,7 +186,7 @@ def test_representative_rows_reach_silver_extractor(module, dataset, row):
 
 
 def test_cellchat_unknown_label_does_not_invent_complex_members_or_gene_ids():
-    mod = import_module('pypath.inputs_v2.cellchat')
+    mod = import_module('omnipath_resources.inputs_v2.cellchat')
     entity = mod._protein_group_entity(name='A_B_2', genes=[], taxon_id='9606')
     assert entity_type(entity.type) == 'named_thing'
     assert not entity.membership
@@ -196,7 +196,7 @@ def test_cellchat_unknown_label_does_not_invent_complex_members_or_gene_ids():
 
 
 def test_cellchat_cofactor_effect_is_qualified_and_unknown_effect_rejected():
-    mod = import_module('pypath.inputs_v2.cellchat')
+    mod = import_module('omnipath_resources.inputs_v2.cellchat')
     row = {
         'taxon_id': '9606',
         'cofactor_gene': 'FST',
@@ -215,7 +215,7 @@ def test_cellchat_cofactor_effect_is_qualified_and_unknown_effect_rejected():
 
 
 def test_guidetopharma_id_domains_and_unknown_action():
-    mod = import_module('pypath.inputs_v2.guidetopharma')
+    mod = import_module('omnipath_resources.inputs_v2.guidetopharma')
     ligand = mod.ligands_schema(
         {
             'Ligand ID': '1',
@@ -240,7 +240,7 @@ def test_guidetopharma_id_domains_and_unknown_action():
 
 
 def test_mrclinksdb_never_promotes_pubchem_substance_to_compound():
-    mod = import_module('pypath.inputs_v2.mrclinksdb')
+    mod = import_module('omnipath_resources.inputs_v2.mrclinksdb')
     for value in ['SID:999', 'SID:999;CID:123', 'garbage']:
         entity = mod.metabolite_builder(
             {'hmdb_id': 'HMDB0000012', 'pubchem_cid_sid': value}
@@ -287,13 +287,13 @@ def test_neuronchat_chemical_has_no_organism_taxonomy_or_inferred_effect():
 
 def test_missing_participants_do_not_emit_nichenet_or_icellnet_statements():
     assert (
-        import_module('pypath.inputs_v2.nichenet').map_nichenet_interaction(
+        import_module('omnipath_resources.inputs_v2.nichenet').map_nichenet_interaction(
             {'ligand': 'A'}
         )
         is None
     )
     assert (
-        import_module('pypath.inputs_v2.icellnet').map_icellnet_interaction(
+        import_module('omnipath_resources.inputs_v2.icellnet').map_icellnet_interaction(
             {'Ligand 1': 'A'}
         )
         is None
@@ -301,7 +301,7 @@ def test_missing_participants_do_not_emit_nichenet_or_icellnet_statements():
 
 
 def test_imm1415_missing_optional_annotations_and_compound_namespace():
-    mod = import_module('pypath.inputs_v2.imm1415')
+    mod = import_module('omnipath_resources.inputs_v2.imm1415')
     rows = list(
         mod.parser(
             SimpleNamespace(
@@ -390,7 +390,7 @@ def test_guidetopharma_original_ic50_and_comparator_remain_numeric():
 
 
 def test_guidetopharma_nonhuman_assay_does_not_reuse_human_gene_aliases():
-    mod = import_module('pypath.inputs_v2.guidetopharma')
+    mod = import_module('omnipath_resources.inputs_v2.guidetopharma')
     target = mod._GuidetopharmaTargetMemberBuilder().build(
         {
             'Target ID': '1',
@@ -413,7 +413,7 @@ def test_guidetopharma_nonhuman_assay_does_not_reuse_human_gene_aliases():
 
 
 def test_cellinker_missing_participants_are_not_anonymous_protein_records():
-    mod = import_module('pypath.inputs_v2.cellinker')
+    mod = import_module('omnipath_resources.inputs_v2.cellinker')
     assert (
         mod.resource.human_protein_interactions.mapper(
             {'Ligand_Uniprot': 'P00533'}
@@ -423,7 +423,7 @@ def test_cellinker_missing_participants_are_not_anonymous_protein_records():
 
 
 def test_cellphonedb_keeps_fifth_source_complex_subunit():
-    mod = import_module('pypath.inputs_v2.cellphonedb')
+    mod = import_module('omnipath_resources.inputs_v2.cellphonedb')
     row = {
         'complex_name': 'five_member_complex',
         **{f'uniprot_{i}': f'P0000{i}' for i in range(1, 6)},
@@ -433,7 +433,7 @@ def test_cellphonedb_keeps_fifth_source_complex_subunit():
 
 
 def test_names_and_synonyms_are_supplemental_identifiers():
-    mod = import_module('pypath.inputs_v2.guidetopharma')
+    mod = import_module('omnipath_resources.inputs_v2.guidetopharma')
     record = mod.ligands_schema(
         {
             'Ligand ID': '42',
@@ -453,7 +453,7 @@ def test_names_and_synonyms_are_supplemental_identifiers():
 
 
 def test_direct_cellchat_single_protein_uses_gene_name_not_group_role():
-    mod = import_module('pypath.inputs_v2.cellchat')
+    mod = import_module('omnipath_resources.inputs_v2.cellchat')
     record = mod._protein_group_entity(
         name='Source label', genes=['TGFB1'], taxon_id='9606'
     )
@@ -470,7 +470,7 @@ def test_tabular_download_error_page_is_not_a_successful_empty_resource():
     from io import StringIO
     from types import SimpleNamespace
     import pytest
-    from pypath.inputs_v2.parsers.base import iter_tsv
+    from omnipath_resources.inputs_v2.parsers.base import iter_tsv
     opener = SimpleNamespace(result=StringIO('<html>\n<head><title>404 Not Found</title></head>\n</html>'))
     with pytest.raises(ValueError, match='HTML document'):
         list(iter_tsv(opener))

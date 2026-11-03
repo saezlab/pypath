@@ -12,7 +12,7 @@ import json
 import re
 from typing import Any, Literal, Protocol
 
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
@@ -24,15 +24,15 @@ from pypath.internals.cv_terms import (
 from biolink_model.datamodel.model import OntologyClass, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
-from pypath.internals.ontology_schema import OntologyTerm
-from pypath.internals.silver_schema import (
+from omnipath_resources.internals.ontology_schema import OntologyTerm
+from omnipath_resources.internals.silver_schema import (
     Annotation,
     Entity,
     EntityRef,
     Identifier,
     OntologyRelation,
 )
-from pypath.share.downloads import download_and_open
+from omnipath_resources.share.downloads import download_and_open
 
 
 class _Resolver(Protocol):
@@ -95,7 +95,7 @@ class ResourceConfig:
     topics: tuple[Topic, ...] = ()
     content: tuple[Content, ...] = ()
     knowledge_origin: tuple[KnowledgeOrigin, ...] = ()
-    # 3-name model (Milestone M; see pypath.inputs_v2.resource_names):
+    # 3-name model (Milestone M; see omnipath_resources.inputs_v2.resource_names):
     #   slug  — all-lowercase canonical id/filter key, no `_`, no spaces
     #   short — the resource's own spelling (display name), no `_`, no spaces
     #   full  — the long name, spaces allowed, no `_`
@@ -129,7 +129,7 @@ class ResourceConfig:
         member name (``self.id``) — not the inconsistent ``name`` — so the
         authoritative ``resources.json`` entry is found reliably.
         """
-        from pypath.inputs_v2.resource_names import resolve_names, slugify
+        from omnipath_resources.inputs_v2.resource_names import resolve_names, slugify
 
         cv_slug = None
         try:

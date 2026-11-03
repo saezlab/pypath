@@ -68,8 +68,8 @@ import io
 from types import SimpleNamespace
 from typing import Any
 
-from pypath.inputs_v2._publications import is_pmid
-from pypath.inputs_v2.parsers.base import iter_tsv, read_text
+from omnipath_resources.inputs_v2._publications import is_pmid
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv, read_text
 
 MAIN_KEY = 'Transcription Factor (Associated Gene Name)'
 MAIN_TARGET = 'Target Gene (Associated Gene Name)'

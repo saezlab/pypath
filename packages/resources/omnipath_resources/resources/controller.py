@@ -36,10 +36,10 @@ import functools
 
 import pandas as pd
 
-import pypath.share.session as session_mod
-import pypath.share.common as common
-import pypath.internals.resource as resource_base
-import pypath.resources._network as netres
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.common as common
+import omnipath_resources.internals.resource as resource_base
+import omnipath_resources.resources._network as netres
 from . import licenses as licenses
 
 

@@ -24,10 +24,10 @@ import collections
 
 from typing import List
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.inputs.embopress as embo
-import pypath.inputs.common as inputs_common
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.inputs.embopress as embo
+import omnipath_resources.inputs.common as inputs_common
 
 
 def kirouac2010_interactions() -> List[tuple]:

@@ -3,10 +3,10 @@
 Merges two independent sources:
 
 1. MetaNetX ``chem_xref.tsv`` kegg→chebi column (~45 K pairs), loaded via
-   ``pypath.inputs.metanetx.metanetx_mapping("kegg", "chebi")``.
+   ``omnipath_resources.inputs.metanetx.metanetx_mapping("kegg", "chebi")``.
 
 2. KEGG REST ``/conv/chebi/compound`` endpoint (~17 K pairs), loaded via
-   ``pypath.inputs.kegg_api._kegg_conv``.
+   ``omnipath_resources.inputs.kegg_api._kegg_conv``.
 
 Both sources are merged by union per KEGG ID.  Any KEGG ID that maps to
 **more than one distinct ChEBI** after merging is excluded (1→many abort);
@@ -55,13 +55,13 @@ class KeggCompoundBackend(MappingBackend):
         ncbi_tax_id: int,
         **kwargs: object,
     ) -> dict[str, set[str]]:
-        from pypath.inputs.metanetx import metanetx_mapping
+        from omnipath_resources.inputs.metanetx import metanetx_mapping
 
         try:
-            from pypath.inputs.kegg_api import _kegg_conv as _rest_fn
+            from omnipath_resources.inputs.kegg_api import _kegg_conv as _rest_fn
         except ImportError:
             _log.warning(
-                "KeggCompound: pypath.inputs.kegg_api unavailable "                "(pycurl missing?); KEGG REST source disabled"
+                "KeggCompound: omnipath_resources.inputs.kegg_api unavailable "                "(pycurl missing?); KEGG REST source disabled"
             )
             _rest_fn = lambda *a, **kw: {}
 

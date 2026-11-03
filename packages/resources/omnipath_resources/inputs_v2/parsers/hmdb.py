@@ -11,7 +11,7 @@ import re
 
 import lxml.etree as etree
 
-from pypath.inputs_v2.parsers.obo import iter_obo
+from omnipath_resources.inputs_v2.parsers.obo import iter_obo
 
 
 def _raw(

@@ -17,7 +17,7 @@ from collections.abc import Generator
 from typing import Any
 import xml.etree.ElementTree as ET
 
-from pypath.inputs_v2.parsers.base import read_xml_root
+from omnipath_resources.inputs_v2.parsers.base import read_xml_root
 
 TABLE_ID = 'T1'
 CAPTION = 'Human integrin subunits'

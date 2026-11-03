@@ -23,7 +23,7 @@ def runtime_provenance() -> dict:
         "omnipath-build",
         "omnipath-core",
         "omnipath-resolver",
-        "pypath-omnipath",
+        "omnipath-resources",
         "biolink-model",
         "duckdb",
         "pyarrow",

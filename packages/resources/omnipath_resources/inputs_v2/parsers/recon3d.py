@@ -12,8 +12,8 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.base import read_opener_text
-from pypath.inputs_v2._source_context import (
+from omnipath_resources.inputs_v2.base import read_opener_text
+from omnipath_resources.inputs_v2._source_context import (
     flux_direction,
     stoichiometric_coefficient,
 )
@@ -544,7 +544,7 @@ def _raw(opener: Any, data_type: str, **kwargs) -> Generator[dict, None, None]:
     """Yield raw record dicts for the requested data type.
 
     Entry point called by each ``Dataset.raw_parser`` lambda in
-    ``pypath/inputs_v2/recon3d.py``.  Loads the BiGG JSON from the cached
+    ``omnipath_resources/inputs_v2/recon3d.py``.  Loads the BiGG JSON from the cached
     file and dispatches to the appropriate ``_parse_*`` function.
 
     Args:

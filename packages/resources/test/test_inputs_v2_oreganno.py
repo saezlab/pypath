@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import oreganno as mod
-from pypath.inputs_v2.parsers import oreganno as parser
+from omnipath_resources.inputs_v2 import oreganno as mod
+from omnipath_resources.inputs_v2.parsers import oreganno as parser
 
 HEADER = (
     'ORegAnno_ID\tSpecies\tOutcome\tType\tGene_Symbol\tGene_ID\tGene_Source\t'

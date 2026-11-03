@@ -17,7 +17,7 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-from pypath.inputs.disgenet._field import (
+from omnipath_resources.inputs.disgenet._field import (
     DiseaseClasses,
     Float,
     Int,

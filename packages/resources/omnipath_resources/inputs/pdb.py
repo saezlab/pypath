@@ -22,10 +22,10 @@ from future.utils import iteritems
 import re
 import collections
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.internals.intera as intera
-import pypath.utils.reflists as reflists
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.utils.reflists as reflists
 
 
 def pdb_uniprot():
@@ -189,7 +189,7 @@ def pdb_chains():
 def pdb_complexes(organism = None):
     """
     Extracts protein complex data from PDB. The complexes are returned in
-    a dict with string keys and ``pypath.internals.intera.Complex``
+    a dict with string keys and ``omnipath_resources.internals.intera.Complex``
     objects as values. These latter carry their constitution, stoichiometry
     and the PDB identifiers.
     """

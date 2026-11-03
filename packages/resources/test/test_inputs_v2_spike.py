@@ -7,15 +7,15 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.parsers.spike import (
+from omnipath_resources.inputs_v2.parsers.spike import (
     QUALITY_LEVELS,
     iter_interactions,
     iter_spike_groups,
     iter_spike_interactions,
     iter_spike_regulations,
 )
-from pypath.inputs_v2.parsers.spike import iter_regulations as _iter_regulations
-from pypath.inputs_v2.spike import (
+from omnipath_resources.inputs_v2.parsers.spike import iter_regulations as _iter_regulations
+from omnipath_resources.inputs_v2.spike import (
     ASSAYS,
     EFFECTS,
     MECHANISMS,

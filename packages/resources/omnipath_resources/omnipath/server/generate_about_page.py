@@ -19,11 +19,11 @@
 
 from future.utils import iteritems
 
-import pypath.omnipath.server._html as _html
-import pypath.resources.urls as urls
+import omnipath_resources.omnipath.server._html as _html
+import omnipath_resources.resources.urls as urls
 
-import pypath.share.common as common
-import pypath.share.session as session_mod
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session_mod
 _logger = session_mod.Logger(name = 'generate_about_page')
 _log = _logger._log
 

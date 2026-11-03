@@ -7,9 +7,9 @@ import openpyxl
 import pytest
 from omnipath_build.silver import SilverExtractor
 
-from pypath.internals.cv_terms import LicenseCV, ResourceCv
-from pypath.inputs_v2.celltypist import map_marker, resource
-from pypath.inputs_v2.parsers.celltypist import COLUMNS, iter_markers
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv
+from omnipath_resources.inputs_v2.celltypist import map_marker, resource
+from omnipath_resources.inputs_v2.parsers.celltypist import COLUMNS, iter_markers
 
 # Rows of encyclopedia_table.xlsx (worksheet Main).
 ROWS = [
@@ -175,7 +175,7 @@ def test_nothing_else_is_asserted():
 
 
 def test_resource_declares_its_dataset_and_license():
-    from pypath.inputs_v2 import celltypist
+    from omnipath_resources.inputs_v2 import celltypist
 
     assert celltypist.config.id == ResourceCv.CELLTYPIST
     assert celltypist.config.license == LicenseCV.CC_BY_NC_ND_4_0

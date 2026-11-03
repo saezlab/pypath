@@ -21,8 +21,8 @@ from future.utils import iteritems
 
 import os
 
-import pypath.share.curl as curl
-import pypath.share.session as session
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.session as session
 
 
 _logger = session.Logger(name = 'cell_input')

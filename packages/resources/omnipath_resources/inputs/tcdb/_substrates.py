@@ -24,13 +24,13 @@ import gzip
 import itertools
 import logging
 import time
-from pypath.share import curl
-from pypath.resources import urls
-from pypath.inputs import uniprot
+from omnipath_resources.share import curl
+from omnipath_resources.resources import urls
+from omnipath_resources.inputs import uniprot
 import pandas as pd
 __all__ = ['tcdb_substrate']
 
-from pypath.utils import reflists
+from omnipath_resources.utils import reflists
 
 _log = logging.getLogger(__name__)
 

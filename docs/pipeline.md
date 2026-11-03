@@ -1,6 +1,6 @@
 # Pipeline Guide
 
-The `omnipath_build` pipeline builds PostgreSQL tables from `pypath.inputs_v2`
+The `omnipath_build` pipeline builds PostgreSQL tables from `omnipath_resources.inputs_v2`
 datasets through a DuckDB staging and canonicalization path.
 
 This page is the short entry point. The detailed workflow is split into ordered
@@ -59,7 +59,7 @@ make load SOURCE=bindingdb MAX_RECORDS=200000 SCHEMA=omnipath_test
 - `omnipath_build/cli.py`: administrative commands such as schema setup,
   resolver materialization, source deletion, and derivation.
 - `omnipath_build/duckdb_direct_pipeline.py`: active load orchestration.
-- `omnipath_build/resources.py`: dynamic `pypath.inputs_v2` source discovery.
+- `omnipath_build/resources.py`: dynamic `omnipath_resources.inputs_v2` source discovery.
 - `omnipath_build/evidence_projector.py`: shared source-record projection rules.
 - `omnipath_build/duckdb_load.py`: DuckDB resolver views, canonicalization SQL,
   and PostgreSQL COPY helpers.

@@ -19,7 +19,7 @@
 
 import pprint
 
-import pypath.share.session as session
+import omnipath_resources.share.session as session
 
 __all__ = ['_log', '_show_tables']
 

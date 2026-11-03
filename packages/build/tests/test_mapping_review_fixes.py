@@ -14,7 +14,7 @@ from omnipath_build.writer import ParquetWriter
 from omnipath_core.measurements import quantity_dict
 from omnipath_core.naming import Namespace
 from omnipath_core.silver_schema import format_term
-from pypath.inputs_v2 import (
+from omnipath_resources.inputs_v2 import (
     cellchat,
     cellphonedb,
     chembl,
@@ -25,9 +25,9 @@ from pypath.inputs_v2 import (
     signor,
     swisslipids,
 )
-from pypath.inputs_v2.base import ontology_term_to_entity
-from pypath.inputs_v2.parsers import chembl as chembl_parser
-from pypath.internals.ontology_schema import OntologyTerm
+from omnipath_resources.inputs_v2.base import ontology_term_to_entity
+from omnipath_resources.inputs_v2.parsers import chembl as chembl_parser
+from omnipath_resources.internals.ontology_schema import OntologyTerm
 from library_fixture import build_fixture_library
 
 
@@ -151,7 +151,7 @@ def test_cellchat_protein_ligands_stay_proteins():
 
 def test_cellchat_symbol_in_another_case_takes_the_gene_info_spelling():
     import pandas as pd
-    from pypath.inputs_v2.parsers import cellchat as cellchat_parser
+    from omnipath_resources.inputs_v2.parsers import cellchat as cellchat_parser
 
     db = {
         "interaction": pd.DataFrame(
@@ -300,7 +300,7 @@ def test_macrophage_partners_are_read_as_legacy_pypath_read_them(monkeypatch):
         # A homodimer is no pair of a gene with itself.
         _macrophage_row("ATM:ATM", "472:472", "Complex", "ATM", "472", "Protein"),
     ]
-    from pypath.inputs_v2 import macrophage
+    from omnipath_resources.inputs_v2 import macrophage
 
     monkeypatch.setattr(macrophage, "iter_interactions", lambda *a, **k: iter(rows))
     expanded = list(macrophage.iter_member_interactions(None))
@@ -318,7 +318,7 @@ def test_macrophage_partners_are_read_as_legacy_pypath_read_them(monkeypatch):
 
 
 def test_oreganno_cells_of_several_names_give_the_first_as_legacy_did():
-    from pypath.inputs_v2 import oreganno
+    from omnipath_resources.inputs_v2 import oreganno
 
     assert oreganno._symbol("STAT1/STAT3") == "STAT1"
     assert oreganno._symbol("E4TF1, Fli-1 (RBF Motif)") == "E4TF1"
@@ -334,7 +334,7 @@ def test_oreganno_cells_of_several_names_give_the_first_as_legacy_did():
 
 
 def test_mirdeathdb_symbol_with_several_products_gives_each_as_legacy_did():
-    from pypath.inputs_v2.parsers.mirdeathdb import each_product, mirbase_products
+    from omnipath_resources.inputs_v2.parsers.mirdeathdb import each_product, mirbase_products
 
     products = mirbase_products("hsa-let-7a-5p,hsa-let-7b-5p", "MIMAT0000062,MIMAT0000063")
     rows = each_product(products)
@@ -356,7 +356,7 @@ def test_cellphonedb_hla_partner_is_the_protein_of_its_gene():
 
 
 def test_hmdb_keeps_the_kegg_compound():
-    from pypath.inputs_v2 import hmdb
+    from omnipath_resources.inputs_v2 import hmdb
 
     kegg = hmdb.f("kegg_id", extract="kegg_compound", transform="kegg_compound")
     assert kegg.extract({"kegg_id": "C01152"}) == ["C01152"]
@@ -364,7 +364,7 @@ def test_hmdb_keeps_the_kegg_compound():
 
 
 def test_guidetopharma_peptide_ligand_has_the_gene_symbol_of_the_interaction():
-    from pypath.inputs_v2 import guidetopharma
+    from omnipath_resources.inputs_v2 import guidetopharma
 
     ligand = {"Ligand ID": "5081", "Name": "4-1BB ligand", "UniProt ID": "P41273", "Type": "Peptide"}
     with_symbol = guidetopharma._with_gene_symbol(ligand, "TNFSF9")

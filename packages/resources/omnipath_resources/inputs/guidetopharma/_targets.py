@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 
-from pypath.utils import taxonomy
+from omnipath_resources.utils import taxonomy
 from ._records import G2PTarget, clean_dict
 from . import _raw
 from . import _constants

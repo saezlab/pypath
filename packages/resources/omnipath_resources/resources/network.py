@@ -17,10 +17,10 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import pypath.resources._network as _netres
-import pypath.resources as _resources
-import pypath.internals.resource as _resfmt
-from pypath.resources._network import choose_dataset, dorothea_expand_levels
+import omnipath_resources.resources._network as _netres
+import omnipath_resources.resources as _resources
+import omnipath_resources.internals.resource as _resfmt
+from omnipath_resources.resources._network import choose_dataset, dorothea_expand_levels
 
 _co = _resources.get_controller()
 

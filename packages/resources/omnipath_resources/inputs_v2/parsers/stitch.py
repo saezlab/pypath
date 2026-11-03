@@ -15,7 +15,7 @@ from collections.abc import Generator, Iterable
 from pathlib import Path
 from typing import Any, NamedTuple
 
-from pypath.inputs_v2.base import _first_handle
+from omnipath_resources.inputs_v2.base import _first_handle
 
 
 RE_STITCH_ID = re.compile(r'((?:\d+)?)\.?(CID|ENS[A-Z]*P)([ms]?)(0*)(\d+)')

@@ -30,8 +30,8 @@ from itertools import zip_longest
 import re
 from typing import Any
 
-from pypath.inputs_v2 import _mitab
-from pypath.inputs_v2.parsers.base import iter_tsv, read_xml_root
+from omnipath_resources.inputs_v2 import _mitab
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv, read_xml_root
 
 __all__ = [
     'COLUMNS',

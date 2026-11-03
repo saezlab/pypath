@@ -1,5 +1,5 @@
 import pytest
-from pypath.inputs_v2.tcdb import _transporters_schema
+from omnipath_resources.inputs_v2.tcdb import _transporters_schema
 from omnipath_build.silver import SilverExtractor
 
 
@@ -24,7 +24,7 @@ def test_tcdb_sequence_accessions_are_not_uniprot(accession, namespace):
     "accession,namespace", [("WP_090136218", "refseq_protein"), ("ABC12345.2", "genbank")]
 )
 def test_brenda_uses_same_sequence_namespace_rule(accession, namespace):
-    from pypath.inputs_v2.brenda import schema
+    from omnipath_resources.inputs_v2.brenda import schema
 
     row = {"UniProt": accession}
     ex = SilverExtractor("brenda", "data")

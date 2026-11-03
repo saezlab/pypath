@@ -68,7 +68,7 @@ Examples:
 ```python
 from biolink_model.datamodel.model import Protein, slots, DirectionQualifierEnum
 from omnipath_core.naming import Namespace
-from pypath.internals.tabular_builder import CV, EntityBuilder, IdentifiersBuilder, AnnotationsBuilder
+from omnipath_resources.internals.tabular_builder import CV, EntityBuilder, IdentifiersBuilder, AnnotationsBuilder
 
 protein = EntityBuilder(
     entity_type=Protein,

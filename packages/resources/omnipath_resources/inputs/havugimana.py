@@ -17,11 +17,11 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import pypath.inputs.cell as cell_input
-import pypath.inputs.common as inputs_common
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.internals.intera as intera
+import omnipath_resources.inputs.cell as cell_input
+import omnipath_resources.inputs.common as inputs_common
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.internals.intera as intera
 
 
 def get_havugimana():

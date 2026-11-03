@@ -1,7 +1,7 @@
 """UniProt AC hub from the full FTP idmapping file plus secondary ACs.
 
 Streams ``idmapping.dat.gz`` (all organisms) and keeps only the protein
-reference identifier types from ``pypath.inputs_v2.uniprot``:
+reference identifier types from ``omnipath_resources.inputs_v2.uniprot``:
 UniProt, entry name, gene name / synonym, Entrez, Ensembl, HGNC.
 PDB, EMBL, GI, DrugBank, GO, UniRef, and similar xrefs are dropped.
 """
@@ -23,7 +23,7 @@ SEC_AC_URL = (
     "knowledgebase/complete/docs/sec_ac.txt"
 )
 
-# Keep in sync with pypath.inputs_v2.uniprot.PROTEIN_REFERENCE_KEY_TYPES
+# Keep in sync with omnipath_resources.inputs_v2.uniprot.PROTEIN_REFERENCE_KEY_TYPES
 # and omnipath-utils resolver_protein (ensg/ensp/enst split).
 IDTYPE_MAP = {
     "UniProtKB-ID": "uniprot_entry",

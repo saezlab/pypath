@@ -17,8 +17,8 @@ from collections.abc import Generator
 import re
 from typing import Any
 
-from pypath.inputs_v2._publications import is_pmid
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2._publications import is_pmid
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 __all__ = ['iter_entries', 'iter_terms']
 

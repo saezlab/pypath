@@ -6,7 +6,7 @@ declarative schema pattern.
 """
 
 from __future__ import annotations
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import (
     Protein,
     MacromolecularComplex,
@@ -16,15 +16,15 @@ from biolink_model.datamodel.model import (
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 from omnipath_core.silver_schema import format_term
-from pypath.internals.silver_schema import (
+from omnipath_resources.internals.silver_schema import (
     Annotation,
     Entity,
     Identifier,
     Membership,
     Relation,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.neuronchat import iter_neuronchat
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.neuronchat import iter_neuronchat
 
 config = ResourceConfig(
     id=ResourceCv.NEURONCHAT,

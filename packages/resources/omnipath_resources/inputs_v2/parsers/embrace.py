@@ -17,7 +17,7 @@ from __future__ import annotations
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_excel
+from omnipath_resources.inputs_v2.parsers.base import iter_excel
 
 SHEET = 'expressed_pairs'
 # Columns of the sheet, in source order. The eight flags are 1 when the

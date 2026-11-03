@@ -148,7 +148,7 @@ def _build_resource(
     max_batch_bytes: int = 256 * 1024 * 1024,
     force_refresh: bool = False,
     progress: bool = True,
-    inputs_package: str = "pypath.inputs_v2",
+    inputs_package: str = "omnipath_resources.inputs_v2",
     datasets: Sequence[str] | None = None,
     cache_dir: str | Path | None = None,
     on_progress: ProgressCallback | None = None,

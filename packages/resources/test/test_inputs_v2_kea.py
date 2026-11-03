@@ -8,8 +8,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import kea
-from pypath.inputs_v2.parsers.kea import iter_kea
+from omnipath_resources.inputs_v2 import kea
+from omnipath_resources.inputs_v2.parsers.kea import iter_kea
 
 # Lines copied from the source file, including its one malformed line, a
 # kinase with a trailing space and references that are not PubMed IDs.

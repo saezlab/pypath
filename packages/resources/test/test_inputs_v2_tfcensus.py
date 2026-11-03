@@ -6,8 +6,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import tfcensus
-from pypath.inputs_v2.parsers import tfcensus as parser
+from omnipath_resources.inputs_v2 import tfcensus
+from omnipath_resources.inputs_v2.parsers import tfcensus as parser
 
 PREAMBLE = (
     'A census of human transcription factors: function, expression and evolution\r\n'

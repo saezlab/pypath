@@ -20,7 +20,7 @@
 """Converts OmniPath components to PyBEL.
 
 This module also provides a command line interface that can either be acccessed
-via: ``python -m pypath.bel`` or directly as ``bio2bel_omnipath``.
+via: ``python -m omnipath_resources.bel`` or directly as ``bio2bel_omnipath``.
 
 This file is part of the `pypath` python module'
 
@@ -49,9 +49,9 @@ from typing import Optional, Set, Union
 
 import click
 
-import pypath.share.progress as progress
-import pypath.share.common as common
-import pypath.share.session as session_mod
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session_mod
 
 _logger = session_mod.Logger(name = 'bel')
 
@@ -405,7 +405,7 @@ class Bel(BELManagerMixin, session_mod.Logger):
 
     def resource_to_relationships_enzyme_substrate(self, enz_sub):
         self._log(
-            'Building bel graph from `pypath.ptm.PtmAggregator` object.'
+            'Building bel graph from `omnipath_resources.ptm.PtmAggregator` object.'
         )
         
         for enz_sub in self.resource:
@@ -453,7 +453,7 @@ class Bel(BELManagerMixin, session_mod.Logger):
     def resource_to_relationships_complexes(self, complexes):
         
         self._log(
-            'Building bel graph from `pypath.complex.ComplexAggregator` '
+            'Building bel graph from `omnipath_resources.complex.ComplexAggregator` '
             'object. Sorry this is not implemented yet!'
         )
         raise NotImplementedError
@@ -461,7 +461,7 @@ class Bel(BELManagerMixin, session_mod.Logger):
     def resource_to_relationships_network(self, network):
         
         self._log(
-            'Building bel graph from `pypath.network.Network` '
+            'Building bel graph from `omnipath_resources.network.Network` '
             'object. Sorry this is not implemented yet!'
         )
         raise NotImplementedError
@@ -508,27 +508,27 @@ class Bel(BELManagerMixin, session_mod.Logger):
             
             if dataset == 'graph':
                 
-                from pypath import main
-                from pypath import data_formats
+                from omnipath_resources import main
+                from omnipath_resources import data_formats
                 pa = main.PyPath()
                 pa.init_network(data_formats.pathway)
                 return pa
             # TODO add more options
             elif dataset == 'complexes':
                 
-                from pypath import complexes
+                from omnipath_resources import complexes
                 co = complexes.ComplexAggregator()
                 return co
                 
             elif dataset == 'ptms':
                 
-                from pypath import ptm
+                from omnipath_resources import ptm
                 es = ptm.PtmAggregator()
                 return es
                 
             elif dataset == 'annotations':
                 
-                from pypath import annot
+                from omnipath_resources import annot
                 an = ptm.AnnotationTable(keep_annotators = True)
                 return an
                 

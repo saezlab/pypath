@@ -10,8 +10,8 @@ from collections import defaultdict
 
 import logging
 
-import pypath.resources.urls as urls
-from pypath.share.downloads import dm, _resolve_data_dir
+import omnipath_resources.resources.urls as urls
+from omnipath_resources.share.downloads import dm, _resolve_data_dir
 
 
 _log = logging.getLogger(__name__)

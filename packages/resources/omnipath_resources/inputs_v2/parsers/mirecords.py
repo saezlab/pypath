@@ -37,7 +37,7 @@ from collections.abc import Generator
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_excel
+from omnipath_resources.inputs_v2.parsers.base import iter_excel
 
 # Header of the sheet, in source order (the two ``Reporter link element``
 # columns are the 10th and the 20th).

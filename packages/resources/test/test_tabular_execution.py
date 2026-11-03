@@ -3,7 +3,7 @@
 import pytest
 from biolink_model.datamodel.model import Protein, slots
 from omnipath_core.naming import Namespace
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     AnnotationsBuilder, AssociationBuilder, Column, ColumnCache, CV, EntityBuilder, IdentifiersBuilder,
 )
 
@@ -97,7 +97,7 @@ def test_entity_type_and_identifier_share_row_local_extraction():
 
 
 def test_relation_emission_reuses_the_same_mapping_and_validation():
-    from pypath.internals.tabular_builder import RelationBuilder
+    from omnipath_resources.internals.tabular_builder import RelationBuilder
 
     endpoint = EntityBuilder(
         entity_type=Protein,
@@ -129,7 +129,7 @@ def test_associations_deduplicate_identifiers_under_a_slot_predicate():
 
 
 def test_measurements_deduplicate_by_their_fields():
-    from pypath.inputs_v2._measurements import measurement
+    from omnipath_resources.inputs_v2._measurements import measurement
 
     values = [measurement('5', 'nM', 'Ki (nM)'), measurement('5', 'nM', 'Ki (nM)'),
               measurement('7', 'nM', 'Ki (nM)'), measurement('5', 'nM', 'Kd (nM)')]

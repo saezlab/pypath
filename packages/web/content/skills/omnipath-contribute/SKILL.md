@@ -6,7 +6,7 @@ description: Contribute a new biological data resource to OmniPath by adding an 
 # Contribute to OmniPath
 
 Add the user's chosen data resource to [saezlab/pypath](https://github.com/saezlab/pypath)
-as a new `pypath/inputs_v2` module, validate it, and open an upstream pull request.
+as a new `omnipath_resources/inputs_v2` module, validate it, and open an upstream pull request.
 If the resource is unspecified, ask for its name or source URL.
 
 Use an existing pypath checkout or clone the repository. In the OmniPath development
@@ -15,8 +15,8 @@ and verify the appropriate upstream base branch for `inputs_v2` contributions.
 
 Before implementing, read:
 
-- `pypath/inputs_v2/README.md` for the declarative input framework and contribution workflow.
-- `pypath/inputs_v2/BIOLINK_MODELING.md` for biological modeling conventions.
+- `omnipath_resources/inputs_v2/README.md` for the declarative input framework and contribution workflow.
+- `omnipath_resources/inputs_v2/BIOLINK_MODELING.md` for biological modeling conventions.
 - Existing `inputs_v2` modules and their tests that resemble the new source's format
   and biological content. Use these as implementation examples.
 

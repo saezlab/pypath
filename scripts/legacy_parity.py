@@ -16,7 +16,7 @@ Keys by kind:
   references);
 - annotation: (entity, value).
 
-Legacy identifier translation (pypath.utils.mapping) is replaced by identity,
+Legacy identifier translation (omnipath_resources.utils.mapping) is replaced by identity,
 so legacy keeps the source's identifiers too.
 
 Nothing is downloaded: both sides read the files in PYPATH_DOWNLOAD_DATADIR
@@ -106,10 +106,10 @@ def serve(module: str, aliases: dict[str, str] | None = None) -> None:
     """Let legacy downloads read the files of an inputs_v2 module."""
     import importlib
 
-    from pypath.share.downloads import get_data_dir
+    from omnipath_resources.share.downloads import get_data_dir
 
     data_dir = get_data_dir()
-    resource = importlib.import_module(f'pypath.inputs_v2.{module}').resource
+    resource = importlib.import_module(f'omnipath_resources.inputs_v2.{module}').resource
     for dataset in resource.datasets().values():
         download = dataset.download
         if download is None or callable(download.url) or callable(download.filename):
@@ -132,7 +132,7 @@ def setup(scratch: Path) -> None:
 
     # The legacy package writes its own caches; keep them out of the build's
     # download directory.
-    import pypath.share.cache as legacy_cache
+    import omnipath_resources.share.cache as legacy_cache
 
     legacy_dir = scratch / 'legacy-cache'
     legacy_dir.mkdir(parents=True, exist_ok=True)
@@ -140,8 +140,8 @@ def setup(scratch: Path) -> None:
 
     # Module-level lookups of the legacy package that call services whose
     # formats changed; nothing compared here depends on them.
-    import pypath.inputs.unichem as unichem
-    import pypath.inputs.mirbase as mirbase
+    import omnipath_resources.inputs.unichem as unichem
+    import omnipath_resources.inputs.mirbase as mirbase
 
     unichem.unichem_sources = lambda *a, **k: {}
     mirbase.mirbase_organisms = lambda *a, **k: {}
@@ -149,8 +149,8 @@ def setup(scratch: Path) -> None:
     # Legacy inputs translate identifiers with tables downloaded from UniProt;
     # here every name translates to itself, so that legacy keeps the source's
     # identifiers as inputs_v2 does.
-    import pypath.utils.mapping as mapping
-    import pypath.inputs.uniprot_db as uniprot_db
+    import omnipath_resources.utils.mapping as mapping
+    import omnipath_resources.inputs.uniprot_db as uniprot_db
 
     mapping.map_name = lambda name, *a, **k: {name} if name else set()
     mapping.map_name0 = lambda name, *a, **k: name
@@ -163,7 +163,7 @@ def setup(scratch: Path) -> None:
 
     # Organism names, without the Ensembl and NCBI tables the legacy lookups
     # download.
-    import pypath.utils.taxonomy as taxonomy
+    import omnipath_resources.utils.taxonomy as taxonomy
 
     organisms = {
         9606: ('human', 'Homo sapiens', 'hs'),
@@ -192,9 +192,9 @@ def setup(scratch: Path) -> None:
     taxonomy.ensure_latin_name = lambda t: organisms.get(ensure_ncbi_tax_id(t), (None, None))[1]
 
     from cachedir._open import Opener
-    import pypath.inputs_v2.base as v2_base
-    from pypath.share.downloads import get_data_dir
-    import pypath.share.curl as curl
+    import omnipath_resources.inputs_v2.base as v2_base
+    from omnipath_resources.share.downloads import get_data_dir
+    import omnipath_resources.share.curl as curl
 
     def cached_download_and_open(
         url, filename, subfolder, large=True, encoding='utf-8',
@@ -213,7 +213,7 @@ def setup(scratch: Path) -> None:
 
     # Legacy inputs ported to the download manager call the shared
     # download_and_open: served the inputs_v2 file of the same request.
-    import pypath.share.downloads as downloads
+    import omnipath_resources.share.downloads as downloads
 
     def legacy_download_and_open(url, filename, subfolder, large=True, encoding='utf-8',
                                  default_mode='r', ext=None, needed=None, **kwargs):
@@ -483,7 +483,7 @@ def datasets(module: str, *names: str, **kwargs) -> Callable[[], Iterable[Any]]:
     def run():
         import importlib
 
-        resource = importlib.import_module(f'pypath.inputs_v2.{module}').resource
+        resource = importlib.import_module(f'omnipath_resources.inputs_v2.{module}').resource
         if _V2_SUBSET:
             kwargs.setdefault('max_records', _V2_SUBSET)
         for name in names:
@@ -659,14 +659,14 @@ def _complex_tokens(cplex) -> frozenset[str]:
 
 
 def _signor_interactions():
-    from pypath.inputs import signor
+    from omnipath_resources.inputs import signor
 
     for row in signor.signor_interactions(raw_records=True):
         yield Rel(tokens(row['IDA']), tokens(row['IDB']), sign_of(row['EFFECT']))
 
 
 def _signor_complexes():
-    from pypath.inputs import signor
+    from omnipath_resources.inputs import signor
 
     for cplex in signor.signor_complexes().values():
         for key in cplex.ids['SIGNOR']:
@@ -674,28 +674,28 @@ def _signor_complexes():
 
 
 def _signalink():
-    from pypath.inputs import signalink
+    from omnipath_resources.inputs import signalink
 
     for rec in signalink.signalink_interactions(exclude_secondary=False):
         yield Rel(tokens(rec.id_a), tokens(rec.id_b), sign_of(rec.effect))
 
 
 def _collectri():
-    from pypath.inputs import collectri
+    from omnipath_resources.inputs import collectri
 
     for rec in collectri.collectri_raw(mirna=True):
         yield Rel(tokens(rec.tf), tokens(rec.target), sign_of(rec.effect))
 
 
 def _dorothea():
-    from pypath.inputs import dorothea
+    from omnipath_resources.inputs import dorothea
 
     for rec in dorothea.dorothea_full_raw().itertuples():
         yield Rel(tokens(rec.tf), tokens(rec.target), sign_of(int(rec.mor)))
 
 
 def _trrust():
-    from pypath.inputs import trrust
+    from omnipath_resources.inputs import trrust
 
     for rec in trrust.trrust_interactions('human'):
         yield Rel(
@@ -705,28 +705,28 @@ def _trrust():
 
 
 def _corum():
-    from pypath.inputs import corum
+    from omnipath_resources.inputs import corum
 
     for cplex in corum.corum_complexes(9606).values():
         yield _complex_tokens(cplex)
 
 
 def _phosphosite():
-    from pypath.inputs import phosphosite
+    from omnipath_resources.inputs import phosphosite
 
     for rec in phosphosite.phosphosite_enzyme_substrate(raw=True, organism='human'):
         yield Rel(tokens(rec['kinase']), tokens(rec['substrate']))
 
 
 def _complexportal():
-    from pypath.inputs import complexportal
+    from omnipath_resources.inputs import complexportal
 
     for cplex in complexportal.complexportal_complexes(9606).values():
         yield _complex_tokens(cplex)
 
 
 def _cellphonedb():
-    from pypath.inputs import cellphonedb
+    from omnipath_resources.inputs import cellphonedb
 
     def ids(partner):
         names = (
@@ -741,8 +741,8 @@ def _cellphonedb():
 
 
 def _cellphonedb_roles():
-    from pypath.inputs import cellphonedb
-    from pypath.resources.urls import urls
+    from omnipath_resources.inputs import cellphonedb
+    from omnipath_resources.resources.urls import urls
 
     for table, key in (('proteins', 'uniprot'), ('complexes', 'complex_name')):
         annotations = cellphonedb._cellphonedb_annotations(
@@ -757,7 +757,7 @@ def _cellphonedb_roles():
 
 
 def _v2_cellphonedb_roles():
-    from pypath.inputs_v2 import cellphonedb
+    from omnipath_resources.inputs_v2 import cellphonedb
 
     for dataset, key in (('protein_roles', 'uniprot'), ('complex_roles', 'complex_name')):
         for row in getattr(cellphonedb.resource, dataset).raw():
@@ -776,7 +776,7 @@ def _legacy_rel(module: str, function: str, subject, object_, sign=None, **kwarg
     def run():
         import importlib
 
-        records = getattr(importlib.import_module(f'pypath.inputs.{module}'), function)(**kwargs)
+        records = getattr(importlib.import_module(f'omnipath_resources.inputs.{module}'), function)(**kwargs)
         for rec in records:
             yield Rel(
                 id_tokens(get(rec, f) for f in _fields(subject)),
@@ -799,7 +799,7 @@ def _legacy_annotations(module: str, function: str, value, key=None, **kwargs):
     def run():
         import importlib
 
-        records = getattr(importlib.import_module(f'pypath.inputs.{module}'), function)(**kwargs)
+        records = getattr(importlib.import_module(f'omnipath_resources.inputs.{module}'), function)(**kwargs)
         for k, annotations in records.items():
             for a in annotations:
                 values = value(a) if callable(value) else getattr(a, value)
@@ -875,7 +875,7 @@ def _legacy_id_pairs(module: str, function: str, key, values: dict, limit: int |
     def run():
         import importlib
 
-        records = getattr(importlib.import_module(f'pypath.inputs.{module}'), function)(**kwargs)
+        records = getattr(importlib.import_module(f'omnipath_resources.inputs.{module}'), function)(**kwargs)
         for rec in itertools.islice(records, limit):
             subject = tokens(key(rec) if callable(key) else get(rec, key))
             for field in values:
@@ -900,7 +900,7 @@ def datasets_starting(module: str, *prefixes: str) -> Callable[[], Iterable[Any]
     def run():
         import importlib
 
-        resource = importlib.import_module(f'pypath.inputs_v2.{module}').resource
+        resource = importlib.import_module(f'omnipath_resources.inputs_v2.{module}').resource
         names = [n for n in resource.datasets() if n.startswith(prefixes)]
         yield from datasets(module, *names)()
 
@@ -908,8 +908,8 @@ def datasets_starting(module: str, *prefixes: str) -> Callable[[], Iterable[Any]
 
 
 def _cellchat():
-    from pypath.inputs import cellchatdb
-    from pypath.inputs_v2.cellchat import metabolite
+    from omnipath_resources.inputs import cellchatdb
+    from omnipath_resources.inputs_v2.cellchat import metabolite
 
     frame = cellchatdb.cellchatdb_download(9606)['interaction']
     for rec in frame.itertuples():
@@ -922,7 +922,7 @@ def _cellchat():
 
 
 def _matrisome():
-    from pypath.inputs import matrisome
+    from omnipath_resources.inputs import matrisome
 
     for uniprot, annotations in matrisome.matrisome_annotations(9606).items():
         for annotation in annotations:
@@ -1136,7 +1136,7 @@ spec('cellcellinteractions', 'relation',
 spec('celltypist', 'relation', _legacy_annotations('celltypist', 'celltypist_annotations', 'cell_ontology'),
      lambda: v2_pairs(datasets('celltypist', 'markers')()), serve='celltypist')
 spec('compleat', 'complex',
-     lambda: (_complex_tokens(c) for c in __import__('pypath.inputs.compleat', fromlist=['x']).compleat_complexes().values()),
+     lambda: (_complex_tokens(c) for c in __import__('omnipath_resources.inputs.compleat', fromlist=['x']).compleat_complexes().values()),
      lambda: v2_complexes(datasets('compleat', 'literature_complexes', 'predicted_complexes')()), serve='compleat')
 spec('cpad', 'relation', _legacy_annotations('cpad', 'cpad_annotations', 'cancer', key='pathway'),
      lambda: v2_pairs(datasets('cpad', 'entries')()), serve='cpad', note='Pathway and cancer.')
@@ -1154,7 +1154,7 @@ spec('encode', 'relation', _legacy_rel('encode', 'encode_tf_mirna_interactions',
 spec('gpcrdb', 'relation', _legacy_annotations('gpcrdb', 'gpcrdb_annotations', 'subfamily'),
      lambda: v2_pairs(datasets('gpcrdb', 'families')()), serve='gpcrdb', note='Receptor and its subfamily.')
 spec('havugimana', 'complex',
-     lambda: (_complex_tokens(c) for c in __import__('pypath.inputs.havugimana', fromlist=['x']).havugimana_complexes().values()),
+     lambda: (_complex_tokens(c) for c in __import__('omnipath_resources.inputs.havugimana', fromlist=['x']).havugimana_complexes().values()),
      lambda: v2_complexes(datasets('havugimana', 'complexes')()), serve='havugimana')
 def _score(relation) -> float:
     for annotation in relation.annotations or ():
@@ -1181,7 +1181,7 @@ spec('htri', 'relation',
      _legacy_rel('htri', 'htri_interactions', ('entrez_tf', 'genesymbol_tf'), ('entrez_target', 'genesymbol_target')),
      lambda: v2_relations(datasets('htri', 'interactions')()), serve='htri')
 spec('humap', 'complex',
-     lambda: (_complex_tokens(c) for c in __import__('pypath.inputs.humap', fromlist=['x']).humap2and3_complexes().values()),
+     lambda: (_complex_tokens(c) for c in __import__('omnipath_resources.inputs.humap', fromlist=['x']).humap2and3_complexes().values()),
      lambda: v2_complexes(datasets('humap', 'humap2_complexes', 'humap3_complexes')()), serve='humap')
 spec('lambert2018', 'relation',
      _legacy_annotations('lambert2018', 'lambert2018_annotations',
@@ -1194,7 +1194,7 @@ spec('lncrnadb', 'relation', _legacy_rel('lncrnadb', 'lncrnadb_interactions', 'l
      lambda: v2_relations(datasets('lncrnadb', 'associations')()), serve='lncrnadb')
 spec('mcam', 'relation',
      lambda: (Rel(tokens(u), tokens('human_cell_adhesion_molecule'))
-              for u in __import__('pypath.inputs.mcam', fromlist=['x']).mcam_cell_adhesion_molecules()),
+              for u in __import__('omnipath_resources.inputs.mcam', fromlist=['x']).mcam_cell_adhesion_molecules()),
      lambda: v2_pairs(datasets('mcam', 'proteins')()), serve='mcam')
 spec('mirdeathdb', 'relation', _legacy_rel('mirdeathdb', 'mirdeathdb_interactions', 'mirna', 'target_entrez'),
      lambda: v2_relations(datasets('mirdeathdb', 'interactions')()), serve='mirdeathdb')
@@ -1241,7 +1241,7 @@ spec('wang', 'relation',
      lambda: v2_relations(datasets('wang', 'interactions')()), serve='wang')
 spec('zhong2015', 'relation',
      _legacy_annotations('zhong2015', 'zhong2015_annotations',
-                         lambda a: {v: k for k, v in __import__('pypath.inputs_v2.zhong2015', fromlist=['x']).CAM_TYPES.items()}.get(a.type, a.type)),
+                         lambda a: {v: k for k, v in __import__('omnipath_resources.inputs_v2.zhong2015', fromlist=['x']).CAM_TYPES.items()}.get(a.type, a.type)),
      lambda: v2_pairs(datasets('zhong2015', 'genes')()), serve='zhong2015')
 spec('laudanna_directions', 'relation',
      _legacy_rel('laudanna', 'laudanna_directions', 'source_genesymbol', 'target_genesymbol'),
@@ -1253,7 +1253,7 @@ spec('instruct', 'relation',
      _legacy_rel('instruct', 'get_instruct', lambda r: r['uniprots'][0], lambda r: r['uniprots'][1]),
      lambda: v2_relations(datasets('instruct', 'interactions')()), serve='instruct')
 spec('tcdb', 'relation',
-     lambda: (Rel(tokens(u), tokens(c[0])) for u, c in __import__('pypath.inputs.tcdb', fromlist=['x']).tcdb_classes().items()),
+     lambda: (Rel(tokens(u), tokens(c[0])) for u, c in __import__('omnipath_resources.inputs.tcdb', fromlist=['x']).tcdb_classes().items()),
      lambda: v2_annotation_pairs(datasets('tcdb', 'transporters')(), 'topic'), serve='tcdb',
      note='Protein and TC number.')
 spec('recon3d_metabolites', 'relation',
@@ -1266,7 +1266,7 @@ spec('recon3d_metabolites', 'relation',
      note='BiGG metabolite and its cross-references; v2 has the metabolites of reactions as their members.')
 spec('recon3d_reactions', 'relation',
      lambda: (Rel(tokens(r['id']), tokens(m.rsplit('_', 1)[0]))
-              for r in __import__('pypath.inputs.recon3d', fromlist=['x']).recon3d_reactions() for m in r['metabolites']),
+              for r in __import__('omnipath_resources.inputs.recon3d', fromlist=['x']).recon3d_reactions() for m in r['metabolites']),
      lambda: (Rel(r.object, r.subject) for r in v2_pairs(datasets('recon3d', 'reactions')())),
      serve='recon3d', note='Reaction and its metabolites (BiGG).')
 spec('imm1415_metabolites', 'relation',
@@ -1292,11 +1292,11 @@ spec('spike', 'relation',
      lambda: v2_relations(datasets_starting('spike', 'regulations', 'interactions')()), serve='spike',
      note='Regulations and interactions of all quality levels.')
 spec('spike_complexes', 'complex',
-     lambda: (_complex_tokens(c) for c in __import__('pypath.inputs.spike', fromlist=['x']).spike_complexes().values()),
+     lambda: (_complex_tokens(c) for c in __import__('omnipath_resources.inputs.spike', fromlist=['x']).spike_complexes().values()),
      lambda: v2_complexes(datasets('spike', 'complexes')()), serve='spike')
 spec('psi_mi', 'relation',
      lambda: (Rel(tokens(r.id), tokens(parent))
-              for r in __import__('pypath.inputs.psimi', fromlist=['x']).psimi_ontology()
+              for r in __import__('omnipath_resources.inputs.psimi', fromlist=['x']).psimi_ontology()
               for parent in r.parent_ids or ()),
      lambda: v2_pairs(datasets('psi_mi', 'terms')()), serve='psi_mi',
      aliases={
@@ -1347,7 +1347,7 @@ spec('hmdb', 'relation',
 
 def run(spec: Spec) -> dict[str, Any]:
     """Compare one resource. inputs_v2 runs first: some legacy modules patch
-    shared packages (pypath.inputs.rdata changes the rdata converter)."""
+    shared packages (omnipath_resources.inputs.rdata changes the rdata converter)."""
     _files.clear()
     _served.clear()
     serve(spec.serve, spec.aliases)

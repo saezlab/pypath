@@ -6,10 +6,10 @@ from types import SimpleNamespace
 import pytest
 from omnipath_build.silver import SilverExtractor
 
-from pypath.internals.cv_terms import LicenseCV, ResourceCv
-from pypath.inputs_v2 import cytosig
-from pypath.inputs_v2.cytosig import CYTOKINE, resource
-from pypath.inputs_v2.parsers.cytosig import iter_cytokines, iter_signature
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv
+from omnipath_resources.inputs_v2 import cytosig
+from omnipath_resources.inputs_v2.cytosig import CYTOKINE, resource
+from omnipath_resources.inputs_v2.parsers.cytosig import iter_cytokines, iter_signature
 
 # The header and two rows of signature.centroid. The header has a name for each
 # of the 43 cytokines and none for the column of gene symbols.

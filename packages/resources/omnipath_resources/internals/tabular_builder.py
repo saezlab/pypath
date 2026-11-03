@@ -15,7 +15,7 @@ import logging
 import re
 from typing import Any, Callable, Mapping, Sequence
 
-from pypath.internals.silver_schema import (
+from omnipath_resources.internals.silver_schema import (
     Annotation as SilverAnnotation,
     Association as SilverAssociation,
     Entity as SilverEntity,

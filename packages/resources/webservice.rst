@@ -45,7 +45,7 @@ and rat. The rodent data has been translated from human using the NCBI
 Homologene database. Many human proteins do not have known homolog in rodents
 hence rodent datasets are smaller than their human counterparts. Note, if you
 work with mouse omics data you might do better to translate your dataset to
-human (for example using the ``pypath.homology`` module) and use human
+human (for example using the ``omnipath_resources.homology`` module) and use human
 interaction data.
 
 

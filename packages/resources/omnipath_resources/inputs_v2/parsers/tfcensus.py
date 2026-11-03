@@ -28,7 +28,7 @@ from collections.abc import Generator
 from types import SimpleNamespace
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_tsv, read_text
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv, read_text
 
 MARKER = '--Table start--'
 COLUMNS = (

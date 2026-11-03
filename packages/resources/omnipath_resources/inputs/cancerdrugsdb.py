@@ -26,11 +26,11 @@ import collections
 import itertools
 import re
 
-import pypath.share.curl as curl
-import pypath.share.common as common
-import pypath.resources.urls as urls
-import pypath.utils.mapping as mapping
-import pypath.share.session as session
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.common as common
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.share.session as session
 
 _logger = session.Logger(name = 'cancerdrugsdb_input')
 _log = _logger._log
@@ -115,7 +115,7 @@ def cancerdrugsdb_interactions():
 
     # Download the ChEMBL to PubChem mapping table once
     try:
-        import pypath.inputs.unichem as unichem
+        import omnipath_resources.inputs.unichem as unichem
         chembl_to_pubchem = unichem._unichem_mapping(1, 22)  # ChEMBL(1) to PubChem(22)
         _log(f'Loaded ChEMBL to PubChem mapping with {len(chembl_to_pubchem)} entries')
     except Exception as e:

@@ -28,8 +28,8 @@ import pandas as pd
 import pyparsing
 
 from pypath_common import _misc as _common
-from pypath.share import curl
-from pypath.utils import mapping, taxonomy
+from omnipath_resources.share import curl
+from omnipath_resources.utils import mapping, taxonomy
 
 REORGANISM = re.compile(
     r'#(\d+)# '

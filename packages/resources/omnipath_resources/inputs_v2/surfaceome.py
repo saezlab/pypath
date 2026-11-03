@@ -24,19 +24,19 @@ from biolink_model.datamodel.model import OntologyClass, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
-from pypath.inputs_v2._almen_classes import (
+from omnipath_resources.inputs_v2._almen_classes import (
     flag,
     map_class,
     protein_entity,
     surfaceome_table,
     term_entity,
 )
-from pypath.inputs_v2._measurements import measurement
-from pypath.inputs_v2.base import Dataset, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.almen2009 import CLASS
-from pypath.inputs_v2.parsers.surfaceome import SURFACEOME, iter_proteins, iter_terms
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.silver_schema import Annotation, Entity, Identifier, Relation
+from omnipath_resources.inputs_v2._measurements import measurement
+from omnipath_resources.inputs_v2.base import Dataset, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.almen2009 import CLASS
+from omnipath_resources.inputs_v2.parsers.surfaceome import SURFACEOME, iter_proteins, iter_terms
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.silver_schema import Annotation, Entity, Identifier, Relation
 
 config = ResourceConfig(
     id=ResourceCv.SURFACEOME,

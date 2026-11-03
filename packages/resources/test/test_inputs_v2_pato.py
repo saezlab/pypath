@@ -3,9 +3,9 @@
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.silver_schema import format_term
-from pypath.internals.cv_terms import LicenseCV, ResourceCv
-from pypath.inputs_v2 import pato
-from pypath.inputs_v2.parsers.obo import parse_obo_text
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv
+from omnipath_resources.inputs_v2 import pato
+from omnipath_resources.inputs_v2.parsers.obo import parse_obo_text
 
 # Stanzas copied from pato.obo (data-version releases/2026-10-01/pato.obo); the stub of a Cell
 # Ontology term is the one pato-base.obo holds, which pato.obo does not.

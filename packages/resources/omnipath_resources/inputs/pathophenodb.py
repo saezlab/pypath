@@ -22,10 +22,10 @@ import pickle
 import hashlib
 import collections
 
-import pypath.resources.urls as urls
-import pypath.share.cache as cache
-import pypath.share.session as session
-import pypath.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.cache as cache
+import omnipath_resources.share.session as session
+import omnipath_resources.share.curl as curl
 
 _logger = session.Logger(name = 'pathophenodb_input')
 _log = _logger._log

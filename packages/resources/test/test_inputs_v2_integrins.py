@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.integrins import FAMILY_NAME, FAMILY_NAMESPACE, resource
-from pypath.inputs_v2.parsers.integrins import COLUMNS, iter_family, iter_subunits
+from omnipath_resources.inputs_v2.integrins import FAMILY_NAME, FAMILY_NAMESPACE, resource
+from omnipath_resources.inputs_v2.parsers.integrins import COLUMNS, iter_family, iter_subunits
 
 # Rows of Table 1 of Takada et al. 2007 as Europe PMC serves it (JATS XML).
 ITGA1 = ('ITGA1', 'α1', 'CD49a', 'NM_181501', '5q11.2', 'P56199')

@@ -7,7 +7,7 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.abs import resource
+from omnipath_resources.inputs_v2.abs import resource
 
 # Lines of abs.gff: a site in an extracted promoter, a site in a chicken
 # promoter, and the sites of one factor on the opposite strand in a human and a

@@ -9,8 +9,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import huri
-from pypath.inputs_v2.parsers.huri import iter_screen
+from omnipath_resources.inputs_v2 import huri
+from omnipath_resources.inputs_v2.parsers.huri import iter_screen
 
 DB = 'comment:vector name: pDEST-DB|comment:centromeric vector|comment:yeast strain: '
 AD = 'comment:vector name: pDEST-AD|comment:centromeric vector|comment:yeast strain: '

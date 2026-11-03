@@ -14,13 +14,13 @@ from biolink_model.datamodel.model import Gene, OntologyClass, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
 )
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     AssociationBuilder,
     AssociationsBuilder,
     AnnotationsBuilder,
@@ -29,15 +29,15 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.inputs_v2.base import (
+from omnipath_resources.inputs_v2.base import (
     Dataset,
     Download,
     Resource,
     ResourceConfig,
     ontology_entity_mapper,
 )
-from pypath.inputs_v2.parsers.base import iter_tsv
-from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
 
 config = ResourceConfig(

@@ -8,8 +8,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import mimp
-from pypath.inputs_v2.parsers import mimp as mimp_parser
+from omnipath_resources.inputs_v2 import mimp
+from omnipath_resources.inputs_v2.parsers import mimp as mimp_parser
 
 HEADER = '\t'.join(mimp_parser.COLUMNS) + '\n'
 # Rows copied from phosphorylation_data.tab: sites without a kinase, several

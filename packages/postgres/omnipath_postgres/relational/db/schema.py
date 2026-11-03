@@ -2758,7 +2758,7 @@ def _ensure_data_source_license(
 
     The build recorded no license anywhere: ``data_source`` held
     ``(source_id, name)`` and nothing else. This table adds the terms, one row
-    per resource, in the ordinal form ``pypath/internals/license.py`` already
+    per resource, in the ordinal form ``omnipath_resources/internals/license.py`` already
     models.
 
     **Levels, not a name.** ``License.enables(other)`` is ``self >= other``, so
@@ -2789,7 +2789,7 @@ def _ensure_data_source_license(
     ``is_known`` and never by the numbers.
 
     The table is declared here; the load step fills it from
-    ``pypath/resources/data/resources.json``.
+    ``omnipath_resources/resources/data/resources.json``.
     """
     schema_id = sql.Identifier(schema)
     cur.execute(

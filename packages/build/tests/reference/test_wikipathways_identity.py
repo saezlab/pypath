@@ -1,4 +1,4 @@
-from pypath.inputs_v2.wikipathways import map_interaction
+from omnipath_resources.inputs_v2.wikipathways import map_interaction
 from omnipath_build.silver import SilverExtractor
 
 

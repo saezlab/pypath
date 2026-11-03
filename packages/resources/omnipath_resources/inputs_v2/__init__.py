@@ -22,13 +22,13 @@ Input modules v2 - aligned with the new internal data representation.
 
 These modules emit Entity records using the schema defined in
 omnipath_build.utils.silver_schema, replacing the legacy input modules
-in pypath.inputs.
+in omnipath_resources.inputs.
 """
 
 import importlib
 
 
-import pypath.share.session as session
+import omnipath_resources.share.session as session
 
 _logger = session.Logger(name='inputs_v2')
 _log = _logger._log
@@ -38,7 +38,7 @@ def get_method(module_name, method_name=None):
     """
     Retrieves a method from a submodule of this module (``inputs_v2``) by its
     name. E.g. for ``'uniprot.uniprot_entities'`` it returns the
-    ``uniprot_entities`` method from the ``pypath.inputs_v2.uniprot`` module.
+    ``uniprot_entities`` method from the ``omnipath_resources.inputs_v2.uniprot`` module.
 
     This function works similarly to the v1 inputs.get_method but is designed
     for the new v2 modules that emit Entity records according to the new schema.
@@ -58,7 +58,7 @@ def get_method(module_name, method_name=None):
         module_name = module_method[-2] if len(module_method) > 1 else 'main'
 
     module_name = module_name.rsplit('.', maxsplit=1)[-1]
-    module_name = 'pypath.inputs_v2.%s' % module_name
+    module_name = 'omnipath_resources.inputs_v2.%s' % module_name
 
     _log(
         'Selecting input method v2 (step 2): module `%s`, method `%s`.'

@@ -29,10 +29,10 @@ import sqlite3
 import pandas as pd
 
 from pypath_common import _misc
-import pypath.resources.urls as urls
-from pypath.share.downloads import dm
-import pypath.share.cache as cache
-from pypath.formats import sqlite as _sqlite
+import omnipath_resources.resources.urls as urls
+from omnipath_resources.share.downloads import dm
+import omnipath_resources.share.cache as cache
+from omnipath_resources.formats import sqlite as _sqlite
 from ._common import _log, _show_tables
 
 

@@ -27,7 +27,7 @@ import functools
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_excel
+from omnipath_resources.inputs_v2.parsers.base import iter_excel
 
 CURATED_MARKERS = 'Curated markers'
 MODEL_GENES = 'Top 10 important genes from the CellTypist model'

@@ -27,7 +27,7 @@ from collections.abc import Generator
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_excel
+from omnipath_resources.inputs_v2.parsers.base import iter_excel
 
 # Receptor cells of ligands the table gives no receptor for.
 NO_RECEPTOR = frozenset({'???', '????', 'xxx'})

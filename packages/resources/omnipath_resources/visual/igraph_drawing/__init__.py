@@ -52,12 +52,12 @@ try:
     from igraph.drawing.baseclasses import AbstractDrawer, AbstractCairoDrawer, \
         AbstractXMLRPCDrawer
     from igraph.drawing.colors import color_to_html_format, color_name_to_rgb
-    from pypath.visual.igraph_drawing.edge import ArrowEdgeDrawer
+    from omnipath_resources.visual.igraph_drawing.edge import ArrowEdgeDrawer
     from igraph.drawing.text import TextAlignment, TextDrawer
     from igraph.drawing.metamagic import AttributeCollectorBase
     from igraph.drawing.shapes import PolygonDrawer
     from igraph.drawing.utils import Point
-    from pypath.visual.igraph_drawing.vertex import DefaultVertexDrawer
+    from omnipath_resources.visual.igraph_drawing.vertex import DefaultVertexDrawer
     from igraph.layout import Layout
     from igraph.drawing.graph import AbstractCairoGraphDrawer
     try:

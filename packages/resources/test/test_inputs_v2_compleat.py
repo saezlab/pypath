@@ -6,8 +6,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.compleat import COMPLEAT_NAMESPACE, DATABASES, map_complex, resource
-from pypath.inputs_v2.parsers.compleat import COLUMNS, iter_compleat_complexes
+from omnipath_resources.inputs_v2.compleat import COMPLEAT_NAMESPACE, DATABASES, map_complex, resource
+from omnipath_resources.inputs_v2.parsers.compleat import COLUMNS, iter_compleat_complexes
 
 # Rows of the file, as it is written: CRLF line ends, members separated by
 # spaces with one at the end, and a last line ``null``.
@@ -178,7 +178,7 @@ def test_unknown_database_is_an_error_and_there_are_no_pairs():
 def test_the_arguments_of_the_build_do_not_replace_the_selection_of_a_dataset():
     # The build calls every parser with the resource and dataset names as
     # keywords; a dataset still reads its own kind of complex.
-    from pypath.inputs_v2 import compleat
+    from omnipath_resources.inputs_v2 import compleat
 
     for name, dataset in compleat.resource.datasets().items():
         rows = list(

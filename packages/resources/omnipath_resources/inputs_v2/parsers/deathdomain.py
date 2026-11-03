@@ -17,7 +17,7 @@ from collections import Counter
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_html_tables, read_text
+from omnipath_resources.inputs_v2.parsers.base import iter_html_tables, read_text
 
 # Table title -> (table name, columns of a data line). The third cell of a
 # line holds only a link to the page of the pair.

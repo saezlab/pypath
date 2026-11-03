@@ -8,8 +8,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import lmpid
-from pypath.inputs_v2.parsers.lmpid import iter_lmpid
+from omnipath_resources.inputs_v2 import lmpid
+from omnipath_resources.inputs_v2.parsers.lmpid import iter_lmpid
 
 # The first two records of LMPID_DATA_pubmed_ref.xml, with its line endings.
 # Tests append further records to them.

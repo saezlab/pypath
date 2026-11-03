@@ -7,8 +7,8 @@ from cachedir._open import Opener
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import pathwaycommons as pc
-from pypath.inputs_v2.parsers import pathwaycommons as parser
+from omnipath_resources.inputs_v2 import pathwaycommons as pc
+from omnipath_resources.inputs_v2.parsers import pathwaycommons as parser
 
 EDGE_HEADER = (
     'PARTICIPANT_A\tINTERACTION_TYPE\tPARTICIPANT_B\tINTERACTION_DATA_SOURCE\t'

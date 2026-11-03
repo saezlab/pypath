@@ -1,4 +1,4 @@
-from pypath.inputs_v2.kegg import pathways_schema
+from omnipath_resources.inputs_v2.kegg import pathways_schema
 from omnipath_build.silver import SilverExtractor
 
 

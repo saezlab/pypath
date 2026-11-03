@@ -17,7 +17,7 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import pypath.omnipath.databases.define as define
+import omnipath_resources.omnipath.databases.define as define
 
 
 def class_and_param(label):
@@ -35,7 +35,7 @@ def build(label):
     Builds a built in database and returns the instance.
     This is not the preferred method to get a database instance.
     Unless there is a strong reason, both built in and user defined databases
-    should be managed by the ``pypath.omnipath.app`` module.
+    should be managed by the ``omnipath_resources.omnipath.app`` module.
     """
     
     manager = get_manager()

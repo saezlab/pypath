@@ -23,8 +23,8 @@ import sqlite3
 
 import json
 
-from pypath.share import curl
-from pypath.resources import urls
+from omnipath_resources.share import curl
+from omnipath_resources.resources import urls
 from . import _sqlite
 
 DATA = Literal[

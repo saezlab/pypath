@@ -3,8 +3,8 @@
 import pytest
 from biolink_model.datamodel.model import Protein
 from omnipath_core import Namespace
-from pypath.inputs_v2 import intact, signor
-from pypath.internals.tabular_builder import CV, EntityBuilder, IdentifiersBuilder
+from omnipath_resources.inputs_v2 import intact, signor
+from omnipath_resources.internals.tabular_builder import CV, EntityBuilder, IdentifiersBuilder
 
 
 def mitab_row():
@@ -97,7 +97,7 @@ def test_signor_nested_member_isoforms_are_not_merged_into_canonical_members():
 
 
 def test_bindingdb_retains_each_reported_chain_isoform_in_its_complex():
-    from pypath.inputs_v2.bindingdb import _target
+    from omnipath_resources.inputs_v2.bindingdb import _target
     from omnipath_core.biolink import entity_type
     row = {
         'Target Name': 'test complex',
@@ -118,8 +118,8 @@ def test_reactome_retains_exact_features_before_tabular_flattening():
     from rdflib import Graph, Literal, URIRef
     from rdflib.namespace import RDF
     from omnipath_core import Entity, Identifier
-    from pypath.inputs_v2 import reactome
-    from pypath.inputs_v2.parsers.reactome import BP, _extract_participant_data, _flatten_participants
+    from omnipath_resources.inputs_v2 import reactome
+    from omnipath_resources.inputs_v2.parsers.reactome import BP, _extract_participant_data, _flatten_participants
 
     graph = Graph()
     molecule, reference = URIRef('urn:protein'), URIRef('urn:reference')
@@ -156,7 +156,7 @@ def test_reactome_retains_exact_features_before_tabular_flattening():
 
 def test_reactome_gene_type_stays_gene_and_unannotated_positions_stay_unknown():
     from rdflib import Graph, Literal, URIRef
-    from pypath.inputs_v2.parsers.reactome import BP, PHYSICAL_ENTITY_TYPE_MAP, _participant_molecular_form
+    from omnipath_resources.inputs_v2.parsers.reactome import BP, PHYSICAL_ENTITY_TYPE_MAP, _participant_molecular_form
     assert PHYSICAL_ENTITY_TYPE_MAP['gene'] == 'gene'
     graph = Graph()
     molecule, feature, vocabulary, site = [URIRef('urn:' + name) for name in ('p', 'f', 'v', 's')]

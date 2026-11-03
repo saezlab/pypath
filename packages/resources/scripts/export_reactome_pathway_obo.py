@@ -2,7 +2,7 @@
 """Export Reactome pathways as an OBO ontology.
 
 Builds a Reactome pathway ontology from the BioPAX pathway records parsed by
-``pypath.inputs_v2.parsers.reactome`` and writes an OBO file suitable for the
+``omnipath_resources.inputs_v2.parsers.reactome`` and writes an OBO file suitable for the
 ontology service.
 
 Usage:
@@ -19,8 +19,8 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from pypath.inputs_v2.reactome import download
-from pypath.inputs_v2.parsers.reactome import _raw
+from omnipath_resources.inputs_v2.reactome import download
+from omnipath_resources.inputs_v2.parsers.reactome import _raw
 
 
 def escape_obo_string(value: str) -> str:

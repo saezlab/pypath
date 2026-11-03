@@ -7,14 +7,14 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.elm import resource
-from pypath.inputs_v2.parsers.elm import (
+from omnipath_resources.inputs_v2.elm import resource
+from omnipath_resources.inputs_v2.parsers.elm import (
     join_evidence,
     parse_position,
     read_features,
     split_methods,
 )
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 
 # Header and rows of http://elm.eu.org/interactions/as_tsv ...

@@ -239,9 +239,9 @@ class TaxonomyManager:
         return dict(self._by_taxid)
 
     def load_from_ensembl(self) -> None:
-        """Load organisms from Ensembl via pypath.inputs.ensembl."""
+        """Load organisms from Ensembl via omnipath_resources.inputs.ensembl."""
         try:
-            from pypath.inputs.ensembl import ensembl_organisms
+            from omnipath_resources.inputs.ensembl import ensembl_organisms
             count = 0
             for org in ensembl_organisms():
                 taxid = int(org.taxon_id)
@@ -281,9 +281,9 @@ class TaxonomyManager:
             _log.warning('Failed to load Ensembl organisms: %s', e)
 
     def load_from_uniprot(self) -> None:
-        """Load organisms from UniProt speclist via pypath.inputs.uniprot."""
+        """Load organisms from UniProt speclist via omnipath_resources.inputs.uniprot."""
         try:
-            from pypath.inputs.uniprot import uniprot_ncbi_taxids_2
+            from omnipath_resources.inputs.uniprot import uniprot_ncbi_taxids_2
             ncbi_data = uniprot_ncbi_taxids_2()
             count = 0
             for taxid, taxon in ncbi_data.items():
@@ -323,9 +323,9 @@ class TaxonomyManager:
             _log.warning('Failed to load UniProt organisms: %s', e)
 
     def load_from_kegg(self) -> None:
-        """Load KEGG codes via pypath.inputs.kegg_organisms."""
+        """Load KEGG codes via omnipath_resources.inputs.kegg_organisms."""
         try:
-            from pypath.inputs.kegg_organisms import kegg_organisms
+            from omnipath_resources.inputs.kegg_organisms import kegg_organisms
             count = 0
             for org in kegg_organisms():
                 # Try to match by latin name
@@ -346,9 +346,9 @@ class TaxonomyManager:
             _log.warning('Failed to load KEGG organisms: %s', e)
 
     def load_from_mirbase(self) -> None:
-        """Load miRBase codes via pypath.inputs.mirbase."""
+        """Load miRBase codes via omnipath_resources.inputs.mirbase."""
         try:
-            from pypath.inputs.mirbase import mirbase_organisms
+            from omnipath_resources.inputs.mirbase import mirbase_organisms
             mirbase_to_ncbi = mirbase_organisms('mirbase', 'ncbi')
             count = 0
             for mirbase_code, ncbi_id in mirbase_to_ncbi.items():

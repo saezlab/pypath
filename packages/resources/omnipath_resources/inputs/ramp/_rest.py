@@ -22,9 +22,9 @@ from __future__ import annotations
 import json
 import warnings
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.session as session_mod
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.session as session_mod
 
 __all__ = ['ramp_id_types']
 

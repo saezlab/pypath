@@ -15,8 +15,8 @@ from collections.abc import Generator, Mapping
 import re
 from typing import Any
 
-from pypath.inputs_v2.base import Download
-from pypath.inputs_v2.parsers.base import iter_html_tables, iter_tsv, read_text
+from omnipath_resources.inputs_v2.base import Download
+from omnipath_resources.inputs_v2.parsers.base import iter_html_tables, iter_tsv, read_text
 
 __all__ = ['iter_gene_sets', 'iter_states']
 

@@ -5,8 +5,8 @@ import sqlite3
 
 import duckdb
 import pytest
-from pypath.inputs_v2 import chembl
-from pypath.inputs_v2.parsers.chembl import PARQUET_QUERIES, SQLITE_QUERIES
+from omnipath_resources.inputs_v2 import chembl
+from omnipath_resources.inputs_v2.parsers.chembl import PARQUET_QUERIES, SQLITE_QUERIES
 
 SCHEMA = {
     'activities': 'activity_id INTEGER, molregno INTEGER, assay_id INTEGER, doc_id INTEGER, standard_type TEXT, standard_relation TEXT, standard_value DOUBLE, standard_units TEXT, pchembl_value DOUBLE, data_validity_comment TEXT, action_type TEXT',

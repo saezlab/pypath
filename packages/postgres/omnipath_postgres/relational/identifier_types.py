@@ -6,7 +6,7 @@ from __future__ import annotations
 # Exact append-only main namespace registry, rendered using the vocabulary at
 # omnipath-build 9f9bb709c764's pypath gitlink. No runtime parser/resolver imports.
 VOCABULARY_SOURCE_COMMIT = "33f37fbaab59993d24f5c32bb4b3e7587085bcf4"
-VOCABULARY_SOURCE_PATH = "pypath/internals/cv_terms/identifiers.py"
+VOCABULARY_SOURCE_PATH = "omnipath_resources/internals/cv_terms/identifiers.py"
 VOCABULARY_SOURCE_BLOB = "247c83e9223dcfb76ade356c8ce0f132ebc7aab3"
 
 

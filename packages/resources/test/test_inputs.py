@@ -1,6 +1,6 @@
-import pypath.inputs.cancerdrugs_db as cancerdrugs_db
-import pypath.inputs.cancerdrugsdb as cancerdrugsdb
-import pypath.inputs.biomodels as biomodels
+import omnipath_resources.inputs.cancerdrugs_db as cancerdrugs_db
+import omnipath_resources.inputs.cancerdrugsdb as cancerdrugsdb
+import omnipath_resources.inputs.biomodels as biomodels
 
 def test_cancerdrugs_db():
     # test annotations

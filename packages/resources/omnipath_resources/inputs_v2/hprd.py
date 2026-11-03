@@ -31,10 +31,10 @@ from omnipath_core.molecular_forms import molecular_form_from_identifiers
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
-from pypath.inputs_v2._publications import PMID_EXTRACT
-from pypath.inputs_v2._molecular_forms import combine_forms
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.hprd import (
+from omnipath_resources.inputs_v2._publications import PMID_EXTRACT
+from omnipath_resources.inputs_v2._molecular_forms import combine_forms
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.hprd import (
     COMPLEX_MEMBER,
     INTERACTION_MEMBER,
     PTM_MEMBER,
@@ -42,13 +42,13 @@ from pypath.inputs_v2.parsers.hprd import (
     iter_enzyme_sites,
     iter_interactions,
 )
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.silver_schema import Membership
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.silver_schema import Membership
+from omnipath_resources.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
     EntityBuilder,

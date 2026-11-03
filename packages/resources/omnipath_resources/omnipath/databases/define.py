@@ -24,8 +24,8 @@ import os
 import itertools
 import json
 
-import pypath.share.session as session
-import pypath.omnipath.databases.build as build
+import omnipath_resources.share.session as session
+import omnipath_resources.omnipath.databases.build as build
 
 _logger = session.Logger(name = 'db_define')
 _log = _logger._log

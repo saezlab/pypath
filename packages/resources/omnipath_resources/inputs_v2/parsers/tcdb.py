@@ -98,7 +98,7 @@ def transporters(
 
     Args:
         opener: Download opener for acc2tcid.py (UniProt → TCID mapping).
-        families_download: A :class:`~pypath.inputs_v2.base.Download` instance
+        families_download: A :class:`~omnipath_resources.inputs_v2.base.Download` instance
             for families.py, injected via ``functools.partial`` in the main
             ``tcdb`` module. Used to resolve family prefixes to family names.
         **kwargs: Passed through; ``force_refresh`` is forwarded to the
@@ -143,7 +143,7 @@ def transport_substrates(
     Args:
         opener: Download opener for getSubstrates.py. Each line has the
             form ``TCID<TAB>CHEBI:id;name|CHEBI:id;name|...``.
-        acc2tc_download: A :class:`~pypath.inputs_v2.base.Download` instance
+        acc2tc_download: A :class:`~omnipath_resources.inputs_v2.base.Download` instance
             for acc2tcid.py, injected via ``functools.partial`` in the main
             ``tcdb`` module. Used to build the TCID → UniProt mapping.
         **kwargs: Passed through; ``force_refresh`` is forwarded to the

@@ -17,7 +17,7 @@ class TestContract:
         assert hasattr(DatabaseBuilder, 'load_mane')
 
     def test_pypath_input_present(self):
-        from pypath.inputs.mane import mane_summary
+        from omnipath_resources.inputs.mane import mane_summary
 
         assert callable(mane_summary)
 

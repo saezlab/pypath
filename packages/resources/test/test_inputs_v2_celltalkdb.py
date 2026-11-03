@@ -10,8 +10,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.source_attributes import PARTICIPANT_ROLE
 
-from pypath.inputs_v2.celltalkdb import resource
-from pypath.inputs_v2.parsers.celltalkdb import COLUMNS, iter_lr_pairs
+from omnipath_resources.inputs_v2.celltalkdb import resource
+from omnipath_resources.inputs_v2.parsers.celltalkdb import COLUMNS, iter_lr_pairs
 
 
 # Rows of human_lr_pair.rds and mouse_lr_pair.rds as the parser yields them.

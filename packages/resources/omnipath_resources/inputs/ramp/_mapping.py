@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-import pypath.share.common as common
+import omnipath_resources.share.common as common
 from ._sqlite import ramp_sqlite
 
 

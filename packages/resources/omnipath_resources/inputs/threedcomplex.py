@@ -22,19 +22,19 @@ from future.utils import iteritems
 import itertools
 import collections
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.progress as progress
-import pypath.share.common as common
-import pypath.inputs.pdb as pdb_input
-import pypath.inputs.pfam as pfam_input
-import pypath.internals.intera as intera
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.common as common
+import omnipath_resources.inputs.pdb as pdb_input
+import omnipath_resources.inputs.pfam as pfam_input
+import omnipath_resources.internals.intera as intera
 
 
 def threedcomplex_complexes():
     """
     To be implemented later. Should return dictionary of
-    pypath.internals.intera.Complex objects.
+    omnipath_resources.internals.intera.Complex objects.
     """
 
     raise NotImplementedError
@@ -176,7 +176,7 @@ def threedcomplex_contacts(chains = None, pdb_uniprot = None):
             ``threedcomplex_chains``. If None, it will be obtained
             automatically.
         pdb_uniprot (dict): A dict of PDB-UniProt mappings, as created by
-            ``pypath.inputs.pdb.pdb_chains``. If None, it will be obtained
+            ``omnipath_resources.inputs.pdb.pdb_chains``. If None, it will be obtained
             automatically.
     """
 

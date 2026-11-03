@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import openpyxl
 import pytest
 
-from pypath.inputs_v2.parsers.base import (
+from omnipath_resources.inputs_v2.parsers.base import (
     content_text,
     iter_csv,
     iter_excel,
@@ -372,7 +372,7 @@ def test_psimi_xml_rejects_other_levels_and_other_documents():
 def test_required_columns_and_rows_are_checked_when_asked_for():
     import io
 
-    from pypath.inputs_v2.parsers.base import iter_tsv
+    from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
     table = lambda text: SimpleNamespace(result=io.StringIO(text))
     assert list(iter_tsv(table('a\tb\n1\t2\n'), required=('a', 'b'))) == [{'a': '1', 'b': '2'}]
@@ -390,7 +390,7 @@ def test_required_columns_and_rows_are_checked_when_asked_for():
 def test_pubmed_identifier_is_one_to_eight_digits_without_a_leading_zero():
     import re
 
-    from pypath.inputs_v2._publications import PMID_EXTRACT, is_pmid, pmid_curie
+    from omnipath_resources.inputs_v2._publications import PMID_EXTRACT, is_pmid, pmid_curie
 
     assert pmid_curie('8986718') == 'PMID:8986718'
     assert pmid_curie(' 12345 ') == 'PMID:12345'
@@ -406,8 +406,8 @@ def test_rdata_reads_named_objects_and_rows_in_slices(tmp_path, monkeypatch):
     import pandas as pd
     import rdata
 
-    from pypath.inputs_v2.parsers import base
-    from pypath.inputs_v2.parsers.base import iter_rdata
+    from omnipath_resources.inputs_v2.parsers import base
+    from omnipath_resources.inputs_v2.parsers.base import iter_rdata
 
     first = pd.DataFrame({'gene': pd.Series(['EGFR', ' TP53 ', ''], dtype=object), 'weight': [1.5, -2.0, 0.25]})
     second = pd.DataFrame({'gene': pd.Series(['MYC'], dtype=object), 'weight': [3.0]})

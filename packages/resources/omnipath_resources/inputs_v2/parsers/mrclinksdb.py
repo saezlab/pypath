@@ -12,7 +12,7 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.base import _first_handle
+from omnipath_resources.inputs_v2.base import _first_handle
 
 
 def _normalise_header(raw: str) -> str:

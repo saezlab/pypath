@@ -19,8 +19,8 @@
 
 from typing import List, Optional, NamedTuple
 
-import pypath.resources.urls as urls
-import pypath.formats.obo as obo
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.formats.obo as obo
 
 
 class PsimiRecord(NamedTuple):

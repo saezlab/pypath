@@ -20,10 +20,10 @@
 import re
 import sys
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.inputs.pfam as pfam_input
-import pypath.share.progress as progress
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.inputs.pfam as pfam_input
+import omnipath_resources.share.progress as progress
 
 
 def get_i3d():

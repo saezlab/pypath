@@ -9,8 +9,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import KnowledgeOrigin
 
-from pypath.inputs_v2 import phosphatome
-from pypath.inputs_v2.parsers import phosphatome as parser
+from omnipath_resources.inputs_v2 import phosphatome
+from omnipath_resources.inputs_v2.parsers import phosphatome as parser
 
 S1 = 'S1-HumanPhosphatases'
 S1_GROUPS = [None, None, 'Classification', None, None, None] + [None] * 15 + ['Substrate type', None, None, None]

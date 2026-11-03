@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import cpdb
-from pypath.inputs_v2.parsers import cpdb as parser
+from omnipath_resources.inputs_v2 import cpdb
+from omnipath_resources.inputs_v2.parsers import cpdb as parser
 
 HEADER = (
     '#  ConsensusPathDB (version 35) list of human protein interactions\n'

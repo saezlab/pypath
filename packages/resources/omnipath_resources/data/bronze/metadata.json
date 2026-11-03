@@ -75,7 +75,7 @@
         "uniprot_ids": ",",
         "gene_groups": "|"
       },
-      "transform": "pypath.inputs.hgnc.process_genegroups",
+      "transform": "omnipath_resources.inputs.hgnc.process_genegroups",
       "description": "HGNC gene family/group annotations",
       "organism": 9606,
       "data_type": "annotation",

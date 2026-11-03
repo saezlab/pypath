@@ -19,17 +19,17 @@
 
 import bs4
 
-import pypath.share.curl as curl
-import pypath.share.progress as progress
-import pypath.resources.urls as urls
-import pypath.utils.mapping as mapping
-import pypath.inputs.uniprot_db as uniprot_db
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.progress as progress
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.inputs.uniprot_db as uniprot_db
 
 
 def load_lmpid(organism = 9606):
     """
     Reads and processes LMPID data from local file
-    `pypath.data/LMPID_DATA_pubmed_ref.xml`.
+    `omnipath_resources.data/LMPID_DATA_pubmed_ref.xml`.
     The file was provided by LMPID authors and is now
     redistributed with the module.
     Returns list of domain-motif interactions.
@@ -74,7 +74,7 @@ def load_lmpid(organism = 9606):
 def lmpid_interactions(organism = 9606):
     """
     Converts list of domain-motif interactions supplied by
-    ``pypath.inputs.lmpid.load_lmpid`` to list of interactions.
+    ``omnipath_resources.inputs.lmpid.load_lmpid`` to list of interactions.
     """
 
     data = load_lmpid(organism = organism)
@@ -85,8 +85,8 @@ def lmpid_interactions(organism = 9606):
 def lmpid_dmi(organism = 9606):
     """
     Converts list of domain-motif interactions supplied by
-    ``pypath.inputs.lmpid.load_lmpid`` to list of
-    ``pypath.intera.DomainMotif`` objects.
+    ``omnipath_resources.inputs.lmpid.load_lmpid`` to list of
+    ``omnipath_resources.intera.DomainMotif`` objects.
     """
 
     data = load_lmpid(organism = organism)

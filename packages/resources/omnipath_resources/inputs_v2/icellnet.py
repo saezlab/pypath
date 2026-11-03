@@ -5,7 +5,7 @@ Parse ICELLNET v2 data and emit Entity records.
 from __future__ import annotations
 import re
 from typing import Any
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import (
     Protein,
     MacromolecularComplex,
@@ -15,15 +15,15 @@ from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.silver_schema import format_term
 from omnipath_core.source_attributes import PARTICIPANT_ROLE
-from pypath.internals.silver_schema import (
+from omnipath_resources.internals.silver_schema import (
     Annotation,
     Entity,
     Identifier,
     Membership,
     Relation,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.base import iter_csv
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.base import iter_csv
 
 config = ResourceConfig(
     id=ResourceCv.ICELLNET,

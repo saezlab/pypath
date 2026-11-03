@@ -21,12 +21,12 @@ from __future__ import annotations
 
 from typing import Any, Iterable, Literal, Sequence
 
-import pypath.share.curl as curl
-import pypath.share.common as common
-import pypath.share.session as session
-import pypath.resources.urls as urls
-import pypath.inputs.disgenet._auth as _auth
-import pypath.inputs.disgenet._valid as _valid
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.inputs.disgenet._auth as _auth
+import omnipath_resources.inputs.disgenet._valid as _valid
 
 
 class DisgenetRequest(_auth.DisgenetAuth):

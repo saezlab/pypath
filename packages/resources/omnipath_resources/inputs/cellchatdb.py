@@ -21,12 +21,12 @@ import re
 import itertools
 import collections
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.utils.taxonomy as taxonomy
-import pypath.utils.mapping as mapping
-import pypath.internals.intera as intera
-import pypath.inputs.pubmed as pubmed
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.taxonomy as taxonomy
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.inputs.pubmed as pubmed
 
 
 def cellchatdb_download(organism = 9606, dataset = 'CellChatDB'):
@@ -68,7 +68,7 @@ def cellchatdb_download(organism = 9606, dataset = 'CellChatDB'):
 
     except Exception:
         # Fall back to manual extraction without full conversion
-        import pypath.inputs.rdata as rdata
+        import omnipath_resources.inputs.rdata as rdata
         import pandas as pd
 
         rdata_parsed = rdata.rdata.parser.parse_file(rdata_path)

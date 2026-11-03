@@ -37,9 +37,9 @@ except:
 
 import bs4
 
-import pypath.resources.urls as urls
-import pypath.share.common as common
-import pypath.share.session as session
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session
 
 
 Segment = collections.namedtuple(

@@ -18,9 +18,9 @@ from typing import Any
 from biolink_model.datamodel.model import OntologyClass, Protein, slots
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.base import Download
-from pypath.inputs_v2.parsers.almen2009 import CLASS, EC
-from pypath.internals.silver_schema import (
+from omnipath_resources.inputs_v2.base import Download
+from omnipath_resources.inputs_v2.parsers.almen2009 import CLASS, EC
+from omnipath_resources.internals.silver_schema import (
     Annotation,
     Entity,
     EntityRef,

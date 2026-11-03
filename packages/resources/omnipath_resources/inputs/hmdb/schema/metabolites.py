@@ -19,8 +19,8 @@
 
 import lxml.etree as etree
 
-import pypath.formats.xml as xml
-from pypath.inputs.hmdb.schema.common import (
+import omnipath_resources.formats.xml as xml
+from omnipath_resources.inputs.hmdb.schema.common import (
     XMLNS,
     SIMPLE_FIELDS,
     ARRAY_FIELDS,

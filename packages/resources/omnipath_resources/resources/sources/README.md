@@ -46,7 +46,7 @@ source_name:
 ### Basic Usage
 
 ```python
-from pypath.inputs.input_module import InputModule
+from omnipath_resources.inputs.input_module import InputModule
 
 # Load a configured source
 module = InputModule('biogrid', 'biogrid_physical')
@@ -89,7 +89,7 @@ To migrate an existing input module:
 2. Use `create_input_function()` for a drop-in replacement:
 
 ```python
-from pypath.inputs.input_module import create_input_function
+from omnipath_resources.inputs.input_module import create_input_function
 
 # Creates a function with the old API
 my_input_func = create_input_function('mysource', 'my_data')
@@ -172,4 +172,4 @@ json_source:
 
 - `schema.yaml` - Full configuration schema
 - `examples/` - Example configurations
-- `pypath/inputs/input_module.py` - Implementation details
+- `omnipath_resources/inputs/input_module.py` - Implementation details

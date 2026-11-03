@@ -19,7 +19,7 @@
 
 import collections
 
-import pypath.resources.urls as urls
+import omnipath_resources.resources.urls as urls
 from dlmachine import DownloadManager
 
 

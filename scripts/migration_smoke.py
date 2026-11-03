@@ -306,7 +306,7 @@ def main(argv=None) -> int:
 
     from omnipath_build.pipeline import build_resource
     from omnipath_build.versioning import validate_version
-    from pypath.inputs_v2 import signor
+    from omnipath_resources.inputs_v2 import signor
 
     validate_version(args.version)
     root = args.output_dir.resolve()
@@ -331,7 +331,7 @@ def main(argv=None) -> int:
             require(consumed <= args.max_records, "The parser consumed a record beyond the cap")
             yield row
 
-    # The isolated worker imports the real mapper from pypath.inputs_v2.signor.
+    # The isolated worker imports the real mapper from omnipath_resources.inputs_v2.signor.
     # Only this parent process opens the synthetic input file.
     os.environ["OMNIPATH_BUILD_DUCKDB_THREADS"] = "1"
     with ExitStack() as stack:
@@ -339,7 +339,7 @@ def main(argv=None) -> int:
             patch.object(dataset, "download", LocalDownload(fixture_dir / "signor.tsv"))
         )
         stack.enter_context(patch.object(dataset, "_raw_parser", bounded_parser))
-        stack.enter_context(patch("pypath.inputs_v2.base.download_and_open", blocked_download))
+        stack.enter_context(patch("omnipath_resources.inputs_v2.base.download_and_open", blocked_download))
         result = build_resource(
             "signor",
             version=args.version,

@@ -26,5 +26,5 @@ Data included in the module:
 * Configuration file
 """
 
-from pypath.data._data import *
+from omnipath_resources.data._data import *
 from pypath_common import data

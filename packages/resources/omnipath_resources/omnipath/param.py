@@ -26,8 +26,8 @@ own code.
 
 import copy
 
-import pypath.share.settings as settings
-import pypath.resources.network as netres
+import omnipath_resources.share.settings as settings
+import omnipath_resources.resources.network as netres
 
 
 def curated_ppi_resources():

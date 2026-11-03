@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_semicolon
+from omnipath_resources.inputs_v2.parsers.base import iter_semicolon
 
 # The header line. ``Entrez GeneID`` occurs twice, so the shared readers
 # cannot take the column names from it.

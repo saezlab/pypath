@@ -8,8 +8,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import dbptm
-from pypath.inputs_v2.parsers import dbptm as dbptm_parser
+from omnipath_resources.inputs_v2 import dbptm
+from omnipath_resources.inputs_v2.parsers import dbptm as dbptm_parser
 
 HEADER = '\t'.join(dbptm_parser.COLUMNS) + '\n'
 # Rows copied from the rescued table: sites without an enzyme, two enzymes in

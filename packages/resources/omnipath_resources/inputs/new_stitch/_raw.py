@@ -1,7 +1,7 @@
 from collections.abc import Generator
 import csv
 
-from pypath.share import curl
+from omnipath_resources.share import curl
 
 __all__ = [
     'tables'

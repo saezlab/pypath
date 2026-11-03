@@ -19,8 +19,8 @@
 
 from typing import Any
 
-import pypath.share.common as common
-from pypath.inputs.hmdb import _log
+import omnipath_resources.share.common as common
+from omnipath_resources.inputs.hmdb import _log
 
 
 XMLNS = '{http://www.hmdb.ca}'

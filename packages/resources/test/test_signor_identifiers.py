@@ -4,11 +4,11 @@ from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core import Namespace
 from omnipath_core.biolink import entity_type
-from pypath.inputs_v2.signor import (
+from omnipath_resources.inputs_v2.signor import (
     complexes_schema, phenotypes_schema, stimuli_schema, protein_families_schema,
     interactions_schema, _infer_signor_interactor_type,
 )
-from pypath.internals.tabular_builder import CV, EntityBuilder, IdentifiersBuilder, AnnotationsBuilder, MembersFromList, MembershipBuilder
+from omnipath_resources.internals.tabular_builder import CV, EntityBuilder, IdentifiersBuilder, AnnotationsBuilder, MembersFromList, MembershipBuilder
 
 
 def interaction_row(causal='MI:2236'):
@@ -96,7 +96,7 @@ def test_builder_accepts_native_enum_values_in_nested_members():
 
 
 def test_legacy_types_are_not_adapted():
-    from pypath.internals.cv_terms import EntityTypeCv
+    from omnipath_resources.internals.cv_terms import EntityTypeCv
     for invalid in [EntityTypeCv.PROTEIN, 'nonsense', 42]:
         with pytest.raises(ValueError):
             EntityBuilder(entity_type=invalid)

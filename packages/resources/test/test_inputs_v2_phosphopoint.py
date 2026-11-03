@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.parsers.phosphopoint import COLUMNS, iter_pairs
-from pypath.inputs_v2.phosphopoint import resource
+from omnipath_resources.inputs_v2.parsers.phosphopoint import COLUMNS, iter_pairs
+from omnipath_resources.inputs_v2.phosphopoint import resource
 
 HEADER = 'Kinase;Entrez GeneID;Gene;Entrez GeneID;Category'
 # Lines of phosphopoint.csv, one of each category.

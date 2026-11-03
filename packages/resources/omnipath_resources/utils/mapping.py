@@ -58,26 +58,26 @@ import pandas as pd
 import timeloop
 
 # from pypath:
-import pypath.share.progress as progress
-import pypath.share.common as common
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.share.cache as cache_mod
-import pypath.internals.maps as maps
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.inputs as inputs
-import pypath.inputs.uniprot as uniprot_input
-import pypath.inputs.uniprot_db as uniprot_db
-import pypath.inputs.pro as pro_input
-import pypath.inputs.biomart as biomart_input
-import pypath.inputs.unichem as unichem_input
-import pypath.inputs.ramp as ramp_input
-import pypath.inputs.hmdb as hmdb_input
-import pypath.internals.input_formats as input_formats
-import pypath.utils.reflists as reflists
-import pypath.utils.taxonomy as taxonomy
-import pypath.share.settings as settings
-import pypath.share.session as session_mod
+import omnipath_resources.share.cache as cache_mod
+import omnipath_resources.internals.maps as maps
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.inputs as inputs
+import omnipath_resources.inputs.uniprot as uniprot_input
+import omnipath_resources.inputs.uniprot_db as uniprot_db
+import omnipath_resources.inputs.pro as pro_input
+import omnipath_resources.inputs.biomart as biomart_input
+import omnipath_resources.inputs.unichem as unichem_input
+import omnipath_resources.inputs.ramp as ramp_input
+import omnipath_resources.inputs.hmdb as hmdb_input
+import omnipath_resources.internals.input_formats as input_formats
+import omnipath_resources.utils.reflists as reflists
+import omnipath_resources.utils.taxonomy as taxonomy
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.session as session_mod
 _logger = session_mod.log()
 
 
@@ -1945,7 +1945,7 @@ class Mapper(session_mod.Logger):
                 - embl (DDBJ/EMBL/GeneBank CDS accession)
                 - embl_id (DDBJ/EMBL/GeneBank accession)
                 And many more, see the code of
-                ``pypath.internals.input_formats``
+                ``omnipath_resources.internals.input_formats``
             target_id_type (str): The name type to translate to, more or
                 less the same values are available as for ``id_type``.
             ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
@@ -2370,7 +2370,7 @@ class Mapper(session_mod.Logger):
                 - embl (DDBJ/EMBL/GeneBank CDS accession)
                 - embl_id (DDBJ/EMBL/GeneBank accession)
                 And many more, see the code of
-                ``pypath.internals.input_formats``
+                ``omnipath_resources.internals.input_formats``
             target_id_type (str): The name type to translate to, more or
                 less the same values are available as for ``id_type``.
             ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
@@ -3619,7 +3619,7 @@ def map_name(
             - embl (DDBJ/EMBL/GeneBank CDS accession)
             - embl_id (DDBJ/EMBL/GeneBank accession)
             And many more, see the code of
-            ``pypath.internals.input_formats``
+            ``omnipath_resources.internals.input_formats``
         target_id_type (str): The name type to translate to, more or
             less the same values are available as for ``id_type``.
         ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
@@ -3709,7 +3709,7 @@ def map_names(
             - embl (DDBJ/EMBL/GeneBank CDS accession)
             - embl_id (DDBJ/EMBL/GeneBank accession)
             And many more, see the code of
-            ``pypath.internals.input_formats``
+            ``omnipath_resources.internals.input_formats``
         target_id_type (str): The name type to translate to, more or
             less the same values are available as for ``id_type``.
         ncbi_tax_id (int): NCBI Taxonomy ID of the organism.

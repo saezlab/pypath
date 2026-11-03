@@ -10,8 +10,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.source_attributes import PARTICIPANT_ROLE
 
-from pypath.inputs_v2.parsers.talklr import COLUMNS, iter_pairs
-from pypath.inputs_v2.talklr import resource
+from omnipath_resources.inputs_v2.parsers.talklr import COLUMNS, iter_pairs
+from omnipath_resources.inputs_v2.talklr import resource
 
 
 def row(*values):

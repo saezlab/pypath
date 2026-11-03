@@ -20,7 +20,7 @@ from .provenance import file_fingerprint
 
 @lru_cache(maxsize=16)
 def load_mapper(module: str, dataset: str):
-    from pypath.inputs_v2.base import Resource
+    from omnipath_resources.inputs_v2.base import Resource
 
     mod = importlib.import_module(module)
     ds = getattr(mod, dataset, None)

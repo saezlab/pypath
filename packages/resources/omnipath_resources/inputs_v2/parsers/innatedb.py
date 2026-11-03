@@ -5,7 +5,7 @@ The file has a header line, whose first name starts with a hash
 (``#unique_identifier_A``), and one row per experimental observation of an
 interaction. Rows are dictionaries keyed by the header names; every value is
 text as written, with ``-`` for no value. Cells that hold several items
-separate them with ``|`` (see ``pypath.inputs_v2._mitab``).
+separate them with ``|`` (see ``omnipath_resources.inputs_v2._mitab``).
 """
 
 from __future__ import annotations
@@ -13,8 +13,8 @@ from __future__ import annotations
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2 import _mitab
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2 import _mitab
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 # The columns the mapper reads, of the 42 of PSI-MI TAB 2.7. The header line
 # starts with a hash.

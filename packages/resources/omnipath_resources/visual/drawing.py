@@ -32,10 +32,10 @@ except:
 import math
 import time
 
-from pypath.share.common import *
-import pypath.share.common as common
+from omnipath_resources.share.common import *
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.share.session as session_mod
+import omnipath_resources.share.session as session_mod
 
 __all__ = ['Plot', 'InterSet']
 
@@ -351,7 +351,7 @@ class Plot(session_mod.Logger):
             self.kwargs['autocurve'] = self.autocurve
 
         if igraph.__version__ < '0.9.4':
-            import pypath.visual.igraph_drawing as ig_drawing
+            import omnipath_resources.visual.igraph_drawing as ig_drawing
             self.kwargs['drawer_factory'] = (
                 ig_drawing.DefaultGraphDrawerFFsupport
             )

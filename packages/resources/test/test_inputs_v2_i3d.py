@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import i3d
-from pypath.inputs_v2.parsers.i3d import COLUMNS
+from omnipath_resources.inputs_v2 import i3d
+from omnipath_resources.inputs_v2.parsers.i3d import COLUMNS
 
 HEADER = '\t'.join(COLUMNS) + '\n'
 # Lines copied from interactions.dat (release 2024_12): a homology model, an

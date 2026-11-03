@@ -8,8 +8,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import KnowledgeOrigin
 
-from pypath.inputs_v2.mcam import LIST_ID, LIST_NAMESPACE, config, resource
-from pypath.inputs_v2.parsers.mcam import iter_list, iter_proteins
+from omnipath_resources.inputs_v2.mcam import LIST_ID, LIST_NAMESPACE, config, resource
+from omnipath_resources.inputs_v2.parsers.mcam import iter_list, iter_proteins
 
 HEADER = 'ACC\tENTNAME\tFIELD2\tHUNIPORTID\tLENGTH\tMATCHEDQUERYID\tNF50\tNF90\tORG\tTAXGRP'
 # Rows of the human list of MCAM. The file ends its lines with a carriage return

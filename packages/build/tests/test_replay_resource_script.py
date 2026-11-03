@@ -185,7 +185,7 @@ def test_real_native_mapper_worker_preserves_original_ids_hashes_and_zero_datase
     tmp_path, monkeypatch
 ):
     from omnipath_build import two_phase
-    from pypath.inputs_v2 import tcdb
+    from omnipath_resources.inputs_v2 import tcdb
 
     raw = {
         "transporter_uniprot": "P11166",
@@ -234,7 +234,7 @@ def test_real_native_mapper_worker_preserves_original_ids_hashes_and_zero_datase
 
 def test_native_parent_bindings_restore_when_build_raises(tmp_path, monkeypatch):
     from omnipath_build import pipeline, two_phase
-    from pypath.inputs_v2 import rhea
+    from omnipath_resources.inputs_v2 import rhea
 
     directory, _ = published(tmp_path, [payload()], datasets=["reactions"])
     original = replay.read_input(directory)
@@ -260,7 +260,7 @@ def test_native_parent_bindings_restore_when_build_raises(tmp_path, monkeypatch)
 def test_legacy_empty_scope_replays_published_rows_and_infers_current_zero_datasets(
     tmp_path, monkeypatch
 ):
-    from pypath.inputs_v2 import tcdb
+    from omnipath_resources.inputs_v2 import tcdb
 
     raw = {"transporter_uniprot": "P11166", "substrate_id": "CHEBI:4167", "tcid": "2.A.1.1.28"}
     directory, _ = published(
@@ -342,14 +342,14 @@ def test_native_curl_transport_proxy_rejects_perform_variants_and_duplicate_hand
 def test_real_download_backend_and_preexisting_native_handle_entrypoints_are_blocked(monkeypatch):
     from dlmachine import DownloadManager, _downloader
 
-    legacy = ModuleType("pypath.share.curl")
+    legacy = ModuleType("omnipath_resources.share.curl")
 
     class LegacyCurl:
         def curl_call(self):
             pytest.fail("Legacy transport entrypoint executed")
 
     legacy.Curl = LegacyCurl
-    monkeypatch.setitem(sys.modules, "pypath.share.curl", legacy)
+    monkeypatch.setitem(sys.modules, "omnipath_resources.share.curl", legacy)
     download = _downloader.CurlDownloader.download
     called = []
     preexisting = object.__new__(_downloader.CurlDownloader)
@@ -387,8 +387,8 @@ def test_offline_guard_preserves_direct_local_file_reads(tmp_path):
 
 
 def test_offline_guard_preserves_cached_human_gem_xref_mapper(tmp_path, monkeypatch):
-    from pypath.inputs_v2 import metatlas
-    from pypath.inputs_v2.parsers.metatlas import _metabolite_xrefs
+    from omnipath_resources.inputs_v2 import metatlas
+    from omnipath_resources.inputs_v2.parsers.metatlas import _metabolite_xrefs
 
     path = tmp_path / "Human-GEM-metabolites.tsv"
     path.write_text("metsNoComp\tmetSmiles\nM1\tO\n")

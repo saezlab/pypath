@@ -25,9 +25,9 @@ from __future__ import annotations
 
 from collections.abc import Generator
 
-from pypath.share.downloads import download_and_open
-from pypath.inputs import mitab
-from pypath.inputs.mitab import MitabInteraction
+from omnipath_resources.share.downloads import download_and_open
+from omnipath_resources.inputs import mitab
+from omnipath_resources.inputs.mitab import MitabInteraction
 
 __all__ = [
     'intact_interactions_raw',

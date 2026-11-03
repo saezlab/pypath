@@ -1,7 +1,7 @@
 """BiGG mapping backend for metabolite identifiers.
 
 Reads BiGG universal metabolite cross-references from the BiGG Models
-bulk TSV file (via ``pypath.inputs.bigg.bigg_metabolite_mapping()``).
+bulk TSV file (via ``omnipath_resources.inputs.bigg.bigg_metabolite_mapping()``).
 Covers all 9,090 universal metabolites across 85+ BiGG models.
 """
 
@@ -31,7 +31,7 @@ class BiggBackend(MappingBackend):
             return {}
 
     def _read_via_pypath(self, id_type, target_id_type, ncbi_tax_id, **kwargs):
-        from pypath.inputs.bigg import bigg_metabolite_mapping
+        from omnipath_resources.inputs.bigg import bigg_metabolite_mapping
 
         _log.info("BiGG: %s -> %s", id_type, target_id_type)
 

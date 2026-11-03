@@ -19,7 +19,7 @@
 
 from future.utils import iteritems
 
-import pypath.share.session as session_mod
+import omnipath_resources.share.session as session_mod
 
 _logger = session_mod.Logger(name = 'db_categories')
 _log = _logger._log

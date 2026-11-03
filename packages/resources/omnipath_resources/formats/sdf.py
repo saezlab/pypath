@@ -36,7 +36,7 @@ import types
 import warnings
 
 from pypath_common import _misc
-import pypath.share.session as session
+import omnipath_resources.share.session as session
 
 
 resyn = re.compile(

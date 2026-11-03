@@ -8,9 +8,9 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import _vesicles, exocarta, vesiclepedia
-from pypath.inputs_v2.parsers.exocarta import VESICLEPEDIA, iter_detections, iter_vesicle_types
-from pypath.inputs_v2.vesiclepedia import TAXA, VESICLE_TYPE_NAMESPACE, resource
+from omnipath_resources.inputs_v2 import _vesicles, exocarta, vesiclepedia
+from omnipath_resources.inputs_v2.parsers.exocarta import VESICLEPEDIA, iter_detections, iter_vesicle_types
+from omnipath_resources.inputs_v2.vesiclepedia import TAXA, VESICLE_TYPE_NAMESPACE, resource
 
 # Lines of VESICLEPEDIA_EXPERIMENT_DETAILS_5.1.txt.
 EXPERIMENT_HEADER = (

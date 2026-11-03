@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import pytest
 from omnipath_build.silver import SilverExtractor
 
-from pypath.inputs_v2.nrf2ome import resource
+from omnipath_resources.inputs_v2.nrf2ome import resource
 
 # Lines of nrf2ome.csv: an undirected link, an inhibition, a directed link
 # without effect and the link of a protein to itself (undirected).

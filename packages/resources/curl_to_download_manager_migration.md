@@ -1,14 +1,14 @@
-# Migrating from pypath.share.curl to download-manager
+# Migrating from omnipath_resources.share.curl to download-manager
 
 ## Overview
 
-This guide documents the process of migrating pypath input modules from using `pypath.share.curl` to the new `download-manager` module, based on the experience with `transmir.py`.
+This guide documents the process of migrating pypath input modules from using `omnipath_resources.share.curl` to the new `download-manager` module, based on the experience with `transmir.py`.
 
 ## Key Differences
 
 ### Old Approach (curl)
 ```python
-import pypath.share.curl as curl
+import omnipath_resources.share.curl as curl
 
 c = curl.Curl(
     url,
@@ -75,7 +75,7 @@ The cache item's `open()` method:
 
 ```python
 # Remove
-import pypath.share.curl as curl
+import omnipath_resources.share.curl as curl
 
 # Add
 from download_manager import DownloadManager

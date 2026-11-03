@@ -26,9 +26,9 @@ import re
 from types import SimpleNamespace
 from typing import Any
 
-from pypath.inputs_v2._publications import is_pmid
-from pypath.inputs_v2.base import Download
-from pypath.inputs_v2.parsers.base import iter_html_tables, iter_tsv, read_text
+from omnipath_resources.inputs_v2._publications import is_pmid
+from omnipath_resources.inputs_v2.base import Download
+from omnipath_resources.inputs_v2.parsers.base import iter_html_tables, iter_tsv, read_text
 
 # Columns of the dump, in source order.
 COLUMNS = (

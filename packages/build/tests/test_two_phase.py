@@ -215,6 +215,6 @@ def test_preparation_processes_are_reused_across_batches(tmp_path, dataset, monk
 
 def test_mapper_ignores_module_attribute_named_annotations():
     from omnipath_build.two_phase import load_mapper
-    from pypath.inputs_v2 import hpo
+    from omnipath_resources.inputs_v2 import hpo
 
-    assert load_mapper("pypath.inputs_v2.hpo", "annotations") is hpo.annotations_schema
+    assert load_mapper("omnipath_resources.inputs_v2.hpo", "annotations") is hpo.annotations_schema

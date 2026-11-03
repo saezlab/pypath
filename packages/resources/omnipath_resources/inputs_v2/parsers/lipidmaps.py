@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 
-from pypath.formats.sdf import SdfReader
+from omnipath_resources.formats.sdf import SdfReader
 
 
 def _raw(opener, **_kwargs: object) -> Generator[dict[str, str], None, None]:

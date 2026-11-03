@@ -5,8 +5,8 @@
 Demo of the new input system with YAML configuration and bronze layer.
 """
 
-import pypath.inputs.input_module as input_module
-import pypath.inputs.biogrid_new as biogrid_new
+import omnipath_resources.inputs.input_module as input_module
+import omnipath_resources.inputs.biogrid_new as biogrid_new
 
 
 def demo_basic_usage():

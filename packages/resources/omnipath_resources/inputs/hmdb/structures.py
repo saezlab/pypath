@@ -23,9 +23,9 @@ from __future__ import annotations
 Structures from the Human Metabolome Database (HMDB).
 """
 
-import pypath.formats.sdf as sdfparser
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
+import omnipath_resources.formats.sdf as sdfparser
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
 
 
 def sdf():

@@ -19,8 +19,8 @@
 
 import re
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
 
 
 def phosphonetworks_enzyme_substrate():

@@ -24,8 +24,8 @@ import re
 from typing import Any
 import xml.etree.ElementTree as ET
 
-from pypath.inputs_v2._publications import is_pmid
-from pypath.inputs_v2.parsers.base import read_bytes
+from omnipath_resources.inputs_v2._publications import is_pmid
+from omnipath_resources.inputs_v2.parsers.base import read_bytes
 
 _FIELDS = {
     'Bait_UniProt_ID': 'bait_uniprot',

@@ -32,12 +32,12 @@ except:
 import numpy as np
 import pandas as pd
 
-import pypath.inputs as inputs
-import pypath.internals.intera as intera
-import pypath.internals.resource as resource
-import pypath.share.settings as settings
-import pypath.share.session as session_mod
-import pypath.share.common as common
+import omnipath_resources.inputs as inputs
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.internals.resource as resource
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.common as common
 
 
 complex_resources = (

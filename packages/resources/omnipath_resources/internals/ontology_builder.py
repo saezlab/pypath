@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from typing import Any, Sequence
 
-from pypath.internals.ontology_schema import OntologyRelationship, OntologyTerm
-from pypath.internals.tabular_builder import Column, ColumnCache
+from omnipath_resources.internals.ontology_schema import OntologyRelationship, OntologyTerm
+from omnipath_resources.internals.tabular_builder import Column, ColumnCache
 
 __all__ = [
     'RelationshipBuilder',

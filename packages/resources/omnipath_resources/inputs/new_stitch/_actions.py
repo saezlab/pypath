@@ -1,7 +1,7 @@
 from collections.abc import Generator
 import re
 
-import pypath.resources.urls as urls
+import omnipath_resources.resources.urls as urls
 from ._records import StitchAction, Entity
 from ._raw import tables
 

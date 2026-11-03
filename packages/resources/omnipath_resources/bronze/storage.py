@@ -34,8 +34,8 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import platformdirs
 
-import pypath.share.session as session
-import pypath.share.settings as settings
+import omnipath_resources.share.session as session
+import omnipath_resources.share.settings as settings
 
 _logger = session.Logger(name='bronze_storage')
 _log = _logger._log
@@ -58,13 +58,13 @@ class BronzeStorage:
         Args:
             base_path: Base directory for bronze storage
             pkg: Package name for default directory
-            use_pypath_data: If True and base_path is None, use pypath/data directory
+            use_pypath_data: If True and base_path is None, use omnipath_resources/data directory
         """
         if base_path is None:
             if use_pypath_data:
-                # Use pypath/data directory
-                import pypath
-                pypath_dir = Path(pypath.__file__).parent
+                # Use omnipath_resources/data directory
+                import omnipath_resources
+                pypath_dir = Path(omnipath_resources.__file__).parent
                 base_path = pypath_dir / 'data'
             else:
                 # Use platform-specific data directory

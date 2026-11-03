@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from pypath.inputs_v2.resource_names import (
+from omnipath_resources.inputs_v2.resource_names import (
     build_filter_index,
     resolve_filter,
     resolve_names,
@@ -99,8 +99,8 @@ def test_resolve_filter_slug_short_synonym():
 
 def test_resource_config_names_uses_resourcecv_slug():
     """ResourceConfig.names() resolves via the ResourceCv member, not `name`."""
-    from pypath.inputs_v2.base import ResourceConfig
-    from pypath.internals.cv_terms import (
+    from omnipath_resources.inputs_v2.base import ResourceConfig
+    from omnipath_resources.internals.cv_terms import (
         LicenseCV,
         ResourceCv,
         UpdateCategoryCV,

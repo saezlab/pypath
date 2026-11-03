@@ -24,10 +24,10 @@ from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.reactions import BIOCHEMICAL_REACTION, TRANSPORT
 from omnipath_core.source_attributes import TRANSPORT_SIDE
 
-from pypath.inputs_v2._reactions import reaction_type_cv
+from omnipath_resources.inputs_v2._reactions import reaction_type_cv
 
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.tabular_builder import (
     AssociationBuilder,
     AssociationsBuilder,
     AnnotationsBuilder,
@@ -38,9 +38,9 @@ from pypath.internals.tabular_builder import (
     MembershipBuilder,
     MembersFromList,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2._source_context import conversion_direction_cv
-from pypath.inputs_v2.parsers.rhea import _raw
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2._source_context import conversion_direction_cv
+from omnipath_resources.inputs_v2.parsers.rhea import _raw
 
 
 config = ResourceConfig(

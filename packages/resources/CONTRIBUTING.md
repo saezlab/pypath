@@ -5,7 +5,7 @@ Please make sure you follow them as much as possible.
 
 ## Adding a new resource
 
-- Create a new module in the [`pypath.inputs`][10] module, or a new function
+- Create a new module in the [`omnipath_resources.inputs`][10] module, or a new function
   if a module for the resource already exists. Follow other input modules as
   examples and use the module infrastructure, especially [`share.curl`][7]
   for downloads and [`share.settings`][8] for configuration. Configuration
@@ -73,8 +73,8 @@ has undergone large refactoring efforts since 2019 and it has still around 30%
 of its working codebase left with a sometimes messy and ugly style. Please
 forgiving when you see these parts and feel free to improvethem if you want.
 To see a more consistent style characteristic to the module, we recommend to
-look at some new core modules, e.g. `pypath.core.network` or
-`pypath.core.interaction`. As we mentioned we follow the standards, we have
+look at some new core modules, e.g. `omnipath_resources.core.network` or
+`omnipath_resources.core.interaction`. As we mentioned we follow the standards, we have
 exceptions in a few points. In the document below we only discuss these
 alterations and additional rules. For general guidelines you can refer to the
 [PEP8][1] and the [Google style guide][2].
@@ -256,7 +256,7 @@ Between these sections we leave an empty line
 ## Logging
 
 `pypath` has its own session and log manager built in. A class either should
-inherit from `pypath.share.session.Logger` and then have its `_log` method
+inherit from `omnipath_resources.share.session.Logger` and then have its `_log` method
 or a logger instance should be created at the module level and used by
 methods and classes in that module. Each logger instance have a default label
 so in the log one can see which message comes from which part of the module.
@@ -264,18 +264,18 @@ so in the log one can see which message comes from which part of the module.
 
 [1]: https://www.python.org/dev/peps/pep-0008/
 [2]: https://github.com/google/styleguide/blob/gh-pages/pyguide.md
-[3]: pypath/resources/data/resources.json
-[4]: pypath/resources/descriptions.py
-[5]: pypath/data/licenses
+[3]: omnipath_resources/resources/data/resources.json
+[4]: omnipath_resources/resources/descriptions.py
+[5]: omnipath_resources/data/licenses
 [6]: https://status.omnipathdb.org/inputs/
-[7]: pypath/share/curl.py
-[8]: pypath/share/settings.py
-[9]: pypath/data/settings.yaml
-[10]: pypath/inputs
+[7]: omnipath_resources/share/curl.py
+[8]: omnipath_resources/share/settings.py
+[9]: omnipath_resources/data/settings.yaml
+[10]: omnipath_resources/inputs
 [11]: https://realpython.com/lessons/type-hinting/
-[12]: pypath/resources/data_formats.py
-[13]: pypath/core/annot.py
-[14]: pypath/core/complex.py
+[12]: omnipath_resources/resources/data_formats.py
+[13]: omnipath_resources/core/annot.py
+[14]: omnipath_resources/core/complex.py
 [15]: https://github.com/saezlab/pypath/blob/master/pypath/resources/data/resources.json
-[16]: pypath/core/intercell_annot.py
+[16]: omnipath_resources/core/intercell_annot.py
 [17]: https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html

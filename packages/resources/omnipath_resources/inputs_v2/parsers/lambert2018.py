@@ -38,7 +38,7 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_excel
+from omnipath_resources.inputs_v2.parsers.base import iter_excel
 
 SHEET = 'Table S1. Related to Figure 1B'
 # Names of the columns by position, as far as they are read.

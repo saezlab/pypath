@@ -23,14 +23,14 @@ import re
 import itertools
 import collections
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.session as session
-import pypath.share.progress as progress
-import pypath.inputs.ontology as ontology
-import pypath.internals.intera as intera
-import pypath.internals.resource as resource_internals
-import pypath.core.evidence as evidence
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.session as session
+import omnipath_resources.share.progress as progress
+import omnipath_resources.inputs.ontology as ontology
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.internals.resource as resource_internals
+import omnipath_resources.core.evidence as evidence
 
 _logger = session.Logger(name = 'domino_input')
 _log = _logger._log

@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import mirtarbase as mod
-from pypath.inputs_v2.parsers.mirtarbase import COLUMNS, iter_interactions
+from omnipath_resources.inputs_v2 import mirtarbase as mod
+from omnipath_resources.inputs_v2.parsers.mirtarbase import COLUMNS, iter_interactions
 
 HEADER = ','.join(COLUMNS)
 

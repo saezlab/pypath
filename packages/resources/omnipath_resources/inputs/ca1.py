@@ -19,9 +19,9 @@
 
 import collections
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.inputs.science as science_input
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.inputs.science as science_input
 
 
 def ca1_interactions():

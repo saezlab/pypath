@@ -40,7 +40,7 @@ try:
 except ImportError:
     pyreadr = None
 
-import pypath.share.session as session
+import omnipath_resources.share.session as session
 
 _logger = session.Logger(name='bronze_loaders')
 _log = _logger._log

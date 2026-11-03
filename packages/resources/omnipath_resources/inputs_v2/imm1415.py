@@ -6,9 +6,9 @@ records using the declarative schema pattern.
 """
 
 import json
-from pypath.inputs_v2.base import ResourceConfig, Download, Resource, Dataset
-from pypath.inputs_v2._source_context import compartment_name
-from pypath.internals.tabular_builder import (
+from omnipath_resources.inputs_v2.base import ResourceConfig, Download, Resource, Dataset
+from omnipath_resources.inputs_v2._source_context import compartment_name
+from omnipath_resources.internals.tabular_builder import (
     CV,
     AssociationBuilder,
     AssociationsBuilder,
@@ -16,7 +16,7 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import ChemicalEntity, OntologyClass, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.reactions import go_compartment

@@ -7,9 +7,9 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.cancercellmap import resource
-from pypath.inputs_v2.parsers.base import iter_tsv
-from pypath.inputs_v2.parsers.cancercellmap import (
+from omnipath_resources.inputs_v2.cancercellmap import resource
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.cancercellmap import (
     EDGE_COLUMNS,
     NODE_COLUMNS,
     join_nodes,

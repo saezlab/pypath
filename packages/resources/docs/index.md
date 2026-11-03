@@ -9,11 +9,11 @@ from various resources. It serves as the data integration backend for
 ## Quick start
 
 ```bash
-pip install pypath-omnipath
+pip install omnipath-resources
 ```
 
 ```python
-import pypath
+import omnipath_resources
 ```
 
 ## Links

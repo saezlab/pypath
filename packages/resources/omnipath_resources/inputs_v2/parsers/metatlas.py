@@ -38,10 +38,10 @@ from typing import Any
 
 import yaml
 
-from pypath.inputs_v2.base import read_opener_text
-from pypath.inputs_v2._source_context import flux_direction
-from pypath.inputs_v2.parsers.recon3d import _parse_gene_rule
-from pypath.share.downloads import download_and_open
+from omnipath_resources.inputs_v2.base import read_opener_text
+from omnipath_resources.inputs_v2._source_context import flux_direction
+from omnipath_resources.inputs_v2.parsers.recon3d import _parse_gene_rule
+from omnipath_resources.share.downloads import download_and_open
 
 _METABOLITE_XREF_URL = (
     'https://raw.githubusercontent.com/SysBioChalmers/Human-GEM/main/model/'

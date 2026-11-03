@@ -21,11 +21,11 @@ from __future__ import annotations
 
 import copy
 
-import pypath.share.settings as settings
-import pypath.share.session as session
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.session as session
 import pypath_common._constants as _const
-import pypath.inputs.uniprot_idmapping as uniprot_idmapping
-import pypath.inputs.unichem as unichem_input
+import omnipath_resources.inputs.uniprot_idmapping as uniprot_idmapping
+import omnipath_resources.inputs.unichem as unichem_input
 
 _logger = session.Logger(name = 'input_formats')
 

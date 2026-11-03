@@ -27,13 +27,13 @@ import itertools
 import numpy as np
 import pandas as pd
 
-import pypath.share.settings as settings
-import pypath.share.common as common
-import pypath.share.session as session
-import pypath.core.annot as annot
-import pypath.core.intercell_annot as intercell_annot
-import pypath.core.network as network_mod
-import pypath.internals.annot_formats as af
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session
+import omnipath_resources.core.annot as annot
+import omnipath_resources.core.intercell_annot as intercell_annot
+import omnipath_resources.core.network as network_mod
+import omnipath_resources.internals.annot_formats as af
 
 
 class IntercellAnnotation(annot.CustomAnnotation):
@@ -58,11 +58,11 @@ class IntercellAnnotation(annot.CustomAnnotation):
         Builds a database about roles of proteins and complexes in
         intercellular communication. The built-in category definitions
         defining the default contents of this database can be found in the
-        ``pypath.core.intercell_annot`` module.
+        ``omnipath_resources.core.intercell_annot`` module.
 
         :param tuple class_definitions:
             A series of annotation class definitions, each represented by
-            an instance of ``pypath.internals.annot_formats.AnnotDef``.
+            an instance of ``omnipath_resources.internals.annot_formats.AnnotDef``.
             These definitions carry the attributes and instructions to
             populate the classes.
         :param dict excludes:
@@ -821,8 +821,8 @@ class IntercellAnnotation(annot.CustomAnnotation):
         Creates a ``pandas.DataFrame`` where each record is an interaction
         between a pair of molecular enitities labeled by their annotations.
 
-        network : pypath.network.Network,pandas.DataFrame
-            A ``pypath.network.Network`` object or a data frame with network
+        network : omnipath_resources.network.Network,pandas.DataFrame
+            A ``omnipath_resources.network.Network`` object or a data frame with network
             data.
         combined_df : pandas.DataFrame
             Optional, a network data frame already combined with annotations

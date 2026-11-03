@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from collections.abc import Generator
 
-from pypath.utils import taxonomy
+from omnipath_resources.utils import taxonomy
 
 from . import _raw
 from ._records import BindingdbInteraction, BindingdbLigand, BindingdbTarget

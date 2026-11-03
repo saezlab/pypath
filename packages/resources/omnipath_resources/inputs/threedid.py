@@ -23,16 +23,16 @@ import re
 
 from future.utils import iteritems
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.common as common
-import pypath.inputs.pfam as pfam_input
-import pypath.inputs.pdb as pdb_input
-import pypath.inputs.uniprot_db as uniprot_db
-import pypath.utils.pdb as pdb_utils
-import pypath.share.cache as cache
-import pypath.internals.intera as intera
-import pypath.share.progress as progress
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.common as common
+import omnipath_resources.inputs.pfam as pfam_input
+import omnipath_resources.inputs.pdb as pdb_input
+import omnipath_resources.inputs.uniprot_db as uniprot_db
+import omnipath_resources.utils.pdb as pdb_utils
+import omnipath_resources.share.cache as cache
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.share.progress as progress
 
 # Define non_digit regex pattern for extracting numbers
 non_digit = re.compile(r'[^\d.-]+')

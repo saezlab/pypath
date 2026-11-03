@@ -22,7 +22,7 @@ from collections.abc import Generator
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import read_text
+from omnipath_resources.inputs_v2.parsers.base import read_text
 
 # The title line of each file and the values its edges can have.
 SIGNALING_FLOW = 'Signaling_flow'

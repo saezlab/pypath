@@ -5,8 +5,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import dorothea as mod
-from pypath.inputs_v2.parsers import dorothea as parser
+from omnipath_resources.inputs_v2 import dorothea as mod
+from omnipath_resources.inputs_v2.parsers import dorothea as parser
 
 _COLUMNS = (
     'tf',

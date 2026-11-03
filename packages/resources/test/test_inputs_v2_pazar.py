@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import pazar as mod
-from pypath.inputs_v2.parsers.pazar import COLUMNS, iter_tf_targets
+from omnipath_resources.inputs_v2 import pazar as mod
+from omnipath_resources.inputs_v2.parsers.pazar import COLUMNS, iter_tf_targets
 
 # Lines copied from the files of tftargets.zip (tab separated, no header),
 # with the spaces at the end of a cell as they are in the file.

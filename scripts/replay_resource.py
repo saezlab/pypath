@@ -352,11 +352,11 @@ def offline_network():
             stack.enter_context(patch.object(backend, "download", blocked_download))
         # Existing imported aliases still reach the patched DownloadManager or
         # backend. Patch loaded helper bindings as well to reject calls earlier.
-        for name in ("pypath.share.downloads", "pypath.inputs_v2.base"):
+        for name in ("omnipath_resources.share.downloads", "omnipath_resources.inputs_v2.base"):
             module = sys.modules.get(name)
             if module is not None:
                 stack.enter_context(patch.object(module, "download_and_open", blocked_download))
-        legacy = sys.modules.get("pypath.share.curl")
+        legacy = sys.modules.get("omnipath_resources.share.curl")
         if legacy is not None:
             stack.enter_context(patch.object(legacy.Curl, "curl_call", blocked_download))
         try:

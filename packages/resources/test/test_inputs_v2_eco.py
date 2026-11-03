@@ -3,9 +3,9 @@
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.silver_schema import format_term
-from pypath.internals.cv_terms import LicenseCV, ResourceCv
-from pypath.inputs_v2 import eco
-from pypath.inputs_v2.parsers.obo import parse_obo_text
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv
+from omnipath_resources.inputs_v2 import eco
+from omnipath_resources.inputs_v2.parsers.obo import parse_obo_text
 
 # Stanzas copied from eco.obo (data-version releases/2026-07-10); eco.obo holds ECO's own terms
 # only, so the foreign stanza at the end is added: a merged edition would carry such terms.

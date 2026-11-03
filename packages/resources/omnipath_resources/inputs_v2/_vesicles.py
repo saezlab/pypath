@@ -14,8 +14,8 @@ from typing import Any
 from biolink_model.datamodel.model import Gene, OntologyClass, slots
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2._publications import pmid_curie
-from pypath.internals.silver_schema import Annotation, Entity, Identifier, Relation
+from omnipath_resources.inputs_v2._publications import pmid_curie
+from omnipath_resources.internals.silver_schema import Annotation, Entity, Identifier, Relation
 
 
 def map_detection(

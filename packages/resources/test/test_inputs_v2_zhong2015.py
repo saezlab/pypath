@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.parsers.zhong2015 import iter_cam_types, iter_genes
-from pypath.inputs_v2.zhong2015 import CAM_TYPES, TYPE_NAMESPACE, resource
+from omnipath_resources.inputs_v2.parsers.zhong2015 import iter_cam_types, iter_genes
+from omnipath_resources.inputs_v2.zhong2015 import CAM_TYPES, TYPE_NAMESPACE, resource
 
 # Rows of Supplementary Table S1: the file has four more empty columns and
 # trailing spaces in the names.

@@ -24,12 +24,12 @@ import collections
 import itertools
 import csv
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.utils.mapping as mapping
-import pypath.internals.intera as intera
-import pypath.core.entity as entity
-import pypath.inputs.pubmed as pubmed_input
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.core.entity as entity
+import omnipath_resources.inputs.pubmed as pubmed_input
 
 
 IcellnetRecord = collections.namedtuple(

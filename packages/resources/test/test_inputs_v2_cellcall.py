@@ -8,8 +8,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.source_attributes import PARTICIPANT_ROLE
 
-from pypath.inputs_v2.cellcall import resource
-from pypath.inputs_v2.parsers.cellcall import COLUMNS, iter_pairs
+from omnipath_resources.inputs_v2.cellcall import resource
+from omnipath_resources.inputs_v2.parsers.cellcall import COLUMNS, iter_pairs
 
 
 HEADER = '\t'.join(COLUMNS)

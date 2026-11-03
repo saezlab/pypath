@@ -24,7 +24,7 @@ def write_resource(root, source="signor", version="1.0.0"):
     directory = root / "resources" / source / version
     write_tables(directory)
     manifest = write_manifest(
-        directory, source, version, provenance={"dependencies": {"pypath-omnipath": "fixture"}}
+        directory, source, version, provenance={"dependencies": {"omnipath-resources": "fixture"}}
     )
     write_json(directory / "build_manifest.json", manifest)
     return directory, manifest
@@ -68,7 +68,7 @@ def test_selection_is_pinned_deeply_immutable_and_preserves_build_manifest(relea
     with pytest.raises(TypeError):
         result.manifest["resources"]["signor"] = "2"
     with pytest.raises(TypeError):
-        resource.manifest["provenance"]["dependencies"]["pypath-omnipath"] = "changed"
+        resource.manifest["provenance"]["dependencies"]["omnipath-resources"] = "changed"
     with pytest.raises(TypeError):
         resource.files["entity.parquet"] = None
 

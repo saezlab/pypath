@@ -9,9 +9,9 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.silver_schema import format_term
-from pypath.internals.cv_terms import LicenseCV, ResourceCv
-from pypath.inputs_v2 import intogen, oncotree
-from pypath.inputs_v2.parsers.oncotree import iter_terms
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv
+from omnipath_resources.inputs_v2 import intogen, oncotree
+from omnipath_resources.inputs_v2.parsers.oncotree import iter_terms
 
 # A cut of https://oncotree.mskcc.org/api/tumorTypes/tree?version=oncotree_2025_10_03: the
 # root, the lung branch down to LUAD, SPCC (a code with a previous one), and a

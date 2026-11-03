@@ -7,7 +7,7 @@ from collections.abc import Generator
 import re
 from typing import Any, NamedTuple
 
-from pypath.internals.ontology_schema import OntologyRelationship, OntologyTerm
+from omnipath_resources.internals.ontology_schema import OntologyRelationship, OntologyTerm
 
 RECORDS_ENABLED = {
     'ID',

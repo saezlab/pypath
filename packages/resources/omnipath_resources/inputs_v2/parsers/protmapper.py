@@ -21,7 +21,7 @@ import logging
 from types import SimpleNamespace
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_csv
+from omnipath_resources.inputs_v2.parsers.base import iter_csv
 
 _log = logging.getLogger(__name__)
 

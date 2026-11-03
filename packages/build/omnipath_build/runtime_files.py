@@ -20,7 +20,7 @@ _SOFTWARE = {
     "omnipath-build": "omnipath_build",
     "omnipath-core": "omnipath_core",
     "omnipath-resolver": "omnipath_resolver",
-    "pypath-omnipath": "pypath",
+    "omnipath-resources": "omnipath_resources",
     "biolink-model": "biolink_model",
 }
 _NATIVE_SUFFIXES = {".so", ".pyd", ".dll", ".dylib"}
@@ -157,7 +157,7 @@ def software_provenance() -> dict[str, Any]:
             raise RuntimeError("Cannot fingerprint the required native resolver extension")
         if module == "omnipath_core":
             vocabulary = {name: value for name, value in files.items() if name.startswith("vocab/")}
-        elif module == "pypath":
+        elif module == "omnipath_resources":
             vocabulary = {
                 name: value
                 for name, value in files.items()

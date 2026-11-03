@@ -18,7 +18,7 @@ def test_only_complete_successful_download_records_are_used(tmp_path):
             INSERT INTO attr_datetime VALUES (1,'download_finished','2026-05-01 12:00:00');
         """)
     ds = SimpleNamespace(
-        qualified_module="pypath.inputs_v2.cellchat",
+        qualified_module="omnipath_resources.inputs_v2.cellchat",
         raw_dataset=SimpleNamespace(download=SimpleNamespace(url="https://example.org/data")),
     )
     with patch(
@@ -48,7 +48,7 @@ def test_composite_and_dynamic_download_descriptors(tmp_path):
         True,
     )
     ds = SimpleNamespace(
-        qualified_module="pypath.inputs_v2.stitch", raw_dataset=SimpleNamespace(download=combined)
+        qualified_module="omnipath_resources.inputs_v2.stitch", raw_dataset=SimpleNamespace(download=combined)
     )
     with patch(
         "omnipath_build.source_metadata.importlib.import_module", return_value=SimpleNamespace()

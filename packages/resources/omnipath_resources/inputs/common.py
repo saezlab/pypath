@@ -32,8 +32,8 @@ import xlrd
 import openpyxl
 import glom
 
-import pypath.share.session as session_mod
-import pypath.share.common as common
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
 
 _logger = session_mod.Logger(name = 'inputs_common')

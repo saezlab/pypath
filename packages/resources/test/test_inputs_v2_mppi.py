@@ -7,9 +7,9 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.mppi import accession, resource
-from pypath.inputs_v2.parsers.base import iter_psimi_xml
-from pypath.inputs_v2.parsers.mppi import iter_interactions
+from omnipath_resources.inputs_v2.mppi import accession, resource
+from omnipath_resources.inputs_v2.parsers.base import iter_psimi_xml
+from omnipath_resources.inputs_v2.parsers.mppi import iter_interactions
 
 HEADER = (
     '<?xml version="1.0" encoding="UTF-8"?>\n'

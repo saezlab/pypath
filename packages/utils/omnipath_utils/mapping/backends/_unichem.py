@@ -46,7 +46,7 @@ class UniChemBackend(MappingBackend):
             return {}
 
     def _read_via_pypath(self, id_type, target_id_type, ncbi_tax_id, **kwargs):
-        from pypath.inputs.unichem import unichem_mapping
+        from omnipath_resources.inputs.unichem import unichem_mapping
 
         label_a = _to_unichem_label(id_type)
         label_b = _to_unichem_label(target_id_type)

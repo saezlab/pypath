@@ -8,8 +8,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import opm
-from pypath.inputs_v2.parsers import opm as opm_parser
+from omnipath_resources.inputs_v2 import opm
+from omnipath_resources.inputs_v2.parsers import opm as opm_parser
 
 # Columns of the tables that the reader uses, with rows copied from the exports.
 MEMBRANES = """\

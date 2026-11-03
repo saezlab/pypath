@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import cpad
-from pypath.inputs_v2.parsers.cpad import iter_entries, iter_terms
+from omnipath_resources.inputs_v2 import cpad
+from omnipath_resources.inputs_v2.parsers.cpad import iter_entries, iter_terms
 
 # The header ends in three empty column names; the lines end in three tabs and CRLF.
 HEADER = (

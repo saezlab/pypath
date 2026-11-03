@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import intogen
-from pypath.inputs_v2.parsers.intogen import iter_cancer_types, iter_drivers
+from omnipath_resources.inputs_v2 import intogen
+from omnipath_resources.inputs_v2.parsers.intogen import iter_cancer_types, iter_drivers
 
 DRIVER_HEADER = (
     'SYMBOL\tTRANSCRIPT\tCOHORT\tCANCER_TYPE\tMETHODS\tMUTATIONS\tSAMPLES\t%_SAMPLES_COHORT\tQVALUE_COMBINATION\tROLE'

@@ -27,10 +27,10 @@ import gzip
 import shutil
 import math
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.session as session
-import pypath.inputs.common as inputs_common
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.session as session
+import omnipath_resources.inputs.common as inputs_common
 
 _logger = session.Logger(name = 'inputs.interpro')
 _log = _logger._log

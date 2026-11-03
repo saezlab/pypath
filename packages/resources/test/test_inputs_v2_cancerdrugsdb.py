@@ -8,8 +8,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import cancerdrugsdb
-from pypath.inputs_v2.parsers.cancerdrugsdb import iter_drug_targets
+from omnipath_resources.inputs_v2 import cancerdrugsdb
+from omnipath_resources.inputs_v2.parsers.cancerdrugsdb import iter_drug_targets
 
 DB = '<a href="https://go.drugbank.com/drugs/{0}">{0}</a>'
 CH = '<a href="https://www.ebi.ac.uk/chembl/compound_report_card/{0}">{0}</a>'

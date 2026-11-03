@@ -1,6 +1,6 @@
 """Datasets with a table parser: raw() streams the SQL table's rows."""
 
-from pypath.inputs_v2.base import Dataset
+from omnipath_resources.inputs_v2.base import Dataset
 
 LINES = [{'id': str(i), 'keep': 'yes' if i % 3 else 'no', 'note': None if i % 2 else 'even'} for i in range(100)]
 

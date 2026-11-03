@@ -25,9 +25,9 @@ Visualisation of metabolite structures.
 
 from typing import Iterable
 
-import pypath.share.common as common
-import pypath.utils.mapping as mapping
-import pypath.inputs.hmdb.visual as hmdb_visual
+import omnipath_resources.share.common as common
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.inputs.hmdb.visual as hmdb_visual
 
 
 def show(metabolite: str | Iterable, id_type: str | None = None) -> None:

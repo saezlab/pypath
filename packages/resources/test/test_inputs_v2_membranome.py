@@ -8,8 +8,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.membranome import MEMBRANE_NAMESPACE, TAXA, config, resource
-from pypath.inputs_v2.parsers.membranome import iter_localizations, iter_membranes
+from omnipath_resources.inputs_v2.membranome import MEMBRANE_NAMESPACE, TAXA, config, resource
+from omnipath_resources.inputs_v2.parsers.membranome import iter_localizations, iter_membranes
 
 # Membranes 1, 2, 4, 5, 6 and 16 of the response of /membranes (it has 24; the
 # fixture's total is its own number of objects).

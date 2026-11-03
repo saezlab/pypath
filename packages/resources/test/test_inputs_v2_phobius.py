@@ -6,8 +6,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import phobius
-from pypath.inputs_v2.parsers import phobius as phobius_parser
+from omnipath_resources.inputs_v2 import phobius
+from omnipath_resources.inputs_v2.parsers import phobius as phobius_parser
 
 HEADER = 'Source\tUniprot_AC\tUniprot_ID\tTM\tSP\tPREDICTION'
 # Rows of phobius_human_proteome.tsv as written (the file has CRLF line ends).

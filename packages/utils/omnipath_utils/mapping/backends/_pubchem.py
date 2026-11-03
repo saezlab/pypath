@@ -1,6 +1,6 @@
 """PubChem structure-bearing mapping backend (Milestone I).
 
-Streams ``pypath.inputs.pubchem.pubchem_mapping(target, source='cid')``, which
+Streams ``omnipath_resources.inputs.pubchem.pubchem_mapping(target, source='cid')``, which
 yields ``(cid, value)`` rows from the compact PubChem FTP ``Extras`` tables
 (``Compound/Extras/CID-<TYPE>.gz``) -- CID -> standard InChIKey / InChI /
 SMILES. Because the rows are streamed, ``limit`` (``--pubchem-max-records``)
@@ -35,7 +35,7 @@ class PubchemBackend(MappingBackend):
         limit: int | None = None,
         **kwargs: object,
     ) -> dict[str, set[str]]:
-        from pypath.inputs.pubchem import pubchem_mapping
+        from omnipath_resources.inputs.pubchem import pubchem_mapping
 
         # One side is always the Compound CID; stream CID -> <structure> and
         # orient the result accordingly.

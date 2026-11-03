@@ -21,9 +21,9 @@ from __future__ import annotations
 
 from typing import Callable, Generator, NamedTuple
 
-import pypath.share.session as session
-import pypath.inputs.disgenet._proc as _proc
-import pypath.inputs.disgenet._request as _request
+import omnipath_resources.share.session as session
+import omnipath_resources.inputs.disgenet._proc as _proc
+import omnipath_resources.inputs.disgenet._request as _request
 
 
 class DisgenetClient(session.Logger):

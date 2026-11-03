@@ -33,10 +33,10 @@ import pickle
 import sqlparse
 import pandas as pd
 
-import pypath.share.curl as curl
-import pypath.share.common as common
-import pypath.share.session as session
-import pypath.share.cache as cache
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session
+import omnipath_resources.share.cache as cache
 
 _log = session.Logger(name = 'sqldump')._log
 
@@ -70,7 +70,7 @@ def tables(
             Unique identifier for the source of the data. Necessary for
             caching, only if the path can not be determined from the
             file-like object.
-        **kwargs: Passed to `pypath.share.curl.FileOpener`.
+        **kwargs: Passed to `omnipath_resources.share.curl.FileOpener`.
 
     Returns:
         Contents of the table.

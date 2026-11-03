@@ -27,9 +27,9 @@ import collections
 
 import pandas as pd
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.share.session as session
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.session as session
 
 _log = session.Logger(name = 'opentargets_input')._log
 

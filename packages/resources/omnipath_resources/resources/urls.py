@@ -19,9 +19,9 @@
 
 import os
 
-import pypath.share.common as common
-import pypath.share.cache as cache
-import pypath.share.settings as settings
+import omnipath_resources.share.common as common
+import omnipath_resources.share.cache as cache
+import omnipath_resources.share.settings as settings
 
 urls = {
     'uniprot_pdb': {

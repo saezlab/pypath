@@ -21,7 +21,7 @@ from collections.abc import Generator
 import functools
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_rdata
+from omnipath_resources.inputs_v2.parsers.base import iter_rdata
 
 MODEL = 'model_human_full'
 COLUMNS = ('gene', 'pathway', 'weight', 'p.value')

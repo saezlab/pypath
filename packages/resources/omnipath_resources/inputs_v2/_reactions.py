@@ -15,8 +15,8 @@ from typing import Any
 from omnipath_core import reactions as _r
 from omnipath_core.source_attributes import SOURCE_REACTION, SOURCE_REACTION_TYPE
 
-from pypath.inputs_v2._source_context import compartment_name
-from pypath.internals.tabular_builder import CV
+from omnipath_resources.inputs_v2._source_context import compartment_name
+from omnipath_resources.internals.tabular_builder import CV
 
 Row = Mapping[str, Any]
 

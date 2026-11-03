@@ -21,12 +21,12 @@ from typing import Collection, Dict, List, Optional, Union
 
 import glom
 
-import pypath.share.session as session
-import pypath.share.common as common
-import pypath.utils.taxonomy as taxonomy
-import pypath.resources.urls as urls
-import pypath.inputs.ebi as ebi
-import pypath.inputs.common as inputs_common
+import omnipath_resources.share.session as session
+import omnipath_resources.share.common as common
+import omnipath_resources.utils.taxonomy as taxonomy
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.inputs.ebi as ebi
+import omnipath_resources.inputs.common as inputs_common
 
 _logger = session.Logger(name = 'proteins_input')
 

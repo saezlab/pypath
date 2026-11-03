@@ -29,14 +29,14 @@ import collections
 
 from lxml import etree
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.progress as progress
-import pypath.share.session as session
-import pypath.share.common as common
-import pypath.utils.taxonomy as taxonomy
-import pypath.data as pypath_data
-import pypath.inputs.uniprot as uniprot_input
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.session as session
+import omnipath_resources.share.common as common
+import omnipath_resources.utils.taxonomy as taxonomy
+import omnipath_resources.data as pypath_data
+import omnipath_resources.inputs.uniprot as uniprot_input
 
 _logger = session.Logger(name = 'go_input')
 _log = _logger._log
@@ -270,7 +270,7 @@ def go_descendants_goose(aspects = ('C','F','P')):
     IMPORTANT:
     This is not the preferred method any more to get descendants.
     Recently the preferred method to access GO annotations is
-    ``pypath.inputs.go.go_descendants_quickgo``.
+    ``omnipath_resources.inputs.go.go_descendants_quickgo``.
     The data in GO MySQL instances has not been updated since Dec 2016.
     Unfortunately the providers ceased to support MySQL, the most flexible
     and highest performance access to GO data. The replacement is Solr
@@ -605,7 +605,7 @@ def go_annotations_quickgo(
 
     IMPORTANT:
     Recently the preferred method to access GO annotations is
-    ``pypath.inputs.go.go_annotations_goa``.
+    ``omnipath_resources.inputs.go.go_annotations_goa``.
     Contrary to its name QuickGO is super slow, otherwise it should yield
     up to date data, identical to the GOA file.
 
@@ -792,7 +792,7 @@ def go_annotations_goose(organism = 9606, aspects = ('C', 'F', 'P'),
     IMPORTANT:
     This is not the preferred method any more to get terms and annotations.
     Recently the preferred method to access GO annotations is
-    ``pypath.inputs.go.go_annotations_solr``.
+    ``omnipath_resources.inputs.go.go_annotations_solr``.
     The data in GO MySQL instances has not been updated since Dec 2016.
     Unfortunately the providers ceased to support MySQL, the most flexible
     and highest performance access to GO data. The replacement is Solr

@@ -27,18 +27,18 @@ import itertools
 
 import xml.etree.cElementTree as ET
 
-import pypath.share.progress as progress
-import pypath.utils.taxonomy as taxonomy
-import pypath.internals.intera as intera
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.inputs.uniprot_db as uniprot_db
-import pypath.inputs.common as inputs_common
-import pypath.inputs.homologene as homologene
-import pypath.utils.mapping as mapping
-import pypath.share.common as common
-import pypath.share.session as session
-import pypath.data as _data
+import omnipath_resources.share.progress as progress
+import omnipath_resources.utils.taxonomy as taxonomy
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.inputs.uniprot_db as uniprot_db
+import omnipath_resources.inputs.common as inputs_common
+import omnipath_resources.inputs.homologene as homologene
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session
+import omnipath_resources.data as _data
 
 _logger = session.Logger(name = 'phosphosite_input')
 

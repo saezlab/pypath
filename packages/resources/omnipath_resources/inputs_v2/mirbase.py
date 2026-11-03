@@ -25,12 +25,12 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     AssociationBuilder,
     AssociationsBuilder,
     CV,
@@ -38,8 +38,8 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.inputs_v2._molecular_forms import combine_forms, sequence_form
-from pypath.inputs_v2.base import (
+from omnipath_resources.inputs_v2._molecular_forms import combine_forms, sequence_form
+from omnipath_resources.inputs_v2.base import (
     Dataset, Download, Resource, ResourceConfig, _first_handle,
 )
 

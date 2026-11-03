@@ -27,8 +27,8 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from pypath.internals.cv_terms import CvEnum
-from pypath.internals import cv_terms
+from omnipath_resources.internals.cv_terms import CvEnum
+from omnipath_resources.internals import cv_terms
 
 
 # PSI-MI OBO source

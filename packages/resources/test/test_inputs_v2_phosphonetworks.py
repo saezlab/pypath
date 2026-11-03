@@ -8,8 +8,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import phosphonetworks
-from pypath.inputs_v2.parsers.phosphonetworks import iter_network
+from omnipath_resources.inputs_v2 import phosphonetworks
+from omnipath_resources.inputs_v2.parsers.phosphonetworks import iter_network
 
 # Lines copied from the source file: substrate lines start with ">", a site
 # near the start of the sequence has a window padded with "-".

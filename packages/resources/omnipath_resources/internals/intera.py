@@ -35,12 +35,12 @@ import collections
 import itertools
 
 # from pypath:
-import pypath.share.common as common
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.utils.mapping as mapping
-import pypath.core.evidence as evidence
-import pypath.core.entity as entity
-import pypath.utils.taxonomy as taxonomy
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.core.evidence as evidence
+import omnipath_resources.core.entity as entity
+import omnipath_resources.utils.taxonomy as taxonomy
 
 __all__ = [
     'Residue',

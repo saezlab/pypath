@@ -31,9 +31,9 @@ import sys
 import os
 import platform
 
-from pypath._metadata import __version__, __author__, __license__
-from pypath._metadata import metadata as _metadata
-from pypath.share import session as _session
+from omnipath_resources._metadata import __version__, __author__, __license__
+from omnipath_resources._metadata import metadata as _metadata
+from omnipath_resources.share import session as _session
 
 session = _session.session()
 
@@ -64,9 +64,9 @@ def disclaimer():
         '\tyou use in your analysis, and please give appropriate\n'
         '\tcredits for the original sources when you publish your\n'
         '\tresults. To find out more about data sources please\n'
-        '\tlook at `pypath/resources/data/resources.json` or\n'
+        '\tlook at `omnipath_resources/resources/data/resources.json` or\n'
         '\thttps://omnipathdb.org/info and \n'
-        '\t`pypath.resources.urls.urls`.\n\n'
+        '\t`omnipath_resources.resources.urls.urls`.\n\n'
     )
 
     sys.stdout.write(_disclaimer_text)

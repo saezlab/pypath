@@ -29,10 +29,10 @@ import textwrap
 
 import bs4
 
-import pypath.share.progress as progress
-import pypath.share.curl as curl
-import pypath.share.common as common
-import pypath.inputs.unichem as unichem_input
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.common as common
+import omnipath_resources.inputs.unichem as unichem_input
 
 
 class Unichem(object):

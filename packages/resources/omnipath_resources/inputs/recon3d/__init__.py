@@ -31,7 +31,7 @@ Two data sources are supported:
   annotations parsed via :func:`gem_matlab_extract`.
 
 The :func:`recon3d_network` function yields :class:`GemInteraction` records
-compatible with ``pypath.inputs.metatlas`` and the ``omnipath-metabo`` GEM
+compatible with ``omnipath_resources.inputs.metatlas`` and the ``omnipath-metabo`` GEM
 processor.  Gene IDs are NCBI Entrez Gene IDs (integers as strings).
 
 References:

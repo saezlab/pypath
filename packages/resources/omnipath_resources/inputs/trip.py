@@ -23,11 +23,11 @@ import os
 import bs4
 import pickle
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.share.cache as cache
-import pypath.share.session as session
-import pypath.share.common as common
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.cache as cache
+import omnipath_resources.share.session as session
+import omnipath_resources.share.common as common
 
 _logger = session.Logger(name = 'trip_input')
 _log = _logger._log
@@ -181,7 +181,7 @@ def trip_find_uniprot(soup):
 
     @soup : bs4.BeautifulSoup
         The `BeautifulSoup` instance returned by
-        ``pypath.inputs.trip.trip_get_uniprot``.
+        ``omnipath_resources.inputs.trip.trip_get_uniprot``.
     """
 
     for tr in soup.find_all('div', id = 'tab2')[0].find_all('tr'):
@@ -205,7 +205,7 @@ def trip_process(
         strict = False,
     ):
     """
-    Downloads TRIP data by calling `pypath.dadio.take_a_trip()` and
+    Downloads TRIP data by calling `omnipath_resources.dadio.take_a_trip()` and
     further provcesses it.
     Returns dict of dict with TRIP data.
 
@@ -307,7 +307,7 @@ def trip_interactions(
     ):
     """
     Obtains processed TRIP interactions by
-    calling ``pypath.inputs.trip.trip_process``
+    calling ``omnipath_resources.inputs.trip.trip_process``
     and returns list of interactions. All arguments are passed to
     ``trip_process``, see their definition there.
     """

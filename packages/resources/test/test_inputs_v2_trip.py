@@ -7,9 +7,9 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import trip as mod
-from pypath.inputs_v2.parsers import trip as parser
-from pypath.inputs_v2.parsers.base import (
+from omnipath_resources.inputs_v2 import trip as mod
+from omnipath_resources.inputs_v2.parsers import trip as parser
+from omnipath_resources.inputs_v2.parsers.base import (
     iter_csv,
     iter_html_links,
     iter_html_tables,

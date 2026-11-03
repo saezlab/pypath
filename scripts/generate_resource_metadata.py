@@ -9,7 +9,7 @@ import pkgutil
 
 from omnipath_build.discovery import resolve_source_name
 from omnipath_build.source_metadata import config_metadata
-import pypath.inputs_v2
+import omnipath_resources.inputs_v2
 
 TARGET = (
     Path(__file__).resolve().parents[1] / "packages/core/omnipath_core/vocab/resource_metadata.yaml"
@@ -18,10 +18,10 @@ TARGET = (
 
 def generate() -> str:
     sources = {}
-    for module in pkgutil.iter_modules(pypath.inputs_v2.__path__):
+    for module in pkgutil.iter_modules(omnipath_resources.inputs_v2.__path__):
         if module.ispkg or module.name.startswith("_"):
             continue
-        metadata = config_metadata(f"pypath.inputs_v2.{module.name}")
+        metadata = config_metadata(f"omnipath_resources.inputs_v2.{module.name}")
         if "website" in metadata:  # the module has a config
             sources[resolve_source_name(module.name)] = metadata
     return json.dumps(dict(sorted(sources.items())), indent=2, ensure_ascii=False) + "\n"

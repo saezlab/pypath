@@ -33,13 +33,13 @@ import biocypher
 import neo4j_utils
 import yaml
 
-import pypath
-import pypath.core.network as network_mod
-import pypath.omnipath as op
-import pypath.resources.network as netres
-import pypath.share.session as _session
-from pypath.core import annot
-from pypath.core import complex as cmplx
+import omnipath_resources
+import omnipath_resources.core.network as network_mod
+import omnipath_resources.omnipath as op
+import omnipath_resources.resources.network as netres
+import omnipath_resources.share.session as _session
+from omnipath_resources.core import annot
+from omnipath_resources.core import complex as cmplx
 
 __all__ = ['Adapter']
 
@@ -262,7 +262,7 @@ class Adapter(_session.Logger):
                 An object from this module compatible with the current
                 adapter. Currently the following database objects are
                 supported:
-                    * :py:class:`pypath.core.network.Network`
+                    * :py:class:`omnipath_resources.core.network.Network`
         """
 
         if hasattr(obj, 'nodes') and hasattr(obj, 'interactions'):

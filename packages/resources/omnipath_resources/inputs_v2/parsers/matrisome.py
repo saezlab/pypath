@@ -23,7 +23,7 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_excel
+from omnipath_resources.inputs_v2.parsers.base import iter_excel
 
 # The species of the lists: the column of the gene id, the pattern the id follows
 # and the NCBI taxon.

@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.humancellmap import LOCALIZATION_NAMESPACE, config, resource
-from pypath.inputs_v2.parsers.humancellmap import iter_localizations, iter_terms
+from omnipath_resources.inputs_v2.humancellmap import LOCALIZATION_NAMESPACE, config, resource
+from omnipath_resources.inputs_v2.parsers.humancellmap import iter_localizations, iter_terms
 
 HEADER = (
     'symbol\tNMF rank\tMMF localization\tSAFE domain\tSAFE localization\tEntrez\tBioGRID\t'

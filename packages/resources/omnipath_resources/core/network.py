@@ -39,25 +39,25 @@ from typing_extensions import Literal
 import numpy as np
 import pandas as pd
 
-import pypath.share.session as session_mod
-import pypath.share.progress as progress
-import pypath.core.interaction as interaction_mod
-import pypath.core.evidence as evidence
-import pypath.core.entity as entity_mod
-import pypath.core.common as core_common
-import pypath.share.common as common
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.progress as progress
+import omnipath_resources.core.interaction as interaction_mod
+import omnipath_resources.core.evidence as evidence
+import omnipath_resources.core.entity as entity_mod
+import omnipath_resources.core.common as core_common
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.share.settings as settings
-import pypath.share.cache as cache_mod
-import pypath.utils.mapping as mapping
-import pypath.inputs.pubmed as pubmed_input
-import pypath.share.curl as curl
-import pypath.internals.refs as refs_mod
-import pypath.utils.reflists as reflists
-import pypath.resources.network as network_resources
-import pypath.internals.input_formats as input_formats
-import pypath.internals.resource as resource_formats
-import pypath.inputs as inputs
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.cache as cache_mod
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.inputs.pubmed as pubmed_input
+import omnipath_resources.share.curl as curl
+import omnipath_resources.internals.refs as refs_mod
+import omnipath_resources.utils.reflists as reflists
+import omnipath_resources.resources.network as network_resources
+import omnipath_resources.internals.input_formats as input_formats
+import omnipath_resources.internals.resource as resource_formats
+import omnipath_resources.inputs as inputs
 
 # Py 2/3
 try:
@@ -380,7 +380,7 @@ class Network(session_mod.Logger):
 
     :arg list,dict resources:
         One or more lists or dictionaries containing
-        ``pypath.internals.resource.NetworkResource`` objects.
+        ``omnipath_resources.internals.resource.NetworkResource`` objects.
     :arg bool make_df:
         Create a ``pandas.DataFrame`` already when creating the instance.
         If no network data loaded no data frame will be created.
@@ -553,11 +553,11 @@ class Network(session_mod.Logger):
         :arg str,dict,list,resource.NetworkResource resources:
             An object defining one or more network resources. If *str* it
             will be looked up among the collections in the
-            ``pypath.resources.network`` module (e.g. ``'pathway'`` will load
+            ``omnipath_resources.resources.network`` module (e.g. ``'pathway'`` will load
             all resources in the `pathway` collection). If *dict* or *list*
             it will be processed recursively i.e. the ``load`` method will be
             called for each element. If it is a
-            ``pypath.internals.resource.NetworkResource`` object it will be
+            ``omnipath_resources.internals.resource.NetworkResource`` object it will be
             processed and added to the network.
         :arg bool make_df:
             Whether to create a ``pandas.DataFrame`` after loading all
@@ -656,15 +656,15 @@ class Network(session_mod.Logger):
         Loads the data from a single resource and attaches it to the
         network
 
-        :arg pypath.input_formats.NetworkInput resource:
-            :py:class:`pypath.input_formats.NetworkInput` instance
+        :arg omnipath_resources.input_formats.NetworkInput resource:
+            :py:class:`omnipath_resources.input_formats.NetworkInput` instance
             containing the detailed definition of the input format to
             the downloaded file.
         :arg bool clean:
             Legacy parameter, has no effect at the moment.
             Optional, ``True`` by default. Whether to clean the graph
             after importing the data or not. See
-            :py:meth:`pypath.main.PyPath.clean_graph` for more
+            :py:meth:`omnipath_resources.main.PyPath.clean_graph` for more
             information.
         :arg dict cache_files:
             Legacy parameter, has no effect at the moment.
@@ -770,11 +770,11 @@ class Network(session_mod.Logger):
         preprocess data, and then give it to this function to finally
         attach to the network.
 
-        :arg pypath.input_formats.NetworkInput resource:
-            :py:class:`pypath.input_formats.NetworkInput` instance
+        :arg omnipath_resources.input_formats.NetworkInput resource:
+            :py:class:`omnipath_resources.input_formats.NetworkInput` instance
             containing the detailed definition of the input format of
             the file. Instead of the file name (on the
-            :py:attr:`pypath.input_formats.NetworkInput.input`
+            :py:attr:`omnipath_resources.input_formats.NetworkInput.input`
             attribute) you can give a custom function name, which will
             be executed, and the returned data will be used instead.
         :arg bool keep_raw:
@@ -882,8 +882,8 @@ class Network(session_mod.Logger):
                     self._log(
                         '_read_network_data: No proper input file '
                         'definition. `param` should be either '
-                        'a `pypath.internals.input_formats.NetworkInput` or a '
-                        '`pypath.internals.resource.NetworkResource` instance.',
+                        'a `omnipath_resources.internals.input_formats.NetworkInput` or a '
+                        '`omnipath_resources.internals.resource.NetworkResource` instance.',
                         -5,
                     )
 
@@ -969,7 +969,7 @@ class Network(session_mod.Logger):
 
                     self._log(
                         'Retrieving data by method `%s` of the '
-                        'pypath.inputs module...' % input_func.__name__
+                        'omnipath_resources.inputs module...' % input_func.__name__
                     )
 
                     _store_cache = curl.CACHE
@@ -986,7 +986,7 @@ class Network(session_mod.Logger):
 
                         self._log(
                             f'Error in method `{input_func.__name__}` of the '
-                            'pypath.inputs module. '
+                            'omnipath_resources.inputs module. '
                         )
 
                         raise e
@@ -1063,7 +1063,7 @@ class Network(session_mod.Logger):
                 'Resource `%s` %s have literature references '
                 'for all interactions. Interactions without references '
                 'will be %s. You can alter this condition globally by '
-                '`pypath.settings.keep_noref` or for individual resources '
+                '`omnipath_resources.settings.keep_noref` or for individual resources '
                 'by the `must_have_references` attribute of their '
                 '`NetworkInput` object.' % (
                     networkinput.name,
@@ -1573,7 +1573,7 @@ class Network(session_mod.Logger):
             Data regarding the sign to be processed.
         :arg tuple sign_def:
             Contains information about how to process *sign_data*. This
-            is defined in :py:mod:`pypath.data_formats`. First element
+            is defined in :py:mod:`omnipath_resources.data_formats`. First element
             determines the position on the direction information of each
             line on the data file [int], second element is either [str]
             or [list] and defines the terms for which an interaction is
@@ -1753,8 +1753,8 @@ class Network(session_mod.Logger):
         :arg bool single_list:
             Optional, ``False`` by default. Determines whether the
             provided elements are items or edges. This is, either calls
-            :py:meth:`pypath.main.PyPath.map_edge` or
-            :py:meth:`pypath.main.PyPath.map_item` to map the item
+            :py:meth:`omnipath_resources.main.PyPath.map_edge` or
+            :py:meth:`omnipath_resources.main.PyPath.map_item` to map the item
             names.
         :arg bool expand_complexes:
             Expand complexes, i.e. create links between each member of
@@ -1791,9 +1791,9 @@ class Network(session_mod.Logger):
         """
         Translates the name in *item* representing a molecule. Default
         name types are defined in
-        :py:attr:`pypath.main.PyPath.default_name_type` If the mapping
+        :py:attr:`omnipath_resources.main.PyPath.default_name_type` If the mapping
         is unsuccessful, the item will be added to
-        :py:attr:`pypath.main.PyPath.unmapped` list.
+        :py:attr:`omnipath_resources.main.PyPath.unmapped` list.
 
         :arg dict item:
             Item whose name is to be mapped to a default name type.
@@ -1823,9 +1823,9 @@ class Network(session_mod.Logger):
         """
         Translates the identifiers in *edge* representing an edge. Default
         name types are defined in
-        :py:attr:`pypath.main.PyPath.default_name_type` If the mapping
+        :py:attr:`omnipath_resources.main.PyPath.default_name_type` If the mapping
         is unsuccessful, the item will be added to
-        :py:attr:`pypath.main.PyPath.unmapped` list.
+        :py:attr:`omnipath_resources.main.PyPath.unmapped` list.
 
         :arg dict edge:
             Item whose name is to be mapped to a default name type.
@@ -1993,14 +1993,14 @@ class Network(session_mod.Logger):
         """
         Adds edges to the network from *edge_list* obtained from file or
         other input method. If none is passed, checks for such data in
-        :py:attr:`pypath.network.Network.edge_list_mapped`.
+        :py:attr:`omnipath_resources.network.Network.edge_list_mapped`.
 
         :arg str edge_list:
             Optional, ``False`` by default. The source name of the list
             of edges to be added. This must have been loaded previously
-            (e.g.: with :py:meth:`pypath.main.PyPath.read_data_file`).
+            (e.g.: with :py:meth:`omnipath_resources.main.PyPath.read_data_file`).
             If none is passed, loads the data directly from
-            :py:attr:`pypath.main.PyPath.raw_data`.
+            :py:attr:`omnipath_resources.main.PyPath.raw_data`.
         :arg bool regulator:
             Optional, ``False`` by default. If set to ``True``, non
             previously existing nodes, will not be added (and hence, the
@@ -2092,13 +2092,13 @@ class Network(session_mod.Logger):
             :item set source:
                 Or [list], contains the names [str] of the resources
                 supporting that edge.
-            :item pypath.evidence.Evidence evidence:
-                A ``pypath.evidence.Evidence`` object.
+            :item omnipath_resources.evidence.Evidence evidence:
+                A ``omnipath_resources.evidence.Evidence`` object.
             :item bool is_directed:
                 Whether if the edge is directed or not.
             :item set refs:
                 Or [list], contains the instances of the references
-                :py:class:`pypath.refs.Reference` for that edge.
+                :py:class:`omnipath_resources.refs.Reference` for that edge.
             :item bool stim:
                 Whether the edge is stimulatory or not.
             :item bool inh:
@@ -2477,10 +2477,10 @@ class Network(session_mod.Logger):
     def from_igraph(cls, pa, **kwargs):
         """
         Creates an instance from an ``igraph.Graph`` based
-        ``pypath.main.PyPath`` object.
+        ``omnipath_resources.main.PyPath`` object.
 
-        :arg pypath.main.PyPath pa:
-            A ``pypath.main.PyPath`` object with network data loaded.
+        :arg omnipath_resources.main.PyPath pa:
+            A ``omnipath_resources.main.PyPath`` object with network data loaded.
         """
 
         obj = cls(**kwargs)
@@ -2499,13 +2499,13 @@ class Network(session_mod.Logger):
             only_directions = False,
         ):
         """
-        Adds a ready ``pypath.interaction.Interaction`` object to the network.
+        Adds a ready ``omnipath_resources.interaction.Interaction`` object to the network.
         If an interaction between the two endpoints already exists, the
         interactions will be merged: this stands for the directions, signs,
         evidences and other attributes.
 
         :arg interaction.Interaction interaction:
-            A ``pypath.interaction.Interaction`` object.
+            A ``omnipath_resources.interaction.Interaction`` object.
         :arg NoneType,dict attrs:
             Optional, a dictionary of extra (usually resource specific)
             attributes.
@@ -2760,7 +2760,7 @@ class Network(session_mod.Logger):
 
     def entity_by_id(self, identifier):
         """
-        Returns a ``pypath.entity.Entity`` object representing a molecular
+        Returns a ``omnipath_resources.entity.Entity`` object representing a molecular
         entity by looking it up by its identifier. If the molecule does not
         present in the current network ``None`` will be returned.
 
@@ -2777,7 +2777,7 @@ class Network(session_mod.Logger):
 
     def entity_by_label(self, label):
         """
-        Returns a ``pypath.entity.Entity`` object representing a molecular
+        Returns a ``omnipath_resources.entity.Entity`` object representing a molecular
         entity by looking it up by its label. If the molecule does not
         present in the current network ``None`` will be returned.
 
@@ -2870,7 +2870,7 @@ class Network(session_mod.Logger):
 
     def interaction_by_id(self, id_a, id_b):
         """
-        Returns a ``pypath.interaction.Interaction`` object by looking it up
+        Returns a ``omnipath_resources.interaction.Interaction`` object by looking it up
         based on a pair of identifiers. If the interaction does not exist
         in the network ``None`` will be returned.
 
@@ -2888,7 +2888,7 @@ class Network(session_mod.Logger):
 
     def interaction_by_label(self, label_a, label_b):
         """
-        Returns a ``pypath.interaction.Interaction`` object by looking it up
+        Returns a ``omnipath_resources.interaction.Interaction`` object by looking it up
         based on a pair of labels. If the interaction does not exist
         in the network ``None`` will be returned.
 
@@ -4034,7 +4034,7 @@ class Network(session_mod.Logger):
         Args
             kwargs:
                 Passed to methods of
-                :py:class:`pypath.interaction.Interaction`.
+                :py:class:`omnipath_resources.interaction.Interaction`.
         """
 
         result = set() if not by else collections.defaultdict(set)

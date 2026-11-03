@@ -27,14 +27,14 @@ from future.utils import iteritems
 
 import pandas as pd
 
-import pypath.share.progress as progress
-import pypath.resources.urls as urls
-import pypath.resources.data_formats as data_formats
-import pypath.share.settings as settings
-import pypath.core.entity as entity
-import pypath.share.session as session
-import pypath.resources.network as netres
-import pypath.share.common as common
+import omnipath_resources.share.progress as progress
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.resources.data_formats as data_formats
+import omnipath_resources.share.settings as settings
+import omnipath_resources.core.entity as entity
+import omnipath_resources.share.session as session
+import omnipath_resources.resources.network as netres
+import omnipath_resources.share.common as common
 
 strip_json = re.compile(r'[\[\]{}\"]')
 simple_types = {bool, int, float, type(None)}

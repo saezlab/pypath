@@ -20,7 +20,7 @@
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
-import pypath.share.session as session_mod
+import omnipath_resources.share.session as session_mod
 
 _logger = session_mod.Logger(name = 'main')
 
@@ -86,7 +86,7 @@ try:
 except ModuleNotFoundError:
     _logger._log(
         'Module `igraph` not available. '
-        'The legacy `pypath.main.PyPath` class requires `igraph`.'
+        'The legacy `omnipath_resources.main.PyPath` class requires `igraph`.'
     )
 
 # importing cairo here only to test if the module is available
@@ -102,70 +102,70 @@ except ImportError: # XXX: Catching any exception like this is bad practice
     )
 
 # from this module:
-import pypath
-import pypath.share.cache as cache_mod
-import pypath.resources.data_formats as data_formats
-import pypath.utils.mapping as mapping
-import pypath.resources.descriptions as descriptions
-import pypath.inputs.pubmed as pubmed_input
-import pypath.inputs.kegg as kegg_input
-import pypath.inputs.phosphosite as phosphosite_input
-import pypath.inputs.phosphonetworks as phosphonetworks_input
-import pypath.inputs.mimp as mimp_input
-import pypath.inputs.laudanna as laudanna_input
-import pypath.inputs.string as string_input
-import pypath.inputs.go as go_input
-import pypath.inputs.pdb as pdb_input
-import pypath.inputs.corum as corum
-import pypath.inputs.havugimana as havugimana
-import pypath.inputs.compleat as compleat
-import pypath.inputs.complexportal as complexportal
-import pypath.inputs.proteinatlas as proteinatlas
-import pypath.inputs.surfaceome as surfaceome_input
-import pypath.inputs.matrisome as matrisome_input
-import pypath.inputs.phosphopoint as phosphopoint_input
-import pypath.inputs.graphviz as graphviz_input
-import pypath.inputs.disgenet as disgenet_input
-import pypath.inputs.membranome as membranome_input
-import pypath.inputs.wang as wang_input
-import pypath.inputs.acsn as acsn_input
-import pypath.inputs.exocarta as exocarta_input
-import pypath.inputs.guide2pharma as g2p_input
-import pypath.inputs.comppi as comppi_input
-import pypath.inputs.pepcyber as pepcyber_input
-import pypath.inputs.domino as domino_input
-import pypath.inputs.threedid as threedid
-import pypath.inputs.threedcomplex as threedcomplex
-import pypath.inputs.elm as elm_input
-import pypath.inputs.ielm as ielm_input
-import pypath.inputs.pisa as pisa
-import pypath.inputs as inputs
-import pypath.core.network as network
-import pypath.utils.orthology as orthology
-import pypath.inputs.uniprot as uniprot_input
-import pypath.inputs.pfam as pfam_input
-import pypath.share.curl as curl
-import pypath.internals.intera as intera
-import pypath.utils.seq as se
-import pypath.utils.go as go
-import pypath.visual.drawing as bdrawing
-import pypath.utils.proteomicsdb as proteomicsdb
-import pypath.utils.reflists as reflists
-import pypath.internals.input_formats as input_formats
-import pypath.internals.refs as _refs
-import pypath.visual.plot as plot
-import pypath.core.enz_sub
-import pypath.omnipath.export as export
-import pypath.share.common as common
+import omnipath_resources
+import omnipath_resources.share.cache as cache_mod
+import omnipath_resources.resources.data_formats as data_formats
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.resources.descriptions as descriptions
+import omnipath_resources.inputs.pubmed as pubmed_input
+import omnipath_resources.inputs.kegg as kegg_input
+import omnipath_resources.inputs.phosphosite as phosphosite_input
+import omnipath_resources.inputs.phosphonetworks as phosphonetworks_input
+import omnipath_resources.inputs.mimp as mimp_input
+import omnipath_resources.inputs.laudanna as laudanna_input
+import omnipath_resources.inputs.string as string_input
+import omnipath_resources.inputs.go as go_input
+import omnipath_resources.inputs.pdb as pdb_input
+import omnipath_resources.inputs.corum as corum
+import omnipath_resources.inputs.havugimana as havugimana
+import omnipath_resources.inputs.compleat as compleat
+import omnipath_resources.inputs.complexportal as complexportal
+import omnipath_resources.inputs.proteinatlas as proteinatlas
+import omnipath_resources.inputs.surfaceome as surfaceome_input
+import omnipath_resources.inputs.matrisome as matrisome_input
+import omnipath_resources.inputs.phosphopoint as phosphopoint_input
+import omnipath_resources.inputs.graphviz as graphviz_input
+import omnipath_resources.inputs.disgenet as disgenet_input
+import omnipath_resources.inputs.membranome as membranome_input
+import omnipath_resources.inputs.wang as wang_input
+import omnipath_resources.inputs.acsn as acsn_input
+import omnipath_resources.inputs.exocarta as exocarta_input
+import omnipath_resources.inputs.guide2pharma as g2p_input
+import omnipath_resources.inputs.comppi as comppi_input
+import omnipath_resources.inputs.pepcyber as pepcyber_input
+import omnipath_resources.inputs.domino as domino_input
+import omnipath_resources.inputs.threedid as threedid
+import omnipath_resources.inputs.threedcomplex as threedcomplex
+import omnipath_resources.inputs.elm as elm_input
+import omnipath_resources.inputs.ielm as ielm_input
+import omnipath_resources.inputs.pisa as pisa
+import omnipath_resources.inputs as inputs
+import omnipath_resources.core.network as network
+import omnipath_resources.utils.orthology as orthology
+import omnipath_resources.inputs.uniprot as uniprot_input
+import omnipath_resources.inputs.pfam as pfam_input
+import omnipath_resources.share.curl as curl
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.utils.seq as se
+import omnipath_resources.utils.go as go
+import omnipath_resources.visual.drawing as bdrawing
+import omnipath_resources.utils.proteomicsdb as proteomicsdb
+import omnipath_resources.utils.reflists as reflists
+import omnipath_resources.internals.input_formats as input_formats
+import omnipath_resources.internals.refs as _refs
+import omnipath_resources.visual.plot as plot
+import omnipath_resources.core.enz_sub
+import omnipath_resources.omnipath.export as export
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-from pypath.share.progress import *
-import pypath.share.settings as settings
-import pypath.core.entity as entity_mod
-import pypath.utils.taxonomy as taxonomy
-import pypath.legacy.db_categories as db_categories
-import pypath.resources.network as network_resources
-import pypath.core.evidence as evidence
-import pypath.core.interaction as interaction
+from omnipath_resources.share.progress import *
+import omnipath_resources.share.settings as settings
+import omnipath_resources.core.entity as entity_mod
+import omnipath_resources.utils.taxonomy as taxonomy
+import omnipath_resources.legacy.db_categories as db_categories
+import omnipath_resources.resources.network as network_resources
+import omnipath_resources.core.evidence as evidence
+import omnipath_resources.core.interaction as interaction
 
 # to make it accessible directly from the module
 omnipath = network_resources.omnipath
@@ -230,8 +230,8 @@ class Direction(object):
     """
     This is a *legacy* object for handling directionality information
     associated with unique pairs of interacting molecular entities.
-    The py:class:`pypath.interaction.Interaction` available in the ``attrs``
-    edge attribute of the legacy :py:class:`pypath.main.PyPath`` object
+    The py:class:`omnipath_resources.interaction.Interaction` available in the ``attrs``
+    edge attribute of the legacy :py:class:`omnipath_resources.main.PyPath`` object
     provides a clearer and much more versatile interface. This object will
     be removed at some point, we don't recommend to build applications by
     using it.
@@ -1317,7 +1317,7 @@ class Direction(object):
         :py:attr:`negative`, :py:attr:`positive_sources` and
         :py:attr:`negative_sources`.
 
-        :arg pypath.main.Direction other:
+        :arg omnipath_resources.main.Direction other:
             The new edge object to be merged with the current one.
         """
 
@@ -1349,7 +1349,7 @@ class Direction(object):
             nodes as keys and their translation as values.
 
         :return:
-            (*pypath.main.Direction*) -- The copy of current edge object
+            (*omnipath_resources.main.Direction*) -- The copy of current edge object
             with translated node names.
         """
 
@@ -1474,7 +1474,7 @@ class _NamedVertexSeq(object):
     """
     *Legacy* object, will be removed.
     A more versatile replacement in the new API is
-    :py:class:`pypath.entity.EntityList`.
+    :py:class:`omnipath_resources.entity.EntityList`.
     Vertex sequence object. Combines the list of vertex objects, their
     UniProt IDs and corresponding GeneSymbols.
 
@@ -1564,15 +1564,15 @@ class PyPath(session_mod.Logger):
     This is the a *legacy* object representing a molecular interaction
     network. At some point it will be removed, we don't recommend to rely
     on it when you build your applications.
-    The :py:class:`pypath.network.Network` object offers a much clearer and
+    The :py:class:`omnipath_resources.network.Network` object offers a much clearer and
     more versatile API. As of end of 2019 not all functionalities have been
     migrated to the new API. For this reason we offer an intermediate
     solution: in this `igraph` based object the `attrs` edge attribute
-    holds instances of :py:class:`pypath.interaction.Interaction` objects,
+    holds instances of :py:class:`omnipath_resources.interaction.Interaction` objects,
     the same type of object we use to represent interactions in the new
-    :py:class:`pypath.network.Network`.
+    :py:class:`omnipath_resources.network.Network`.
     At the same time we will keep supporting `igraph` with a method for
-    converting :py:class:`pypath.network.Network` to a
+    converting :py:class:`omnipath_resources.network.Network` to a
     :py:class:`igraph.Graph` object, however this won't provide all the
     methods available here but will serve only the purpose to make it
     possible to use the graph theory methods from the `igraph` library
@@ -1590,9 +1590,9 @@ class PyPath(session_mod.Logger):
         the default identifier types to which the downloaded data will
         be converted. If others are used, user may need to provide the
         format definitions for the conversion tables.
-    :arg pypath.main.PyPath copy:
+    :arg omnipath_resources.main.PyPath copy:
         Optional, ``None`` by default. Other
-        :py:class:`pypath.main.PyPath` instance from which the data will
+        :py:class:`omnipath_resources.main.PyPath` instance from which the data will
         be copied.
     :arg str name:
         Optional, ``'unnamed'`` by default. Session or project name
@@ -1610,12 +1610,12 @@ class PyPath(session_mod.Logger):
     :var list adjlist:
         List of [set] containing the adjacency of each node. See
         :py:meth:`PyPath.update_adjlist` method for more information.
-    :var pypath.chembl.Chembl chembl:
-        Contains the ChEMBL data. See :py:mod:`pypath.chembl` module
+    :var omnipath_resources.chembl.Chembl chembl:
+        Contains the ChEMBL data. See :py:mod:`omnipath_resources.chembl` module
         documentation for more information.
     :var tuple chembl_mysql:
         DEPRECATED Contains the MySQL parameters used by the
-        :py:mod:`pypath.mapping` module to load the ChEMBL ID conversion
+        :py:mod:`omnipath_resources.mapping` module to load the ChEMBL ID conversion
         tables.
     :var dict data:
         Stores the loaded interaction and attribute table. See
@@ -1653,7 +1653,7 @@ class PyPath(session_mod.Logger):
     :var pandas.DataFrame exp_prod:
         Stores the edge expression data (as the product of the
         normalized expression between the pair of nodes by default). For
-        more details see :py:meth:`pypath.main.PyPath.edges_expression`.
+        more details see :py:meth:`omnipath_resources.main.PyPath.edges_expression`.
     :var set exp_samples:
         Contains a list of tissues as downloaded by ProteomicsDB. See
         :py:meth:`PyPath.get_proteomicsdb` for more information.
@@ -1664,14 +1664,14 @@ class PyPath(session_mod.Logger):
         A and B and [int] IDs of the edges in both directions.
     :var dict go:
         Contains the organism(s) NCBI taxonomy ID as key [int] and
-        :py:class:`pypath.go.GOAnnotation` object as value, which
+        :py:class:`omnipath_resources.go.GOAnnotation` object as value, which
         contains the GO annotations for the nodes in the graph. See
-        :py:class:`pypath.go.GOAnnotation` for more information.
+        :py:class:`omnipath_resources.go.GOAnnotation` for more information.
     :var igraph.Graph graph:
         Undirected network graph object.
-    :var pypath.gsea.GSEA gsea:
+    :var omnipath_resources.gsea.GSEA gsea:
         Contains the loaded gene-sets from MSigDB. See
-        :py:class:`pypath.gsea.GSEA` for more information.
+        :py:class:`omnipath_resources.gsea.GSEA` for more information.
     :var set has_cats:
         Contains the categories (e.g.: resource types) [str] loaded in
         the current network. Possible categories are: ``'m'`` for
@@ -1693,27 +1693,27 @@ class PyPath(session_mod.Logger):
         Contains specific lists of nodes (values) for different
         categories [str] (keys). These can to be loaded from a file or
         a resource. Some methods include
-        :py:meth:`pypath.main.PyPath.receptor_list` (``'rec'``),
-        :py:meth:`pypath.main.PyPath.druggability_list` (``'dgb'``),
-        :py:meth:`pypath.main.PyPath.kinases_list` (``'kin'``),
-        :py:meth:`pypath.main.PyPath.tfs_list` (``'tf'``),
-        :py:meth:`pypath.main.PyPath.disease_genes_list` (``'dis'``),
-        :py:meth:`pypath.main.PyPath.signaling_proteins_list`
-        (``'sig'``), :py:meth:`pypath.main.PyPath.proteome_list`
+        :py:meth:`omnipath_resources.main.PyPath.receptor_list` (``'rec'``),
+        :py:meth:`omnipath_resources.main.PyPath.druggability_list` (``'dgb'``),
+        :py:meth:`omnipath_resources.main.PyPath.kinases_list` (``'kin'``),
+        :py:meth:`omnipath_resources.main.PyPath.tfs_list` (``'tf'``),
+        :py:meth:`omnipath_resources.main.PyPath.disease_genes_list` (``'dis'``),
+        :py:meth:`omnipath_resources.main.PyPath.signaling_proteins_list`
+        (``'sig'``), :py:meth:`omnipath_resources.main.PyPath.proteome_list`
         (``'proteome'``) and
-        :py:meth:`pypath.main.PyPath.cancer_drivers_list` (``'cdv'``).
+        :py:meth:`omnipath_resources.main.PyPath.cancer_drivers_list` (``'cdv'``).
     :var str loglevel:
         The level of the logger.
     :var bool loops:
         Whether if self-loop edges are allowed in the graph.
-    :var pypath.mapping.Mapper mapper:
-        :py:class:`pypath.mapper.Mapper` object for ID conversion and
+    :var omnipath_resources.mapping.Mapper mapper:
+        :py:class:`omnipath_resources.mapper.Mapper` object for ID conversion and
         other ID-related operations across resources.
     :var list mutation_samples:
         DEPRECATED
     :var tuple mysql_conf:
         DEPRECATED Contains the MySQL parameters used by the
-        :py:mod:`pypath.mapping` module to load the ID conversion
+        :py:mod:`omnipath_resources.mapping` module to load the ID conversion
         tables.
     :var str name:
         Session or project name (custom).
@@ -1723,7 +1723,7 @@ class PyPath(session_mod.Logger):
     :var dict negatives:
         Contains a list of negative interactions according to a given
         source (e.g.: Negatome database). See
-        :py:meth:`pypath.main.PyPath.apply_negative` for more
+        :py:meth:`omnipath_resources.main.PyPath.apply_negative` for more
         information.
     :var dict nodDct:
         Maps the undirected graph node names [str] (keys) to their
@@ -1748,8 +1748,8 @@ class PyPath(session_mod.Logger):
         loaded in the network.
     :var dict plots:
         DEPRECATED (?)
-    :var pypath.proteomicsdb.ProteomicsDB proteomicsdb:
-        Contains a :py:class:`pypath.proteomicsdb.ProteomicsDB`
+    :var omnipath_resources.proteomicsdb.ProteomicsDB proteomicsdb:
+        Contains a :py:class:`omnipath_resources.proteomicsdb.ProteomicsDB`
         instance, see the class documentation for more information.
     :var list raw_data:
         Contains a list of loaded edges [dict] from a data file. See
@@ -1773,7 +1773,7 @@ class PyPath(session_mod.Logger):
         DEPRECATED (?)
     :var list unmapped:
         Contains the names of unmapped items [str]. See
-        :py:meth:`pypath.main.PyPath.map_item` for more information.
+        :py:meth:`omnipath_resources.main.PyPath.map_item` for more information.
     :var dict vertexAttrs:
         Stores the node attribute names [str] as keys and their
         corresponding types (e.g.: ``set``, ``list``, ``str``, ...) as
@@ -1800,7 +1800,7 @@ class PyPath(session_mod.Logger):
 
         session_mod.Logger.__init__(self, name = 'network')
 
-        self.__version__ = pypath.__version__
+        self.__version__ = omnipath_resources.__version__
 
         self.cache_dir = cache_mod.get_cachedir(cachedir = cache_dir)
 
@@ -1886,10 +1886,10 @@ class PyPath(session_mod.Logger):
 
     def copy(self, other):
         """
-        Copies another :py:class:`pypath.main.PyPath` instance into the
+        Copies another :py:class:`omnipath_resources.main.PyPath` instance into the
         current one.
 
-        :arg pypath.main.PyPath other:
+        :arg omnipath_resources.main.PyPath other:
             The instance to be copied from.
         """
 
@@ -1925,7 +1925,7 @@ class PyPath(session_mod.Logger):
         :arg dict lst:
             Optional, ``None`` by default. Specifies the data input
             formats for the different resources (keys) [str]. Values
-            are :py:class:`pypath.input_formats.NetworkInput` instances
+            are :py:class:`omnipath_resources.input_formats.NetworkInput` instances
             containing the information. By default uses the set of
             resources of OmniPath.
         :arg list exclude:
@@ -2129,13 +2129,13 @@ class PyPath(session_mod.Logger):
             Optional, ``False`` by default. Specifies whether to replace
             the :py:class:`igraph.Graph` instance. This can be either
             the undirected network of the current
-            :py:class:`pypath.main.PyPath` instance (default) or the one
+            :py:class:`omnipath_resources.main.PyPath` instance (default) or the one
             passed under the keyword argument *graph*.
         :arg igraph.Graph graph:
             Optional, ``None`` by default. The graph object from which
             the giant component is to be computed. If none is specified,
             takes the undirected network of the current
-            :py:class:`pypath.main.PyPath` instance.
+            :py:class:`omnipath_resources.main.PyPath` instance.
 
         :return:
             (*igraph.Graph*) -- If ``replace=False``, returns a copy of
@@ -2381,7 +2381,7 @@ class PyPath(session_mod.Logger):
             Data regarding the sign to be processed.
         :arg tuple signDef:
             Contains information about how to process *signData*. This
-            is defined in :py:mod:`pypath.data_formats`. First element
+            is defined in :py:mod:`omnipath_resources.data_formats`. First element
             determines the position on the direction information of each
             line on the data file [int], second element is either [str]
             or [list] and defines the terms for which an interaction is
@@ -2467,11 +2467,11 @@ class PyPath(session_mod.Logger):
         preprocess data, and then give it to this function to finally
         attach to the network.
 
-        :arg pypath.input_formats.NetworkInput param:
-            :py:class:`pypath.input_formats.NetworkInput` instance
+        :arg omnipath_resources.input_formats.NetworkInput param:
+            :py:class:`omnipath_resources.input_formats.NetworkInput` instance
             containing the detailed definition of the input format of
             the file. Instead of the file name (on the
-            :py:attr:`pypath.input_formats.NetworkInput.input`
+            :py:attr:`omnipath_resources.input_formats.NetworkInput.input`
             attribute) you can give a custom function name, which will
             be executed, and the returned data will be used instead.
         :arg bool keep_raw:
@@ -2569,8 +2569,8 @@ class PyPath(session_mod.Logger):
                     self._log(
                         '_read_network_data: No proper input file '
                         'definition. `param` should be either '
-                        'a `pypath.input_formats.NetworkInput` or a '
-                        '`pypath.resource.NetworkResource` instance.',
+                        'a `omnipath_resources.input_formats.NetworkInput` or a '
+                        '`omnipath_resources.resource.NetworkResource` instance.',
                         -5,
                     )
 
@@ -2764,7 +2764,7 @@ class PyPath(session_mod.Logger):
                 'Resource `%s` %s have literature references '
                 'for all interactions. Interactions without references '
                 'will be dropped. You can alter this condition globally by '
-                '`pypath.settings.keep_noref` or for individual resources '
+                '`omnipath_resources.settings.keep_noref` or for individual resources '
                 'by the `must_have_references` attribute of their '
                 '`NetworkInput` object.' % (
                     param.name,
@@ -3121,7 +3121,7 @@ class PyPath(session_mod.Logger):
         :arg str intogen_file:
             Path to the data file. Can also be [function] that provides
             the data. In general, anything accepted by
-            :py:attr:`pypath.input_formats.NetworkInput.input`.
+            :py:attr:`omnipath_resources.input_formats.NetworkInput.input`.
         """
 
         data_formats.intogen_cancer.input = intogen_file
@@ -3137,7 +3137,7 @@ class PyPath(session_mod.Logger):
             Optional, ``None`` by default. Path to the data file. Can
             also be [function] that provides the data. In general,
             anything accepted by
-            :py:attr:`pypath.input_formats.NetworkInput.input`.
+            :py:attr:`omnipath_resources.input_formats.NetworkInput.input`.
         """
 
         self.cancer_gene_census_list()
@@ -3162,7 +3162,7 @@ class PyPath(session_mod.Logger):
         :arg set lst:
             Can also be [list] (will be converted to [set]) or [str]. In
             the latter case it will retrieve the list with that name (if
-            such list exists in :py:attr:`pypath.main.PyPath.lists`).
+            such list exists in :py:attr:`omnipath_resources.main.PyPath.lists`).
         """
 
         lst = lst if isinstance(lst, set) \
@@ -3197,7 +3197,7 @@ class PyPath(session_mod.Logger):
         contingency table is built as follows:
         First row contains the number of nodes in the *ref* list (such
         list is considered to be loaded in
-        :py:attr:`pypath.main.PyPath.lists`) and the number of nodes in
+        :py:attr:`omnipath_resources.main.PyPath.lists`) and the number of nodes in
         the current (undirected) network. Second row contains the number
         of nodes in *lst* list (also considered to be already loaded)
         and the number of nodes in the network with a non-empty
@@ -3206,7 +3206,7 @@ class PyPath(session_mod.Logger):
         information.
 
         :arg str lst:
-            Name of the list in :py:attr:`pypath.main.PyPath.lists`
+            Name of the list in :py:attr:`omnipath_resources.main.PyPath.lists`
             whose number of elements will be the first element in the
             second row of the contingency table.
         :arg str attr:
@@ -3215,7 +3215,7 @@ class PyPath(session_mod.Logger):
             the second row of the contingency table.
         :arg str ref:
             Optional, ``'proteome'`` by default. The name of the list in
-            :py:attr:`pypath.main.PyPath.lists` whose number of elements
+            :py:attr:`omnipath_resources.main.PyPath.lists` whose number of elements
             will be the first element of the first row of the
             contingency table.
 
@@ -3236,9 +3236,9 @@ class PyPath(session_mod.Logger):
     def read_list_file(self, settings, **kwargs):
         """
         Reads a list from a file and adds it to
-        :py:attr:`pypath.main.PyPath.lists`.
+        :py:attr:`omnipath_resources.main.PyPath.lists`.
 
-        :arg pypath.input_formats.ReadList settings:
+        :arg omnipath_resources.input_formats.ReadList settings:
             :py:class:`python.data_formats.ReadList` instance specifying
             the settings of the file to be read. See the class
             documentation for more details.
@@ -3246,7 +3246,7 @@ class PyPath(session_mod.Logger):
             Extra arguments passed to the file reading function. Such
             function name is outlined in the
             :py:attr:`python.data_formats.ReadList.input` attribute and
-            defined in :py:mod:`pypath.inputs`.
+            defined in :py:mod:`omnipath_resources.inputs`.
         """
 
         _input = None
@@ -3383,8 +3383,8 @@ class PyPath(session_mod.Logger):
         :arg bool single_list:
             Optional, ``False`` by default. Determines whether the
             provided elements are items or edges. This is, either calls
-            :py:meth:`pypath.main.PyPath.map_edge` or
-            :py:meth:`pypath.main.PyPath.map_item` to map the item
+            :py:meth:`omnipath_resources.main.PyPath.map_edge` or
+            :py:meth:`omnipath_resources.main.PyPath.map_item` to map the item
             names.
         :arg bool expand_complexes:
             Expand complexes, i.e. create links between each member of
@@ -3419,9 +3419,9 @@ class PyPath(session_mod.Logger):
         """
         Translates the name in *item* representing a molecule. Default
         name types are defined in
-        :py:attr:`pypath.main.PyPath.default_name_type` If the mapping
+        :py:attr:`omnipath_resources.main.PyPath.default_name_type` If the mapping
         is unsuccessful, the item will be added to
-        :py:attr:`pypath.main.PyPath.unmapped` list.
+        :py:attr:`omnipath_resources.main.PyPath.unmapped` list.
 
         :arg dict item:
             Item whose name is to be mapped to a default name type.
@@ -3451,9 +3451,9 @@ class PyPath(session_mod.Logger):
         """
         Translates the identifiers in *edge* representing an edge. Default
         name types are defined in
-        :py:attr:`pypath.main.PyPath.default_name_type` If the mapping
+        :py:attr:`omnipath_resources.main.PyPath.default_name_type` If the mapping
         is unsuccessful, the item will be added to
-        :py:attr:`pypath.main.PyPath.unmapped` list.
+        :py:attr:`omnipath_resources.main.PyPath.unmapped` list.
 
         :arg dict edge:
             Item whose name is to be mapped to a default name type.
@@ -3517,9 +3517,9 @@ class PyPath(session_mod.Logger):
             * Numbers: returns the greater by default or calls
               *num_method* if given.
             * Sets: returns the union.
-            * Dictionaries: calls :py:func:`pypath.common.merge_dicts`.
+            * Dictionaries: calls :py:func:`omnipath_resources.common.merge_dicts`.
             * Direction: calls their special
-              :py:meth:`pypath.main.Direction.merge` method.
+              :py:meth:`omnipath_resources.main.Direction.merge` method.
 
         Works on more than 2 attributes recursively.
 
@@ -3666,7 +3666,7 @@ class PyPath(session_mod.Logger):
         :arg igraph.Graph graph:
             Optional, ``None`` by default. The network for which the
             nodes are to be collapsed. If none is provided, takes
-            :py:attr:`pypath.main.PyPath.graph` (undirected network) by
+            :py:attr:`omnipath_resources.main.PyPath.graph` (undirected network) by
             default.
         """
 
@@ -3934,11 +3934,11 @@ class PyPath(session_mod.Logger):
             Optional, ``'protein'`` by default. Determines the molecule
             type. These can be ``'protein'``, ``'drug'``, ``'lncrna'``,
             ``'mirna'`` or any other type defined in
-            :py:attr:`pypath.main.PyPath.default_name_type`.
+            :py:attr:`omnipath_resources.main.PyPath.default_name_type`.
         :arg str default_name_type:
             Optional, ``None`` by default. The default name type for the
             given molecular species. If none is specified takes it from
-            :py:attr:`pypath.main.PyPath.default_name_type` (e.g.: for
+            :py:attr:`omnipath_resources.main.PyPath.default_name_type` (e.g.: for
             ``'protein'``, default is ``'uniprot'``).
         :arg set organisms_allowed:
             NCBI Taxonomy identifiers [int] of the organisms allowed in
@@ -3994,9 +3994,9 @@ class PyPath(session_mod.Logger):
         """
         Removes multiple edges, unknown molecules and those from wrong
         taxon. Multiple edges will be combined by
-        :py:meth:`pypath.main.PyPath.combine_attr` method.
+        :py:meth:`omnipath_resources.main.PyPath.combine_attr` method.
         Loops will be deleted unless the attribute
-        :py:attr:`pypath.main.PyPath.loops` is set to ``True``.
+        :py:attr:`omnipath_resources.main.PyPath.loops` is set to ``True``.
 
         :arg set organisms_allowed:
             NCBI Taxonomy identifiers [int] of the organisms allowed
@@ -4210,13 +4210,13 @@ class PyPath(session_mod.Logger):
         :arg set source:
             Or [list], contains the names [str] of the resources
             supporting that edge.
-        :arg pypath.evidence.Evidence evidence:
-            A ``pypath.evidence.Evidence`` object.
+        :arg omnipath_resources.evidence.Evidence evidence:
+            A ``omnipath_resources.evidence.Evidence`` object.
         :arg bool is_directed:
             Whether if the edge is directed or not.
         :arg set refs:
             Or [list], contains the instances of the references
-            :py:class:`pypath.refs.Reference` for that edge.
+            :py:class:`omnipath_resources.refs.Reference` for that edge.
         :arg bool stim:
             Whether the edge is stimulatory or not.
         :arg bool inh:
@@ -4520,15 +4520,15 @@ class PyPath(session_mod.Logger):
         """
         Converts a copy of *graph* undirected *igraph.Graph* object to a
         directed one. By default it converts the current network
-        instance in :py:attr:`pypath.main.PyPath.graph` and places the
+        instance in :py:attr:`omnipath_resources.main.PyPath.graph` and places the
         copy of the directed instance in
-        :py:attr:`pypath.main.PyPath.dgraph`.
+        :py:attr:`omnipath_resources.main.PyPath.dgraph`.
 
         :arg igraph.Graph graph:
             Optional, ``None`` by default. Undirected graph object. If
             none is passed, takes the current undirected network
             instance and saves the directed network under the attribute
-            :py:attr:`pypath.main.PyPath.dgraph`. Otherwise, the
+            :py:attr:`omnipath_resources.main.PyPath.dgraph`. Otherwise, the
             directed graph will be returned instead.
         :arg bool conv_edges:
             Optional, ``False`` by default. Whether to convert
@@ -4770,7 +4770,7 @@ class PyPath(session_mod.Logger):
         edge exists in the opposite direction, no such edge exists or
         any of the vertex ids doesn't exist). To find edges regardless
         of their direction, see
-        :py:meth:`pypath.main.PyPath.edge_exists`.
+        :py:meth:`omnipath_resources.main.PyPath.edge_exists`.
 
         :arg tuple nodes:
             Or [list], contains the node IDs [int] where the first
@@ -4900,8 +4900,8 @@ class PyPath(session_mod.Logger):
         """
         Updates the node and edge attributes. Note that no data is
         donwloaded, mainly updates the dictionaries of attributes
-        :py:attr:`pypath.main.PyPath.edgeAttrs` and
-        :py:attr:`pypath.main.PyPath.vertexAttrs` containing the
+        :py:attr:`omnipath_resources.main.PyPath.edgeAttrs` and
+        :py:attr:`omnipath_resources.main.PyPath.vertexAttrs` containing the
         attributes names and their correspoding types and initializes
         such attributes in the network nodes/edges if they weren't.
         """
@@ -4967,7 +4967,7 @@ class PyPath(session_mod.Logger):
         """
         Fills all vertices attribute *attr* with its default type (if
         such attribute value is ``None``), creates [list] if in
-        :py:attr:`pypath.main.PyPath.vertexAttrs` such attribute is
+        :py:attr:`omnipath_resources.main.PyPath.vertexAttrs` such attribute is
         registered as [list].
 
         :arg str attr:
@@ -4989,7 +4989,7 @@ class PyPath(session_mod.Logger):
         """
         Fills all edges attribute *attr* with its default type (if
         such attribute value is ``None``), creates [list] if in
-        :py:attr:`pypath.main.PyPath.edgeAttrs` such attribute is
+        :py:attr:`omnipath_resources.main.PyPath.edgeAttrs` such attribute is
         registered as [list].
 
         :arg str attr:
@@ -5018,14 +5018,14 @@ class PyPath(session_mod.Logger):
         """
         Adds edges to the network from *edge_list* obtained from file or
         other input method. If none is passed, checks for such data in
-        :py:attr:`pypath.main.PyPath.raw_data`.
+        :py:attr:`omnipath_resources.main.PyPath.raw_data`.
 
         :arg str edge_list:
             Optional, ``False`` by default. The source name of the list
             of edges to be added. This must have been loaded previously
-            (e.g.: with :py:meth:`pypath.main.PyPath.read_data_file`).
+            (e.g.: with :py:meth:`omnipath_resources.main.PyPath.read_data_file`).
             If none is passed, loads the data directly from
-            :py:attr:`pypath.main.PyPath.raw_data`.
+            :py:attr:`omnipath_resources.main.PyPath.raw_data`.
         :arg bool regulator:
             Optional, ``False`` by default. If set to ``True``, non
             previously existing nodes, will not be added (and hence, the
@@ -5190,8 +5190,8 @@ class PyPath(session_mod.Logger):
         :arg str name:
             The name of the list to be added as attribute. Must have
             been previously loaded with
-            :py:meth:`pypath.main.PyPath.load_list` or other methods.
-            See description of :py:attr:`pypath.main.PyPath.lists`
+            :py:meth:`omnipath_resources.main.PyPath.load_list` or other methods.
+            See description of :py:attr:`omnipath_resources.main.PyPath.lists`
             attribute for more information.
         :arg str node_or_edge:
             Optional, ``'node'`` by default. Whether the attribute list
@@ -5362,7 +5362,7 @@ class PyPath(session_mod.Logger):
         """
         Computes the similarity across databases according to a given
         index metric. Computes the similarity across the loaded
-        resources (listed in :py:attr:`pypath.main.PyPath.sources` in
+        resources (listed in :py:attr:`omnipath_resources.main.PyPath.sources` in
         terms of nodes and edges separately.
 
         :arg str index:
@@ -5518,7 +5518,7 @@ class PyPath(session_mod.Logger):
             names (if any) are defined with the key ``'header'``.
         :arg str outfile:
             File name where to save the table. The file will be saved
-            under the object's :py:attr:`pypath.main.PyPath.outdir`
+            under the object's :py:attr:`omnipath_resources.main.PyPath.outdir`
             (``'results'`` by default).
         :arg str sep:
             Optional, ``'\t'`` (tab) by default. Specifies the separator
@@ -5634,14 +5634,14 @@ class PyPath(session_mod.Logger):
             that are to be kept.
         :arg str andor:
             Optional, ``'or'`` by default. Determines the search mode.
-            See :py:meth:`pypath.main.PyPath.search_attr_or` and
-            :py:meth:`pypath.main.PyPath.search_attr_and` for more
+            See :py:meth:`omnipath_resources.main.PyPath.search_attr_or` and
+            :py:meth:`omnipath_resources.main.PyPath.search_attr_and` for more
             details.
         :arg igraph.Graph graph:
             Optional, ``None`` by default. The graph object where to
             extract the subnetwork. If none is passed, takes the current
             network (undirected) graph
-            (:py:attr:`pypath.main.PyPath.graph`).
+            (:py:attr:`omnipath_resources.main.PyPath.graph`).
 
         :return:
             (*dict*) -- Keys are ``'nodes'`` and ``'edges'`` whose
@@ -5733,7 +5733,7 @@ class PyPath(session_mod.Logger):
         """
         Retrieves a subnetwork according to a set of user-defined
         attributes. Basically applies
-        :py:meth:`pypath.main.PyPath.get_sub` on a given *graph*.
+        :py:meth:`omnipath_resources.main.PyPath.get_sub` on a given *graph*.
 
         :arg dict crit:
             Defines the critical attributes to generate the subnetwork.
@@ -5743,14 +5743,14 @@ class PyPath(session_mod.Logger):
             that are to be kept.
         :arg str andor:
             Optional, ``'or'`` by default. Determines the search mode.
-            See :py:meth:`pypath.main.PyPath.search_attr_or` and
-            :py:meth:`pypath.main.PyPath.search_attr_and` for more
+            See :py:meth:`omnipath_resources.main.PyPath.search_attr_or` and
+            :py:meth:`omnipath_resources.main.PyPath.search_attr_and` for more
             details.
         :arg igraph.Graph graph:
             Optional, ``None`` by default. The graph object where to
             extract the subnetwork. If none is passed, takes the current
             network (undirected) graph
-            (:py:attr:`pypath.main.PyPath.graph`).
+            (:py:attr:`omnipath_resources.main.PyPath.graph`).
 
         :return:
             (*igraph.Graph*) -- The subgraph obtained from filtering
@@ -5768,7 +5768,7 @@ class PyPath(session_mod.Logger):
         """
         Separates the undirected network according to the different
         sources. Basically applies
-        :py:meth:`pypath.main.PyPath.get_network` for each resource.
+        :py:meth:`omnipath_resources.main.PyPath.get_network` for each resource.
 
         :return:
             (*dict*) -- Keys are resource names [str] whose values are
@@ -5791,7 +5791,7 @@ class PyPath(session_mod.Logger):
             * ``'r'``: Process description/reaction resources.
             * ``'t'``: Transcription resources.
 
-        Works in the same way as :py:meth:`pypath.main.PyPath.separate`.
+        Works in the same way as :py:meth:`omnipath_resources.main.PyPath.separate`.
 
         :return:
             (*dict*) -- Keys are category names [str] whose values are
@@ -5813,7 +5813,7 @@ class PyPath(session_mod.Logger):
     def update_pathway_types(self):
         """
         Updates the pathway types attribute
-        (:py:attr:`pypath.main.PyPath.pathway_types`) according to the
+        (:py:attr:`omnipath_resources.main.PyPath.pathway_types`) according to the
         loaded resources of the undirected network.
         """
 
@@ -5832,8 +5832,8 @@ class PyPath(session_mod.Logger):
         Computes the Sorensen's similarity index across nodes and edges
         for all the sources available (already loaded in the network)
         and saves them into table files. Files are stored in
-        :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by default).
-        See :py:meth:`pypath.main.PyPath.databases_similarity` for more
+        :py:attr:`omnipath_resources.main.PyPath.outdir` (``'results'`` by default).
+        See :py:meth:`omnipath_resources.main.PyPath.databases_similarity` for more
         information.
 
         :arg str outfile:
@@ -5855,8 +5855,8 @@ class PyPath(session_mod.Logger):
         Computes the Sorensen's similarity index across nodes and edges
         for all the available pathway sources (already loaded in the
         network) and saves them into table files. Files are stored in
-        :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by default).
-        See :py:meth:`pypath.main.PyPath.sorensen_pathways` for more
+        :py:attr:`omnipath_resources.main.PyPath.outdir` (``'results'`` by default).
+        See :py:meth:`omnipath_resources.main.PyPath.sorensen_pathways` for more
         information..
 
         :arg str outfile:
@@ -5876,7 +5876,7 @@ class PyPath(session_mod.Logger):
 
     def update_sources(self):
         """
-        Makes sure that the :py:attr:`pypath.main.PyPath.sources`
+        Makes sure that the :py:attr:`omnipath_resources.main.PyPath.sources`
         attribute is an up to date [list] of all sources in the current
         network.
         """
@@ -5898,7 +5898,7 @@ class PyPath(session_mod.Logger):
 
     def update_cats(self):
         """
-        Makes sure that the :py:attr:`pypath.main.PyPath.has_cats`
+        Makes sure that the :py:attr:`omnipath_resources.main.PyPath.has_cats`
         attribute is an up to date [set] of all categories in the
         current network.
         """
@@ -5917,7 +5917,7 @@ class PyPath(session_mod.Logger):
 
     def update_pathways(self):
         """
-        Makes sure that the :py:attr:`pypath.main.PyPath.pathways`
+        Makes sure that the :py:attr:`omnipath_resources.main.PyPath.pathways`
         attribute is an up to date [dict] of all pathways and their
         sources in the current network.
         """
@@ -5969,7 +5969,7 @@ class PyPath(session_mod.Logger):
             Optional, ``None`` by default. The network graph object
             where the GeneSymbol labels are to be set/updated. If none
             is passed, takes the current network undirected graph by
-            default (:py:attr:`pypath.main.PyPath.graph`).
+            default (:py:attr:`omnipath_resources.main.PyPath.graph`).
         :arg bool remap_all:
             Optional, ``False`` by default. Whether to map anew the
             GeneSymbol labels if those were already initialized.
@@ -6040,7 +6040,7 @@ class PyPath(session_mod.Logger):
         sources (node and edge counts, average node degree, graph
         diameter, transitivity, adhesion and cohesion). Writes the
         results in a tab file. File is stored in
-        :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by default).
+        :py:attr:`omnipath_resources.main.PyPath.outdir` (``'results'`` by default).
 
         :arg str outfile:
             Optional, ``None`` by default. Specifies the file name. If
@@ -6076,7 +6076,7 @@ class PyPath(session_mod.Logger):
         distribution information is computed and saved into a file.
         A file is created for each resource under the name
         ``'pwnet-<session_id>-degdist-<resource>''``. Files are stored
-        in :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by
+        in :py:attr:`omnipath_resources.main.PyPath.outdir` (``'results'`` by
         default).
         """
 
@@ -6382,7 +6382,7 @@ class PyPath(session_mod.Logger):
         :arg str fname:
             Optional, ``None`` by default. If provided, saves the
             results into a table file. File is stored in
-            :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by
+            :py:attr:`omnipath_resources.main.PyPath.outdir` (``'results'`` by
             default).
         :arg bool return_data:
             Optional, ``False`` by default. Whether to return the
@@ -6420,7 +6420,7 @@ class PyPath(session_mod.Logger):
         """
         Counts the number of sources per interaction in the graph and
         saves them into a file named ``source_num``. File is stored in
-        :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by
+        :py:attr:`omnipath_resources.main.PyPath.outdir` (``'results'`` by
         default).
         """
 
@@ -6540,7 +6540,7 @@ class PyPath(session_mod.Logger):
         :arg str filename:
             Optional, ``None`` by default. Specifies the file name and
             path to save the table. If none is passed, file will be
-            saved in :py:attr:`pypath.main.PyPath.outdir` (``'results'``
+            saved in :py:attr:`omnipath_resources.main.PyPath.outdir` (``'results'``
             by default) with the name ``'<session_id>-refs-hist'``.
         """
 
@@ -6574,7 +6574,7 @@ class PyPath(session_mod.Logger):
         :arg dict lst:
             Optional, ``None`` by default. Specifies the data input
             formats for the different resources (keys) [str]. Values
-            are :py:class:`pypath.input_formats.NetworkInput` instances
+            are :py:class:`omnipath_resources.input_formats.NetworkInput` instances
             containing the information. By default uses the set of
             resources of OmniPath.
         :arg list exclude:
@@ -6684,14 +6684,14 @@ class PyPath(session_mod.Logger):
         Loads the data from a single resource and attaches it to the
         network
 
-        :arg pypath.input_formats.NetworkInput settings:
-            :py:class:`pypath.input_formats.NetworkInput` instance
+        :arg omnipath_resources.input_formats.NetworkInput settings:
+            :py:class:`omnipath_resources.input_formats.NetworkInput` instance
             containing the detailed definition of the input format to
             the downloaded file.
         :arg bool clean:
             Optional, ``True`` by default. Whether to clean the graph
             after importing the data or not. See
-            :py:meth:`pypath.main.PyPath.clean_graph` for more
+            :py:meth:`omnipath_resources.main.PyPath.clean_graph` for more
             information.
         :arg dict cache_files:
             Optional, ``{}`` by default. Contains the resource name(s)
@@ -7148,7 +7148,7 @@ class PyPath(session_mod.Logger):
         :arg list jedges:
             List of [tuple] containing the edges node names [str] and
             their Jaccard index. Basically, the output of
-            :py:meth:`pypath.main.PyPath.jaccard_edges`.
+            :py:meth:`omnipath_resources.main.PyPath.jaccard_edges`.
         :arg float critical:
             Specifies the threshold of the Jaccard index from above
             which an edge will be included in the graph.
@@ -7173,11 +7173,11 @@ class PyPath(session_mod.Logger):
         Loads a negative interaction source (e.g.: Negatome) into the
         current network.
 
-        :arg pypath.input_formats.NetworkInput settings:
-            :py:class:`pypath.input_formats.NetworkInput` instance
+        :arg omnipath_resources.input_formats.NetworkInput settings:
+            :py:class:`omnipath_resources.input_formats.NetworkInput` instance
             containing the detailed definition of the input format to
             the downloaded file. For instance
-            :py:data:`pypath.data_formats.negative['negatome']`
+            :py:data:`omnipath_resources.data_formats.negative['negatome']`
         """
 
         g = self.graph
@@ -7488,7 +7488,7 @@ class PyPath(session_mod.Logger):
             columns.
         :arg \*\* kwargs:
             Additional keyword arguments passed to
-            :py:class:`pypath.export.Export`.
+            :py:class:`omnipath_resources.export.Export`.
         """
 
         e = export.Export(pa=self, extra_node_attrs=extra_node_attrs,
@@ -7658,14 +7658,14 @@ class PyPath(session_mod.Logger):
 
         :arg tuple chebl_mysql:
             Optional, ``None`` by default. Contains the MySQL parameters
-            used by the :py:mod:`pypath.mapping` module to loadthe
+            used by the :py:mod:`omnipath_resources.mapping` module to loadthe
             ChEMBL ID conversion tables. If none is passed, takes the
-            current instance :py:attr:`pypath.main.PyPath.chembl_mysql`
+            current instance :py:attr:`omnipath_resources.main.PyPath.chembl_mysql`
             attribute.
         :arg list nodes:
             Optional, ``None`` by default. List of node indices for
             which the information is to be loaded. If none is provided
-            calls the method :py:meth:`pypath.main.PyPath.get_sub` with
+            calls the method :py:meth:`omnipath_resources.main.PyPath.get_sub` with
             the provided *crit* parameter.
         :arg dict crit:
             Optional, ``None`` by default. Defines the critical
@@ -7678,8 +7678,8 @@ class PyPath(session_mod.Logger):
         :arg str andor:
             Optional, ``'or'`` by default. Determines the search mode
             for the subnetwork generation (if ``nodes=None``). See
-            :py:meth:`pypath.main.PyPath.search_attr_or` and
-            :py:meth:`pypath.main.PyPath.search_attr_and` for more
+            :py:meth:`omnipath_resources.main.PyPath.search_attr_or` and
+            :py:meth:`omnipath_resources.main.PyPath.search_attr_and` for more
             details.
         :arg list assay_types:
             Optional, ``['B', 'F']`` by default. Types of assay to query
@@ -7698,7 +7698,7 @@ class PyPath(session_mod.Logger):
             Optional, ``False`` by default. Not used.
         :arg \*\*kwargs:
             Additional keyword arguments for
-            :py:meth:`pypath.chembl.Chembl.compounds_targets`.
+            :py:meth:`omnipath_resources.chembl.Chembl.compounds_targets`.
         """
 
         chembl_mysql = chembl_mysql or self.chembl_mysql
@@ -7976,7 +7976,7 @@ class PyPath(session_mod.Logger):
         """
         Loads the protein domain information from Pfam into the network.
         Creates the node attribute ``'doms'`` containing a [list] of
-        :py:class:`pypath.intera.Domain` instances with information
+        :py:class:`omnipath_resources.intera.Domain` instances with information
         about each domain of the protein (see the corresponding class
         documentation for more information).
         """
@@ -10210,7 +10210,7 @@ class PyPath(session_mod.Logger):
         ):
         """
         This is a new method which will replace `load_ptms`.
-        It uses `pypath.enz_sub.EnzymeSubstrateAggregator`, a newly
+        It uses `omnipath_resources.enz_sub.EnzymeSubstrateAggregator`, a newly
         introduced module for combining enzyme-substrate data from multiple
         resources using orthology translation on users demand.
 
@@ -10240,7 +10240,7 @@ class PyPath(session_mod.Logger):
             A `dict` can be supplied for each resource, e.g.
             `{'Signor': {...}, 'PhosphoSite': {...}, ...}`.
             Those not used by `PtmProcessor` are forwarded to the
-            `pypath.inputs` methods.
+            `omnipath_resources.inputs` methods.
         :param database:
             A ``PtmAggregator`` object. If provided no new database will be
             created.
@@ -10259,7 +10259,7 @@ class PyPath(session_mod.Logger):
 
             method = 'init_db' if force_load else 'get_db'
 
-            _ = getattr(pypath.core.enz_sub, 'method')(
+            _ = getattr(omnipath_resources.core.enz_sub, 'method')(
                 input_methods = input_methods,
                 ncbi_tax_id = self.ncbi_tax_id,
                 map_by_orthology_from = map_by_orthology_from,
@@ -10269,7 +10269,7 @@ class PyPath(session_mod.Logger):
                 inputargs = inputargs
             )
 
-            ptma = pypath.core.enz_sub.get_db()
+            ptma = omnipath_resources.core.enz_sub.get_db()
 
         ptma.assign_to_network(self)
 
@@ -11901,7 +11901,7 @@ class PyPath(session_mod.Logger):
 
     def load_go(self, organism = None):
         """
-        Creates a ``pypath.go.GOAnnotation`` object for one organism in the
+        Creates a ``omnipath_resources.go.GOAnnotation`` object for one organism in the
         dict under ``go`` attribute.
 
         :param int organism:
@@ -11973,7 +11973,7 @@ class PyPath(session_mod.Logger):
 
     def init_gsea(self, user):
         """
-        Initializes a ``pypath.gsea.GSEA`` object and shows the list of the
+        Initializes a ``omnipath_resources.gsea.GSEA`` object and shows the list of the
         collections in MSigDB.
         """
 
@@ -15040,9 +15040,9 @@ class PyPath(session_mod.Logger):
         the entity and the returned value will be used for the graphviz attribute.
         E.g. `edge_arrowhead(edge)` or `vertex_fillcolor(vertex)`
         Example:
-            import pypath
-            from pypath import data_formats
-            net = pypath.PyPath()
+            import omnipath_resources
+            from omnipath_resources import data_formats
+            net = omnipath_resources.PyPath()
             net.init_network(pfile = 'cache/default.pickle')
             #net.init_network({'arn': data_formats.omnipath['arn']})
             tgf = [v.index for v in net.graph.vs if 'TGF' in v['slk_pathways']]
@@ -16199,9 +16199,9 @@ class PyPath(session_mod.Logger):
         --------
             >>> import igraph
             >>> import pypath
-            >>> pa = pypath.PyPath()
+            >>> pa = omnipath_resources.PyPath()
             >>> pa.init_network({
-                    'signor': pypath.data_formats.pathway['signor']
+                    'signor': omnipath_resources.data_formats.pathway['signor']
                 })
             >>> q = [
                     pa.gs('EGFR').index,
@@ -16558,7 +16558,7 @@ class PyPath(session_mod.Logger):
         Prints a disclaimer about respecting data licences.
         """
 
-        pypath._disclaimer()
+        omnipath_resources._disclaimer()
 
 
     @staticmethod
@@ -16567,7 +16567,7 @@ class PyPath(session_mod.Logger):
         Prints information about data licences.
         """
 
-        pypath.license()
+        omnipath_resources.license()
 
 
 def init_db(use_omnipath = False, **kwargs):

@@ -4,7 +4,7 @@ MetaNetX provides a reconciled namespace for metabolic networks.  The
 MNXref ``chem_xref.tsv`` file maps external database identifiers (ChEBI,
 HMDB, KEGG, BiGG, LipidMaps, etc.) to MetaNetX compound IDs (MNXM*).
 
-This backend delegates to ``pypath.inputs.metanetx.metanetx_mapping()``
+This backend delegates to ``omnipath_resources.inputs.metanetx.metanetx_mapping()``
 which reads the cross-reference file and builds pairwise mappings between
 any two supported metabolite ID types using MetaNetX IDs as a bridge.
 """
@@ -35,7 +35,7 @@ class MetaNetXBackend(MappingBackend):
             return {}
 
     def _read_via_pypath(self, id_type, target_id_type, ncbi_tax_id, **kwargs):
-        from pypath.inputs.metanetx import metanetx_mapping
+        from omnipath_resources.inputs.metanetx import metanetx_mapping
 
         _log.info("MetaNetX: %s -> %s", id_type, target_id_type)
 

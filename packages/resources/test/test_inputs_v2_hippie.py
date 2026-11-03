@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import hippie
-from pypath.inputs_v2.parsers.hippie import iter_hippie, parse_details
+from omnipath_resources.inputs_v2 import hippie
+from omnipath_resources.inputs_v2.parsers.hippie import iter_hippie, parse_details
 
 # Lines copied from hippie_current.txt: a pair with several techniques,
 # publications and source databases; one with the placeholder PubMed ID

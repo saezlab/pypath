@@ -29,7 +29,7 @@ from typing import Iterable, Mapping, TYPE_CHECKING
 
 if TYPE_CHECKING:
 
-    import pypath.internals.license as License
+    import omnipath_resources.internals.license as License
 
 import os
 import collections
@@ -41,9 +41,9 @@ except:
     import pickle
 
 
-import pypath.inputs as inputs
-import pypath.share.common as common
-import pypath.share.session as session_mod
+import omnipath_resources.inputs as inputs
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session_mod
 
 
 class AbstractResource(session_mod.Logger):

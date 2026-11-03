@@ -288,7 +288,7 @@ def _create_inputs(con: Any, resources: tuple[ResourceSelection, ...]) -> None:
 
 def _namespace_names() -> dict[str, str]:
     """Namespace spelling adapters only; no identifier translation/resolution."""
-    from pypath.internals.cv_terms import IdentifierNamespaceCv, cv_term_label_accession
+    from omnipath_resources.internals.cv_terms import IdentifierNamespaceCv, cv_term_label_accession
 
     members = {
         "uniprot": "UNIPROT",

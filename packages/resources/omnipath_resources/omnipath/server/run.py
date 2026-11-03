@@ -29,7 +29,7 @@ import hashlib
 import warnings
 import contextlib
 
-from pypath.share import session as session_mod
+from omnipath_resources.share import session as session_mod
 
 _logger = session_mod.Logger(name = 'server')
 _log = _logger._log
@@ -58,17 +58,17 @@ import mimetypes
 import pandas as pd
 import numpy as np
 
-import pypath.resources as resources
-from pypath.omnipath.server import generate_about_page
-import pypath.omnipath.server._html as _html
-import pypath.resources.urls as urls
-import pypath.resources as resources_mod
-import pypath.share.common as common
+import omnipath_resources.resources as resources
+from omnipath_resources.omnipath.server import generate_about_page
+import omnipath_resources.omnipath.server._html as _html
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.resources as resources_mod
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.core.intercell_annot as intercell_annot
-import pypath.share.settings as settings
-from pypath.share.common import flat_list
-from pypath._metadata import __version__
+import omnipath_resources.core.intercell_annot as intercell_annot
+import omnipath_resources.share.settings as settings
+from omnipath_resources.share.common import flat_list
+from omnipath_resources._metadata import __version__
 
 if 'unicode' not in __builtins__:
     unicode = str
@@ -1279,7 +1279,7 @@ class TableServer(BaseServer):
         Server based on ``pandas`` data frames.
 
         :param dict input_files:
-            Paths to tables exported by the ``pypath.websrvtab`` module.
+            Paths to tables exported by the ``omnipath_resources.websrvtab`` module.
         """
 
         session_mod.Logger.__init__(self, name = 'server')

@@ -8,8 +8,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import lambert2018
-from pypath.inputs_v2.parsers import lambert2018 as parser
+from omnipath_resources.inputs_v2 import lambert2018
+from omnipath_resources.inputs_v2.parsers import lambert2018 as parser
 
 GROUPS = [
     'Gene Information', None, None, 'Is TF?', 'Final Assesment', None, None, None, None,

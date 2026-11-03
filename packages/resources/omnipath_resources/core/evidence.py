@@ -32,13 +32,13 @@ from future.utils import iteritems
 import importlib as imp
 import copy
 
-import pypath.internals.refs as refs
-import pypath.share.common as common
-import pypath.share.session as session_mod
-import pypath.share.constants as _const
-import pypath.core.entity as entity
-import pypath.core.attrs as attrs_mod
-import pypath.resources.network as netres
+import omnipath_resources.internals.refs as refs
+import omnipath_resources.share.common as common
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.constants as _const
+import omnipath_resources.core.entity as entity
+import omnipath_resources.core.attrs as attrs_mod
+import omnipath_resources.resources.network as netres
 import pypath_common._constants as _const
 
 _logger = session_mod.Logger(name = 'evidence')
@@ -54,8 +54,8 @@ class Evidence(attrs_mod.AttributeHandler):
     references. If a relationship is supported by multiple databases, for
     each one `Evidence` object should be created and
 
-    :arg pypath.resource.ResourceAttributes resource:
-        An object derived from :py:class:`pypath.resource.ResourceAttributes`.
+    :arg omnipath_resources.resource.ResourceAttributes resource:
+        An object derived from :py:class:`omnipath_resources.resource.ResourceAttributes`.
     :arg str,list,set,NoneType references:
         Optional, one or more literature references (preferably PubMed IDs).
     """
@@ -861,7 +861,7 @@ class Evidences(object):
 
     def __getitem__(self, key):
         """
-        Key is a :py:class:`pypath.internals.resource.NetworkResourceKey` or
+        Key is a :py:class:`omnipath_resources.internals.resource.NetworkResourceKey` or
         an equivalent tuple.
         """
 
@@ -872,7 +872,7 @@ class Evidences(object):
         """
         Returns
             (dict_keys): The keys of this dictionary are
-                :py:class:`pypath.internals.resource.NetworkResourceKey`
+                :py:class:`omnipath_resources.internals.resource.NetworkResourceKey`
                 objects.
         """
 
@@ -883,8 +883,8 @@ class Evidences(object):
         """
         Returns
             (dict_items): The evidences as a mapping, with
-                :py:class:`pypath.internals.resource.NetworkResourceKey`
-                objects as keys and :py:class:`pypath.core.evidence.Evidence`
+                :py:class:`omnipath_resources.internals.resource.NetworkResourceKey`
+                objects as keys and :py:class:`omnipath_resources.core.evidence.Evidence`
                 objects as values.
         """
 

@@ -18,7 +18,7 @@ import pyarrow.parquet as pq
 from omnipath_core.fixtures import read_resource
 import pytest
 
-from pypath.internals.tabular_builder import EntityBuilder, RelationBuilder
+from omnipath_resources.internals.tabular_builder import EntityBuilder, RelationBuilder
 
 REACTION_CASES = [
     (module, mapper, row)
@@ -84,7 +84,7 @@ REACTION_CASES = [
 
 
 def _mapper(module: str, name: str) -> EntityBuilder | RelationBuilder:
-    return getattr(importlib.import_module('pypath.inputs_v2.' + module), name)
+    return getattr(importlib.import_module('omnipath_resources.inputs_v2.' + module), name)
 
 
 def _extract(

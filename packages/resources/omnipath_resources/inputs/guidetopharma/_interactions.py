@@ -19,7 +19,7 @@
 from collections.abc import Generator
 
 import pypath_common._constants as _const
-from pypath.utils import taxonomy
+from omnipath_resources.utils import taxonomy
 from . import _ligands, _targets, _raw
 from ._records import G2PInteraction, G2PTarget, clean_dict
 from ._constants import POSITIVE_REGULATION, NEGATIVE_REGULATION

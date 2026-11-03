@@ -67,7 +67,7 @@ class ReferenceListManager:
         )
 
         try:
-            from pypath.inputs.uniprot import UniprotQuery
+            from omnipath_resources.inputs.uniprot import UniprotQuery
 
             q = UniprotQuery(
                 organism=ncbi_tax_id, fields='accession', reviewed=True
@@ -88,7 +88,7 @@ class ReferenceListManager:
         _log.info('Loading TrEMBL reference list for organism %d', ncbi_tax_id)
 
         try:
-            from pypath.inputs.uniprot import UniprotQuery
+            from omnipath_resources.inputs.uniprot import UniprotQuery
 
             q = UniprotQuery(
                 organism=ncbi_tax_id, fields='accession', reviewed=False
@@ -119,7 +119,7 @@ class ReferenceListManager:
         key = ('swissprot', 0)
         if key not in self._cache:
             try:
-                from pypath.inputs.uniprot import UniprotQuery
+                from omnipath_resources.inputs.uniprot import UniprotQuery
 
                 q = UniprotQuery(fields='accession', reviewed=True)
                 data = q.perform()

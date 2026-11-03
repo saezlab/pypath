@@ -120,8 +120,8 @@ from typing import Iterable, Optional
 
 import pandas as pd
 
-import pypath.share.curl as curl
-import pypath.utils.mapping as mapping
+import omnipath_resources.share.curl as curl
+import omnipath_resources.utils.mapping as mapping
 ```
 
 **Avoid in new code** (legacy compatibility):
@@ -133,7 +133,7 @@ from past.builtins import xrange    # Use range() directly
 
 ### Logging
 
-Classes inherit from `pypath.share.session.Logger`:
+Classes inherit from `omnipath_resources.share.session.Logger`:
 ```python
 class MyClass(session_mod.Logger):
     def __init__(self):
@@ -143,7 +143,7 @@ class MyClass(session_mod.Logger):
 
 Or module-level logger:
 ```python
-import pypath.share.session as session_mod
+import omnipath_resources.share.session as session_mod
 _logger = session_mod.Logger(name='inputs.mymodule')
 _logger._log('Processing data...')
 ```
@@ -159,9 +159,9 @@ _logger._log('Processing data...')
 
 ### Standard Data Flow
 
-1. **Download** via `pypath.share.curl.Curl`
+1. **Download** via `omnipath_resources.share.curl.Curl`
 2. **Parse** to Python structures (lists, dicts, namedtuples)
-3. **Map IDs** to UniProt using `pypath.utils.mapping`
+3. **Map IDs** to UniProt using `omnipath_resources.utils.mapping`
 4. **Return** standardized format
 
 ### Basic Input Module Pattern
@@ -175,9 +175,9 @@ from __future__ import annotations
 
 import collections
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.utils.mapping as mapping
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.mapping as mapping
 
 
 ResourceRecord = collections.namedtuple(
@@ -231,9 +231,9 @@ inputs/resource/
 ### SQLite Database Pattern
 
 ```python
-import pypath.formats.sqlite as _sqlite
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
+import omnipath_resources.formats.sqlite as _sqlite
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
 
 
 def resource_sqlite(version: int = 1, connect: bool = True):
@@ -262,7 +262,7 @@ def resource_sqlite(version: int = 1, connect: bool = True):
 
 **ID Mapping:**
 ```python
-import pypath.utils.mapping as mapping
+import omnipath_resources.utils.mapping as mapping
 
 # Map multiple IDs
 uniprot_ids = mapping.map_names(gene_symbols, 'genesymbol', 'uniprot')
@@ -273,7 +273,7 @@ uniprot = mapping.map_name('EGFR', 'genesymbol', 'uniprot')
 
 **Taxonomy:**
 ```python
-import pypath.utils.taxonomy as taxonomy
+import omnipath_resources.utils.taxonomy as taxonomy
 
 name = taxonomy.taxids[9606]  # 'Homo sapiens'
 ```
@@ -300,7 +300,7 @@ result = glom.glom(record, spec, default=_const.GLOM_ERROR)
 
 **Cache control context managers:**
 ```python
-import pypath.share.curl as curl
+import omnipath_resources.share.curl as curl
 
 # Force fresh download
 with curl.cache_delete_on():
@@ -317,29 +317,20 @@ with curl.debug_on():
 
 ## Testing Input Modules
 
-```bash
-# Test specific module
-python input_module_maintenance/test_input_modules.py --module signor
-
-# Test specific function
-python input_module_maintenance/test_input_modules.py --function signor.signor_interactions
-
-# List all modules
-python input_module_maintenance/test_input_modules.py --list-modules
-```
+`make test-resources` at the repository root runs the offline input tests.
 
 **Quick smoke test:**
 ```python
-from pypath.inputs import signor
+from omnipath_resources.inputs import signor
 ints = signor.signor_interactions()
 print(len(ints), ints[0])
 ```
 
 ## Adding a New Resource
 
-1. Create module in `pypath/inputs/` (file or sub-package)
-2. Add URL to `pypath/resources/urls.py`
-3. Add metadata to `pypath/resources/descriptions.py`
+1. Create module in `omnipath_resources/inputs/` (file or sub-package)
+2. Add URL to `omnipath_resources/resources/urls.py`
+3. Add metadata to `omnipath_resources/resources/descriptions.py`
 4. Update `resources.json` with license information
 5. Create core database input definitions if needed:
    - `network`: Format definition in `resources/data_formats.py`
@@ -378,10 +369,9 @@ print(len(ints), ints[0])
 
 ## Key Files Reference
 
-- `pypath/resources/urls.py` - All 1000+ data source URLs
-- `pypath/resources/descriptions.py` - Resource metadata
-- `pypath/resources/data_formats.py` - Input format definitions
-- `pypath/share/curl.py` - Download infrastructure
-- `pypath/utils/mapping.py` - ID translation
+- `omnipath_resources/resources/urls.py` - All 1000+ data source URLs
+- `omnipath_resources/resources/descriptions.py` - Resource metadata
+- `omnipath_resources/resources/data_formats.py` - Input format definitions
+- `omnipath_resources/share/curl.py` - Download infrastructure
+- `omnipath_resources/utils/mapping.py` - ID translation
 - `CONTRIBUTING.md` - Detailed contribution guide
-- `input_module_maintenance/` - Testing and maintenance tools

@@ -21,7 +21,7 @@ from collections.abc import Generator, Iterable
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_csv, iter_excel
+from omnipath_resources.inputs_v2.parsers.base import iter_csv, iter_excel
 
 # The interaction column of Table S2, whose name is its own key.
 INTERACTION = 'Interaction (1=activating; 2=inhibiting; 3=binding)'

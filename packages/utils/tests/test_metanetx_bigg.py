@@ -23,7 +23,7 @@ class TestMetaNetXBackend:
 
     def test_read_bigg_to_chebi(self):
         """Mock pypath and verify read returns dict[str, set[str]]."""
-        with patch("pypath.inputs.metanetx.metanetx_mapping") as mock:
+        with patch("omnipath_resources.inputs.metanetx.metanetx_mapping") as mock:
             mock.return_value = {
                 "atp": {"CHEBI:30616"},
                 "gtp": {"CHEBI:15996"},
@@ -38,7 +38,7 @@ class TestMetaNetXBackend:
 
     def test_read_empty_when_no_data(self):
         """Returns empty dict when metanetx_mapping returns nothing."""
-        with patch("pypath.inputs.metanetx.metanetx_mapping") as mock:
+        with patch("omnipath_resources.inputs.metanetx.metanetx_mapping") as mock:
             mock.return_value = {}
             backend = MetaNetXBackend()
             result = backend.read("bigg", "chebi", 0)
@@ -55,7 +55,7 @@ class TestMetaNetXBackend:
 
     def test_read_handles_exception(self):
         """Returns empty dict when metanetx_mapping raises."""
-        with patch("pypath.inputs.metanetx.metanetx_mapping") as mock:
+        with patch("omnipath_resources.inputs.metanetx.metanetx_mapping") as mock:
             mock.side_effect = ValueError("download failed")
             backend = MetaNetXBackend()
             result = backend.read("bigg", "chebi", 0)
@@ -78,7 +78,7 @@ class TestBiggBackend:
 
     def test_read_bigg_to_chebi(self):
         """bigg->chebi reads forward mapping."""
-        with patch("pypath.inputs.bigg.bigg_metabolite_mapping") as mock:
+        with patch("omnipath_resources.inputs.bigg.bigg_metabolite_mapping") as mock:
             mock.return_value = {
                 "atp": {"CHEBI:30616", "CHEBI:15422"},
                 "gtp": {"CHEBI:15996"},
@@ -91,7 +91,7 @@ class TestBiggBackend:
 
     def test_read_chebi_to_bigg_reverses(self):
         """chebi->bigg should reverse the mapping."""
-        with patch("pypath.inputs.bigg.bigg_metabolite_mapping") as mock:
+        with patch("omnipath_resources.inputs.bigg.bigg_metabolite_mapping") as mock:
             mock.return_value = {"atp": {"CHEBI:30616"}}
             backend = BiggBackend()
             result = backend.read("chebi", "bigg", 0)
@@ -106,7 +106,7 @@ class TestBiggBackend:
 
     def test_read_empty_when_no_data(self):
         """Returns empty dict when pypath returns nothing."""
-        with patch("pypath.inputs.bigg.bigg_metabolite_mapping") as mock:
+        with patch("omnipath_resources.inputs.bigg.bigg_metabolite_mapping") as mock:
             mock.return_value = {}
             backend = BiggBackend()
             result = backend.read("bigg", "chebi", 0)
@@ -114,7 +114,7 @@ class TestBiggBackend:
 
     def test_read_handles_exception(self):
         """Returns empty dict when bigg_metabolite_mapping raises."""
-        with patch("pypath.inputs.bigg.bigg_metabolite_mapping") as mock:
+        with patch("omnipath_resources.inputs.bigg.bigg_metabolite_mapping") as mock:
             mock.side_effect = ValueError("download failed")
             backend = BiggBackend()
             result = backend.read("bigg", "chebi", 0)
@@ -122,7 +122,7 @@ class TestBiggBackend:
 
     def test_reverse_multi_target(self):
         """Reverse mapping with multiple targets per bigg ID."""
-        with patch("pypath.inputs.bigg.bigg_metabolite_mapping") as mock:
+        with patch("omnipath_resources.inputs.bigg.bigg_metabolite_mapping") as mock:
             mock.return_value = {
                 "atp": {"CHEBI:30616", "CHEBI:15422"},
             }

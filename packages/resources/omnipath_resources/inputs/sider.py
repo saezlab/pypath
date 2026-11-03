@@ -23,9 +23,9 @@ from typing import NamedTuple
 
 import collections
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.share.common as common
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.common as common
 
 
 class SiderSideeffect(NamedTuple):

@@ -30,13 +30,13 @@ import sys
 import re
 import collections
 
-import pypath.share.common as common
-import pypath.inputs.pfam as pfam_input
-import pypath.inputs.uniprot as uniprot_input
-import pypath.inputs.uniprot_db as uniprot_db
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.utils.taxonomy as taxonomy
+import omnipath_resources.share.common as common
+import omnipath_resources.inputs.pfam as pfam_input
+import omnipath_resources.inputs.uniprot as uniprot_input
+import omnipath_resources.inputs.uniprot_db as uniprot_db
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.utils.taxonomy as taxonomy
 
 
 def swissprot_seq(

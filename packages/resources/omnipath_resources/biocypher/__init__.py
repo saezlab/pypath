@@ -17,6 +17,6 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-from pypath.biocypher.adapter import Adapter
+from omnipath_resources.biocypher.adapter import Adapter
 
 __all__ = ['Adapter']

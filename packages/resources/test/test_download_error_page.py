@@ -1,6 +1,6 @@
 """A page saved in place of a data file is an error; an expected HTML page is not."""
 
-from pypath.share.downloads import _is_error_page
+from omnipath_resources.share.downloads import _is_error_page
 
 
 def test_html_page_is_data_when_html_is_expected(tmp_path):

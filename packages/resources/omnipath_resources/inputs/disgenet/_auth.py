@@ -21,10 +21,10 @@ from __future__ import annotations
 
 import json
 
-import pypath.share.curl as curl
-import pypath.share.session as session
-import pypath.share.settings as settings
-import pypath.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.session as session
+import omnipath_resources.share.settings as settings
+import omnipath_resources.resources.urls as urls
 
 _logger = session.Logger(name = 'disgenet_input')
 _log = _logger._log

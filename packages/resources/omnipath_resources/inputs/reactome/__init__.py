@@ -1,8 +1,8 @@
 import csv
 from typing import Literal
 from collections.abc import Generator
-from pypath.resources import urls
-from pypath.share import curl
+from omnipath_resources.resources import urls
+from omnipath_resources.share import curl
 
 def _reactome_txt(url: str, colnames: list[str]) -> Generator[tuple]:
 

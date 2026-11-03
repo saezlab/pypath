@@ -9,8 +9,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import KnowledgeOrigin
 
-from pypath.inputs_v2 import kinasedotcom
-from pypath.inputs_v2.parsers import kinasedotcom as parser
+from omnipath_resources.inputs_v2 import kinasedotcom
+from omnipath_resources.inputs_v2.parsers import kinasedotcom as parser
 
 HEADER = [
     'Name', 'SK', 'Group', 'Family', 'Subfamily', 'Pseudogene?', 'Header',

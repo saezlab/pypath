@@ -21,12 +21,12 @@ from future.utils import iteritems
 
 import collections
 
-import pypath.share.curl as curl
-import pypath.share.common as common
-import pypath.resources.urls as urls
-import pypath.inputs.common as inputs_common
-import pypath.utils.mapping as mapping
-import pypath.utils.taxonomy as taxonomy
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.common as common
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.inputs.common as inputs_common
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.utils.taxonomy as taxonomy
 
 
 def cspa_annotations(organism = 9606):

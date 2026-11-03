@@ -23,7 +23,7 @@ from collections.abc import Generator, Iterable
 import itertools
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_excel
+from omnipath_resources.inputs_v2.parsers.base import iter_excel
 
 # The worksheet with the published list; the workbook also has an older one.
 SHEET = 'Interaction Sheet Jan'

@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import encode as mod
-from pypath.inputs_v2.parsers import encode as parser
+from omnipath_resources.inputs_v2 import encode as mod
+from omnipath_resources.inputs_v2.parsers import encode as parser
 
 # Lines copied from enets2.Proximal_filtered.txt (space separated),
 # enets3.Distal.txt (tab separated, Windows line ends) and

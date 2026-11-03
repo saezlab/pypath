@@ -7,16 +7,16 @@ from typing import Any
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 
-from pypath.inputs_v2.base import (
+from omnipath_resources.inputs_v2.base import (
     Dataset,
     Download,
     Resource,
     ResourceConfig,
     ontology_entity_mapper,
 )
-from pypath.inputs_v2.parsers.oncotree import iter_terms, oncotree_record_to_term
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.silver_schema import Annotation, Entity
+from omnipath_resources.inputs_v2.parsers.oncotree import iter_terms, oncotree_record_to_term
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.silver_schema import Annotation, Entity
 
 
 config = ResourceConfig(

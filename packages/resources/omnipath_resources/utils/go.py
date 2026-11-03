@@ -33,13 +33,13 @@ try:
 except:
     import pickle
 
-import pypath.share.cache as cache
-import pypath.inputs.go as go_input
-import pypath.share.progress as progress
-import pypath.share.common as common
-from pypath.share.common import *
-import pypath.share.session as session_mod
-import pypath.share.settings as settings
+import omnipath_resources.share.cache as cache
+import omnipath_resources.inputs.go as go_input
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.common as common
+from omnipath_resources.share.common import *
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.settings as settings
 
 # this is for GO terms parsing:
 _reexprterm = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')
@@ -1211,8 +1211,8 @@ class GOCustomAnnotation(session_mod.Logger):
             or names or complex expressions as values.
             Alternatively a set of GO terms, in this case the term names will
             be used as labels.
-        :arg pypath.go.GOAnnotation go_annot:
-            A :class:``pypath.go.GOAnnotation`` object.
+        :arg omnipath_resources.go.GOAnnotation go_annot:
+            A :class:``omnipath_resources.go.GOAnnotation`` object.
         """
 
         session_mod.Logger.__init__(self, name = 'go')

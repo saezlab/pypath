@@ -2,7 +2,7 @@
 Parse Guide to Pharmacology data and emit Entity records.
 
 This module converts Guide to Pharmacology ligand-target interaction data
-into Entity records using the schema defined in pypath.internals.silver_schema.
+into Entity records using the schema defined in omnipath_resources.internals.silver_schema.
 """
 
 from __future__ import annotations
@@ -31,11 +31,11 @@ from biolink_model.datamodel.model import (
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
-from pypath.inputs_v2._measurements import measurement
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.silver_schema import Entity, Identifier, Membership
-from pypath.internals.tabular_builder import (
+from omnipath_resources.inputs_v2._measurements import measurement
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.silver_schema import Entity, Identifier, Membership
+from omnipath_resources.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
     AssociationBuilder,

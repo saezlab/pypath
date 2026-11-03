@@ -3,7 +3,7 @@ Parse LIPID MAPS Structure Database (LMSD) data and emit Entity records.
 
 This module downloads the LIPID MAPS Structure Database in SDF format and
 converts lipid structures into Entity records using the schema defined in
-pypath.internals.silver_schema.
+omnipath_resources.internals.silver_schema.
 """
 
 from __future__ import annotations
@@ -12,17 +12,17 @@ from biolink_model.datamodel.model import ChemicalEntity, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 
-from pypath.inputs_v2._class_terms import (
+from omnipath_resources.inputs_v2._class_terms import (
     Level,
     class_associations,
     coded,
     iter_class_terms,
     map_class_term,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.lipidmaps import _raw
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.tabular_builder import (
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.lipidmaps import _raw
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
     AssociationsBuilder,

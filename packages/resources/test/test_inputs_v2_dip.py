@@ -8,8 +8,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import dip
-from pypath.inputs_v2.parsers.dip import COLUMNS, iter_dip
+from omnipath_resources.inputs_v2 import dip
+from omnipath_resources.inputs_v2.parsers.dip import COLUMNS, iter_dip
 
 HEADER = 'ID interactor A\tID interactor B\tAlt. ID interactor A\tAlt. ID interactor B\tAlias(es) interactor A\tAlias(es) interactor B\tInteraction detection method(s)\tPublication 1st author(s)\tPublication Identifier(s)\tTaxid interactor A\tTaxid interactor B\tInteraction type(s)\tSource database(s)\tInteraction identifier(s)\tConfidence value(s)\tProcessing Status\t\n'
 # Rows copied from Hsapi20170205.txt, in this order: DIP-42E, a self

@@ -8,7 +8,7 @@ building Entity records (no ``Dataset.__call__`` overhead) and without RDKit
 cheminformatics out of utils).
 
 Subclass :class:`InputsV2Backend`, set ``resource_module`` (the
-``pypath.inputs_v2`` module) and ``dataset`` (e.g. ``molecules``/``lipids``), and
+``omnipath_resources.inputs_v2`` module) and ``dataset`` (e.g. ``molecules``/``lipids``), and
 ``register(...)``. The canonical id_type → raw-column mapping comes from
 ``id_types.yaml`` (the base class resolves ``src_col``/``tgt_col``), so a backend
 is a few lines and ``id_types.yaml`` wiring.
@@ -66,7 +66,7 @@ def raw_rows(
     cache_key = (resource_module, dataset)
     if limit is None and cache_key in _RAW_CACHE:
         return _RAW_CACHE[cache_key]
-    module = importlib.import_module(f'pypath.inputs_v2.{resource_module}')
+    module = importlib.import_module(f'omnipath_resources.inputs_v2.{resource_module}')
     dataset_obj = getattr(module.resource, dataset)
     iterator = dataset_obj.raw()
     if limit is not None:
@@ -79,7 +79,7 @@ def raw_rows(
 class InputsV2Backend(MappingBackend):
     """Map between columns of an ``inputs_v2`` resource's raw rows."""
 
-    #: The ``pypath.inputs_v2`` module name (e.g. ``chebi``).
+    #: The ``omnipath_resources.inputs_v2`` module name (e.g. ``chebi``).
     resource_module: str = ''
     #: The dataset attribute on ``resource`` whose ``.raw()`` is read.
     dataset: str = ''
@@ -95,7 +95,7 @@ class InputsV2Backend(MappingBackend):
         limit: int | None = None,
         **kwargs: object,
     ) -> dict[str, set[str]]:
-        importlib.import_module('pypath')  # ImportError → base falls to _read_direct
+        importlib.import_module('omnipath_resources')  # ImportError → base falls to _read_direct
         rows = raw_rows(self.resource_module, self.dataset, limit)
         return build_mapping(rows, src_col, tgt_col)
 

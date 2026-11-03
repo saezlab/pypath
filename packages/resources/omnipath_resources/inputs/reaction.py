@@ -39,13 +39,13 @@ from lxml import etree
 import copy
 import struct
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.share.progress as progress
-import pypath.share.common as common
-import pypath.share.cache as cache_mod
-import pypath.inputs.acsn as acsn_input
-from pypath.resources import data_formats
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.common as common
+import omnipath_resources.share.cache as cache_mod
+import omnipath_resources.inputs.acsn as acsn_input
+from omnipath_resources.resources import data_formats
 
 
 def reactome_sbml():
@@ -1177,7 +1177,7 @@ def get_reactions(types = None, sources = None):
         interactions = pickle.load(open(cachefile, 'rb'))
 
     else:
-        import pypath.utils.pyreact as pyreact
+        import omnipath_resources.utils.pyreact as pyreact
         rea = pyreact.PyReact()
         rea.load_all()
         rea.expand_by_source()

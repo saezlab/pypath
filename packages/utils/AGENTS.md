@@ -89,9 +89,9 @@ Subclasses declare `name` and `yaml_key` and implement `_read_via_pypath()`
 and `_read_direct()`.
 
 ### pypath integration
-Backends try `pypath.inputs` first, fall back to direct HTTP. This means
+Backends try `omnipath_resources.inputs` first, fall back to direct HTTP. This means
 the package works both with and without pypath installed. Data access
-through pypath uses `dlmachine` (not the old `pypath.share.curl`).
+through pypath uses `dlmachine` (not the old `omnipath_resources.share.curl`).
 
 ### REST fallback chain
 The REST API does: DB query → gene symbol fallbacks (via DB) → chain
@@ -112,7 +112,7 @@ omnipath-utils build --preset full      # all organisms via UniProt FTP
 - `pkg-infra` — logging, config, session, utility functions
 - `cachedir` — file caching with SQLite metadata
 - `dlmachine` — HTTP downloads
-- `pypath-omnipath` (optional) — data access for backends
+- `omnipath-resources` (optional) — data access for backends
 
 ### Key external
 - `narwhals` — backend-agnostic DataFrame ops (pandas/polars/pyarrow)

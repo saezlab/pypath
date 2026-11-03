@@ -5,8 +5,8 @@ from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
-from pypath.inputs_v2._source_context import conversion_direction_cv
-from pypath.internals.tabular_builder import AnnotationsBuilder
+from omnipath_resources.inputs_v2._source_context import conversion_direction_cv
+from omnipath_resources.internals.tabular_builder import AnnotationsBuilder
 from collections.abc import Iterable
 import contextlib
 import fcntl
@@ -66,19 +66,19 @@ def _kegg_organism_codes(
     return tuple(dict.fromkeys(organism_codes))
 
 
-from pypath.inputs_v2.base import (
+from omnipath_resources.inputs_v2.base import (
     Dataset,
     Resource,
     ResourceConfig,
     ontology_entity_mapper,
 )
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.tabular_builder import (
     AssociationBuilder,
     AssociationsBuilder,
     CV,
@@ -89,7 +89,7 @@ from pypath.internals.tabular_builder import (
     MembersFromList,
     MembershipBuilder,
 )
-from pypath.internals.ontology_builder import OntologyBuilder
+from omnipath_resources.internals.ontology_builder import OntologyBuilder
 
 config = ResourceConfig(
     id=ResourceCv.KEGG_METABOLIC,
@@ -557,7 +557,7 @@ def _fetch_kegg_rest(url: str) -> str:
     uv-managed interpreter the build runs on) and failed cert verification with
     ``CERTIFICATE_VERIFY_FAILED`` even though the KEGG certificate is valid.
     """
-    from pypath.share.downloads import get_download_manager
+    from omnipath_resources.share.downloads import get_download_manager
 
     buffer = get_download_manager().download(url, dest=False)
     if buffer is None:
@@ -756,7 +756,7 @@ def _download_kegg_pathway_ontology_files(
 ) -> _MultiOpener:
     """Download only the KEGG files needed for the pathway ontology."""
     from pathlib import Path
-    from pypath.share.downloads import _resolve_data_dir, get_download_manager
+    from omnipath_resources.share.downloads import _resolve_data_dir, get_download_manager
 
     organism_codes = tuple(dict.fromkeys(organism_codes))
     base_dir: Path = _resolve_data_dir()
@@ -809,7 +809,7 @@ def _download_kegg_files(
     ``Opener`` ``UnboundLocalError`` bug on plain TSV files.
     """
     from pathlib import Path
-    from pypath.share.downloads import _resolve_data_dir, get_download_manager
+    from omnipath_resources.share.downloads import _resolve_data_dir, get_download_manager
 
     organism_urls = {
         'conv_uniprot': f'https://rest.kegg.jp/conv/uniprot/{organism_code}',
@@ -868,7 +868,7 @@ class _KeggDataset:
         self._data_type = data_type
 
     def raw(self, **kwargs):
-        from pypath.inputs_v2.parsers.kegg import _raw
+        from omnipath_resources.inputs_v2.parsers.kegg import _raw
 
         organism_codes = _kegg_organism_codes(
             kwargs.pop('organism', self._orgs)
@@ -931,7 +931,7 @@ def make_kegg_resource(
 
 
 def _default_raw(data_type: str, opener=None, **kwargs):
-    from pypath.inputs_v2.parsers.kegg import _raw
+    from omnipath_resources.inputs_v2.parsers.kegg import _raw
 
     requested_organism = kwargs.pop('organism', None)
     if opener is None:
@@ -966,7 +966,7 @@ def _default_pathways_raw(opener=None, **kwargs):
 
 
 def _default_pathway_terms_raw(opener=None, **kwargs):
-    from pypath.inputs_v2.parsers.kegg import _raw
+    from omnipath_resources.inputs_v2.parsers.kegg import _raw
 
     requested_organism = kwargs.pop('organism', None)
     organism_codes = _kegg_organism_codes(requested_organism)

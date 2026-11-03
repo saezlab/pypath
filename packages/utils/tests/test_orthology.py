@@ -162,9 +162,9 @@ class TestOrthologyBackends:
         with patch.dict(
             'sys.modules',
             {
-                'pypath': MagicMock(),
-                'pypath.inputs': MagicMock(),
-                'pypath.inputs.orthodb': mock_mod,
+                'omnipath_resources': MagicMock(),
+                'omnipath_resources.inputs': MagicMock(),
+                'omnipath_resources.inputs.orthodb': mock_mod,
             },
         ):
             mgr = OrthologyManager()
@@ -185,9 +185,9 @@ class TestOrthologyBackends:
         with patch.dict(
             'sys.modules',
             {
-                'pypath': MagicMock(),
-                'pypath.inputs': MagicMock(),
-                'pypath.inputs.orthodb': mock_mod,
+                'omnipath_resources': MagicMock(),
+                'omnipath_resources.inputs': MagicMock(),
+                'omnipath_resources.inputs.orthodb': mock_mod,
             },
         ):
             mgr = OrthologyManager()
@@ -201,9 +201,9 @@ class TestOrthologyBackends:
         with patch.dict(
             'sys.modules',
             {
-                'pypath': MagicMock(),
-                'pypath.inputs': MagicMock(),
-                'pypath.inputs.alliance': mock_mod,
+                'omnipath_resources': MagicMock(),
+                'omnipath_resources.inputs': MagicMock(),
+                'omnipath_resources.inputs.alliance': mock_mod,
             },
         ):
             mgr = OrthologyManager()
@@ -224,9 +224,9 @@ class TestOrthologyBackends:
         with patch.dict(
             'sys.modules',
             {
-                'pypath': MagicMock(),
-                'pypath.inputs': MagicMock(),
-                'pypath.inputs.alliance': mock_mod,
+                'omnipath_resources': MagicMock(),
+                'omnipath_resources.inputs': MagicMock(),
+                'omnipath_resources.inputs.alliance': mock_mod,
             },
         ):
             mgr = OrthologyManager()

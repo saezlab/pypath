@@ -15,26 +15,26 @@ import re
 from collections.abc import Generator, Iterable
 from typing import Any
 
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.silver_schema import (
+from omnipath_resources.internals.silver_schema import (
     Annotation,
     Entity,
     Identifier,
     Relation,
 )
-from pypath.inputs_v2.base import (
+from omnipath_resources.inputs_v2.base import (
     Dataset,
     Download,
     Resource,
     ResourceConfig,
     ontology_entity_mapper,
 )
-from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
+from omnipath_resources.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
 
 _MONDO_DOWNLOAD = Download(

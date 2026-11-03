@@ -1,4 +1,4 @@
-from pypath.inputs_v2 import chembl
+from omnipath_resources.inputs_v2 import chembl
 from biolink_model.datamodel.model import Protein
 from omnipath_build.silver import SilverExtractor
 from omnipath_resolver.canonical.policy import get_policy

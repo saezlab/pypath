@@ -19,7 +19,7 @@
 
 from __future__ import annotations
 
-import pypath.share.common as common
+import omnipath_resources.share.common as common
 from .. import _valid
 from .._records import (
     DiseaseDiseaseAssociation,

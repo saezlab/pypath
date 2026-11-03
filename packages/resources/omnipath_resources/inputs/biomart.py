@@ -27,13 +27,13 @@ import json
 import hashlib
 import collections
 
-import pypath.share.session as session_mod
-import pypath.share.common as common
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.common as common
 import pypath_common.data as _data
-from pypath.share.downloads import dm, DATA_DIR
-import pypath.share.settings as settings
-import pypath.resources.urls as urls
-import pypath.utils.taxonomy as taxonomy
+from omnipath_resources.share.downloads import dm, DATA_DIR
+import omnipath_resources.share.settings as settings
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.taxonomy as taxonomy
 
 _logger = session_mod.Logger(name = 'biomart_input')
 

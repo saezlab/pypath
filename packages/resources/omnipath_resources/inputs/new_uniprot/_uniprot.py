@@ -22,7 +22,7 @@ from __future__ import annotations
 import csv
 from collections.abc import Generator
 
-from pypath.share.downloads import download_and_open
+from omnipath_resources.share.downloads import download_and_open
 from ._records import UniProtRecord
 
 __all__ = [

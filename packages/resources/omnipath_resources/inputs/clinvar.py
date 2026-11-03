@@ -28,8 +28,8 @@ import csv
 import ctypes
 import collections
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
 
 csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
 

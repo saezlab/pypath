@@ -26,8 +26,8 @@ from __future__ import annotations
 from urllib.parse import quote as url_quote
 import json
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
 
 from ._common import _log, _df_or_records
 from ._records import MetatlasGem

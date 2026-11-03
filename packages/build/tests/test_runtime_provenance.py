@@ -19,7 +19,7 @@ def installed_packages(tmp_path, monkeypatch):
         roots[module] = root
     for module, filename in (
         ("omnipath_core", "vocab/organisms.yaml"),
-        ("pypath", "internals/cv_terms/identifiers.py"),
+        ("omnipath_resources", "internals/cv_terms/identifiers.py"),
         ("biolink_model", "schema/biolink_model.yaml"),
     ):
         path = roots[module] / filename
@@ -41,7 +41,7 @@ def test_installed_only_provenance_covers_code_native_and_all_vocabularies(insta
         packages["omnipath-resolver"]["native_files"]["_omnipath_resolver.abi3.so"]["size_bytes"]
         == 18
     )
-    for name in ("omnipath-core", "pypath-omnipath", "biolink-model"):
+    for name in ("omnipath-core", "omnipath-resources", "biolink-model"):
         assert len(packages[name]["vocabulary"]["content_sha256"]) == 64
     assert all(package["git"] is None for package in packages.values())
     assert value["build_code_sha256"] == packages["omnipath-build"]["content_sha256"]
@@ -53,8 +53,8 @@ def test_installed_only_provenance_covers_code_native_and_all_vocabularies(insta
         ("omnipath_core", "__init__.py"),
         ("omnipath_core", "vocab/organisms.yaml"),
         ("omnipath_resolver", "_omnipath_resolver.abi3.so"),
-        ("pypath", "__init__.py"),
-        ("pypath", "internals/cv_terms/identifiers.py"),
+        ("omnipath_resources", "__init__.py"),
+        ("omnipath_resources", "internals/cv_terms/identifiers.py"),
         ("biolink_model", "schema/biolink_model.yaml"),
     ],
 )

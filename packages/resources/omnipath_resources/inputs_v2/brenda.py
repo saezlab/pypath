@@ -12,19 +12,19 @@ from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 
-from pypath.inputs_v2._molecular_forms import protein_variants
+from omnipath_resources.inputs_v2._molecular_forms import protein_variants
 from omnipath_core.molecular_forms import normalize_molecular_form
 
-from pypath.inputs_v2.base import (
+from omnipath_resources.inputs_v2.base import (
     ResourceConfig,
     Download,
     Resource,
     Dataset,
     ontology_entity_mapper,
 )
-from pypath.inputs_v2.parsers import brenda as _parsers
-from pypath.inputs_v2.parsers import protein_ids
-from pypath.internals.tabular_builder import (
+from omnipath_resources.inputs_v2.parsers import brenda as _parsers
+from omnipath_resources.inputs_v2.parsers import protein_ids
+from omnipath_resources.internals.tabular_builder import (
     AssociationBuilder,
     AnnotationsBuilder,
     AssociationsBuilder,
@@ -33,7 +33,7 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     OntologyCv,
     UpdateCategoryCV,

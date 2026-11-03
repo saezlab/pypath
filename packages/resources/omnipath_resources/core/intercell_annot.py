@@ -17,8 +17,8 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import pypath.share.common as common
-import pypath.internals.annot_formats as af
+import omnipath_resources.share.common as common
+import omnipath_resources.internals.annot_formats as af
 
 
 #TODO should go to jsons

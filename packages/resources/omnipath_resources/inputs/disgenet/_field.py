@@ -23,8 +23,8 @@ from typing import Any
 import abc
 import functools
 
-import pypath.share.common as common
-import pypath.inputs.disgenet._records as records
+import omnipath_resources.share.common as common
+import omnipath_resources.inputs.disgenet._records as records
 
 
 class Process:

@@ -7,7 +7,7 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.string import (
+from omnipath_resources.inputs_v2.string import (
     CONFIDENCE,
     FUNCTIONAL_CHANNELS,
     PHYSICAL_CHANNELS,
@@ -19,7 +19,7 @@ from pypath.inputs_v2.string import (
     regulatory_schema,
     resource,
 )
-from pypath.inputs_v2.parsers.string import iter_links
+from omnipath_resources.inputs_v2.parsers.string import iter_links
 
 ARF5, M6PR, FKBP4 = (
     '9606.ENSP00000000233',

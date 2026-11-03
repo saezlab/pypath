@@ -22,11 +22,11 @@ from typing import Any
 from biolink_model.datamodel.model import OntologyClass, slots
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.base import Download
-from pypath.inputs_v2.parsers.hmdb import _normalize_label
-from pypath.inputs_v2.parsers.obo import iter_obo
-from pypath.internals.silver_schema import Entity, EntityRef, Identifier, OntologyRelation
-from pypath.internals.tabular_builder import AssociationBuilder
+from omnipath_resources.inputs_v2.base import Download
+from omnipath_resources.inputs_v2.parsers.hmdb import _normalize_label
+from omnipath_resources.inputs_v2.parsers.obo import iter_obo
+from omnipath_resources.internals.silver_schema import Entity, EntityRef, Identifier, OntologyRelation
+from omnipath_resources.internals.tabular_builder import AssociationBuilder
 
 
 def plain(value: Any) -> tuple[str, str] | None:

@@ -26,14 +26,14 @@ import copy
 
 import pandas as pd
 
-import pypath.utils.mapping as mapping
-import pypath.share.session as session_mod
-import pypath.legacy.main as main_mod
-import pypath.core.network as network_mod
-import pypath.resources.data_formats as data_formats
-import pypath.core.annot as annot
-import pypath.core.intercell as intercell
-import pypath.omnipath.legacy.legacy as omnipath
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.legacy.main as main_mod
+import omnipath_resources.core.network as network_mod
+import omnipath_resources.resources.data_formats as data_formats
+import omnipath_resources.core.annot as annot
+import omnipath_resources.core.intercell as intercell
+import omnipath_resources.omnipath.legacy.legacy as omnipath
 
 
 CellPhoneDBGene = collections.namedtuple(

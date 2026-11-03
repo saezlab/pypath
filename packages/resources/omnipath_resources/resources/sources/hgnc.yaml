@@ -16,7 +16,7 @@ hgnc_genegroups:
     uniprot_ids: ","   # Split UniProt IDs by comma
     gene_groups: "|"   # Split gene groups by pipe
   
-  transform: "pypath.inputs.hgnc.process_genegroups"
+  transform: "omnipath_resources.inputs.hgnc.process_genegroups"
   
   description: "HGNC gene family/group annotations"
   organism: 9606

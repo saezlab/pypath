@@ -21,8 +21,8 @@ from __future__ import annotations
 
 import collections
 
-from pypath.share import curl
-from pypath.resources.urls import urls
+from omnipath_resources.share import curl
+from omnipath_resources.resources.urls import urls
 
 
 CTD_URLS = {

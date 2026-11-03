@@ -31,7 +31,7 @@ def populate_identifier_authority(
     """
     from psycopg2 import sql
 
-    from pypath.internals.cv_terms import cv_term_label_accession
+    from omnipath_resources.internals.cv_terms import cv_term_label_accession
 
     # spec 011 T058: a mints declaration for one of the resolver's own
     # structure-bearing chemical namespaces (the same set resolver_chemical

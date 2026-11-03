@@ -1,12 +1,12 @@
 ---
 name: inputs-v2-convert-legacy
-description: Convert an existing legacy pypath input module from pypath.inputs into a modern inputs_v2 module. Use for legacy audit, upstream re-checking, semantic redesign, implementation, and parity-oriented smoke testing.
+description: Convert an existing legacy pypath input module from omnipath_resources.inputs into a modern inputs_v2 module. Use for legacy audit, upstream re-checking, semantic redesign, implementation, and parity-oriented smoke testing.
 compatibility: Requires the pypath repository with both legacy inputs and inputs_v2 code available.
 ---
 
 # inputs-v2-convert-legacy
 
-Convert a legacy `pypath.inputs.*` module to `pypath.inputs_v2.*` in a deliberate way.
+Convert a legacy `omnipath_resources.inputs.*` module to `omnipath_resources.inputs_v2.*` in a deliberate way.
 
 ## Rules
 
@@ -31,9 +31,9 @@ Identify:
 If practical, run a small sample from the old module.
 
 Also check resource metadata in:
-- `pypath/resources/urls.py`
-- `pypath/resources/descriptions.py`
-- `pypath/resources/data/resources.json`
+- `omnipath_resources/resources/urls.py`
+- `omnipath_resources/resources/descriptions.py`
+- `omnipath_resources/resources/data/resources.json`
 - optionally `.agent/omnipath-resources.csv` if useful
 
 **Checkpoint:** state whether v1 should aim for parity, partial parity, or a cleaner redesign.
@@ -50,10 +50,10 @@ Decide:
 
 ### 3. Redesign for `inputs_v2`
 Read:
-- `pypath/inputs_v2/README.md`
-- `pypath/inputs_v2/base.py`
-- `pypath/internals/tabular_builder.py`
-- `pypath/internals/silver_schema.py`
+- `omnipath_resources/inputs_v2/README.md`
+- `omnipath_resources/inputs_v2/base.py`
+- `omnipath_resources/internals/tabular_builder.py`
+- `omnipath_resources/internals/silver_schema.py`
 - one or more similar modern modules such as `reactome.py`, `signor.py`, `intact.py`, `hmdb.py`
 
 Decide:
@@ -69,8 +69,8 @@ Decide:
 ### 4. Implement
 Create or update:
 - CV files if needed
-- `pypath/inputs_v2/parsers/<resource>.py`
-- `pypath/inputs_v2/<resource>.py`
+- `omnipath_resources/inputs_v2/parsers/<resource>.py`
+- `omnipath_resources/inputs_v2/<resource>.py`
 
 Keep raw records flat and mapping-friendly. Prefer a focused v1 over a full legacy clone.
 
@@ -78,19 +78,19 @@ Keep raw records flat and mapping-friendly. Prefer a focused v1 over a full lega
 Run, when possible:
 
 ```bash
-python -m py_compile pypath/inputs_v2/<resource>.py pypath/inputs_v2/parsers/<resource>.py
+python -m py_compile omnipath_resources/inputs_v2/<resource>.py omnipath_resources/inputs_v2/parsers/<resource>.py
 ```
 
 ```bash
-uv run python -c "from pypath.inputs import <legacy_module>; x = <legacy_call>; print(type(x)); print(next(iter(x)) if hasattr(x, '__iter__') else x)"
+uv run python -c "from omnipath_resources.inputs import <legacy_module>; x = <legacy_call>; print(type(x)); print(next(iter(x)) if hasattr(x, '__iter__') else x)"
 ```
 
 ```bash
-uv run python -c "from pypath.inputs_v2.<resource> import resource; print(next(resource.<dataset>.raw()))"
+uv run python -c "from omnipath_resources.inputs_v2.<resource> import resource; print(next(resource.<dataset>.raw()))"
 ```
 
 ```bash
-uv run python -c "from pypath.inputs_v2.<resource> import resource; print(next(resource.<dataset>()))"
+uv run python -c "from omnipath_resources.inputs_v2.<resource> import resource; print(next(resource.<dataset>()))"
 ```
 
 Compare:

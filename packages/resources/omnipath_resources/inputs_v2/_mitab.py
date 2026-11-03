@@ -29,8 +29,8 @@ from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2._publications import pmid_curie
-from pypath.internals.tabular_builder import CV
+from omnipath_resources.inputs_v2._publications import pmid_curie
+from omnipath_resources.internals.tabular_builder import CV
 
 
 class MitabItem(NamedTuple):

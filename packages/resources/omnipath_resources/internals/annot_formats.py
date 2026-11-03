@@ -24,9 +24,9 @@ try:
 except:
     import collections as collections_abc
 
-import pypath.share.settings as settings
-import pypath.share.common as common
-import pypath.core.entity as entity
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.common as common
+import omnipath_resources.core.entity as entity
 
 
 AnnotDefKey = collections.namedtuple(
@@ -63,12 +63,12 @@ class AnnotDef(
     """
     Annotations are defined by a ``name``, a ``resource`` and an ``args``
     parameter. If the former is a string it will be first looked up among the
-    annotation resources in ``pypath.annot.db``. Otherwise among the keys of
+    annotation resources in ``omnipath_resources.annot.db``. Otherwise among the keys of
     the classes in the ``CustomAnnotation`` object or in the dictionary of
     the class_definitions. If ``source`` is a `set`, it will be used as a
     category without further processing. If it is callable it will be called
     and should return a `set`. If ``bool(args)`` is `False`, in case of
-    annotations in ``pypath.annot.db`` the ``to_set`` method will be called.
+    annotations in ``omnipath_resources.annot.db`` the ``to_set`` method will be called.
     Otherwise ``args`` will be passed to the ``get_subset`` method.
     If ``resource`` is callable, ``args`` will be passed if available.
     """
@@ -183,9 +183,9 @@ class AnnotationGroup(collections_abc.Set):
     Represents a set of molecular entities sharing a custom defined
     annotation. This class behaves like a ``set`` and set operations on it
     result set objects. Normally this class is instantiated by
-    ``pypath.core.annot.CustomAnnotation`` in the process of populating
+    ``omnipath_resources.core.annot.CustomAnnotation`` in the process of populating
     categories and the contents of the groups defined in
-    ``pypath.core.intercell_annot`` in case of annotations of the
+    ``omnipath_resources.core.intercell_annot`` in case of annotations of the
     intercellular communication roles.
     For detailed definitions of the parameter values see the Supplementary
     Table S10 in Turei et al. 2020 (in prep).
@@ -207,7 +207,7 @@ class AnnotationGroup(collections_abc.Set):
         The resource (database) name; in case of composite categories it
         should be the name of the database you are actually building, this
         by default is `OmniPath` and you can change by the
-        ``pypath.share.settings`` module using the
+        ``omnipath_resources.share.settings`` module using the
         ``annot_composite_database_name`` key.
     :param bool transmitter:
         Whether the category contains transmitters of signaling information

@@ -3,9 +3,9 @@
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.silver_schema import format_term
-from pypath.internals.cv_terms import LicenseCV, ResourceCv
-from pypath.inputs_v2 import doid
-from pypath.inputs_v2.parsers.obo import parse_obo_text
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv
+from omnipath_resources.inputs_v2 import doid
+from omnipath_resources.inputs_v2.parsers.obo import parse_obo_text
 
 # Stanzas copied from doid.obo (data-version releases/2026-09-30/doid.obo); one foreign stanza added.
 DOID_OBO = r"""format-version: 1.2

@@ -23,8 +23,8 @@ from typing import Any
 
 import collections
 
-from pypath.inputs.disgenet._schema import SCHEMA
-import pypath.inputs.disgenet._records as _records
+from omnipath_resources.inputs.disgenet._schema import SCHEMA
+import omnipath_resources.inputs.disgenet._records as _records
 
 PROCESSORS = {}
 

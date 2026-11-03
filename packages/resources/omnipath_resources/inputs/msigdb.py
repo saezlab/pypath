@@ -22,12 +22,12 @@ from future.utils import iteritems
 import os
 import collections
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.share.settings as settings
-import pypath.share.session as session
-import pypath.utils.mapping as mapping
-import pypath.utils.taxonomy as taxonomy
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.session as session
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.utils.taxonomy as taxonomy
 
 _logger = session.Logger(name = 'msigdb_input')
 _log = _logger._log
@@ -153,7 +153,7 @@ def msigdb_download(
 
     :arg str,NoneType registered_email:
         An email address registered at MSigDB. If `None` the `msigdb_email`
-        from ``pypath.settings`` will be used.
+        from ``omnipath_resources.settings`` will be used.
     :arg str collection:
         The name of the gene set collection. For available collections (e.g.
         `h.all` or `c2.cpg`) refer to the MSigDB website:
@@ -262,7 +262,7 @@ def msigdb_download_collections(
 
     :arg str,NoneType registered_email:
         An email address registered at MSigDB. If `None` the `msigdb_email`
-        from ``pypath.settings`` will be used.
+        from ``omnipath_resources.settings`` will be used.
     :arg set,NoneType only_collections:
         Limit the annotations only to these collections. For available
         collections e.g. ``{'h.all', 'c2.cgp'}`` refer to the MSigDB webpage:
@@ -324,7 +324,7 @@ def msigdb_annotations(
 
     :arg str,NoneType registered_email:
         An email address registered at MSigDB. If `None` the `msigdb_email`
-        from ``pypath.settings`` will be used.
+        from ``omnipath_resources.settings`` will be used.
     :arg set,NoneType only_collections:
         Limit the annotations only to these collections. For available
         collections e.g. ``{'h.all', 'c2cgp'}`` refer to the MSigDB webpage:

@@ -5,21 +5,21 @@ Parse NicheNet v2 ligand-receptor networks and emit Entity records.
 from __future__ import annotations
 import functools
 from typing import Any
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import (
     Protein,
     slots,
 )
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
-from pypath.internals.silver_schema import (
+from omnipath_resources.internals.silver_schema import (
     Annotation,
     Entity,
     Identifier,
     Relation,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.nichenet import iter_lr_network
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.nichenet import iter_lr_network
 
 config = ResourceConfig(
     id=ResourceCv.NICHENET,

@@ -33,7 +33,7 @@ class MirBaseBackend(MappingBackend):
             return {}
 
     def _read_via_pypath(self, id_type, target_id_type, ncbi_tax_id, **kwargs):
-        from pypath.inputs import mirbase as mirbase_input
+        from omnipath_resources.inputs import mirbase as mirbase_input
         from pkg_infra.utils import swap_dict
 
         # Map our canonical type names to mirbase function names

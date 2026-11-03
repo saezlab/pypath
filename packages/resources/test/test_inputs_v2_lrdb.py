@@ -8,8 +8,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.source_attributes import PARTICIPANT_ROLE
 
-from pypath.inputs_v2.lrdb import DATABASES, resource
-from pypath.inputs_v2.parsers.lrdb import COLUMNS, SOURCES, iter_pairs
+from omnipath_resources.inputs_v2.lrdb import DATABASES, resource
+from omnipath_resources.inputs_v2.parsers.lrdb import COLUMNS, SOURCES, iter_pairs
 
 
 def row(*values):

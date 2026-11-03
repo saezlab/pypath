@@ -7,8 +7,8 @@ import json
 import re
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import read_text
-from pypath.internals.ontology_schema import OntologyTerm
+from omnipath_resources.inputs_v2.parsers.base import read_text
+from omnipath_resources.internals.ontology_schema import OntologyTerm
 
 # The databases of ``externalReferences`` and how the ontology modules write them.
 XREF_PREFIXES = {'UMLS': 'UMLS', 'NCI': 'NCIT'}

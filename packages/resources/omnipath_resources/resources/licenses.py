@@ -19,10 +19,10 @@
 
 import os
 
-import pypath.internals.license as license_mod
-import pypath.share.session as session
-import pypath.share.settings as settings
-import pypath.share.common as common
+import omnipath_resources.internals.license as license_mod
+import omnipath_resources.share.session as session
+import omnipath_resources.share.settings as settings
+import omnipath_resources.share.common as common
 
 
 class Licenses(session.Logger):

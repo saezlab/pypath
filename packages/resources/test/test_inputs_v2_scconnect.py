@@ -8,8 +8,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.source_attributes import PARTICIPANT_ROLE
 
-from pypath.inputs_v2 import scconnect as mod
-from pypath.inputs_v2.parsers import scconnect as parser
+from omnipath_resources.inputs_v2 import scconnect as mod
+from omnipath_resources.inputs_v2.parsers import scconnect as parser
 
 FIELDS = (
     'interaction_id', 'target', 'target_gene_symbol', 'target_uniprot',

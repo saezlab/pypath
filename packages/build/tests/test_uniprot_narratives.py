@@ -1,6 +1,6 @@
 from omnipath_core.biolink import annotation_term
-from pypath.inputs_v2.uniprot import _protein_description_pairs
-from pypath.internals.tabular_builder import AnnotationsBuilder, CV
+from omnipath_resources.inputs_v2.uniprot import _protein_description_pairs
+from omnipath_resources.internals.tabular_builder import AnnotationsBuilder, CV
 
 
 def test_uniprot_narratives_keep_categories_and_clean_prose():

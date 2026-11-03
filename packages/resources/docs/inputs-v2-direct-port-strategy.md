@@ -26,10 +26,10 @@ Each resource is modeled individually. Shared utilities should handle mechanics 
 
 | Location | Responsibility |
 | --- | --- |
-| `pypath/inputs_v2/<resource>.py` | `ResourceConfig`, download definitions, explicit mapping definitions, datasets and module-level `resource`. |
-| `pypath/inputs_v2/parsers/<resource>.py` | Optional source parser for custom formats, multiple files, nested data or source-specific preprocessing. |
-| `pypath/inputs_v2/parsers/base.py` | Existing common readers such as CSV/TSV/JSON; use directly when sufficient. |
-| `pypath/internals/tabular_builder.py` | Existing `FieldConfig`, `CV`, entity/relation/membership builders and generic execution machinery. Extend only for a demonstrated source-independent capability gap. |
+| `omnipath_resources/inputs_v2/<resource>.py` | `ResourceConfig`, download definitions, explicit mapping definitions, datasets and module-level `resource`. |
+| `omnipath_resources/inputs_v2/parsers/<resource>.py` | Optional source parser for custom formats, multiple files, nested data or source-specific preprocessing. |
+| `omnipath_resources/inputs_v2/parsers/base.py` | Existing common readers such as CSV/TSV/JSON; use directly when sufficient. |
+| `omnipath_resources/internals/tabular_builder.py` | Existing `FieldConfig`, `CV`, entity/relation/membership builders and generic execution machinery. Extend only for a demonstrated source-independent capability gap. |
 | `omnipath_core` | Canonical schema, identifier registry and serialization/resolution contracts. Source-specific migration shortcuts do not belong here. |
 | `test/` and fixture data | Parser, mapper and extractor tests using small representative source fixtures. |
 | `docs/` | Per-resource coverage, semantic decisions, exclusions and snapshot validation results. |
@@ -72,8 +72,8 @@ Expose a module-level `resource = Resource(config, ...)` with stable, meaningful
 For example, the following is the assembly pattern after the actual resource-specific configuration, download and mapper have been defined:
 
 ```python
-from pypath.inputs_v2.base import Dataset, Resource
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.base import Dataset, Resource
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 # config, interactions_download and interactions_schema are defined above
 # using this resource's reviewed metadata, source URL and biological mapping.

@@ -20,11 +20,11 @@
 import os
 import collections
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.cache as cache
-import pypath.utils.taxonomy as taxonomy
-import pypath.utils.mapping as mapping
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.cache as cache
+import omnipath_resources.utils.taxonomy as taxonomy
+import omnipath_resources.utils.mapping as mapping
 
 
 def celltalkdb_download(organism = 9606):

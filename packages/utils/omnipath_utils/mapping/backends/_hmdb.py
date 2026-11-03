@@ -23,7 +23,7 @@ class HmdbBackend(MappingBackend):
             return {}
 
     def _read_via_pypath(self, id_type, target_id_type, ncbi_tax_id, **kwargs):
-        from pypath.inputs.hmdb.metabolites import mapping as hmdb_mapping
+        from omnipath_resources.inputs.hmdb.metabolites import mapping as hmdb_mapping
 
         _log.info('HMDB: %s -> %s', id_type, target_id_type)
 

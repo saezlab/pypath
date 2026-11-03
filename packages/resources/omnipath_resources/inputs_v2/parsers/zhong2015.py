@@ -20,7 +20,7 @@ from collections.abc import Generator
 from functools import partial
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 COLUMNS = ('symbol', 'entrezID', 'CAM type', 'Inter Pro', 'GO', 'NCBI', 'Sum', 'name')
 SEARCHES = ('Inter Pro', 'GO', 'NCBI')

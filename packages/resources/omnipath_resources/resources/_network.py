@@ -21,10 +21,10 @@ from future.utils import iteritems
 
 import copy
 
-import pypath.internals.resource as resource
-import pypath.resources.data_formats as data_formats
-import pypath.share.session as session_mod
-import pypath.share.settings as settings
+import omnipath_resources.internals.resource as resource
+import omnipath_resources.resources.data_formats as data_formats
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.settings as settings
 
 _logger = session_mod.Logger(name = 'network_resources')
 _log = _logger._log

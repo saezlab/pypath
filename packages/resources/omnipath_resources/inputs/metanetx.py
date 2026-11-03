@@ -37,9 +37,9 @@ __all__ = ['metanetx_metabolite_chebi']
 
 import io
 
-import pypath.resources.urls as urls
-import pypath.share.session as session_mod
-from pypath.share.downloads import dm, _resolve_data_dir
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.session as session_mod
+from omnipath_resources.share.downloads import dm, _resolve_data_dir
 
 
 _logger = session_mod.Logger(name='inputs.metanetx')

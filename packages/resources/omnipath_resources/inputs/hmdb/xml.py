@@ -21,9 +21,9 @@ from typing import Literal
 
 import lxml.etree as etree
 
-from pypath.inputs.hmdb.schema.common import XMLNS
-import pypath.resources.urls as urls
-from pypath.share.downloads import dm, _resolve_data_dir
+from omnipath_resources.inputs.hmdb.schema.common import XMLNS
+import omnipath_resources.resources.urls as urls
+from omnipath_resources.share.downloads import dm, _resolve_data_dir
 
 
 def hmdb_xml(dataset: Literal['metabolites']) -> etree.iterparse:

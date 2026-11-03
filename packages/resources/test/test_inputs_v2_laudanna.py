@@ -7,7 +7,7 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.laudanna import resource
+from omnipath_resources.inputs_v2.laudanna import resource
 
 # Lines of SignalingFlow.EA: its title, two edges, an edge with a second line
 # of its own and a line without the second node.

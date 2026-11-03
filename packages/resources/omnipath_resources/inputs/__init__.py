@@ -20,7 +20,7 @@
 import importlib
 
 
-import pypath.share.session as session
+import omnipath_resources.share.session as session
 
 _logger = session.Logger(name = 'inputs')
 _log = _logger._log
@@ -30,7 +30,7 @@ def get_method(module_name, method_name = None):
     """
     Retrieves a method from a submodule of this module (``inputs``) by its
     name. E.g. for ``'uniprot_db.all_uniprots'`` it returns the ``all_uniprots``
-    method from the ``pypath.inputs.uniprot_db`` module.
+    method from the ``omnipath_resources.inputs.uniprot_db`` module.
     """
 
     _log('Selecting input method (step 1): module `%s`, method `%s`.' % (
@@ -50,7 +50,7 @@ def get_method(module_name, method_name = None):
         module_name = module_method[-2] if len(module_method) > 1 else 'main'
 
     module_name = module_name.rsplit('.', maxsplit = 1)[-1]
-    module_name = 'pypath.inputs.%s' % module_name
+    module_name = 'omnipath_resources.inputs.%s' % module_name
 
     _log('Selecting input method (step 2): module `%s`, method `%s`.' % (
             module_name,

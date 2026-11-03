@@ -6,8 +6,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import hprd
-from pypath.inputs_v2.parsers import hprd as parser
+from omnipath_resources.inputs_v2 import hprd
+from omnipath_resources.inputs_v2.parsers import hprd as parser
 
 D = parser.ARCHIVE_DIRECTORY
 

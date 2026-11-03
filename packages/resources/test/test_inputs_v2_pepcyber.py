@@ -6,8 +6,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import pepcyber
-from pypath.inputs_v2.parsers import pepcyber as parser
+from omnipath_resources.inputs_v2 import pepcyber
+from omnipath_resources.inputs_v2.parsers import pepcyber as parser
 
 HEADER = (
     '<tr><td><a href="javascript:checkAll();">All</a> <a>None</a></td>'

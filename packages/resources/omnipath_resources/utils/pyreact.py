@@ -38,19 +38,19 @@ try:
 except:
     import pickle
 
-import pypath.utils.mapping as mapping
-import pypath.utils.reflists as reflists
-import pypath.share.common as common
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.utils.reflists as reflists
+import omnipath_resources.share.common as common
 import pypath_common._constants as _const
-import pypath.share.progress as progress
-import pypath.share.curl as curl
-import pypath.internals.intera as intera
-import pypath.internals.refs as refs
-import pypath.inputs.uniprot as uniprot_input
-import pypath.resources.urls as urls
-import pypath.utils.seq as seq
-import pypath.share.session as session_mod
-import pypath.share.cache as cache
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.curl as curl
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.internals.refs as refs
+import omnipath_resources.inputs.uniprot as uniprot_input
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.seq as seq
+import omnipath_resources.share.session as session_mod
+import omnipath_resources.share.cache as cache
 
 
 class BioPaxReader(session_mod.Logger):

@@ -8,8 +8,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.havugimana import COMPLEX_NAMESPACE, map_complex, resource
-from pypath.inputs_v2.parsers.havugimana import HEADER, SHEET, iter_havugimana_complexes
+from omnipath_resources.inputs_v2.havugimana import COMPLEX_NAMESPACE, map_complex, resource
+from omnipath_resources.inputs_v2.parsers.havugimana import HEADER, SHEET, iter_havugimana_complexes
 
 # Rows of Table S3A (sheet ``Predicted_complexes`` of mmc3.xls), as the sheet has them.
 ROWS = [

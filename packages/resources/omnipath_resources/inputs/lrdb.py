@@ -20,10 +20,10 @@
 import csv
 import collections
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.utils.mapping as mapping
-import pypath.share.common as common
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.share.common as common
 
 
 LrdbAnnotation = collections.namedtuple(

@@ -42,7 +42,7 @@ from __future__ import annotations
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 # The header line, written as a comment: the first column name has the hash.
 _FIRST_COLUMN = '#  source_databases'

@@ -172,7 +172,7 @@ def main():
                         patch.object(dataset.raw_dataset, "raw", replay(dataset.dataset_name))
                     )
                 stack.enter_context(
-                    patch("pypath.inputs_v2.base.download_and_open", blocked_download)
+                    patch("omnipath_resources.inputs_v2.base.download_and_open", blocked_download)
                 )
                 result = build_resource(
                     source,

@@ -7,8 +7,8 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import entity_type
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import threedid
-from pypath.inputs_v2.parsers import threedid as parser
+from omnipath_resources.inputs_v2 import threedid
+from omnipath_resources.inputs_v2.parsers import threedid as parser
 
 # Records of 3did_flat: a homodimer pair, a heterodimer pair, and an instance
 # without the topology field. The lines below an instance are residue contacts.

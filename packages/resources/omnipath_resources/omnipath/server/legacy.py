@@ -18,12 +18,12 @@
 #
 
 """
-Old server class working from a ``pypath.legacy.main.PyPath`` object.
+Old server class working from a ``omnipath_resources.legacy.main.PyPath`` object.
 """
 
 import json
 
-import pypath.omnipath.server.run as server
+import omnipath_resources.omnipath.server.run as server
 
 
 class PypathServer(server.BaseServer):

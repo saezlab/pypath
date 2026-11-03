@@ -4,7 +4,7 @@ import io
 
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.silver_schema import format_term
-from pypath.inputs_v2 import (
+from omnipath_resources.inputs_v2 import (
     chemont,
     guidetopharma,
     imm1415,
@@ -16,8 +16,8 @@ from pypath.inputs_v2 import (
     reactome,
     rhea,
 )
-from pypath.inputs_v2.parsers import kegg as kegg_parser
-from pypath.inputs_v2.parsers.obo import parse_obo_text
+from omnipath_resources.inputs_v2.parsers import kegg as kegg_parser
+from omnipath_resources.inputs_v2.parsers.obo import parse_obo_text
 
 
 def extract(record, source="test"):

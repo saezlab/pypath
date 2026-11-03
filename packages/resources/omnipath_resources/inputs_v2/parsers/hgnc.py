@@ -29,8 +29,8 @@ from collections import defaultdict
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2._publications import is_pmid
-from pypath.inputs_v2.parsers.base import iter_csv, iter_tsv
+from omnipath_resources.inputs_v2._publications import is_pmid
+from omnipath_resources.inputs_v2.parsers.base import iter_csv, iter_tsv
 
 FAMILY_COLUMNS = ('id', 'abbreviation', 'name', 'pubmed_ids', 'desc_comment', 'desc_go')
 _GO_URL = re.compile(r'http://purl\.uniprot\.org/go/(\d{7})')

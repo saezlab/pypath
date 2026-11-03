@@ -24,7 +24,7 @@ def build(dbclass, dbdef):
     
     This is not the preferred method to get a database instance.
     Unless there is a strong reason, both built in and user defined databases
-    should be managed by the ``pypath.omnipath.app`` module.
+    should be managed by the ``omnipath_resources.omnipath.app`` module.
     """
     
     dbclass = dbclass if callable(dbclass) else dbclass.get_class()

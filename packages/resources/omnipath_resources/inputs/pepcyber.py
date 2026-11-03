@@ -25,11 +25,11 @@ import collections
 import bs4
 import pandas as pd
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.progress as progress
-import pypath.share.cache as cache_mod
-import pypath.share.session as session
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
+import omnipath_resources.share.progress as progress
+import omnipath_resources.share.cache as cache_mod
+import omnipath_resources.share.session as session
 
 _logger = session.Logger(name = 'pepcyber_input')
 _log = _logger._log

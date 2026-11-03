@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import topdb
-from pypath.inputs_v2.parsers import topdb as topdb_parser
+from omnipath_resources.inputs_v2 import topdb
+from omnipath_resources.inputs_v2.parsers import topdb as topdb_parser
 
 NS = 'xmlns="https://topdb.unitmp.org"'
 # Entries of topdb_all.xml with the sequence, the cross-references and the

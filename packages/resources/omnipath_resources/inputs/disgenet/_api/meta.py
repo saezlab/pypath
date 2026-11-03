@@ -24,8 +24,8 @@ from typing import Callable, Generator, NamedTuple
 import functools
 import textwrap
 
-import pypath.inputs.disgenet._client as _client
-import pypath.inputs.disgenet._api.schema as _schema
+import omnipath_resources.inputs.disgenet._client as _client
+import omnipath_resources.inputs.disgenet._api.schema as _schema
 
 
 class ApiMeta:

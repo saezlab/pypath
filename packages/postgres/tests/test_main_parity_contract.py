@@ -60,10 +60,10 @@ class _ReferenceImports(ast.NodeTransformer):
         ):
             node.module = node.module.replace("omnipath_build", ORACLE_PREFIX, 1)
         elif node.module and (
-            node.module == "pypath.internals.cv_terms"
-            or node.module.startswith("pypath.internals.cv_terms.")
+            node.module == "omnipath_resources.internals.cv_terms"
+            or node.module.startswith("omnipath_resources.internals.cv_terms.")
         ):
-            node.module = node.module.replace("pypath.internals.cv_terms", CV_PREFIX, 1)
+            node.module = node.module.replace("omnipath_resources.internals.cv_terms", CV_PREFIX, 1)
         return node
 
     def visit_Import(self, node):

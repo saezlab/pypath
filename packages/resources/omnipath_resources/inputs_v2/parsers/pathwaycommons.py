@@ -54,7 +54,7 @@ import csv
 from types import SimpleNamespace
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 EDGE_COLUMNS = (
     'PARTICIPANT_A',

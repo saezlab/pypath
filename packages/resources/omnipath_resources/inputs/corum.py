@@ -19,10 +19,10 @@
 
 import csv
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.internals.intera as intera
-import pypath.utils.taxonomy as taxonomy
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.internals.intera as intera
+import omnipath_resources.utils.taxonomy as taxonomy
 
 
 def corum_complexes(organism = 9606):

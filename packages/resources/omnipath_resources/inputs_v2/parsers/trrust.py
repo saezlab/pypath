@@ -20,7 +20,7 @@ from __future__ import annotations
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 # The files have no header row; these names are ours, in source order.
 COLUMNS = ('tf', 'target', 'mode', 'pmids')

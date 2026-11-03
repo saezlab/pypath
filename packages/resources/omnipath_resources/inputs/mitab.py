@@ -22,7 +22,7 @@ from __future__ import annotations
 import re
 from typing import Optional, List, Set, Generator, NamedTuple
 
-import pypath.share.common as common
+import omnipath_resources.share.common as common
 
 
 class MitabInteraction(NamedTuple):

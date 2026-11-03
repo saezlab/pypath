@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import cancersea
-from pypath.inputs_v2.parsers.cancersea import iter_gene_sets, iter_states
+from omnipath_resources.inputs_v2 import cancersea
+from omnipath_resources.inputs_v2.parsers.cancersea import iter_gene_sets, iter_states
 
 # Rows of the states table of the download page. The page gives 73 and 137
 # genes; the gene sets here are cut to three, so the counts are changed.

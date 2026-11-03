@@ -51,8 +51,8 @@ from collections import defaultdict
 from collections.abc import Generator, Mapping
 from typing import Any
 
-from pypath.inputs_v2._publications import is_pmid
-from pypath.inputs_v2.parsers.base import read_text
+from omnipath_resources.inputs_v2._publications import is_pmid
+from omnipath_resources.inputs_v2.parsers.base import read_text
 
 # The fields every set of a file has; a file without one is not the file the
 # module reads.

@@ -9,9 +9,9 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import protmapper
-from pypath.inputs_v2.parsers import protmapper as parser
-from pypath.inputs_v2.parsers.base import iter_csv
+from omnipath_resources.inputs_v2 import protmapper
+from omnipath_resources.inputs_v2.parsers import protmapper as parser
+from omnipath_resources.inputs_v2.parsers.base import iter_csv
 
 # Rows copied from data/export.csv of the version 4 supplement.
 ANNOTATIONS = (

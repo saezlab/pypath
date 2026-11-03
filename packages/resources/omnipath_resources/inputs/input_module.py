@@ -49,11 +49,11 @@ if _cm_path not in sys.path:
 
 from dlmachine import DownloadManager
 
-import pypath.share.session as session
-import pypath.share.settings as settings
-import pypath.bronze.loaders as loaders
-import pypath.bronze.storage as storage
-import pypath.utils.mapping as mapping
+import omnipath_resources.share.session as session
+import omnipath_resources.share.settings as settings
+import omnipath_resources.bronze.loaders as loaders
+import omnipath_resources.bronze.storage as storage
+import omnipath_resources.utils.mapping as mapping
 
 _logger = session.Logger(name='input_module')
 _log = _logger._log
@@ -94,17 +94,17 @@ class InputModule:
         
         # Initialize storage backends
         if bronze_storage is None:
-            # Default to pypath/data directory
-            import pypath
-            pypath_data = Path(pypath.__file__).parent / 'data'
+            # Default to omnipath_resources/data directory
+            import omnipath_resources
+            pypath_data = Path(omnipath_resources.__file__).parent / 'data'
             self.bronze_storage = storage.BronzeStorage(base_path=pypath_data)
         else:
             self.bronze_storage = bronze_storage
             
         if download_manager is None:
             # Use the same data directory for download cache
-            import pypath
-            pypath_data = Path(pypath.__file__).parent / 'data'
+            import omnipath_resources
+            pypath_data = Path(omnipath_resources.__file__).parent / 'data'
             self.download_manager = DownloadManager(
                 path=str(pypath_data / 'cache'),
                 config={'backend': 'requests'}

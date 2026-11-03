@@ -23,9 +23,9 @@ import collections
 
 import bs4
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.internals.intera as intera
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.internals.intera as intera
 
 
 def complexportal_complexes(organism = 9606, return_details = False):

@@ -8,8 +8,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.parsers.surfaceome import COLUMNS, SHEET, iter_proteins, iter_terms
-from pypath.inputs_v2.surfaceome import LIST_ID, LIST_NAMESPACE, resource
+from omnipath_resources.inputs_v2.parsers.surfaceome import COLUMNS, SHEET, iter_proteins, iter_terms
+from omnipath_resources.inputs_v2.surfaceome import LIST_ID, LIST_NAMESPACE, resource
 
 # Rows of the sheet "in silico surfaceome only" of table S3 of Bausch-Fluck et
 # al. 2018, in the order of COLUMNS: entry name, accession, gene, GeneID, label,
@@ -219,7 +219,7 @@ def test_parser_raises_on_a_repeated_accession_and_on_missing_columns():
 
 
 def test_classes_are_mapped_by_the_shared_module_and_equal_those_of_almen2009():
-    from pypath.inputs_v2 import _almen_classes, almen2009, surfaceome
+    from omnipath_resources.inputs_v2 import _almen_classes, almen2009, surfaceome
 
     # No import from one resource module to the other.
     assert surfaceome.map_class is _almen_classes.map_class

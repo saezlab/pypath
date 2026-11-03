@@ -20,9 +20,9 @@ from pathlib import Path
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import RDF
 
-from pypath.share.downloads import DATA_DIR
+from omnipath_resources.share.downloads import DATA_DIR
 from omnipath_core.molecular_forms import molecular_form_from_identifiers, normalize_molecular_form
-from pypath.inputs_v2._molecular_forms import combine_forms, sequence_form
+from omnipath_resources.inputs_v2._molecular_forms import combine_forms, sequence_form
 
 
 # BioPAX namespace
@@ -470,7 +470,7 @@ def _build_degradation_index(
 
 def _load_entity_reference_index(g: Graph, xref_cache: dict[str, dict]) -> dict[str, dict]:
     """Build an index of EntityReference URIs to their full Entity data."""
-    from pypath.internals.silver_schema import Entity, Identifier, Annotation
+    from omnipath_resources.internals.silver_schema import Entity, Identifier, Annotation
 
     reference_index = {}
 

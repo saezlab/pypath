@@ -32,9 +32,9 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2 import _mitab
-from pypath.inputs_v2._publications import pmid_curie
-from pypath.inputs_v2.parsers.base import iter_tsv
+from omnipath_resources.inputs_v2 import _mitab
+from omnipath_resources.inputs_v2._publications import pmid_curie
+from omnipath_resources.inputs_v2.parsers.base import iter_tsv
 
 NODE_COLUMNS = ('id', 'name', 'tax_id', 'pathways', 'topology')
 EDGE_COLUMNS = (

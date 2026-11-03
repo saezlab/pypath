@@ -7,7 +7,7 @@ from omnipath_build.silver import SilverExtractor
 
 
 def project(module, mapper, row):
-    module = importlib.import_module('pypath.inputs_v2.' + module)
+    module = importlib.import_module('omnipath_resources.inputs_v2.' + module)
     record = getattr(module, mapper)(row)
     assert record is not None
     ex = SilverExtractor(module.config.id.value, 'fixture')
@@ -284,7 +284,7 @@ def test_hmdb_locations_are_stated_locations_and_diseases_associations():
 
 
 def test_hmdb_terms_name_only_unmapped_locations_and_keep_omim():
-    from pypath.inputs_v2 import hmdb
+    from omnipath_resources.inputs_v2 import hmdb
 
     assert hmdb.map_term({'field': 'tissue_locations', 'name': 'Liver'}) is None
     disease = hmdb.map_term({'field': 'diseases', 'name': 'Obesity', 'omim': '601665'})
@@ -354,7 +354,7 @@ def test_food_measurements_keep_member_alignment_units_and_statistic():
 
 
 def test_ptfi_does_not_infer_formula_from_ordinary_name():
-    from pypath.inputs_v2.parsers.ptfi import parse_compound_name
+    from omnipath_resources.inputs_v2.parsers.ptfi import parse_compound_name
 
     assert 'formula' not in parse_compound_name('Yohimbine')
     assert parse_compound_name('C28H34O4-470 (PTF28874)') == {
@@ -364,7 +364,7 @@ def test_ptfi_does_not_infer_formula_from_ordinary_name():
 
 
 def test_chembl_ensembl_identifiers_retain_molecule_domain():
-    from pypath.inputs_v2.chembl import _ensembl_namespace
+    from omnipath_resources.inputs_v2.chembl import _ensembl_namespace
 
     assert _ensembl_namespace('ENSP000001') == 'ensp'
     assert _ensembl_namespace('ENSG000001') == 'ensg'
@@ -455,7 +455,7 @@ def test_source_defined_assay_quantities_remain_numeric(module, row, expected):
 
 
 def test_human_gem_parser_and_mapper_preserve_flux_bounds(monkeypatch):
-    from pypath.inputs_v2.parsers import metatlas
+    from omnipath_resources.inputs_v2.parsers import metatlas
 
     monkeypatch.setattr(metatlas, '_metabolite_xrefs', lambda: {})
     parsed = next(
@@ -511,7 +511,7 @@ def test_human_gem_invalid_bound_omits_only_quantity():
 
 
 def test_swisslipids_names_are_supplemental_identifiers():
-    from pypath.inputs_v2.swisslipids import lipids_schema
+    from omnipath_resources.inputs_v2.swisslipids import lipids_schema
 
     record = lipids_schema(
         {
@@ -533,8 +533,8 @@ def test_swisslipids_names_are_supplemental_identifiers():
 
 
 def test_nested_and_direct_names_use_identifier_namespaces():
-    from pypath.inputs_v2.phenol_explorer import foods_schema
-    from pypath.inputs_v2.drugcentral import _target_entity
+    from omnipath_resources.inputs_v2.phenol_explorer import foods_schema
+    from omnipath_resources.inputs_v2.drugcentral import _target_entity
 
     food = foods_schema(
         {
@@ -563,7 +563,7 @@ def test_nested_and_direct_names_use_identifier_namespaces():
 
 
 def test_complex_name_does_not_become_an_unidentified_chain_name():
-    from pypath.inputs_v2.bindingdb import _target
+    from omnipath_resources.inputs_v2.bindingdb import _target
 
     target = _target(
         {
@@ -579,7 +579,7 @@ def test_complex_name_does_not_become_an_unidentified_chain_name():
 
 
 def test_chembl_parser_accepts_pipeline_dataset_context(monkeypatch):
-    from pypath.inputs_v2.parsers import chembl
+    from omnipath_resources.inputs_v2.parsers import chembl
     queries = []
     def rows(opener, *, query, **kwargs):
         queries.append(query)
@@ -591,7 +591,7 @@ def test_chembl_parser_accepts_pipeline_dataset_context(monkeypatch):
 
 def test_chembl_staging_cache_requires_measurement_units(tmp_path):
     import duckdb
-    from pypath.inputs_v2.parsers.chembl import _duckdb_cache_compatible
+    from omnipath_resources.inputs_v2.parsers.chembl import _duckdb_cache_compatible
     path = tmp_path / 'chembl.duckdb'
     assert not _duckdb_cache_compatible(path)
     with duckdb.connect(str(path)) as con:
@@ -608,7 +608,7 @@ def test_chembl_staging_cache_requires_measurement_units(tmp_path):
 
 
 def test_chembl_sample_does_not_materialize_full_prepared_cache(monkeypatch):
-    from pypath.inputs_v2.parsers import chembl
+    from omnipath_resources.inputs_v2.parsers import chembl
     calls = []
     def full_cache(*args, **kwargs):
         raise AssertionError('Sample attempted complete cache preparation')

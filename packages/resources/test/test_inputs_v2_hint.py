@@ -8,7 +8,7 @@ from omnipath_build.silver import SilverExtractor
 from omnipath_core.biolink import slot_name
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import hint
+from omnipath_resources.inputs_v2 import hint
 
 HEADER = (
     'Uniprot_A\tUniprot_B\tGene_A\tGene_B\tpmid:method:quality:type\ttaxid\t'

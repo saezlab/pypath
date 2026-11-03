@@ -6,8 +6,8 @@ from types import SimpleNamespace
 import pytest
 from omnipath_build.silver import SilverExtractor
 
-from pypath.inputs_v2 import deathdomain as mod
-from pypath.inputs_v2.parsers import deathdomain as parser
+from omnipath_resources.inputs_v2 import deathdomain as mod
+from omnipath_resources.inputs_v2.parsers import deathdomain as parser
 
 # Header lines of the four tables, as the pages write them.
 HEADERS = {

@@ -31,7 +31,7 @@ import logging
 import os
 from collections import defaultdict
 
-from pypath.share.downloads import dm
+from omnipath_resources.share.downloads import dm
 
 _log = logging.getLogger(__name__)
 

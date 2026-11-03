@@ -17,7 +17,7 @@ dependencies = [
     "pyarrow>=14",
     "psycopg2-binary>=2.9,<3",
     "PyYAML>=6,<7",
-    "pypath-omnipath",
+    "omnipath-resources",
 ]
 
 [project.scripts]

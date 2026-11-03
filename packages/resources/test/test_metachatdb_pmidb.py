@@ -70,7 +70,7 @@ def metachat_row(**values):
 
 
 def test_metachatdb_keeps_own_rows_and_splits_sensor_types():
-    from pypath.inputs_v2.metachatdb import iter_metachatdb
+    from omnipath_resources.inputs_v2.metachatdb import iter_metachatdb
 
     own = metachat_row(**{'Sensor.Type': 'receptor,transporter'})
     imported = metachat_row(**{'Sources': 'Mebocost; MRCLinkdb'})
@@ -83,7 +83,7 @@ def test_metachatdb_keeps_own_rows_and_splits_sensor_types():
 
 
 def test_metachatdb_rejects_an_unknown_sensor_type():
-    from pypath.inputs_v2.metachatdb import iter_metachatdb
+    from omnipath_resources.inputs_v2.metachatdb import iter_metachatdb
 
     row = metachat_row(**{'Sensor.Type': 'enzyme'})
     columns = METACHAT_HEADER.strip().split('\t')
@@ -92,7 +92,7 @@ def test_metachatdb_rejects_an_unknown_sensor_type():
 
 
 def test_metachatdb_receptor_binds_its_metabolite():
-    from pypath.inputs_v2.metachatdb import interactions_schema
+    from omnipath_resources.inputs_v2.metachatdb import interactions_schema
 
     out = extract('metachatdb', interactions_schema('9606')(metachat_row(sensor_type='receptor')))
     relation, values = relation_annotations(out)
@@ -120,7 +120,7 @@ def test_metachatdb_receptor_binds_its_metabolite():
 
 
 def test_metachatdb_transporter_moves_its_metabolite():
-    from pypath.inputs_v2.metachatdb import interactions_schema
+    from omnipath_resources.inputs_v2.metachatdb import interactions_schema
 
     out = extract('metachatdb', interactions_schema('10090')(metachat_row(sensor_type='transporter')))
     relation, values = relation_annotations(out)
@@ -132,7 +132,7 @@ def test_metachatdb_transporter_moves_its_metabolite():
 
 
 def test_metachatdb_protein_names_leave_out_other_chains():
-    from pypath.inputs_v2.metachatdb import protein_name, protein_synonyms
+    from omnipath_resources.inputs_v2.metachatdb import protein_name, protein_synonyms
 
     value = (
         'Adhesion G protein-coupled receptor B1 (Brain-specific angiogenesis '
@@ -164,7 +164,7 @@ PMIDB_PROTEINS = (
 
 @pytest.fixture
 def pmidb_rows(monkeypatch):
-    from pypath.inputs_v2 import pmidb
+    from omnipath_resources.inputs_v2 import pmidb
 
     files = {'metabolites_infor': PMIDB_METABOLITES, 'protein_infor': PMIDB_PROTEINS}
     monkeypatch.setattr(
@@ -186,7 +186,7 @@ def test_pmidb_keeps_interacting_pairs_with_their_identifiers(pmidb_rows):
 
 
 def test_pmidb_rejects_an_unknown_sample_source(monkeypatch):
-    from pypath.inputs_v2 import pmidb
+    from omnipath_resources.inputs_v2 import pmidb
 
     monkeypatch.setattr(pmidb, '_download', lambda name: SimpleNamespace(open=lambda **_: opener('')))
     text = PMIDB_INTERACTIONS.replace('\thuman\t', '\trat\t')
@@ -195,7 +195,7 @@ def test_pmidb_rejects_an_unknown_sample_source(monkeypatch):
 
 
 def test_pmidb_pair_is_a_binding_with_study_context(pmidb_rows):
-    from pypath.inputs_v2.pmidb import interactions_schema
+    from omnipath_resources.inputs_v2.pmidb import interactions_schema
 
     out = extract('pmidb', interactions_schema(pmidb_rows[1]))
     relation, values = relation_annotations(out)
@@ -212,7 +212,7 @@ def test_pmidb_pair_is_a_binding_with_study_context(pmidb_rows):
 
 
 def test_pmidb_na_context_is_left_out(pmidb_rows):
-    from pypath.inputs_v2.pmidb import interactions_schema
+    from omnipath_resources.inputs_v2.pmidb import interactions_schema
 
     _, values = relation_annotations(extract('pmidb', interactions_schema(pmidb_rows[0])))
     assert 'pmidb:probe' not in values and 'pmidb:mean' not in values
@@ -222,4 +222,4 @@ def test_pmidb_na_context_is_left_out(pmidb_rows):
 def test_module_imports_and_names_its_datasets(module):
     from importlib import import_module
 
-    assert import_module('pypath.inputs_v2.' + module).resource.datasets()
+    assert import_module('omnipath_resources.inputs_v2.' + module).resource.datasets()

@@ -10,4 +10,4 @@ The data is sourced from
 (a ~2 MB TSV covering all 9,090 universal metabolites across 85+ models).
 """
 
-from pypath.inputs.bigg._metabolites import *  # noqa: F401, F403
+from omnipath_resources.inputs.bigg._metabolites import *  # noqa: F401, F403

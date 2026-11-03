@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2 import disgenet
-from pypath.inputs_v2.parsers.disgenet import iter_associations, iter_diseases
+from omnipath_resources.inputs_v2 import disgenet
+from omnipath_resources.inputs_v2.parsers.disgenet import iter_associations, iter_diseases
 
 HEADER = (
     'geneId\tgeneSymbol\tDSI\tDPI\tdiseaseId\tdiseaseName\tdiseaseType\tdiseaseClass\tdiseaseSemanticType\tscore'

@@ -25,7 +25,7 @@ def test_chembl_distinguishes_binding_from_functional_effect(assay,action,label,
 
 @pytest.mark.parametrize('role,expected', [('Transporter','Transports'),('Receptor; Transporter','Transports'),('Receptor',None)])
 def test_mebocost_transport_is_protein_to_chemical_and_keeps_roles(role,expected):
-    from pypath.inputs_v2.mebocost import get_interactions_schema
+    from omnipath_resources.inputs_v2.mebocost import get_interactions_schema
     r=get_interactions_schema('9606')({'ID':'1','HMDB_ID':'HMDB0000001','Gene_name':'ABCA1','Annotation':role})
     annotations=[{'term':annotation_term(a.term),'value':annotation_value(a.term,a.value)} for a in r.annotations]
     assert interaction_label(r.predicate,annotations)==expected
@@ -48,7 +48,7 @@ def test_transport_qualifiers_survive_extraction(module,mapper,row):
 
 
 def test_cellinker_enzyme_role_is_not_transport():
-    from pypath.inputs_v2.cellinker import _make_metabolite_protein_mapper
+    from omnipath_resources.inputs_v2.cellinker import _make_metabolite_protein_mapper
     row={'hmdb_id':'HMDB0000001','HMDB_ID':'HMDB0000001','HMDB ID':'HMDB0000001','UNIPROT_ID':'P00533','uniprot_id':'P00533','METABOLITE_NAME':'X','ENZYME_NAME':'Y'}
     for role in ['enzyme','transporter']:
         r=_make_metabolite_protein_mapper('human',role)(row)

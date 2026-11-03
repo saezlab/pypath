@@ -8,7 +8,7 @@ need to recognize consistently.
 
 from __future__ import annotations
 
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     cv_term_label_accession,

@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.lncdisease import resource
-from pypath.inputs_v2.parsers.lncdisease import iter_interactions
+from omnipath_resources.inputs_v2.lncdisease import resource
+from omnipath_resources.inputs_v2.parsers.lncdisease import iter_interactions
 
 
 def line(*values):

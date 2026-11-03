@@ -20,12 +20,12 @@
 import re
 import collections
 
-import pypath.inputs.common as inputs_common
-import pypath.resources.urls as urls
-import pypath.utils.mapping as mapping
-import pypath.inputs.cell as cell_input
-import pypath.share.common as common
-import pypath.share.curl as curl
+import omnipath_resources.inputs.common as inputs_common
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.inputs.cell as cell_input
+import omnipath_resources.share.common as common
+import omnipath_resources.share.curl as curl
 
 
 def lambert2018_s1_raw():

@@ -7,8 +7,8 @@ import pytest
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 
-from pypath.inputs_v2.lncrnadb import resource
-from pypath.inputs_v2.parsers.lncrnadb import _pmid_list, iter_associations
+from omnipath_resources.inputs_v2.lncrnadb import resource
+from omnipath_resources.inputs_v2.parsers.lncrnadb import _pmid_list, iter_associations
 
 # Entries of the lncRNAdb export (the descriptions are shortened).
 XML = """<?xml version="1.0" ?>

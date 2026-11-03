@@ -21,14 +21,14 @@ from omnipath_core.source_attributes import CELLULAR_LOCATION
 from functools import partial
 import json
 import re
-from pypath.internals.cv_terms import (
+from omnipath_resources.internals.cv_terms import (
     LicenseCV,
     OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.silver_schema import EntityRef, OntologyRelation
-from pypath.internals.tabular_builder import (
+from omnipath_resources.internals.silver_schema import EntityRef, OntologyRelation
+from omnipath_resources.internals.tabular_builder import (
     AssociationBuilder,
     AssociationsBuilder,
     AnnotationsBuilder,
@@ -40,18 +40,18 @@ from pypath.internals.tabular_builder import (
     MembershipBuilder,
     RelationBuilder,
 )
-from pypath.inputs_v2._source_context import (
+from omnipath_resources.inputs_v2._source_context import (
     conversion_direction_cv,
     stoichiometric_coefficient,
 )
-from pypath.inputs_v2._reactions import (
+from omnipath_resources.inputs_v2._reactions import (
     reaction_compartments_cv,
     reaction_type_cv,
     source_reaction_cv,
     source_reaction_type_cv,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.reactome import _raw
+from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2.parsers.reactome import _raw
 
 config = ResourceConfig(
     id=ResourceCv.REACTOME,

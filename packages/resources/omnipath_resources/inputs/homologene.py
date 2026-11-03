@@ -20,11 +20,11 @@
 import collections
 import itertools
 
-import pypath.utils.mapping as mapping
-import pypath.resources.urls as urls
-import pypath.inputs.uniprot_db as uniprot_db
-import pypath.share.session as session
-from pypath.share.downloads import dm
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.inputs.uniprot_db as uniprot_db
+import omnipath_resources.share.session as session
+from omnipath_resources.share.downloads import dm
 
 _logger = session.Logger(name = 'homologene_input')
 _log = _logger._log

@@ -36,7 +36,7 @@ def test_transport_keeps_compartment_on_each_participant(module, id_field):
 
 def test_reactome_physical_state_survives_parser_and_mapping():
     from rdflib import Graph, URIRef, Literal, RDF
-    from pypath.inputs_v2.parsers import reactome as parser
+    from omnipath_resources.inputs_v2.parsers import reactome as parser
     g = Graph()
     p, ref, loc, feature, vocab, site = [URIRef('https://example.org/' + x) for x in ('protein', 'ref', 'loc', 'feature', 'vocab', 'site')]
     for triple in [(p, RDF.type, parser.BP.Protein), (p, parser.BP.entityReference, ref),
@@ -62,7 +62,7 @@ def test_reactome_physical_state_survives_parser_and_mapping():
 
 
 def test_cellchat_role_does_not_rename_reference_protein():
-    from pypath.inputs_v2.cellchat import map_cellchat_cofactor_group, map_cellchat_cofactor_interaction
+    from omnipath_resources.inputs_v2.cellchat import map_cellchat_cofactor_group, map_cellchat_cofactor_interaction
     entity = map_cellchat_cofactor_group({'name': 'ACTIVIN antagonist', 'genes': ['FST'], 'taxon_id': '9606'})
     assert 'ACTIVIN antagonist' not in {i.value for i in entity.identifiers}
     relation = map_cellchat_cofactor_interaction({'cofactor_gene': 'FST', 'cofactor_group': 'ACTIVIN antagonist', 'cofactor_role': 'antagonist', 'effect': 'inhibition', 'target_name': 'INHBA', 'target_genes': ['INHBA'], 'taxon_id': '9606'})
@@ -72,14 +72,14 @@ def test_cellchat_role_does_not_rename_reference_protein():
 
 
 def test_bindingdb_construct_is_observation_context():
-    from pypath.inputs_v2.bindingdb import interactions_schema
+    from omnipath_resources.inputs_v2.bindingdb import interactions_schema
     record = interactions_schema({'BindingDB MonomerID': '1', 'Target Name': 'Dimer of polyprotein [501-599]', 'UniProt (SwissProt) Primary ID of Target Chain 1': 'P03367', 'Ki (nM)': '0.99'})
     assert 'Dimer of polyprotein [501-599]' not in {i.value for i in record.object.identifiers}
     assert {a.term: a.value for a in record.annotations}['original_object'] == 'Dimer of polyprotein [501-599]'
 
 
 def test_unspecified_diagram_edges_do_not_claim_interaction():
-    from pypath.inputs_v2.wikipathways import wikipathways_predicate
+    from omnipath_resources.inputs_v2.wikipathways import wikipathways_predicate
     from omnipath_core.biolink import predicate
     assert predicate(wikipathways_predicate({'interaction_types': ['Conversion']})) == 'related_to'
     assert predicate(wikipathways_predicate({'interaction_types': ['Binding']})) == 'interacts_with'

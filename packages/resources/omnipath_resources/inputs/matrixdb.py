@@ -19,10 +19,10 @@
 
 import collections
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
-import pypath.utils.mapping as mapping
-import pypath.inputs.uniprot_db as uniprot_db
+import omnipath_resources.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.utils.mapping as mapping
+import omnipath_resources.inputs.uniprot_db as uniprot_db
 
 
 def matrixdb_interactions(organism = 9606):
@@ -162,7 +162,7 @@ def _matrixdb_protein_list(category, organism = 9606):
 
     # Handle missing files (only ecm_proteins.csv exists currently)
     if c.result is None or c.status != 0:
-        import pypath.share.session as session
+        import omnipath_resources.share.session as session
         _logger = session.Logger(name = 'matrixdb_input')
         _logger._log(
             f'MatrixDB {category} proteins file not available. '

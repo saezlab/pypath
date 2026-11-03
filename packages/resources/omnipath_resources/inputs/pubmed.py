@@ -24,11 +24,11 @@ import sys
 import json
 import webbrowser
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
+import omnipath_resources.resources.urls as urls
+import omnipath_resources.share.curl as curl
 import pypath_common._constants as _const
-import pypath.share.progress as progress
-import pypath.inputs.eutils as eutils
+import omnipath_resources.share.progress as progress
+import omnipath_resources.inputs.eutils as eutils
 
 
 def open_pubmed(pmid):

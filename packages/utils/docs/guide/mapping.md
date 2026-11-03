@@ -599,20 +599,20 @@ fails (network error, missing data), the next one is tried.
 
 | Backend | Data source | Coverage | Organism-specific | Data access |
 |---------|-------------|----------|-------------------|-------------|
-| `uniprot` | UniProt REST API | UniProt AC, gene symbols, Entrez, HGNC, RefSeq, PDB, and all cross-references in UniProt | Yes | pypath.inputs.uniprot &rarr; direct HTTP |
-| `uniprot_ftp` | UniProt FTP idmapping files | Same as `uniprot`, but bulk download per organism | Yes (12 model organisms) | pypath.inputs.uniprot_ftp &rarr; direct HTTP |
+| `uniprot` | UniProt REST API | UniProt AC, gene symbols, Entrez, HGNC, RefSeq, PDB, and all cross-references in UniProt | Yes | omnipath_resources.inputs.uniprot &rarr; direct HTTP |
+| `uniprot_ftp` | UniProt FTP idmapping files | Same as `uniprot`, but bulk download per organism | Yes (12 model organisms) | omnipath_resources.inputs.uniprot_ftp &rarr; direct HTTP |
 | `uploadlists` | UniProt ID Mapping batch service | Same scope as UniProt, but for targeted ID sets | Yes | Direct HTTP (submit/poll/collect) |
-| `biomart` | Ensembl BioMart | Ensembl gene/transcript/protein IDs, gene symbols, Entrez | Yes | pypath.inputs.biomart &rarr; direct HTTP |
-| `mirbase` | miRBase | Precursor names, mature names, miRBase accessions | Yes | pypath.inputs.mirbase |
-| `unichem` | UniChem (EMBL-EBI) | Cross-references between chemical databases (ChEMBL, ChEBI, DrugBank, PubChem, etc.) | No | pypath.inputs.unichem |
-| `ramp` | RaMP-DB | Metabolite cross-references plus synonym mappings | No | pypath.inputs.ramp |
-| `hmdb` | HMDB | HMDB, PubChem, ChEBI, DrugBank, KEGG compound | Human only | pypath.inputs.hmdb |
-| `metanetx` | MNXref `chem_xref.tsv` (3.4M cross-reference entries) | Pairwise metabolite ID translation via MetaNetX bridge: bigg↔chebi, kegg↔chebi, hmdb↔chebi, lipidmaps↔chebi, swisslipids↔chebi, and all metanetx↔* combinations | No | pypath.inputs.metanetx |
-| `bigg` | BiGG Models universal metabolite TSV (9,090 universal metabolites across 85+ models) | bigg↔chebi, bigg↔hmdb, bigg↔kegg, bigg↔metanetx | No | pypath.inputs.bigg |
+| `biomart` | Ensembl BioMart | Ensembl gene/transcript/protein IDs, gene symbols, Entrez | Yes | omnipath_resources.inputs.biomart &rarr; direct HTTP |
+| `mirbase` | miRBase | Precursor names, mature names, miRBase accessions | Yes | omnipath_resources.inputs.mirbase |
+| `unichem` | UniChem (EMBL-EBI) | Cross-references between chemical databases (ChEMBL, ChEBI, DrugBank, PubChem, etc.) | No | omnipath_resources.inputs.unichem |
+| `ramp` | RaMP-DB | Metabolite cross-references plus synonym mappings | No | omnipath_resources.inputs.ramp |
+| `hmdb` | HMDB | HMDB, PubChem, ChEBI, DrugBank, KEGG compound | Human only | omnipath_resources.inputs.hmdb |
+| `metanetx` | MNXref `chem_xref.tsv` (3.4M cross-reference entries) | Pairwise metabolite ID translation via MetaNetX bridge: bigg↔chebi, kegg↔chebi, hmdb↔chebi, lipidmaps↔chebi, swisslipids↔chebi, and all metanetx↔* combinations | No | omnipath_resources.inputs.metanetx |
+| `bigg` | BiGG Models universal metabolite TSV (9,090 universal metabolites across 85+ models) | bigg↔chebi, bigg↔hmdb, bigg↔kegg, bigg↔metanetx | No | omnipath_resources.inputs.bigg |
 
 ### Pypath integration
 
-Most backends try to use `pypath.inputs` first. If pypath is not
+Most backends try to use `omnipath_resources.inputs` first. If pypath is not
 installed, the `uniprot` and `biomart` backends fall back to direct HTTP
 requests against the upstream APIs. The `mirbase`, `unichem`, `ramp`, and
 `hmdb` backends require pypath (they raise `ImportError` if it is

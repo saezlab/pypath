@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
     import pandas as pd
 
-import pypath.inputs.hmdb.common as hmdb_common
+import omnipath_resources.inputs.hmdb.common as hmdb_common
 
 
 def iter():
@@ -52,7 +52,7 @@ def raw(
             The schema defines the fields to be parsed. By default, a schema
             covering nearly all fields in the HMDB metabolites XML is used.
             Likely you don't need all the fields within one task: in this
-            case see `pypath.inputs.hmdb.PROTEINS_SCHEMA` to see the full
+            case see `omnipath_resources.inputs.hmdb.PROTEINS_SCHEMA` to see the full
             schema, and create your own that is restricted to your fields of
             interest.
         head:
@@ -105,7 +105,7 @@ def table(
 
         ..code-block:: python
 
-           from pypath.inputs import hmdb
+           from omnipath_resources.inputs import hmdb
            df = hmdb.proteins_table(
                'accession',
                'smiles',

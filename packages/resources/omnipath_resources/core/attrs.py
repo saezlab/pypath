@@ -22,7 +22,7 @@ from future.utils import iteritems
 import json
 import itertools
 
-import pypath.share.common as common
+import omnipath_resources.share.common as common
 
 
 class AttributeHandler(object):
@@ -44,7 +44,7 @@ class AttributeHandler(object):
     def update_attrs(self, attrs = None, **kwargs):
         """
         Updates the attributes stored here. The attributes with identical
-        keys are merged using the :py:func:`pypath.share.common.combine_attrs`
+        keys are merged using the :py:func:`omnipath_resources.share.common.combine_attrs`
         function.
 
         The new attributes can be provided three ways: an object with an

@@ -3,13 +3,13 @@
 ## From PyPI
 
 ```bash
-pip install pypath-omnipath
+pip install omnipath-resources
 ```
 
 Or with [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv pip install pypath-omnipath
+uv pip install omnipath-resources
 ```
 
 ## Optional dependencies
@@ -19,7 +19,7 @@ uv pip install pypath-omnipath
 For HTTP downloads via pycurl:
 
 ```bash
-pip install "pypath-omnipath[curl]"
+pip install "omnipath-resources[curl]"
 ```
 
 ### Visualization
@@ -27,7 +27,7 @@ pip install "pypath-omnipath[curl]"
 For plotting capabilities:
 
 ```bash
-pip install "pypath-omnipath[vis]"
+pip install "omnipath-resources[vis]"
 ```
 
 ### Graph analysis
@@ -35,7 +35,7 @@ pip install "pypath-omnipath[vis]"
 For igraph-based network analysis:
 
 ```bash
-pip install "pypath-omnipath[graph]"
+pip install "omnipath-resources[graph]"
 ```
 
 ### Metabolomics
@@ -43,7 +43,7 @@ pip install "pypath-omnipath[graph]"
 For metabolite structure handling:
 
 ```bash
-pip install "pypath-omnipath[metabo]"
+pip install "omnipath-resources[metabo]"
 ```
 
 ## Development installation
