@@ -1,0 +1,178 @@
+# ===================================
+# =======        BUILD       ========
+# ===================================
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+# ===================================
+# =======       PROJECT      ========
+# ===================================
+
+[project]
+authors = [
+    {name = "Denes Turei", email = "turei.denes@gmail.com"},
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    "pkg-infra>=0.1.1",
+    "cachedir>=0.1.2",
+    "dlmachine>=0.0.2",
+    "narwhals>=1.0",
+    "pydantic>=2.0",
+    "platformdirs>=4.0",
+    "requests>=2.28",
+]
+description = "ID translation, taxonomy, orthology and reference lists for molecular biology"
+license = "GPL-3.0-or-later"
+maintainers = [
+    {name = "Denes Turei", email = "turei.denes@gmail.com"},
+]
+name = "omnipath-utils"
+readme = "README.md"
+requires-python = ">=3.10"
+version = "0.1.1"
+
+[project.optional-dependencies]
+db = [
+    "sqlalchemy>=2.0",
+    "psycopg[binary]>=3.0",
+    "asyncpg>=0.29",
+]
+server = [
+    "omnipath-utils[db]",
+    "litestar[standard]>=2.0",
+    "uvicorn[standard]>=0.30",
+]
+build = [
+    "omnipath-utils[db]",
+    "pyarrow>=14.0",
+    "pyyaml>=6.0",
+]
+pypath = [
+    "pypath-omnipath>=0.16",
+]
+chem = [
+    "rdkit>=2023.9",
+]
+lipid = [
+    "pygoslin>=2.2",
+]
+dev = [
+    "pre-commit",
+    "bump2version",
+]
+docs = [
+    "mkdocs>=1.6,<2",
+    "mkdocs-material>=9.6",
+    "pymdown-extensions>=10.15",
+    "mkdocstrings[python]>=0.29",
+]
+tests = [
+    "omnipath-utils[server]",
+    "pytest>=6.0",
+    "pytest-cov",
+    "coverage>=6.0",
+    "ruff",
+]
+
+[project.scripts]
+omnipath-utils = "omnipath_utils.cli._main:main"
+
+[project.urls]
+Documentation = "https://saezlab.github.io/omnipath-utils"
+Homepage = "https://github.com/saezlab/omnipath-utils"
+Issues = "https://github.com/saezlab/omnipath-utils/issues"
+Repository = "https://github.com/saezlab/omnipath-utils"
+
+# ===================================
+# =======        TOOLS       ========
+# ===================================
+
+[tool.bumpversion]
+current_version = "0.1.1"
+commit = true
+tag = true
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+
+[[tool.bumpversion.files]]
+filename = "omnipath_utils/_metadata.py"
+
+[tool.coverage.run]
+omit = ["**/test_*.py"]
+source = ["omnipath_utils"]
+
+[tool.cruft]
+skip = [
+    "tests",
+    "omnipath_utils/__init__.py",
+    "omnipath_utils/_metadata.py",
+]
+template = "https://github.com/saezlab/python-project"
+
+[tool.hatch.build.targets.wheel]
+packages = ["omnipath_utils"]
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+python_files = "test_*.py"
+testpaths = ["tests"]
+xfail_strict = true
+
+[tool.ruff]
+extend-include = ["*.ipynb"]
+line-length = 80
+target-version = "py310"
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+ignore = [
+    "B008", "B024",
+    "D100", "D104", "D105", "D107", "D200", "D202", "D203", "D213",
+    "D400", "D401",
+    "E251", "E303", "E501", "E731", "E741",
+    # Type annotations — too strict for now, add incrementally
+    "ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "ANN401",
+    "BLE001",  # Blind Exception catches are intentional in build/backend code
+]
+select = [
+    "B", "BLE", "C4", "D", "E", "F", "I", "RUF100",
+    "TID", "UP", "W", "Q", "S307", "ANN",
+]
+unfixable = ["UP"]
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+
+[tool.ruff.lint.isort]
+case-sensitive = false
+combine-as-imports = true
+force-sort-within-sections = true
+force-wrap-aliases = true
+known-first-party = ["omnipath_utils"]
+length-sort = true
+no-lines-before = ["local-folder"]
+order-by-type = true
+
+[tool.ruff.lint.per-file-ignores]
+"*/__init__.py" = ["D104", "F401"]
+"tests/*" = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.uv.sources]
+pypath-omnipath = { path = "../omnipath-resources", editable = true }

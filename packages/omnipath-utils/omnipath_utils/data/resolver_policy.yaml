@@ -1,0 +1,27 @@
+# Default resolver export policy (Milestone I).
+#
+# Per entity family, the key types to project onto the canonical target.
+#   action: accept          -> projected to the canonical target
+#           candidate_only  -> demoted (kept as a candidate, not authoritative)
+#           ignore          -> dropped
+#   requires_taxonomy: the mapping is organism-specific (proteins).
+#
+# Round-trips omnipath-build's resolver_mapping_policy semantics. The canonical
+# target itself (uniprot / inchikey) is excluded from the projected sources.
+
+protein:
+  - {key_type: uniprot,     action: accept}
+  - {key_type: genesymbol,  action: accept, requires_taxonomy: true}
+  - {key_type: ensg,        action: accept, requires_taxonomy: true}
+  - {key_type: ensp,        action: accept, requires_taxonomy: true}
+  - {key_type: entrez,      action: accept, requires_taxonomy: true}
+  - {key_type: refseqp,     action: candidate_only, requires_taxonomy: true}
+
+chemical:
+  - {key_type: chebi,       action: accept}
+  - {key_type: pubchem,     action: accept}
+  - {key_type: chembl,      action: accept}
+  - {key_type: lipidmaps,   action: accept}
+  - {key_type: hmdb,        action: accept}
+  - {key_type: kegg,        action: accept}
+  - {key_type: swisslipids, action: candidate_only}

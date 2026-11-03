@@ -1,0 +1,59 @@
+site_name: omnipath-utils
+site_url: https://saezlab.github.io/omnipath-utils
+repo_url: https://github.com/saezlab/omnipath-utils
+repo_name: saezlab/omnipath-utils
+theme:
+  name: material
+  favicon: assets/favicon.ico
+  icon:
+    logo: material/database
+  palette:
+  - media: '(prefers-color-scheme: light)'
+    scheme: default
+    primary: custom
+    accent: custom
+    toggle:
+      icon: material/brightness-7
+      name: Switch to dark mode
+  - media: '(prefers-color-scheme: dark)'
+    scheme: slate
+    primary: custom
+    accent: custom
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
+plugins:
+- search
+- mkdocstrings:
+    handlers:
+      python:
+        paths:
+        - .
+        options:
+          show_source: false
+          show_root_heading: true
+nav:
+- Home: index.md
+- Getting Started:
+  - Installation: installation.md
+  - Quick Start: quickstart.md
+- User Guide:
+  - ID Translation: guide/mapping.md
+  - Advanced Translation: guide/mapping-advanced.md
+  - Taxonomy: guide/taxonomy.md
+  - Reference Lists: guide/reflists.md
+- Deployment:
+  - Database Build: deployment/database.md
+  - Web Service: deployment/server.md
+  - systemd Service: deployment/systemd.md
+- About: about.md
+markdown_extensions:
+- pymdownx.highlight: null
+- pymdownx.superfences
+- pymdownx.tabbed:
+    alternate_style: true
+- admonition
+- toc:
+    permalink: true
+extra_css:
+- assets/omnipath-theme.css

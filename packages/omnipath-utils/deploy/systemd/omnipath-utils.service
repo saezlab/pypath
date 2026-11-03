@@ -1,0 +1,37 @@
+# Systemd user unit for the omnipath-utils web service.
+#
+# Install:
+#   mkdir -p ~/.config/systemd/user
+#   ln -sf "$PWD/omnipath-utils.service" ~/.config/systemd/user/omnipath-utils.service
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now omnipath-utils.service
+#
+# Boot persistence (run once as root):
+#   loginctl enable-linger <user>
+#
+# %h expands to the running user's home. The unit assumes the deployment
+# lives at ~/deploy/omnipath-utils/ (created by setup.sh) and reads DB
+# credentials from .env there, so no secrets are committed to the repo.
+#
+# ExecStart is wrapped in a login bash so PATH (for docker), site-specific
+# env from ~/dev/.envrc (e.g. LD_LIBRARY_PATH on NixOS), and any user-level
+# profile setup are loaded the same way they are in a normal shell session.
+
+[Unit]
+Description=omnipath-utils Litestar API
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=exec
+WorkingDirectory=%h/deploy/omnipath-utils
+EnvironmentFile=-%h/deploy/omnipath-utils/.env
+ExecStartPre=/bin/bash -lc 'docker compose up -d db'
+ExecStart=/bin/bash -lc '[ -f "$HOME/dev/.envrc" ] && . "$HOME/dev/.envrc"; exec "$HOME/deploy/omnipath-utils/.venv/bin/omnipath-utils" serve --db-url "$OMNIPATH_UTILS_DB_URL" --host "$OMNIPATH_UTILS_HOST" --port "$OMNIPATH_UTILS_PORT"'
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:%h/deploy/omnipath-utils/server.log
+StandardError=append:%h/deploy/omnipath-utils/server.log
+
+[Install]
+WantedBy=default.target

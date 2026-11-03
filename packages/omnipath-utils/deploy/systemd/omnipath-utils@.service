@@ -1,0 +1,37 @@
+# Templated systemd user unit for an omnipath-utils instance.
+#
+# Each instance lives at ~/instances/<name>/ with its own source clone,
+# virtualenv, .env file, and Postgres compose file. Enable an instance:
+#
+#   systemctl --user enable --now omnipath-utils@<name>.service
+#
+# Instance layout:
+#
+#   ~/instances/<name>/
+#     src/                  # git clone of omnipath-utils
+#     .venv/                # uv-managed virtualenv (pip install -e ./src[server])
+#     .env                  # OMNIPATH_UTILS_DB_URL, _HOST, _PORT
+#     docker-compose.yml    # Postgres for this instance only
+#     server.log            # uvicorn access log
+#
+# See the non-templated `omnipath-utils.service` for the single-instance
+# (production) deployment.
+
+[Unit]
+Description=omnipath-utils Litestar API (instance %i)
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=exec
+WorkingDirectory=%h/instances/%i
+EnvironmentFile=-%h/instances/%i/.env
+ExecStartPre=/bin/bash -lc 'docker compose -f %h/instances/%i/docker-compose.yml up -d db'
+ExecStart=/bin/bash -lc '[ -f "$HOME/dev/.envrc" ] && . "$HOME/dev/.envrc"; exec "$HOME/instances/%i/.venv/bin/omnipath-utils" serve --db-url "$OMNIPATH_UTILS_DB_URL" --host "$OMNIPATH_UTILS_HOST" --port "$OMNIPATH_UTILS_PORT"'
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:%h/instances/%i/server.log
+StandardError=append:%h/instances/%i/server.log
+
+[Install]
+WantedBy=default.target

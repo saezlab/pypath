@@ -1,0 +1,97 @@
+# pre-commit-config.yaml
+# See https://pre-commit.com for docs and https://pre-commit.com/hooks.html for available hooks
+
+# ======================================================
+# =======        pre-commit configuration       ========
+# ======================================================
+fail_fast: false
+minimum_pre_commit_version: 3.0.0
+default_language_version:
+    python: python3
+default_stages:
+-   pre-commit
+-   pre-push
+
+# ======================================================
+# =======            repository hooks           ========
+# ======================================================
+# UPDATE all the hooks regularly by running in the
+# terminal:
+#   pre-commit autoupdate
+
+repos:
+    # Fast Python linter and formatter with auto-fix support
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.13
+    hooks:
+    -   id: ruff
+        args: [--fix, --show-fixes]
+        stages: [pre-commit]
+        files: \.py$
+    -   id: ruff-format
+        stages: [pre-commit]
+        files: \.py$
+
+    # Go code cleaner (removes unused exports)
+-   repo: https://github.com/deeenes/unexport
+    rev: 0.4.0-patch0-3
+    hooks:
+    -   id: unexport
+        args: [--refactor, --single_quotes]
+        exclude: __init__.py$
+
+    # Official pre-commit-hooks for general checks
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0    # Check for updates regularly
+    hooks:
+    -   id: check-added-large-files
+        stages: [pre-commit, pre-push]
+    -   id: check-ast
+        stages: [pre-commit]
+    -   id: check-case-conflict
+        stages: [pre-commit]
+    -   id: check-merge-conflict
+        stages: [pre-commit, pre-push]
+    -   id: check-symlinks
+        stages: [pre-commit]
+    -   id: check-yaml
+        args: [--unsafe]
+        stages: [pre-commit]
+        files: \.ya?ml$
+    -   id: detect-private-key
+        stages: [pre-commit]
+    -   id: end-of-file-fixer
+        stages: [pre-commit]
+    -   id: mixed-line-ending
+        args: [--fix=lf]
+        exclude: ^docs/make.bat$
+        stages: [pre-commit]
+    -   id: requirements-txt-fixer
+        stages: [pre-commit]
+
+    # Format code blocks in documentation files
+-   repo: https://github.com/asottile/blacken-docs
+    rev: 1.19.1
+    hooks:
+    -   id: blacken-docs
+        stages: [pre-commit]
+        files: \.(md|rst)$
+
+  # Format TOML and YAML files with pretty-format hooks
+-   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.14.0
+    hooks:
+    -   id: pretty-format-toml
+        args:
+        -   --autofix
+        -   --indent
+        -   '4'
+        stages: [pre-commit]
+        files: \.toml$
+    -   id: pretty-format-yaml
+        args:
+        -   --autofix
+        -   --indent
+        -   '4'
+        stages: [pre-commit]
+        files: \.ya?ml$

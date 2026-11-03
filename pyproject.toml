@@ -7,6 +7,7 @@ members = [
     "packages/subsets",
     "packages/api",
     "packages/query/python",
+    "packages/omnipath-utils",
 ]
 
 [tool.uv.sources]
@@ -17,6 +18,7 @@ omnipath-postgres = { workspace = true }
 omnipath-subsets = { workspace = true }
 omnipath-api = { workspace = true }
 omnipath-client = { workspace = true }
+omnipath-utils = { workspace = true }
 pypath-omnipath = { path = "packages/omnipath-resources", editable = true }
 
 [dependency-groups]

@@ -1,0 +1,403 @@
+# Common model organisms with name forms across databases.
+# Key is NCBI Taxonomy ID.
+# Additional organisms can be lazy-loaded from APIs.
+
+9606:
+  common_name: human
+  latin_name: Homo sapiens
+  short_latin: H. sapiens
+  ensembl_name: hsapiens
+  kegg_code: hsa
+  mirbase_code: hsa
+  oma_code: HUMAN
+  uniprot_code: HUMAN
+  dbptm_code: HUMAN
+  synonyms:
+    - homo
+    - man
+
+10090:
+  common_name: mouse
+  latin_name: Mus musculus
+  short_latin: M. musculus
+  ensembl_name: mmusculus
+  kegg_code: mmu
+  mirbase_code: mmu
+  oma_code: MOUSE
+  uniprot_code: MOUSE
+  dbptm_code: MOUSE
+  synonyms:
+    - mus
+
+10116:
+  common_name: rat
+  latin_name: Rattus norvegicus
+  short_latin: R. norvegicus
+  ensembl_name: rnorvegicus
+  kegg_code: rno
+  mirbase_code: rno
+  oma_code: RAT
+  uniprot_code: RAT
+  dbptm_code: RAT
+  synonyms:
+    - rattus
+
+9031:
+  common_name: chicken
+  latin_name: Gallus gallus
+  short_latin: G. gallus
+  ensembl_name: ggallus
+  kegg_code: gga
+  mirbase_code: gga
+  oma_code: CHICK
+  uniprot_code: CHICK
+  dbptm_code: ""
+  synonyms:
+    - gallus
+    - hen
+    - gga
+
+9913:
+  common_name: cow
+  latin_name: Bos taurus
+  short_latin: B. taurus
+  ensembl_name: btaurus
+  kegg_code: bta
+  mirbase_code: bta
+  oma_code: BOVIN
+  uniprot_code: BOVIN
+  dbptm_code: BOVIN
+  synonyms:
+    - bovine
+    - cattle
+    - bos
+    - bta
+    - bull
+    - ox
+
+9986:
+  common_name: rabbit
+  latin_name: Oryctolagus cuniculus
+  short_latin: O. cuniculus
+  ensembl_name: ocuniculus
+  kegg_code: ocu
+  mirbase_code: ocu
+  oma_code: RABIT
+  uniprot_code: RABIT
+  dbptm_code: ""
+  synonyms:
+    - oryctolagus
+    - ocu
+
+9940:
+  common_name: sheep
+  latin_name: Ovis aries
+  short_latin: O. aries
+  ensembl_name: oaries
+  kegg_code: oas
+  mirbase_code: oar
+  oma_code: SHEEP
+  uniprot_code: SHEEP
+  dbptm_code: SHEEP
+  synonyms:
+    - ovine
+    - ovis
+    - oas
+
+10141:
+  common_name: guinea pig
+  latin_name: Cavia porcellus
+  short_latin: C. porcellus
+  ensembl_name: cporcellus
+  kegg_code: cpor
+  mirbase_code: ""
+  oma_code: CAVPO
+  uniprot_code: CAVPO
+  dbptm_code: ""
+  synonyms:
+    - cavia
+
+10036:
+  common_name: hamster
+  latin_name: Mesocricetus auratus
+  short_latin: M. auratus
+  ensembl_name: mauratus
+  kegg_code: mau
+  mirbase_code: ""
+  oma_code: MESAU
+  uniprot_code: MESAU
+  dbptm_code: ""
+  synonyms:
+    - mesocricetus
+    - cgr
+
+7227:
+  common_name: fruit fly
+  latin_name: Drosophila melanogaster
+  short_latin: D. melanogaster
+  ensembl_name: dmelanogaster
+  kegg_code: dme
+  mirbase_code: dme
+  oma_code: DROME
+  uniprot_code: DROME
+  dbptm_code: DROME
+  synonyms:
+    - fly
+    - drosophila
+    - fruitfly
+    - drome
+
+9615:
+  common_name: dog
+  latin_name: Canis lupus familiaris
+  short_latin: C. familiaris
+  ensembl_name: clfamiliaris
+  kegg_code: cfa
+  mirbase_code: cfa
+  oma_code: CANLF
+  uniprot_code: CANLF
+  dbptm_code: CANLF
+  synonyms:
+    - canine
+    - canis
+    - cfa
+
+9823:
+  common_name: pig
+  latin_name: Sus scrofa
+  short_latin: S. scrofa
+  ensembl_name: sscrofa
+  kegg_code: ssc
+  mirbase_code: ssc
+  oma_code: PIG
+  uniprot_code: PIG
+  dbptm_code: PIG
+  synonyms:
+    - swine
+    - porcine
+    - sus
+    - ssc
+
+8355:
+  common_name: frog
+  latin_name: Xenopus laevis
+  short_latin: X. laevis
+  ensembl_name: xlaevis
+  kegg_code: xla
+  mirbase_code: xla
+  oma_code: XENLA
+  uniprot_code: XENLA
+  dbptm_code: XENLA
+  synonyms:
+    - xenopus
+    - african clawed frog
+    - xla
+    - xle
+
+9796:
+  common_name: horse
+  latin_name: Equus caballus
+  short_latin: E. caballus
+  ensembl_name: ecaballus
+  kegg_code: eca
+  mirbase_code: eca
+  oma_code: HORSE
+  uniprot_code: HORSE
+  dbptm_code: ""
+  synonyms:
+    - equine
+    - equus
+    - eca
+
+9925:
+  common_name: goat
+  latin_name: Capra hircus
+  short_latin: C. hircus
+  ensembl_name: chircus
+  kegg_code: chi
+  mirbase_code: chi
+  oma_code: CAPHI
+  uniprot_code: CAPHI
+  dbptm_code: CAPHI
+  synonyms: []
+
+9598:
+  common_name: chimpanzee
+  latin_name: Pan troglodytes
+  short_latin: P. troglodytes
+  ensembl_name: ptroglodytes
+  kegg_code: ptr
+  mirbase_code: ptr
+  oma_code: PANTR
+  uniprot_code: PANTR
+  dbptm_code: ""
+  synonyms:
+    - chimp
+    - pan
+    - ptr
+
+9685:
+  common_name: cat
+  latin_name: Felis catus
+  short_latin: F. catus
+  ensembl_name: fcatus
+  kegg_code: fca
+  mirbase_code: fca
+  oma_code: FELCA
+  uniprot_code: FELCA
+  dbptm_code: ""
+  synonyms:
+    - feline
+    - felis
+
+9544:
+  common_name: rhesus macaque
+  latin_name: Macaca mulatta
+  short_latin: M. mulatta
+  ensembl_name: mmulatta
+  kegg_code: mcc
+  mirbase_code: mml
+  oma_code: MACMU
+  uniprot_code: MACMU
+  dbptm_code: ""
+  synonyms:
+    - macaque
+    - rhesus
+    - mcc
+
+7955:
+  common_name: zebrafish
+  latin_name: Danio rerio
+  short_latin: D. rerio
+  ensembl_name: drerio
+  kegg_code: dre
+  mirbase_code: dre
+  oma_code: DANRE
+  uniprot_code: DANRE
+  dbptm_code: ""
+  synonyms:
+    - fish
+    - danio
+    - dre
+
+6239:
+  common_name: nematode
+  latin_name: Caenorhabditis elegans
+  short_latin: C. elegans
+  ensembl_name: celegans
+  kegg_code: cel
+  mirbase_code: cel
+  oma_code: CAEEL
+  uniprot_code: CAEEL
+  dbptm_code: CAEEL
+  synonyms:
+    - worm
+    - c.elegans
+    - caenorhabditis
+    - roundworm
+    - elegans
+    - cel
+
+4932:
+  common_name: yeast
+  latin_name: Saccharomyces cerevisiae
+  short_latin: S. cerevisiae
+  ensembl_name: scerevisiae
+  kegg_code: sce
+  mirbase_code: ""
+  oma_code: YEAST
+  uniprot_code: YEAST
+  dbptm_code: ""
+  synonyms:
+    - budding yeast
+    - saccharomyces
+    - "baker's yeast"
+    - sce
+    - "brewer's yeast"
+
+3702:
+  common_name: arabidopsis
+  latin_name: Arabidopsis thaliana
+  short_latin: A. thaliana
+  ensembl_name: athaliana
+  kegg_code: ath
+  mirbase_code: ath
+  oma_code: ARATH
+  uniprot_code: ARATH
+  dbptm_code: ARATH
+  synonyms:
+    - thale cress
+    - ath
+    - arath
+
+559292:
+  common_name: yeast s288c
+  latin_name: Saccharomyces cerevisiae S288C
+  short_latin: S. cerevisiae S288C
+  ensembl_name: ""
+  kegg_code: ""
+  mirbase_code: ""
+  oma_code: ""
+  uniprot_code: ""
+  dbptm_code: ""
+  synonyms:
+    - s288c
+    - s288
+
+284812:
+  common_name: fission yeast
+  latin_name: Schizosaccharomyces pombe
+  short_latin: S. pombe
+  ensembl_name: spombe
+  kegg_code: spo
+  mirbase_code: ""
+  oma_code: SCHPO
+  uniprot_code: SCHPO
+  dbptm_code: ""
+  synonyms:
+    - s.pombe
+    - schpo
+    - spo
+
+83333:
+  common_name: e. coli k-12
+  latin_name: Escherichia coli K-12
+  short_latin: E. coli K-12
+  ensembl_name: ""
+  kegg_code: eco
+  mirbase_code: ""
+  oma_code: ""
+  uniprot_code: ""
+  dbptm_code: ""
+  synonyms:
+    - ecoli
+    - e.coli
+    - escherichia
+    - eco
+
+44689:
+  common_name: slime mold
+  latin_name: Dictyostelium discoideum
+  short_latin: D. discoideum
+  ensembl_name: ""
+  kegg_code: ddi
+  mirbase_code: ""
+  oma_code: DICDI
+  uniprot_code: DICDI
+  dbptm_code: ""
+  synonyms:
+    - dictyostelium
+    - dicdi
+
+1142:
+  common_name: cyanobacteria
+  latin_name: Synechocystis sp. PCC 6803
+  short_latin: Synechocystis sp.
+  ensembl_name: ""
+  kegg_code: syn
+  mirbase_code: ""
+  oma_code: ""
+  uniprot_code: ""
+  dbptm_code: ""
+  synonyms:
+    - synechocystis

@@ -1,0 +1,21 @@
+name: Setup Python and Install Dependencies
+description: Sets up Python and installs dependencies using uv
+runs:
+    using: composite
+    steps:
+    -   uses: actions/setup-python@v5
+        with:
+            python-version: ${{ inputs.python-version }}
+    -   name: Install uv
+        shell: bash
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+    -   name: Create virtualenv and install dependencies
+        shell: bash
+        run: |
+            uv venv .venv
+            source .venv/bin/activate
+            uv pip install ".[dev,tests,docs]"
+inputs:
+    python-version:
+        required: true
+        description: Python version to use in the matrix.

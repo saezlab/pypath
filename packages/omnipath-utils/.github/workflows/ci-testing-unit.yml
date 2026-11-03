@@ -1,0 +1,25 @@
+name: CI testing [unit testing]
+
+on: [push, pull_request]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                python-version: ['3.10', '3.11', '3.12', '3.13']
+        steps:
+        -   uses: actions/checkout@v4
+        -   uses: ./.github/actions/setup
+            with:
+                python-version: ${{ matrix.python-version }}
+        -   name: Run tests with coverage
+            run: |
+                source .venv/bin/activate
+                pytest --cov=omnipath_utils --cov-report=xml tests/
+        -   name: Upload coverage to Codecov
+            if: matrix.python-version == '3.12'
+            uses: codecov/codecov-action@v5
+            with:
+                files: coverage.xml
+                fail_ci_if_error: false

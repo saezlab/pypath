@@ -1,0 +1,16 @@
+name: Linting
+
+on: [push, pull_request]
+
+jobs:
+    linting:
+        runs-on: ubuntu-latest
+        steps:
+        -   uses: actions/checkout@v4
+        -   uses: ./.github/actions/setup
+            with:
+                python-version: '3.13'
+        -   name: Run Ruff (lint + formatting + import order)
+            run: .venv/bin/ruff check .
+        -   name: Run Ruff format check (like Black)
+            run: .venv/bin/ruff format --check .
