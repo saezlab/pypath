@@ -22,7 +22,7 @@ flowchart TB
 
 | Stage | What happens | Owner package | Details |
 | --- | --- | --- | --- |
-| Parse | `pypath.inputs_v2` maps source rows to typed entities and relations | `pypath` (submodule) | — |
+| Parse | `pypath.inputs_v2` maps source rows to typed entities and relations | `pypath` (`packages/omnipath-resources`) | — |
 | Build | Extract, [resolve](resolution.md), aggregate, write the normalized tables, publish atomically | `build`, `resolver`, `core` | [Entities](entities.md), [Resolution](resolution.md) |
 | Serve | API and explorer query Parquet through DuckDB; the client reads the same files | `api`, `web`, `client` | — |
 | Load | Pinned release → PostgreSQL relational schema → derived products | `postgres`, `subsets` | [PostgreSQL](postgres.md), [Subsets](subsets.md) |

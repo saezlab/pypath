@@ -6,7 +6,6 @@
 **/target
 /build
 /packages/*/build
-/pypath/build
 **/.pytest_cache
 **/.ruff_cache
 **/.svelte-kit
@@ -17,6 +16,8 @@ data
 cache
 pypath-data
 pypath_log
+packages/*/pypath_log
+packages/*/logs
 main-reference
 legacy
 logs

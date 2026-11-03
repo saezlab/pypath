@@ -14,7 +14,7 @@ make setup
 make help
 ```
 
-Setup uses the locked dependencies and the committed pypath submodule revision; the
+Setup uses the locked dependencies, with pypath and omnipath-utils as workspace packages. The
 resolver's Rust extension is built by `uv sync`. A serving container needs no resolver,
 reference rebuild or sibling prototype checkout.
 
@@ -154,9 +154,10 @@ Python projects use `packages/<short-name>/omnipath_<name>/`, with explicit
 package discovery and wheel checks. Rust and Svelte keep their own `src` folders.
 See [current architecture](docs/architecture.md) and [refactoring log](docs/reviews/refactoring-progress-20261003.md).
 
-Only pypath is a runtime source submodule. The lockfile selects published cachedir
-and dlmachine releases; their optional checkouts and omnipath-utils are not installed
-or copied into images. The cachedir workaround remains scoped to the pinned release
+pypath lives in `packages/omnipath-resources` and omnipath-utils in
+`packages/omnipath-utils`; both keep their own lint and test settings (`make test-pypath`,
+`make test-utils`). The lockfile selects published cachedir and dlmachine releases;
+their optional checkouts are not installed, and omnipath-utils is not copied into images. The cachedir workaround remains scoped to the pinned release
 until its upstream fix is available in a selected version. Proxy settings are honored
 as supplied by the launcher; library calls do not rewrite the process environment.
 

@@ -70,7 +70,7 @@ def check(directory, packages, *, offline=False):
         if package in required:
             build_wheel(("--package", f"omnipath-{package}"), f"omnipath_{package}")
     if required & {"build", "postgres"}:
-        build_wheel(("pypath",), "pypath_omnipath")
+        build_wheel(("packages/omnipath-resources",), "pypath_omnipath")
     for package in required:
         wheel = next(wheels.glob(f"omnipath_{package}-*.whl"))
         with zipfile.ZipFile(wheel) as archive:
