@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS metsigdb_membership (
   set_size    integer NOT NULL,
   set_context jsonb,
 
-  -- Provenance. `provenance_source` cites the omnipath_resources.inputs_v2 module and the
+  -- Provenance. `provenance_source` cites the pypath.inputs_v2 module and the
   -- commit that parsed the resource, read from the `resources` table.
   provenance_source text NOT NULL,
   provenance_record jsonb,

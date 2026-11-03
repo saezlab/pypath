@@ -43,7 +43,7 @@ def config_metadata(module_name):
             license_use={"academic": str(license.academic), "commercial": str(license.commercial)},
         )
     metadata["input_module_url"] = (
-        "https://github.com/saezlab/pypath/blob/silver_schema_improvement/"
+        "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/"
         + module_name.replace(".", "/")
         + ("/__init__.py" if hasattr(module, "__path__") else ".py")
     )

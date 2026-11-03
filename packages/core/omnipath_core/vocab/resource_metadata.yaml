@@ -14,7 +14,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/abs.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/abs.py"
   },
   "acsn": {
     "display_name": "ACSN",
@@ -32,7 +32,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/acsn.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/acsn.py"
   },
   "adhesome": {
     "display_name": "Adhesome",
@@ -50,7 +50,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/adhesome.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/adhesome.py"
   },
   "almen2009": {
     "display_name": "Almen2009",
@@ -68,7 +68,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/almen2009.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/almen2009.py"
   },
   "alzpathway": {
     "display_name": "AlzPathway",
@@ -86,7 +86,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/alzpathway.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/alzpathway.py"
   },
   "apo": {
     "display_name": "APO",
@@ -101,7 +101,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/apo.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/apo.py"
   },
   "arn": {
     "display_name": "ARN",
@@ -119,7 +119,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/arn.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/arn.py"
   },
   "baccin2019": {
     "display_name": "Baccin2019",
@@ -136,7 +136,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/baccin2019.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/baccin2019.py"
   },
   "bindingdb": {
     "display_name": "BindingDB",
@@ -153,7 +153,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/bindingdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/bindingdb.py"
   },
   "biogrid": {
     "display_name": "BioGRID",
@@ -170,7 +170,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/biogrid.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/biogrid.py"
   },
   "brenda": {
     "display_name": "BRENDA",
@@ -187,7 +187,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/brenda.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/brenda.py"
   },
   "bto": {
     "display_name": "BTO",
@@ -202,7 +202,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/bto.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/bto.py"
   },
   "ca1": {
     "display_name": "CA1",
@@ -220,7 +220,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/ca1.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/ca1.py"
   },
   "cancercellmap": {
     "display_name": "CancerCellMap",
@@ -238,7 +238,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cancercellmap.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cancercellmap.py"
   },
   "cancerdrugsdb": {
     "display_name": "CancerDrugsDB",
@@ -255,7 +255,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cancerdrugsdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cancerdrugsdb.py"
   },
   "cancersea": {
     "display_name": "CancerSEA",
@@ -272,7 +272,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cancersea.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cancersea.py"
   },
   "cellcall": {
     "display_name": "CellCall",
@@ -290,7 +290,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cellcall.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cellcall.py"
   },
   "cellcellinteractions": {
     "display_name": "CellCellInteractions",
@@ -307,7 +307,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cellcellinteractions.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cellcellinteractions.py"
   },
   "cellchat": {
     "display_name": "CellChat",
@@ -325,7 +325,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cellchat.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cellchat.py"
   },
   "cellinker": {
     "display_name": "Cellinker",
@@ -342,7 +342,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cellinker.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cellinker.py"
   },
   "cellphonedb": {
     "display_name": "CellPhoneDB",
@@ -361,7 +361,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cellphonedb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cellphonedb.py"
   },
   "celltalkdb": {
     "display_name": "CellTalkDB",
@@ -378,7 +378,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/celltalkdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/celltalkdb.py"
   },
   "celltypist": {
     "display_name": "CellTypist",
@@ -396,7 +396,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/celltypist.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/celltypist.py"
   },
   "chebi": {
     "display_name": "ChEBI",
@@ -414,7 +414,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/chebi.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/chebi.py"
   },
   "chembl": {
     "display_name": "ChEMBL",
@@ -431,7 +431,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/chembl.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/chembl.py"
   },
   "chemont": {
     "display_name": "ChemOnt",
@@ -447,7 +447,7 @@
       "academic": "allowed",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/chemont.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/chemont.py"
   },
   "cl": {
     "display_name": "CL",
@@ -462,7 +462,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cl.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cl.py"
   },
   "collectri": {
     "display_name": "CollecTRI",
@@ -480,7 +480,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/collectri.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/collectri.py"
   },
   "collectri2": {
     "display_name": "CollecTRI2",
@@ -498,7 +498,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/collectri2.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/collectri2.py"
   },
   "compleat": {
     "display_name": "COMPLEAT",
@@ -515,7 +515,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/compleat.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/compleat.py"
   },
   "complexportal": {
     "display_name": "Complex Portal",
@@ -532,7 +532,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/complexportal.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/complexportal.py"
   },
   "connectomedb2025": {
     "display_name": "connectomeDB2025",
@@ -550,7 +550,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/connectomedb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/connectomedb.py"
   },
   "corum": {
     "display_name": "CORUM",
@@ -566,7 +566,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/corum.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/corum.py"
   },
   "cpad": {
     "display_name": "CPAD",
@@ -585,7 +585,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cpad.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cpad.py"
   },
   "cpdb": {
     "display_name": "CPDB",
@@ -603,7 +603,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cpdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cpdb.py"
   },
   "cspa": {
     "display_name": "CSPA",
@@ -621,7 +621,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cspa.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cspa.py"
   },
   "cytosig": {
     "display_name": "CytoSig",
@@ -639,7 +639,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/cytosig.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/cytosig.py"
   },
   "dbptm": {
     "display_name": "dbPTM",
@@ -656,7 +656,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/dbptm.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/dbptm.py"
   },
   "deathdomain": {
     "display_name": "DeathDomain",
@@ -673,7 +673,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/deathdomain.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/deathdomain.py"
   },
   "depod": {
     "display_name": "DEPOD",
@@ -691,7 +691,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/depod.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/depod.py"
   },
   "dgidb": {
     "display_name": "DGIdb",
@@ -709,7 +709,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/dgidb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/dgidb.py"
   },
   "dip": {
     "display_name": "DIP",
@@ -727,7 +727,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/dip.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/dip.py"
   },
   "disgenet": {
     "display_name": "DisGeNET",
@@ -745,7 +745,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/disgenet.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/disgenet.py"
   },
   "doid": {
     "display_name": "DOID",
@@ -760,7 +760,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/doid.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/doid.py"
   },
   "domino": {
     "display_name": "DOMINO",
@@ -778,7 +778,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/domino.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/domino.py"
   },
   "dorothea": {
     "display_name": "DoRothEA",
@@ -797,7 +797,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/dorothea.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/dorothea.py"
   },
   "drugcentral": {
     "display_name": "DrugCentral",
@@ -813,7 +813,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/drugcentral.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/drugcentral.py"
   },
   "eco": {
     "display_name": "ECO",
@@ -828,7 +828,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/eco.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/eco.py"
   },
   "elm": {
     "display_name": "ELM",
@@ -846,7 +846,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/elm.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/elm.py"
   },
   "embrace": {
     "display_name": "EMBRACE",
@@ -862,7 +862,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/embrace.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/embrace.py"
   },
   "encode": {
     "display_name": "ENCODE",
@@ -879,7 +879,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/encode.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/encode.py"
   },
   "exocarta": {
     "display_name": "ExoCarta",
@@ -897,7 +897,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/exocarta.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/exocarta.py"
   },
   "foodb": {
     "display_name": "FooDB",
@@ -914,7 +914,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/foodb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/foodb.py"
   },
   "go": {
     "display_name": "Gene Ontology",
@@ -929,7 +929,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/go.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/go.py"
   },
   "gpcrdb": {
     "display_name": "GPCRdb",
@@ -946,7 +946,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/gpcrdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/gpcrdb.py"
   },
   "guidetopharma": {
     "display_name": "Guide to Pharmacology",
@@ -963,7 +963,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/guidetopharma.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/guidetopharma.py"
   },
   "havugimana": {
     "display_name": "Havugimana2012",
@@ -980,7 +980,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/havugimana.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/havugimana.py"
   },
   "hgnc": {
     "display_name": "HGNC",
@@ -997,7 +997,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/hgnc.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/hgnc.py"
   },
   "hint": {
     "display_name": "HINT",
@@ -1014,7 +1014,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/hint.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/hint.py"
   },
   "hippie": {
     "display_name": "HIPPIE",
@@ -1031,7 +1031,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/hippie.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/hippie.py"
   },
   "hmdb": {
     "display_name": "HMDB",
@@ -1048,7 +1048,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/hmdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/hmdb.py"
   },
   "hpmr": {
     "display_name": "HPMR",
@@ -1067,7 +1067,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/hpmr.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/hpmr.py"
   },
   "hpo": {
     "display_name": "Human Phenotype Ontology",
@@ -1084,7 +1084,7 @@
       "academic": "allowed",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/hpo.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/hpo.py"
   },
   "hprd": {
     "display_name": "HPRD",
@@ -1103,7 +1103,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/hprd.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/hprd.py"
   },
   "htri": {
     "display_name": "HTRIdb",
@@ -1121,7 +1121,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/htri.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/htri.py"
   },
   "humancellmap": {
     "display_name": "HumanCellMap",
@@ -1139,7 +1139,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/humancellmap.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/humancellmap.py"
   },
   "humap": {
     "display_name": "hu.MAP",
@@ -1155,7 +1155,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/humap.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/humap.py"
   },
   "huri": {
     "display_name": "HuRI",
@@ -1172,7 +1172,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/huri.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/huri.py"
   },
   "i3d": {
     "display_name": "Interactome3D",
@@ -1189,7 +1189,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/i3d.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/i3d.py"
   },
   "icellnet": {
     "display_name": "ICELLNET",
@@ -1206,7 +1206,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/icellnet.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/icellnet.py"
   },
   "imm1415": {
     "display_name": "iMM1415",
@@ -1222,7 +1222,7 @@
       "academic": "allowed",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/imm1415.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/imm1415.py"
   },
   "innatedb": {
     "display_name": "InnateDB",
@@ -1240,7 +1240,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/innatedb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/innatedb.py"
   },
   "instruct": {
     "display_name": "INstruct",
@@ -1257,7 +1257,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/instruct.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/instruct.py"
   },
   "intact": {
     "display_name": "IntAct",
@@ -1274,7 +1274,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/intact.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/intact.py"
   },
   "integrins": {
     "display_name": "Integrins",
@@ -1291,7 +1291,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/integrins.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/integrins.py"
   },
   "interpro": {
     "display_name": "InterPro",
@@ -1309,7 +1309,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/interpro.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/interpro.py"
   },
   "intogen": {
     "display_name": "IntOGen",
@@ -1327,7 +1327,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/intogen.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/intogen.py"
   },
   "iptmnet": {
     "display_name": "iPTMnet",
@@ -1345,7 +1345,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/iptmnet.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/iptmnet.py"
   },
   "italk": {
     "display_name": "iTALK",
@@ -1361,7 +1361,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/italk.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/italk.py"
   },
   "kea": {
     "display_name": "KEA",
@@ -1379,7 +1379,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/kea.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/kea.py"
   },
   "kegg": {
     "display_name": "KEGG",
@@ -1395,7 +1395,7 @@
       "academic": "allowed",
       "commercial": "requires_permission"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/kegg.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/kegg.py"
   },
   "kinasedotcom": {
     "display_name": "kinase.com",
@@ -1412,7 +1412,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/kinasedotcom.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/kinasedotcom.py"
   },
   "kirouac2010": {
     "display_name": "Kirouac2010",
@@ -1429,7 +1429,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/kirouac2010.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/kirouac2010.py"
   },
   "lambert2018": {
     "display_name": "Lambert2018",
@@ -1446,7 +1446,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/lambert2018.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/lambert2018.py"
   },
   "laudanna": {
     "display_name": "Laudanna",
@@ -1464,7 +1464,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/laudanna.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/laudanna.py"
   },
   "li2012": {
     "display_name": "Li2012",
@@ -1482,7 +1482,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/li2012.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/li2012.py"
   },
   "lipidmaps": {
     "display_name": "LIPID MAPS",
@@ -1499,7 +1499,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/lipidmaps.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/lipidmaps.py"
   },
   "lmpid": {
     "display_name": "LMPID",
@@ -1515,7 +1515,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/lmpid.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/lmpid.py"
   },
   "lncdisease": {
     "display_name": "LncRNADisease",
@@ -1532,7 +1532,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/lncdisease.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/lncdisease.py"
   },
   "lncrnadb": {
     "display_name": "lncRNAdb",
@@ -1549,7 +1549,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/lncrnadb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/lncrnadb.py"
   },
   "locate": {
     "display_name": "LOCATE",
@@ -1567,7 +1567,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/locate.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/locate.py"
   },
   "lrdb": {
     "display_name": "LRdb",
@@ -1584,7 +1584,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/lrdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/lrdb.py"
   },
   "macdb": {
     "display_name": "MACdb",
@@ -1602,7 +1602,7 @@
       "academic": "allowed",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/macdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/macdb.py"
   },
   "macrophage": {
     "display_name": "Macrophage",
@@ -1621,7 +1621,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/macrophage.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/macrophage.py"
   },
   "matrisome": {
     "display_name": "Matrisome",
@@ -1638,7 +1638,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/matrisome.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/matrisome.py"
   },
   "matrixdb": {
     "display_name": "MatrixDB",
@@ -1657,7 +1657,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/matrixdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/matrixdb.py"
   },
   "mcam": {
     "display_name": "MCAM",
@@ -1674,7 +1674,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/mcam.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/mcam.py"
   },
   "mebocost": {
     "display_name": "MEBOCOST",
@@ -1693,7 +1693,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/mebocost.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/mebocost.py"
   },
   "membranome": {
     "display_name": "Membranome",
@@ -1711,7 +1711,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/membranome.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/membranome.py"
   },
   "metachatdb": {
     "display_name": "MetaChatDB",
@@ -1730,7 +1730,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/metachatdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/metachatdb.py"
   },
   "metatlas": {
     "display_name": "Metabolic Atlas",
@@ -1746,7 +1746,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/metatlas.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/metatlas.py"
   },
   "mimp": {
     "display_name": "MIMP",
@@ -1763,7 +1763,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/mimp.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/mimp.py"
   },
   "mir2disease": {
     "display_name": "miR2Disease",
@@ -1781,7 +1781,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/mir2disease.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/mir2disease.py"
   },
   "mirbase": {
     "display_name": "miRBase",
@@ -1797,7 +1797,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/mirbase.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/mirbase.py"
   },
   "mirdeathdb": {
     "display_name": "miRDeathDB",
@@ -1814,7 +1814,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/mirdeathdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/mirdeathdb.py"
   },
   "mirecords": {
     "display_name": "miRecords",
@@ -1831,7 +1831,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/mirecords.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/mirecords.py"
   },
   "mirtarbase": {
     "display_name": "miRTarBase",
@@ -1848,7 +1848,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/mirtarbase.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/mirtarbase.py"
   },
   "mondo": {
     "display_name": "Mondo",
@@ -1865,7 +1865,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/mondo.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/mondo.py"
   },
   "mp": {
     "display_name": "MP",
@@ -1880,7 +1880,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/mp.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/mp.py"
   },
   "mppi": {
     "display_name": "MPPI",
@@ -1896,7 +1896,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/mppi.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/mppi.py"
   },
   "mrclinksdb": {
     "display_name": "MRClinksDB",
@@ -1913,7 +1913,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/mrclinksdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/mrclinksdb.py"
   },
   "msigdb": {
     "display_name": "MSigDB",
@@ -1933,7 +1933,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/msigdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/msigdb.py"
   },
   "ncrdeathdb": {
     "display_name": "ncRDeathDB",
@@ -1951,7 +1951,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/ncrdeathdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/ncrdeathdb.py"
   },
   "netpath": {
     "display_name": "NetPath",
@@ -1970,7 +1970,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/netpath.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/netpath.py"
   },
   "neuronchat": {
     "display_name": "NeuronChat",
@@ -1986,7 +1986,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/neuronchat.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/neuronchat.py"
   },
   "nichenet": {
     "display_name": "NicheNet",
@@ -2002,7 +2002,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/nichenet.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/nichenet.py"
   },
   "nrf2ome": {
     "display_name": "NRF2ome",
@@ -2020,7 +2020,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/nrf2ome.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/nrf2ome.py"
   },
   "omnipath_ontology": {
     "display_name": "OmniPath Ontology",
@@ -2035,7 +2035,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/omnipath_ontology.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/omnipath_ontology.py"
   },
   "oncotree": {
     "display_name": "OncoTree",
@@ -2051,7 +2051,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/oncotree.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/oncotree.py"
   },
   "opm": {
     "display_name": "OPM",
@@ -2069,7 +2069,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/opm.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/opm.py"
   },
   "oreganno": {
     "display_name": "ORegAnno",
@@ -2087,7 +2087,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/oreganno.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/oreganno.py"
   },
   "panglaodb": {
     "display_name": "PanglaoDB",
@@ -2105,7 +2105,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/panglaodb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/panglaodb.py"
   },
   "pathwaycommons": {
     "display_name": "PathwayCommons",
@@ -2128,7 +2128,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/pathwaycommons.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/pathwaycommons.py"
   },
   "pato": {
     "display_name": "PATO",
@@ -2143,7 +2143,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/pato.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/pato.py"
   },
   "pazar": {
     "display_name": "PAZAR",
@@ -2162,7 +2162,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/pazar.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/pazar.py"
   },
   "pdb": {
     "display_name": "PDB",
@@ -2178,7 +2178,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/pdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/pdb.py"
   },
   "pdzbase": {
     "display_name": "PDZBase",
@@ -2195,7 +2195,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/pdzbase.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/pdzbase.py"
   },
   "pepcyber": {
     "display_name": "PepCyber",
@@ -2212,7 +2212,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/pepcyber.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/pepcyber.py"
   },
   "pfocr": {
     "display_name": "PFOCR",
@@ -2228,7 +2228,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/pfocr.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/pfocr.py"
   },
   "phenol_explorer": {
     "display_name": "Phenol-Explorer",
@@ -2245,7 +2245,7 @@
       "academic": "allowed",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/phenol_explorer.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/phenol_explorer.py"
   },
   "phobius": {
     "display_name": "Phobius",
@@ -2262,7 +2262,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/phobius.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/phobius.py"
   },
   "phosphatome": {
     "display_name": "Phosphatome",
@@ -2279,7 +2279,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/phosphatome.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/phosphatome.py"
   },
   "phosphoelm": {
     "display_name": "Phospho.ELM",
@@ -2296,7 +2296,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/phosphoelm.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/phosphoelm.py"
   },
   "phosphonetworks": {
     "display_name": "PhosphoNetworks",
@@ -2314,7 +2314,7 @@
       "academic": "allowed",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/phosphonetworks.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/phosphonetworks.py"
   },
   "phosphopoint": {
     "display_name": "PhosphoPOINT",
@@ -2332,7 +2332,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/phosphopoint.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/phosphopoint.py"
   },
   "phosphosite": {
     "display_name": "PhosphoSite",
@@ -2349,7 +2349,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/phosphosite.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/phosphosite.py"
   },
   "pmidb": {
     "display_name": "PMI-DB",
@@ -2367,7 +2367,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/pmidb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/pmidb.py"
   },
   "progeny": {
     "display_name": "PROGENy",
@@ -2386,7 +2386,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/progeny.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/progeny.py"
   },
   "protmapper": {
     "display_name": "ProtMapper",
@@ -2404,7 +2404,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/protmapper.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/protmapper.py"
   },
   "psi_mi": {
     "display_name": "PSI-MI",
@@ -2419,7 +2419,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/psi_mi.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/psi_mi.py"
   },
   "ptfi": {
     "display_name": "PTFI",
@@ -2437,7 +2437,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/ptfi.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/ptfi.py"
   },
   "ramilowski2015": {
     "display_name": "Ramilowski2015",
@@ -2454,7 +2454,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/ramilowski2015.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/ramilowski2015.py"
   },
   "rampdb": {
     "display_name": "RaMP-DB",
@@ -2471,7 +2471,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/rampdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/rampdb.py"
   },
   "reactome": {
     "display_name": "Reactome",
@@ -2492,7 +2492,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/reactome.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/reactome.py"
   },
   "recon3d": {
     "display_name": "Recon3D",
@@ -2508,7 +2508,7 @@
       "academic": "allowed",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/recon3d.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/recon3d.py"
   },
   "refmet": {
     "display_name": "RefMet",
@@ -2525,7 +2525,7 @@
       "academic": "allowed",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/refmet.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/refmet.py"
   },
   "rhea": {
     "display_name": "Rhea",
@@ -2542,7 +2542,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/rhea.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/rhea.py"
   },
   "scconnect": {
     "display_name": "scConnect",
@@ -2559,7 +2559,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/scconnect.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/scconnect.py"
   },
   "signalink": {
     "display_name": "SignaLink",
@@ -2578,7 +2578,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/signalink.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/signalink.py"
   },
   "signor": {
     "display_name": "SIGNOR",
@@ -2596,7 +2596,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/signor.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/signor.py"
   },
   "slctables": {
     "display_name": "SLC tables",
@@ -2612,7 +2612,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/slctables.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/slctables.py"
   },
   "spike": {
     "display_name": "SPIKE",
@@ -2633,7 +2633,7 @@
       "academic": "allowed",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/spike.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/spike.py"
   },
   "stitch": {
     "display_name": "STITCH",
@@ -2652,7 +2652,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/stitch.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/stitch.py"
   },
   "string": {
     "display_name": "STRING",
@@ -2672,7 +2672,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/string.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/string.py"
   },
   "surfaceome": {
     "display_name": "Surfaceome",
@@ -2689,7 +2689,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/surfaceome.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/surfaceome.py"
   },
   "swisslipids": {
     "display_name": "SwissLipids",
@@ -2706,7 +2706,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/swisslipids.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/swisslipids.py"
   },
   "switches_elm": {
     "display_name": "switches.ELM",
@@ -2723,7 +2723,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/switches_elm.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/switches_elm.py"
   },
   "talklr": {
     "display_name": "talklr",
@@ -2740,7 +2740,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/talklr.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/talklr.py"
   },
   "tcdb": {
     "display_name": "TCDB",
@@ -2756,7 +2756,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/tcdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/tcdb.py"
   },
   "tfcensus": {
     "display_name": "TFcensus",
@@ -2773,7 +2773,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/tfcensus.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/tfcensus.py"
   },
   "threedid": {
     "display_name": "3did",
@@ -2789,7 +2789,7 @@
       "academic": "unknown",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/threedid.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/threedid.py"
   },
   "topdb": {
     "display_name": "TOPDB",
@@ -2808,7 +2808,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/topdb.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/topdb.py"
   },
   "transmir": {
     "display_name": "TransmiR",
@@ -2825,7 +2825,7 @@
       "academic": "allowed",
       "commercial": "unknown"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/transmir.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/transmir.py"
   },
   "trip": {
     "display_name": "TRIP",
@@ -2843,7 +2843,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/trip.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/trip.py"
   },
   "trrust": {
     "display_name": "TRRUST",
@@ -2860,7 +2860,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/trrust.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/trrust.py"
   },
   "uberon": {
     "display_name": "Uberon",
@@ -2875,7 +2875,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/uberon.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/uberon.py"
   },
   "uniprot": {
     "display_name": "UniProt",
@@ -2891,7 +2891,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/uniprot.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/uniprot.py"
   },
   "vesiclepedia": {
     "display_name": "Vesiclepedia",
@@ -2909,7 +2909,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/vesiclepedia.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/vesiclepedia.py"
   },
   "wang": {
     "display_name": "Wang",
@@ -2927,7 +2927,7 @@
       "academic": "allowed",
       "commercial": "not_allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/wang.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/wang.py"
   },
   "wbphenotype": {
     "display_name": "WBPhenotype",
@@ -2942,7 +2942,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/wbphenotype.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/wbphenotype.py"
   },
   "wikipathways": {
     "display_name": "WikiPathways",
@@ -2960,7 +2960,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/wikipathways.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/wikipathways.py"
   },
   "wojtowicz2020": {
     "display_name": "Wojtowicz2020",
@@ -2977,7 +2977,7 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/wojtowicz2020.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/wojtowicz2020.py"
   },
   "zhong2015": {
     "display_name": "Zhong2015",
@@ -2994,6 +2994,6 @@
       "academic": "allowed",
       "commercial": "allowed"
     },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/zhong2015.py"
+    "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/zhong2015.py"
   }
 }
