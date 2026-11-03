@@ -161,7 +161,7 @@ postgres-up:
 	docker compose --env-file "$(POSTGRES_ENV)" -f deploy/docker-compose.postgres18.yml up -d --build --wait
 rebuild-subsets:
 	uv run --frozen --package omnipath-subsets omnipath-subsets build --schema "$(POSTGRES_SCHEMA)" --products $(SUBSET_PRODUCTS) --checkpoint-products
-# Core documentation viewer (Markdown sources in core_documentation/).
+# Core documentation viewer (Markdown sources in docs/core/).
 DOCS_PORT ?= 8090
 docs:
-	uv run --frozen python -m http.server $(DOCS_PORT) --bind 127.0.0.1 --directory core_documentation
+	uv run --frozen python -m http.server $(DOCS_PORT) --bind 127.0.0.1 --directory docs/core

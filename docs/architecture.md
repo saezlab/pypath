@@ -45,6 +45,6 @@ the base checkpoint; projection reads add traffic. The API currently inventories
 local mounted artifact directory. Public download URLs need not be on that server.
 The Parquet contract is the boundary between systems, not a shared database or cache.
 
-Start from [the root workflow](../README.md), [entity resolution](../core_documentation/resolution.md),
+Start from [the root workflow](../README.md), [entity resolution](core/resolution.md),
 [PostgreSQL](../packages/postgres/README.md) or [serving operations](../deploy/README.md).
 The numbered [old pipeline notes](pipeline/README.md) are historical.

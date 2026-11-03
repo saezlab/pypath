@@ -1,4 +1,4 @@
-# analysis/
+# scripts/analysis/
 
 Reusable, read-only SQL evaluations of a built OmniPath DB. Run against any built
 instance; they disable parallel gather so they work on a web PG too.
@@ -13,5 +13,5 @@ instance; they disable parallel gather so they work on a web PG too.
 
 ```bash
 PGPASSWORD=… psql -h localhost -p <build-or-web-PG-port> -U omnipath -d omnipath \
-  -f analysis/gene_protein_resolution_report.sql
+  -f scripts/analysis/gene_protein_resolution_report.sql
 ```

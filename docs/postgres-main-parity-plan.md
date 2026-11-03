@@ -6,7 +6,7 @@ This plan began with a read-only comparison. The authorized implementation is no
 
 ## Reference and scope
 
-The baseline is GitHub main at `9f9bb709c764e2721a0bcd881cf7ef0eb22bed9a`, fetched on 1 October 2026. Its source and tests match the existing `legacy/postgres` copy exactly. Reuse that code when practical, rather than independently recreating its behavior.
+The baseline is GitHub main at `9f9bb709c764e2721a0bcd881cf7ef0eb22bed9a`, fetched on 1 October 2026. Its source and tests match the existing `packages/postgres/tests/oracle_legacy` copy exactly. Reuse that code when practical, rather than independently recreating its behavior.
 
 An untracked snapshot is at [main-reference/9f9bb709c764](../main-reference/9f9bb709c764/). It contains 169 files: Python source, SQL, tests, pipeline documentation, build configuration and deployment files. [SNAPSHOT.json](../main-reference/9f9bb709c764/SNAPSHOT.json) records the commit, dependency gitlinks and file checksums; all 169 copied files were verified. Submodules were recorded, not copied or updated. [source-contract-inventory.json](../main-reference/9f9bb709c764/source-contract-inventory.json) indexes source DDL and literal index specifications. It includes conditional and scratch definitions, so it is not an executed database catalog.
 

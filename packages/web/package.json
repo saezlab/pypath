@@ -12,7 +12,7 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "test": "node --import tsx --test test/*.test.ts",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "generate:types": "openapi-typescript ../../openapi.json -o src/lib/api/types.generated.ts",
+    "generate:types": "openapi-typescript ../api/openapi.json -o src/lib/api/types.generated.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

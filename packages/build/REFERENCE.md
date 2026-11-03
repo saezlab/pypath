@@ -4,7 +4,7 @@ Resource builds resolve against an identity library (`omnipath-identity-v2`),
 built offline from one set of hubs. Each hub is indexed on its own, then the
 identity decisions (lipid-name anchors, one-step attachment, grouping, quarantine,
 gene–product links) are computed once for all hubs. Rules and decisions are
-described in [entity resolution](../../core_documentation/resolution.md); the
+described in [entity resolution](../../docs/core/resolution.md); the
 implementation spec is [docs/identity-layer-spec.md](../../docs/identity-layer-spec.md).
 
 From the repository root, `make hubs` and `make reference` run the whole sequence

@@ -48,7 +48,8 @@ def test_composite_and_dynamic_download_descriptors(tmp_path):
         True,
     )
     ds = SimpleNamespace(
-        qualified_module="omnipath_resources.inputs_v2.stitch", raw_dataset=SimpleNamespace(download=combined)
+        qualified_module="omnipath_resources.inputs_v2.stitch",
+        raw_dataset=SimpleNamespace(download=combined),
     )
     with patch(
         "omnipath_build.source_metadata.importlib.import_module", return_value=SimpleNamespace()

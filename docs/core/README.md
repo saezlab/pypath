@@ -30,7 +30,7 @@ and open <http://127.0.0.1:8090>.
 ## Keeping it current
 
 - These pages describe the system as it is now. History, experiments and dated
-  measurements stay in [`docs/`](../docs/README.md).
+  measurements stay in [`docs/`](../README.md).
 - A pull request that changes a schema, a resolution rule, the PostgreSQL
   mapping or a product rule updates the matching page here.
 - A changed decision is edited in place in its **Decision** block, with the

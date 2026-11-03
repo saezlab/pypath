@@ -8,6 +8,9 @@ import tempfile
 
 import pytest
 
+# The frozen copy of main (with its own tests) is read by the parity tests, never collected.
+collect_ignore_glob = ["packages/postgres/tests/oracle_legacy/*"]
+
 
 def _worker_port() -> int:
     """Per-xdist-worker port: gw0 -> 55479, gw1 -> 55480, ... (controller/serial -> 55479)."""

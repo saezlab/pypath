@@ -544,7 +544,9 @@ def test_all_five_metsigdb_complete_rows_provenance_and_republication_match_main
     )
     for row in rows:
         source = "hmdb" if row["resource"] == "ClassyFire" else row["resource"].lower()
-        assert row["provenance_source"] == "omnipath_resources.inputs_v2." + source + "@" + COMMIT[:12]
+        assert (
+            row["provenance_source"] == "omnipath_resources.inputs_v2." + source + "@" + COMMIT[:12]
+        )
         assert row["build_id"] == STAMP
         if row["metabolite_entity_id"] == ENTITY_IDS["chemical_a"]:
             assert (

@@ -23,7 +23,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
-    target = Path(__file__).resolve().parents[1] / "openapi.json"
+    target = Path(__file__).resolve().parents[1] / "packages/api/openapi.json"
     content = generate()
     if args.check:
         if target.read_text() != content:

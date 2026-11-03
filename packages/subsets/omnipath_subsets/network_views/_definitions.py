@@ -20,7 +20,7 @@ they survive, frozen at their last refresh, serving data the build has since
 corrected — they are not a live contract, and a fresh ``init-db
 --drop-existing`` takes them. The SQL that built the MetalinksDB views is
 deleted: it read annotation terms of the CV-based inputs that no build writes.
-The copy under ``legacy/postgres`` stays as the parity reference.
+The copy under ``packages/postgres/tests/oracle_legacy`` stays as the parity reference.
 
 Adding a dataset stays a declarative change: a definition here, served by the
 same uniform API.

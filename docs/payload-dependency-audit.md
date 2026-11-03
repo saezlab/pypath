@@ -3,7 +3,7 @@
 # Evidence payload dependency audit
 
 Reviewed 2026-09-30 on the `parquet-migration` branch. This checklist covers the
-active packages and scripts in this repository. The retired `legacy/postgres`
+active packages and scripts in this repository. The retired `packages/postgres/tests/oracle_legacy`
 implementation is not part of the migrated execution path.
 
 The migration publishes the missing information from `inputs_v2` as

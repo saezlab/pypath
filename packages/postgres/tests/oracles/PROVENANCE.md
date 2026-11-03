@@ -1,7 +1,7 @@
 # PostgreSQL parity oracles
 
 All tests read tracked sources through the SHA256-checking loader in this directory.
-The main 9f9bb709c764 source remains untouched under `legacy/postgres/omnipath_build`.
+The main 9f9bb709c764 source remains untouched under `packages/postgres/tests/oracle_legacy/omnipath_build`.
 `cosmos_project_edges_951d500.sql` is the exact deployed source from commit
 951d500b2535547076f292db949f436872b9fda2, original path
 `packages/omnipath_postgres/src/omnipath_postgres/main_compat/cosmos/sql/project_edges.sql`.

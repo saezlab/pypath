@@ -4,8 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[4]
-LEGACY_ROOT = REPO / "legacy/postgres/omnipath_build"
+LEGACY_ROOT = Path(__file__).resolve().parent.parent / "oracle_legacy/omnipath_build"
 CV_ROOT = Path(__file__).resolve().parent.parent / "oracle_cv_terms"
 SOURCE_HASHES = json.loads((Path(__file__).parent / "source_sha256.json").read_text())
 

@@ -1,8 +1,8 @@
 # Entities and relations
 
 Every resource version publishes the same normalized Parquet tables. The schemas
-are defined once in [`omnipath_core/schema.py`](../packages/core/omnipath_core/schema.py)
-and [`molecular_forms.py`](../packages/core/omnipath_core/molecular_forms.py).
+are defined once in [`omnipath_core/schema.py`](../../packages/core/omnipath_core/schema.py)
+and [`molecular_forms.py`](../../packages/core/omnipath_core/molecular_forms.py).
 The current contract is `serving_schema_version = 5`; build manifests stay at
 `schema_version = 1`.
 
@@ -95,7 +95,7 @@ evidence[0].molecular_form: null
 
 ## Keys
 
-Keys are deterministic SHA-256 hashes ([`keys.py`](../packages/core/omnipath_core/keys.py)).
+Keys are deterministic SHA-256 hashes ([`keys.py`](../../packages/core/omnipath_core/keys.py)).
 
 - **`entity_key`** = hash(`entity_type`, `namespace`, `identifier`). A protein
   resolved to gene 7157 and a gene resolved to gene 7157 therefore have

@@ -30,7 +30,9 @@ class BuildOps:
 
             return True
         except ModuleNotFoundError as exc:
-            if exc.name and (exc.name == "omnipath_resources" or exc.name.startswith("omnipath_resources.")):
+            if exc.name and (
+                exc.name == "omnipath_resources" or exc.name.startswith("omnipath_resources.")
+            ):
                 return False
             raise
 
@@ -43,7 +45,9 @@ class BuildOps:
 
             return True
         except ModuleNotFoundError as exc:
-            if exc.name and (exc.name == "omnipath_resources" or exc.name.startswith("omnipath_resources.")):
+            if exc.name and (
+                exc.name == "omnipath_resources" or exc.name.startswith("omnipath_resources.")
+            ):
                 return False
             raise
 

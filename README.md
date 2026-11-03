@@ -67,7 +67,7 @@ unchanged, then writes the identity library to `IDENTITY_DIR/<fingerprint>`
 and `IDENTITY_ARGS` pass memory and thread limits through. See the
 [identity layer guide](packages/build/REFERENCE.md), the
 [resource pipeline](packages/build/README.md),
-[entity resolution](core_documentation/resolution.md) and
+[entity resolution](docs/core/resolution.md) and
 [orchestration guide](packages/build/ORCHESTRATION.md).
 
 A named snapshot lists exact resource versions:
@@ -149,7 +149,8 @@ fixtures require explicit `make test-postgres` and create a disposable local clu
 CI runs developer checks without imposing a production verification phase.
 The [versioning policy](docs/versioning.md) describes independent publication schedules.
 The Python client queries the same published Parquets independently of the server.
-`legacy/` is excluded from the active workspace.
+The frozen copy of main that the PostgreSQL parity tests compare against is
+`packages/postgres/tests/oracle_legacy/`; it is not part of the workspace.
 
 ## Architecture and dependency policy
 

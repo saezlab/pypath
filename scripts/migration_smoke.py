@@ -339,7 +339,9 @@ def main(argv=None) -> int:
             patch.object(dataset, "download", LocalDownload(fixture_dir / "signor.tsv"))
         )
         stack.enter_context(patch.object(dataset, "_raw_parser", bounded_parser))
-        stack.enter_context(patch("omnipath_resources.inputs_v2.base.download_and_open", blocked_download))
+        stack.enter_context(
+            patch("omnipath_resources.inputs_v2.base.download_and_open", blocked_download)
+        )
         result = build_resource(
             "signor",
             version=args.version,

@@ -99,4 +99,4 @@ Release bookkeeping lives in `parquet_release`, `parquet_phase` and
 - `ontology_terms` stays empty, as in main; `entity_ontology_term` is derived.
 
 The column-by-column rules are in
-[`docs/postgres-parquet-column-map.md`](../docs/postgres-parquet-column-map.md).
+[`docs/postgres-parquet-column-map.md`](../postgres-parquet-column-map.md).

@@ -188,7 +188,7 @@ stays unknown; it is not replaced with the selected primary protein.
 
 ## 5. Parquet outputs
 
-The published tables (see `core_documentation/entities.md`):
+The published tables (see `docs/core/entities.md`):
 
 - `entity` with `entity_identifier` and `entity_annotation`: reusable
   entity/reference records, identifiers and annotations.

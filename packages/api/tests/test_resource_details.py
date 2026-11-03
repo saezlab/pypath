@@ -30,7 +30,9 @@ def test_legacy_metadata_does_not_invent_download_date_or_stats(tmp_path):
     assert item["downloaded_at"] is None
     assert item["resolution_stats"] is None
     assert item["website"] == "https://github.com/jinworks/CellChat"
-    assert item["input_module_url"].endswith("/packages/resources/omnipath_resources/inputs_v2/cellchat.py")
+    assert item["input_module_url"].endswith(
+        "/packages/resources/omnipath_resources/inputs_v2/cellchat.py"
+    )
     assert item["license"] == "GNU General Public License v3.0"
 
 

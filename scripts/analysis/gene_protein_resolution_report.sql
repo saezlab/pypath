@@ -9,7 +9,7 @@
 -- Usage (build PG has 1 GB /dev/shm; a web PG may have less — this script
 -- disables parallel gather so it runs anywhere):
 --   PGPASSWORD=… psql -h localhost -p <port> -U omnipath -d omnipath \
---     -f analysis/gene_protein_resolution_report.sql
+--     -f scripts/analysis/gene_protein_resolution_report.sql
 --
 -- Key modelling facts (verify against the DB — vocab ids are assigned SERIALLY
 -- per build, so NEVER hard-code them; we look them up by name below):

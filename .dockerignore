@@ -21,7 +21,7 @@ omnipath_resources_log
 packages/*/omnipath_resources_log
 packages/*/logs
 main-reference
-legacy
+packages/postgres/tests/oracle_legacy
 logs
 out
 bronze

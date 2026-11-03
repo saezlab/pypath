@@ -9,7 +9,7 @@
 -- Usage (build PG has 1 GB /dev/shm; a web PG may have less — this script
 -- disables parallel gather so it runs anywhere):
 --   PGPASSWORD=… psql -h localhost -p <port> -U omnipath -d omnipath \
---     -f analysis/chemical_resolution_report.sql
+--     -f scripts/analysis/chemical_resolution_report.sql
 --
 -- Every statement is read-only. Temp tables live for the session only.
 -- Vocab ids are assigned SERIALLY per build — never hard-coded, resolved by

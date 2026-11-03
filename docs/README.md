@@ -1,6 +1,6 @@
 # Documentation
 
-Start with the [core documentation](../core_documentation/README.md): schema,
+Start with the [core documentation](core/README.md): schema,
 entity resolution, PostgreSQL, subsets, decisions and glossary. Then see the
 [repository README](../README.md) and [architecture](architecture.md).
 

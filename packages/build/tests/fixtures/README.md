@@ -29,7 +29,7 @@ observed aliases, gene/protein results and resource output expectations are unch
 The October 8 removal of the compact reference resolves `library_fixture.py`'s hubs
 through the identity layer (`omnipath-identity-v2`), so the chemical expectations of
 `resolution_contract.json` follow its documented rules
-(core_documentation/resolution.md). 69 of 120 chemical entries changed; gene/protein
+(docs/core/resolution.md). 69 of 120 chemical entries changed; gene/protein
 expectations, observations and `resource_contract.json` are unchanged:
 
 - Labels follow the identity label policy (ChEBI name first, e.g. `water` over

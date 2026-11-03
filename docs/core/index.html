@@ -156,7 +156,7 @@ a.ref-term { color: inherit; text-decoration: underline dotted var(--accent); te
     { id: "postgres", file: "postgres.md", title: "PostgreSQL" },
     { id: "subsets", file: "subsets.md", title: "Subsets" },
   ];
-  const REPO = "https://github.com/saezlab/omnipath-build/blob/main/";
+  const REPO = "https://github.com/saezlab/pypath/blob/parquet-migration/";
   const byFile = Object.fromEntries(PAGES.map(p => [p.file, p]));
   const sources = {};
   const terms = {};  // glossary slug -> {title, html}
@@ -193,7 +193,9 @@ a.ref-term { color: inherit; text-decoration: underline dotted var(--accent); te
         return;
       }
       if (path.startsWith("../")) {
-        a.href = REPO + path.replace(/^(\.\.\/)+/, "") + (frag ? "#" + frag : "");
+        // Resolve against this folder's place in the repository (docs/core/).
+        const repoPath = new URL(path, "https://repo/docs/core/").pathname.slice(1);
+        a.href = REPO + repoPath + (frag ? "#" + frag : "");
         a.target = "_blank"; a.rel = "noopener";
       }
     });

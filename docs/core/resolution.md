@@ -61,7 +61,7 @@ omnipath-build export-hubs --output-dir data/reference/hubs --max-records 0
 
 Each hub is indexed on its own, independent of the identity rules, so a hub is
 re-indexed only when its export changes
-([`hubindex.py`](../packages/build/omnipath_build/identity/hubindex.py)):
+([`hubindex.py`](../../packages/build/omnipath_build/identity/hubindex.py)):
 
 | File | Content |
 | --- | --- |
@@ -99,7 +99,7 @@ new one is complete.
 ## 3. Identity decisions
 
 `build-identity` decides every record that is not simply its own anchor's
-entity ([`decisions.py`](../packages/build/omnipath_build/identity/decisions.py)).
+entity ([`decisions.py`](../../packages/build/omnipath_build/identity/decisions.py)).
 It is plain DuckDB SQL plus an in-process union-find for grouping, and runs in
 minutes.
 
@@ -150,7 +150,7 @@ omnipath-build build-identity --hub-index-root data/reference/hub-index --output
 
 `build-identity` writes the LMDB stores too. `make reference` runs the hub
 indexes, their stores and this step for every hub
-([identity layer guide](../packages/build/REFERENCE.md)).
+([identity layer guide](../../packages/build/REFERENCE.md)).
 
 **Example.** A ChEBI record with InChIKey *K* becomes entity `inchikey:K`. An
 HMDB record without a structure that cross-references only that ChEBI record
@@ -168,10 +168,10 @@ because choosing either would be a guess.
 
 Matching starts from a mapped source entity: its type, primary identifier,
 other identifiers, taxon and molecular form
-([`match.py`](../packages/resolver/omnipath_resolver/canonical/match.py)).
+([`match.py`](../../packages/resolver/omnipath_resolver/canonical/match.py)).
 
 The **entity type selects a policy**
-([`policy.py`](../packages/resolver/omnipath_resolver/canonical/policy.py)):
+([`policy.py`](../../packages/resolver/omnipath_resolver/canonical/policy.py)):
 
 | Policy | Entity types | Identifiers that vote |
 | --- | --- | --- |
@@ -202,7 +202,7 @@ namespace is allowed:
 ## 5–6. Looking up and deciding
 
 Each vote's key is looked up in the hub and identity stores
-([`identity_runtime.py`](../packages/resolver/omnipath_resolver/identity_runtime.py)).
+([`identity_runtime.py`](../../packages/resolver/omnipath_resolver/identity_runtime.py)).
 There is no candidate limit: a key contributes every candidate, and the
 intersection decides.
 
@@ -215,7 +215,7 @@ intersection decides.
   entity through the unique pairs from step 3.
 
 The candidate sets then go to the Rust decision kernel
-([`lib.rs`](../packages/resolver/rust/reference/src/lib.rs)):
+([`lib.rs`](../../packages/resolver/rust/reference/src/lib.rs)):
 
 1. **Chemicals with a stated structure.** If the source states a valid full
    InChIKey, only the InChIKey decides; other identifiers cannot override it.
@@ -248,7 +248,7 @@ result never changes:
 ### Gene and product level
 
 Gene, protein and RNA observations are decided on **two levels at once**
-([`precomputed.rs`](../packages/resolver/src/precomputed.rs)):
+([`precomputed.rs`](../../packages/resolver/src/precomputed.rs)):
 
 - **Gene level.** Each vote contributes the genes of its candidates: directly
   for gene candidates, or through explicit gene links for products. A vote whose
@@ -367,4 +367,4 @@ Grouping happens at query time and does not change any stored key.
 | Policies and matcher | `packages/resolver/omnipath_resolver/canonical/` |
 | Decision kernel | `packages/resolver/rust/reference/src/lib.rs`, `packages/resolver/src/precomputed.rs` |
 | Regression against another library | `packages/build/omnipath_build/regression/` |
-| Rules in detail | [`docs/identity-layer-spec.md`](../docs/identity-layer-spec.md) |
+| Rules in detail | [`docs/identity-layer-spec.md`](../identity-layer-spec.md) |

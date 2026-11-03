@@ -2,7 +2,7 @@
 
 > **Superseded.** This describes the previous compact reference (`build-library`).
 > Resource builds now resolve against the identity layer; see
-> [entity resolution](../core_documentation/resolution.md) and
+> [entity resolution](core/resolution.md) and
 > [the identity layer guide](../packages/build/REFERENCE.md). Its code has been
 > removed.
 
