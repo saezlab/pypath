@@ -1,9 +1,12 @@
+# The project name keeps the volumes of existing build instances
+# (omnipath-build[-devN]_postgres18_data), wherever the checkout lives.
+name: ${COMPOSE_PROJECT_NAME:-omnipath-build}
 services:
   postgres:
     # Custom postgres:18 with pg_roaringbitmap (+ rdkit) — REQUIRED: the build's
     # derivations create the roaringbitmap extension
     # (packages/postgres/omnipath_postgres/relational/db/bitmaps.py).
-    # The stock postgres:18 image lacks it. See postgres/Dockerfile.
+    # The stock postgres:18 image lacks it. See deploy/postgres/Dockerfile.
     build:
       context: ./postgres
       dockerfile: Dockerfile

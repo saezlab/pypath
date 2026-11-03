@@ -73,7 +73,7 @@ concurrent connections roughly track `LOAD_JOBS × ~4`, so the utils PG's
 ## Canonical values on the beauty host (503 GB RAM, 64 cores)
 
 Both containers set these via their compose `command:` (build PG:
-`docker-compose.postgres18.yml`, env-overridable; utils PG: its own compose):
+`deploy/docker-compose.postgres18.yml`, env-overridable; utils PG: its own compose):
 
 | GUC | Build PG (writes) | Utils/resolver PG (reads) | Why |
 |---|---|---|---|

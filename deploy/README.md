@@ -31,7 +31,7 @@ PUBLIC_DATA_URL, then add the routing override:
 
 ```sh
 make serving-up COMPOSE_ENV=deploy/serving.env \
-  COMPOSE_FILES='-f compose.serving.yaml -f deploy/compose.traefik.yaml'
+  COMPOSE_FILES='-f deploy/compose.serving.yaml -f deploy/compose.traefik.yaml'
 ```
 
 The proxy network must already exist. Set PROXY_NETWORK and TLS_RESOLVER for the

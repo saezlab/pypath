@@ -51,7 +51,7 @@ The Python API accepts `base_only=True` and `products=('cosmos',)`. `finish_rele
 
 DuckDB defaults to one thread and 1 GB memory. Use `--duckdb-threads`, `--memory-limit` and `--temp-directory` to choose working limits and staging storage. Temporary CSVs and DuckDB files are removed after loading or failure. Returned timings separate artifact checks, projection, CSV staging, COPY, constraints and durable phases.
 
-Use PostgreSQL 18 with main's [PostgreSQL image](../../postgres/Dockerfile) or an equivalent image providing `roaringbitmap` and `pg_trgm`. The development parity tests compare actual catalog definitions and duplicate-sensitive scientific fixtures with the frozen main source. They are bounded development checks; loading has no mandatory exhaustive verification, rebuild-and-rollback run or automatic safety phase.
+Use PostgreSQL 18 with main's [PostgreSQL image](../../deploy/postgres/Dockerfile) or an equivalent image providing `roaringbitmap` and `pg_trgm`. The development parity tests compare actual catalog definitions and duplicate-sensitive scientific fixtures with the frozen main source. They are bounded development checks; loading has no mandatory exhaustive verification, rebuild-and-rollback run or automatic safety phase.
 
 The earlier resource-record loader (`omnipath_postgres.compatibility.record_layout`) has been removed together with its tests; schemas built by it are not readable by this package. See [the alignment plan](../../docs/postgres-main-parity-plan.md) for the migration boundary.
 

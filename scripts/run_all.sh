@@ -2,7 +2,7 @@
 # Start the local Parquet API and explorer. No resource or database builds run.
 set -euo pipefail
 
-repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_dir"
 api_port="${1:-8085}"
 web_port="${2:-5173}"

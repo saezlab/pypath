@@ -66,3 +66,7 @@ main-reference/
 
 # Locally preserved exploratory artifacts; provenance is in docs/history
 /local-artifacts/
+
+# Local run logs
+logs/
+omnipath_resources_log/

@@ -27,9 +27,9 @@ deployment_root=/root/projects/omnipath-releases/20261007-serving-tables
 # Inspect the running stack.
 cd /root/projects/omnipath-migration/wt-normalized
 make serving-status COMPOSE_ENV="$deployment_root/serving.env" \
-  COMPOSE_FILES='-f compose.serving.yaml -f deploy/compose.traefik.yaml'
+  COMPOSE_FILES='-f deploy/compose.serving.yaml -f deploy/compose.traefik.yaml'
 make serving-logs COMPOSE_ENV="$deployment_root/serving.env" \
-  COMPOSE_FILES='-f compose.serving.yaml -f deploy/compose.traefik.yaml'
+  COMPOSE_FILES='-f deploy/compose.serving.yaml -f deploy/compose.traefik.yaml'
 ```
 
 A deploy builds and starts serving only; it runs no resource build, identity

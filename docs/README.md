@@ -16,7 +16,7 @@ entity resolution, PostgreSQL, subsets, decisions and glossary. Then see the
 - [PostgreSQL](../packages/postgres/README.md)
 - [Parquet-to-PostgreSQL column map](postgres-parquet-column-map.md)
 - [Subset products](../packages/subsets/README.md)
-- [Versioning](../VERSIONING.md)
+- [Versioning](versioning.md)
 - [Serving deployment](../deploy/README.md)
 
 ## Molecular forms

@@ -1,6 +1,7 @@
-# OmniPath build
+# OmniPath
 
-Build resolved, independently versioned Parquet resources from pypath `inputs_v2`.
+Build resolved, independently versioned Parquet resources from the `omnipath_resources.inputs_v2`
+input modules.
 Serve those files through the API and explorer, or load an explicitly pinned
 release into PostgreSQL. Entity resolution happens before Parquet publication.
 API Latest and PostgreSQL's monthly snapshots have independent schedules.
@@ -14,7 +15,7 @@ make setup
 make help
 ```
 
-Setup uses the locked dependencies, with pypath and omnipath-utils as workspace packages. The
+Setup uses the locked dependencies; every package below is a workspace member. The
 resolver's Rust extension is built by `uv sync`. A serving container needs no resolver,
 reference rebuild or sibling prototype checkout.
 
@@ -129,6 +130,7 @@ current product implementations.
 
 | Package | Responsibility |
 | --- | --- |
+| [resources](packages/resources/README.rst) | Resource input modules (`omnipath_resources`, formerly pypath) |
 | [core](packages/core/README.md) | Schemas, vocabulary, IDs and versions |
 | [resolver](packages/resolver/README.md) | Reference indexes and identifier matching |
 | [build](packages/build/README.md) | Reference preparation and resource publication |
@@ -136,6 +138,7 @@ current product implementations.
 | [subsets](packages/subsets/README.md) | MetSigDB, network views, COSMOS and durable product publication |
 | [api](packages/api/README.md) | REST API, inspection and administration; its Parquet queries are `omnipath_api.queries` |
 | [web](packages/web/README.md) | Explorer and API proxy |
+| [utils](packages/utils/README.md) | ID translation, taxonomy, orthology and reference lists (`omnipath_utils`) |
 | [query](packages/query/README.md) | The query layer: SQL macros (`sql/`) and the Python and R clients that install resources and query them locally |
 
 The root Makefile delegates to package commands; implementation stays inside
@@ -144,7 +147,7 @@ local checks. `make test-native` checks Rust policy; `make check-generated` chec
 generated contracts; `make test-wheels` checks isolated installations. PostgreSQL
 fixtures require explicit `make test-postgres` and create a disposable local cluster.
 CI runs developer checks without imposing a production verification phase.
-The [versioning policy](VERSIONING.md) describes independent publication schedules.
+The [versioning policy](docs/versioning.md) describes independent publication schedules.
 The Python client queries the same published Parquets independently of the server.
 `legacy/` is excluded from the active workspace.
 

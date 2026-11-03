@@ -36,7 +36,7 @@ source records.
 - **Service status**: `GET /status` reports query slots in use and waiting, recent response times and coarse host load; the explorer header polls it.
 - **Pinned releases**: `GET /api/releases` lists OmniPath versions. Add
   `?release=2026.09` or `X-OmniPath-Release: 2026.09` to data requests to use that
-  release's exact resource versions. See [Versioning](../../VERSIONING.md).
+  release's exact resource versions. See [Versioning](../../docs/versioning.md).
 
 Resource updates and PostgreSQL snapshots have separate schedules. The default
 Latest view selects the newest published version of each Parquet resource,
@@ -65,7 +65,7 @@ The explorer UI lives in `../web`.
 uv run --frozen omnipath-api --host 127.0.0.1 --port 8085 --data-root data
 
 # Run full stack (API + web explorer)
-./run_all.sh
+./scripts/run_all.sh
 ```
 
 Open interactive API docs from the web app (**API Docs** in the sidebar) or directly at `http://127.0.0.1:8085/api/docs`.

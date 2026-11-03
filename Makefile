@@ -1,6 +1,6 @@
 .PHONY: help setup setup-python setup-web test test-resources test-utils test-postgres test-subsets test-api check check-web build sample hubs reference publish-release api web dev load-postgres finish-postgres build-subsets serving-build serving-up serving-status serving-logs serving-stop worker-up docs
 
-export PKG_INFRA_CONFIG ?= $(CURDIR)/config/pkg_infra_quiet.yaml
+export PKG_INFRA_CONFIG ?= $(CURDIR)/deploy/pkg_infra_quiet.yaml
 SOURCE ?= signor
 VERSION ?= 0.1.0
 MAX_RECORDS ?= 20
@@ -25,7 +25,7 @@ PYTEST_ARGS ?=
 SUBSET_PRODUCTS ?= exclusion_metabolites metsigdb network_views cosmos
 API_PORT ?= 8085
 WEB_PORT ?= 5173
-COMPOSE_FILES ?= -f compose.serving.yaml
+COMPOSE_FILES ?= -f deploy/compose.serving.yaml
 COMPOSE_ENV ?=
 COMPOSE = docker compose $(if $(COMPOSE_ENV),--env-file "$(COMPOSE_ENV)") $(COMPOSE_FILES)
 
@@ -108,7 +108,7 @@ api:
 web:
 	API_SERVICE_URL=http://127.0.0.1:$(API_PORT) pnpm --dir packages/web dev --host 127.0.0.1 --port $(WEB_PORT)
 dev:
-	OMNIPATH_DATA_ROOT="$(DATA_ROOT)" ./run_all.sh $(API_PORT) $(WEB_PORT)
+	OMNIPATH_DATA_ROOT="$(DATA_ROOT)" ./scripts/run_all.sh $(API_PORT) $(WEB_PORT)
 
 load-postgres:
 	@test -n "$(RELEASE_MANIFEST)" || (echo 'Set RELEASE_MANIFEST to a pinned JSON file or HTTPS URL'; exit 2)
@@ -158,7 +158,7 @@ test-wheels:
 	uv run --frozen python scripts/check_wheels.py
 POSTGRES_ENV ?= deploy/postgres.env
 postgres-up:
-	docker compose --env-file "$(POSTGRES_ENV)" -f docker-compose.postgres18.yml up -d --build --wait
+	docker compose --env-file "$(POSTGRES_ENV)" -f deploy/docker-compose.postgres18.yml up -d --build --wait
 rebuild-subsets:
 	uv run --frozen --package omnipath-subsets omnipath-subsets build --schema "$(POSTGRES_SCHEMA)" --products $(SUBSET_PRODUCTS) --checkpoint-products
 # Core documentation viewer (Markdown sources in core_documentation/).

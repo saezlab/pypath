@@ -17,6 +17,8 @@ cache
 pypath-data
 pypath_log
 packages/*/pypath_log
+omnipath_resources_log
+packages/*/omnipath_resources_log
 packages/*/logs
 main-reference
 legacy
