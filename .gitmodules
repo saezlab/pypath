@@ -1,0 +1,12 @@
+[submodule "download-manager"]
+	path = download-manager
+	url = https://github.com/saezlab/dlmachine.git
+	branch = main
+[submodule "cache-manager"]
+	path = cache-manager
+	url = https://github.com/saezlab/cachedir.git
+	branch = main
+[submodule "omnipath-utils"]
+	path = omnipath-utils
+	url = https://github.com/saezlab/omnipath-utils.git
+	branch = main

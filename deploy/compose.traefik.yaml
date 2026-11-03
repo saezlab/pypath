@@ -1,0 +1,34 @@
+# Optional HTTPS routing for an existing Traefik/Dokploy installation.
+services:
+  web:
+    networks: [default, proxy]
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=${PROXY_NETWORK:-dokploy-network}
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web.rule=Host(`${PUBLIC_DOMAIN:?Set PUBLIC_DOMAIN}`)
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web.entrypoints=websecure
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web.tls.certresolver=${TLS_RESOLVER:-letsencrypt}
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web.priority=${ROUTE_PRIORITY:-100}
+      - traefik.http.services.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web.loadbalancer.server.port=8082
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web-http.rule=Host(`${PUBLIC_DOMAIN:?Set PUBLIC_DOMAIN}`)
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web-http.entrypoints=web
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web-http.service=${COMPOSE_PROJECT_NAME:-omnipath-serving}-web
+  data:
+    networks: [default, proxy]
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=${PROXY_NETWORK:-dokploy-network}
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-data.rule=Host(`${DATA_DOMAIN:?Set DATA_DOMAIN}`)
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-data.entrypoints=websecure
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-data.tls.certresolver=${TLS_RESOLVER:-letsencrypt}
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-data.priority=${ROUTE_PRIORITY:-100}
+      - traefik.http.services.${COMPOSE_PROJECT_NAME:-omnipath-serving}-data.loadbalancer.server.port=8080
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-data-http.rule=Host(`${DATA_DOMAIN:?Set DATA_DOMAIN}`)
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-data-http.entrypoints=web
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-data-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-data-http.service=${COMPOSE_PROJECT_NAME:-omnipath-serving}-data
+networks:
+  proxy:
+    external: true
+    name: ${PROXY_NETWORK:-dokploy-network}

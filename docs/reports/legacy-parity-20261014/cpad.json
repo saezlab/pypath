@@ -1,0 +1,75 @@
+{
+  "resource": "cpad",
+  "kind": "relation",
+  "note": "Pathway and cancer.",
+  "v2_seconds": 1.3,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 2225,
+  "legacy_pairs_found_in_v2": 2225,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 12373,
+  "v2_relations_without_legacy_pair": 8183,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 12373
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [
+      "['5-LO/LTA4 hydrolase pathway'] -[associated_with]-> ['Glioma']",
+      "['AA861'] -[associated_with]-> ['5-LOX pathway']",
+      "['AA861'] -[associated_with]-> ['Bladder cancer']",
+      "['5-LOX pathway'] -[associated_with]-> ['Renal cell carcinoma']",
+      "['6-TG-sensitive protein kinase(s) dependent signaling pathway'] -[associated_with]-> ['Hepatocellular carcinoma']",
+      "['Inorganic phosphate'] -[associated_with]-> ['AC/cAMP signaling pathway']",
+      "['Inorganic phosphate'] -[associated_with]-> ['Osteosarcoma']",
+      "['Let-7'] -[associated_with]-> ['Actin cytoskeleton pathway']",
+      "['Let-7'] -[associated_with]-> ['Breast cancer']",
+      "['SEPT7'] -[associated_with]-> ['Actin cytoskeleton pathway']",
+      "['SEPT7'] -[associated_with]-> ['Glioma']",
+      "['Activin pathway'] -[associated_with]-> ['Colorectal cancer']",
+      "['miR-140-5p'] -[associated_with]-> ['ADAM10 mediated Notch1 signaling pathway']",
+      "['miR-140-5p'] -[associated_with]-> ['Squamous cell carcinoma']",
+      "['Dihydroartemisinin'] -[associated_with]-> ['ADAM17 pathway']",
+      "['Dihydroartemisinin'] -[associated_with]-> ['Glioma']",
+      "['Cordycepin'] -[associated_with]-> ['ADORA2A-p53-Caspase 7/PARP signaling pathway']",
+      "['Cordycepin'] -[associated_with]-> ['Glioma']",
+      "['Adrenomedullin pathway'] -[associated_with]-> ['Malignant pleural mesothelioma']",
+      "['miR-1297'] -[associated_with]-> ['AEG1/Wnt signaling pathway']",
+      "['miR-1297'] -[associated_with]-> ['Prostate cancer']",
+      "['AGE-RAGE-Akt signaling pathway'] -[associated_with]-> ['Prostate cancer']",
+      "['AhR/CYP1A1 signaling pathway'] -[associated_with]-> ['Breast cancer']",
+      "['Phthalates'] -[associated_with]-> ['AhR/HDAC6/c-Myc signaling pathway']",
+      "['Phthalates'] -[associated_with]-> ['Breast cancer']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://bio-bigdata.hrbmu.edu.cn/CPAD/download/CPAD-data.txt",
+      "path": "/root/data/pypath-cache/cpad/CPAD-data.txt",
+      "size": 3089249,
+      "sha256": "cc36f2497f6d1e523a58df688a61081a11a63372e3d26e97da3c7acb2f2c93cb",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://bio-bigdata.hrbmu.edu.cn/CPAD/download/CPAD-data.txt",
+      "path": "/root/data/pypath-cache/cpad/CPAD-data.txt",
+      "size": 3089249,
+      "sha256": "cc36f2497f6d1e523a58df688a61081a11a63372e3d26e97da3c7acb2f2c93cb",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

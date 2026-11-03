@@ -1,0 +1,49 @@
+{
+  "resource": "cytosig",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 14.3,
+  "legacy_seconds": 2.7,
+  "legacy_pairs": 209883,
+  "legacy_pairs_found_in_v2": 209883,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 209883,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 209883
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://raw.githubusercontent.com/data2intelligence/CytoSig/master/CytoSig/signature.centroid",
+      "path": "/root/data/pypath-cache/cytosig/cytosig_signature.centroid",
+      "size": 4341405,
+      "sha256": "60a3152afe429a7dbb41fa0597ab9730141ce858af16a35f7063e64bfc239bde",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://raw.githubusercontent.com/data2intelligence/CytoSig/master/CytoSig/signature.centroid",
+      "path": "/root/data/pypath-cache/cytosig/cytosig_signature.centroid",
+      "size": 4341405,
+      "sha256": "60a3152afe429a7dbb41fa0597ab9730141ce858af16a35f7063e64bfc239bde",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

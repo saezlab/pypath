@@ -230,6 +230,5 @@ section-order = [
 convention = "google"
 
 [tool.uv.sources]
-# omnipath-core is developed in the omnipath-build superproject (packages/core),
-# which contains this repository as its `pypath` submodule.
-omnipath-core = { path = "../packages/core", editable = true }
+# omnipath-core is developed alongside this package in the monorepo.
+omnipath-core = { path = "../core", editable = true }

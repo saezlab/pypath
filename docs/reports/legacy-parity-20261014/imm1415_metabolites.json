@@ -1,0 +1,75 @@
+{
+  "resource": "imm1415_metabolites",
+  "kind": "relation",
+  "note": "BiGG metabolite and its cross-references.",
+  "v2_seconds": 0.3,
+  "legacy_seconds": 0.3,
+  "legacy_pairs": 7478,
+  "legacy_pairs_found_in_v2": 7478,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 17135,
+  "v2_relations_without_legacy_pair": 499,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 17135
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "http://bigg.ucsd.edu/static/models/iMM1415.json",
+      "path": "/root/data/pypath-cache/bigg/iMM1415.json",
+      "size": 3683619,
+      "sha256": "5eec43b20f94d4343078e916bdbea5d59b9565f42e414719bf92745432602e3b",
+      "mtime": "2026-09-06"
+    },
+    {
+      "side": "legacy",
+      "url": "http://bigg.ucsd.edu/static/models/iMM1415.json",
+      "path": "/root/data/pypath-cache/bigg/iMM1415.json",
+      "size": 3683619,
+      "sha256": "5eec43b20f94d4343078e916bdbea5d59b9565f42e414719bf92745432602e3b",
+      "mtime": "2026-09-06"
+    }
+  ]
+}

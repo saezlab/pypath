@@ -1,0 +1,18 @@
+logging:
+  handlers:
+    console:
+      level: WARNING
+    file:
+      level: DEBUG
+  loggers:
+    default:
+      level: WARNING
+      handlers: [file]
+      propagate: false
+    pkg_infra:
+      level: WARNING
+      handlers: [file]
+      propagate: false
+  root:
+    level: WARNING
+    handlers: [file]

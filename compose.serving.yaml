@@ -1,0 +1,75 @@
+name: ${COMPOSE_PROJECT_NAME:-omnipath-serving}
+services:
+  api:
+    image: ${API_IMAGE:-omnipath-api:local}
+    build:
+      context: .
+      dockerfile: packages/api/Dockerfile
+      target: api
+    restart: unless-stopped
+    environment:
+      OMNIPATH_PUBLIC_DATA_URL: ${PUBLIC_DATA_URL:-http://localhost:8080}
+      OMNIPATH_READ_ONLY: "true"
+      OMNIPATH_QUERY_CONCURRENCY: ${API_QUERY_CONCURRENCY:-2}
+      OMNIPATH_QUERY_WAIT_SECONDS: ${API_QUERY_WAIT_SECONDS:-30}
+      OMNIPATH_DUCKDB_MEMORY_LIMIT: ${API_QUERY_MEMORY:-1GB}
+      OMNIPATH_DUCKDB_THREADS: ${API_QUERY_THREADS:-2}
+      OMNIPATH_WARM_CACHE: ${API_WARM_CACHE:-true}
+    mem_limit: ${API_MEMORY_LIMIT:-4g}
+    cpus: ${API_CPUS:-4}
+    volumes:
+      - ${DATA_DIR:-./data}:/data:ro
+    ports:
+      - "127.0.0.1:${API_PORT:-8085}:8085"
+
+  web:
+    image: ${WEB_IMAGE:-omnipath-web:local}
+    build:
+      context: .
+      dockerfile: packages/web/Dockerfile
+      args:
+        PUBLIC_ENVIRONMENT: ${PUBLIC_ENVIRONMENT:-production}
+        PUBLIC_DOMAIN: ${PUBLIC_DOMAIN:-localhost}
+        API_SERVICE_URL: http://api:8085
+        DOCKERIZED: "true"
+    restart: unless-stopped
+    environment:
+      API_SERVICE_URL: http://api:8085
+      DOCKERIZED: "true"
+      BODY_SIZE_LIMIT: "16M"
+      PORT: "8082"
+      HOST: "0.0.0.0"
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8082}:8082"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  data:
+    image: nginx:1.28-alpine
+    restart: unless-stopped
+    volumes:
+      - ${DATA_DIR:-./data}:/data:ro
+      - ./deploy/data.nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "127.0.0.1:${DATA_PORT:-8080}:8080"
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  worker:
+    profiles: [build]
+    image: ${WORKER_IMAGE:-omnipath-worker:local}
+    build:
+      context: .
+      dockerfile: packages/build/Dockerfile
+      target: worker
+    restart: unless-stopped
+    environment:
+      PYPATH_DOWNLOAD_DATADIR: /data/pypath-data
+      OMNIPATH_LIBRARY_DIR: /data/reference/library
+    volumes:
+      - ${DATA_DIR:-./data}:/data
+    stop_grace_period: 60s

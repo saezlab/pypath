@@ -1,0 +1,73 @@
+# Curated interaction-class rules for vocab_relation_predicate.
+#
+# Maps every relation predicate (a row in the dynamically-populated
+# vocab_relation_predicate) to exactly one coarse interaction class. Applied
+# during `derive` (after load, since predicates are data-driven) to populate
+# vocab_relation_predicate.interaction_class_id. See
+# omnipath_build/classify/interaction_class.py.
+#
+# Reviewable: one predicate per line under `predicates`; a predicate not listed
+# resolves to `default` (other) and is logged at derive time, so a resource that
+# introduces a new predicate surfaces it for curation rather than failing.
+
+# The controlled vocabulary (seeded into vocab_interaction_class); id = order.
+# This is the single canonical interaction-type vocabulary:
+#   name  — snake_case slug, the stored and filterable value
+#   label — capitalised display form, for presentation only
+#   controlled_vocabulary_mapping — ontology CURIE (BioLink or other), null
+#           where no mapping has been curated yet
+# Legacy OmniPath dataset names (post_translational, transcriptional, ...) are
+# NOT rows here: they are preset scopes over these classes.
+classes:
+  - name: signaling
+    label: Signaling
+    controlled_vocabulary_mapping: null
+  - name: tf_target
+    label: TF-target
+    controlled_vocabulary_mapping: null
+  - name: allosteric
+    label: Allosteric
+    controlled_vocabulary_mapping: null
+  - name: orthosteric
+    label: Orthosteric
+    controlled_vocabulary_mapping: null
+  - name: transport
+    label: Transport
+    controlled_vocabulary_mapping: null
+  - name: ligand_receptor
+    label: Ligand-receptor
+    controlled_vocabulary_mapping: null
+  - name: maturation
+    label: Maturation
+    controlled_vocabulary_mapping: null
+  - name: other
+    label: Other
+    controlled_vocabulary_mapping: null
+
+# Any predicate not listed here -> other (100% coverage, no NULLs).
+default: other
+
+# predicate name (verbatim vocab_relation_predicate.name) -> interaction class
+# slug. The build's predicates are coarse RO/BFO-style terms; only
+# causal-regulation and transport map to a specific class today. Membership,
+# participation, generic association and the structural ontology predicates
+# (is_a, part_of, ...) fall to `other` by default.
+predicates:
+  affects: signaling
+  enabled_by: signaling
+  catalyzes: signaling
+  controls: signaling
+  regulates: signaling
+  negatively_regulates: signaling
+  positively_regulates: signaling
+  transports: transport
+  # pre-miRNA → mature-miRNA processing. The build stores this predicate as the
+  # bare accession, because its controlled-vocabulary term is an
+  # (accession, label) pair and the loader writes the first element. Keyed on
+  # the label alone the rule matched nothing, and miRBase's whole contribution
+  # — 53,316 relations, every one of them a maturation event — was served as
+  # `other`. The label forms stay listed, so a loader that writes them keeps
+  # working.
+  OM:1257: maturation
+  miRNA maturation: maturation
+  miRNA_maturation: maturation

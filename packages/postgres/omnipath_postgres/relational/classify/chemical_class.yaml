@@ -1,0 +1,35 @@
+# Curated chemical-class rules for chemical_entity entities.
+#
+# Flat, single-valued classification. A chemical's class is decided by which
+# resources contributed it (data_source.name); the MOST SPECIFIC class wins
+# (lowest `precedence` number). See omnipath_build/classify/chemical_class.py.
+#
+# Reviewable: one resource per line under `sources`; adding a resource that
+# should imply a class is a one-line change.
+
+# The controlled vocabulary (seeded into vocab_chemical_class) + precedence.
+classes:
+  - {name: xenobiotic, precedence: 1}
+  - {name: drug,       precedence: 2}
+  - {name: food,       precedence: 3}
+  - {name: lipid,      precedence: 4}
+  - {name: metabolite, precedence: 5}
+  - {name: other,      precedence: 6}
+
+# Any chemical_entity entity that has sources but none mapping to a class
+# falls back to this class.
+default: metabolite
+
+# data_source.name -> chemical class. (xenobiotic is keyed off a curated
+# identifier list, not a source — see `xenobiotic_identifiers` below.)
+sources:
+  lipid:      [lipidmaps, swisslipids]
+  drug:       [drugcentral, drugbank, chembl]
+  food:       [foodb, phenol_explorer, ptfi]
+  metabolite: [hmdb, refmet, recon3d, recon3d_metabolic, metatlas, chebi, kegg, rhea, mebocost, bindingdb]
+
+# Xenobiotic identification (precedence over drug/food): membership in a curated
+# identifier list whose primary signal is the HMDB ontology tree
+# (Disposition->Source=Exogenous, Role=Toxin/pollutant). Left empty for now;
+# populated in a follow-up (no entity is classed xenobiotic until then).
+xenobiotic_identifiers: []

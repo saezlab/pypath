@@ -1,0 +1,15 @@
+[package]
+name = "omnipath-resolver"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "_omnipath_resolver"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pyo3 = { version = "0.28", features = ["abi3-py311"] }
+anchor-resolution-serving = { path = "rust/reference" }
+
+[features]
+extension-module = ["pyo3/extension-module"]

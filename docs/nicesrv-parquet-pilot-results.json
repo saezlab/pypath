@@ -1,0 +1,1338 @@
+{
+  "config.json": {
+    "data_root": "/root/projects/full_parquet/data",
+    "schema": "pilot_20260930",
+    "database": "omnipath_migration",
+    "user": "omnipath_migration",
+    "host": "127.0.0.1",
+    "port": 5440,
+    "container": "omnipath-migration-postgres",
+    "volume": "omnipath-migration-postgres-data",
+    "network": "omnipath-migration-pilot",
+    "image_id": "sha256:52f87503b2fe5ad2e0d209b1a55830db42eb3ecd3eaf1b583accb0091ab30bff",
+    "created_at": "2026-09-30T09:23:06.196113+00:00",
+    "migration_commit": "fa439b380c692de7531aa9dc067c9a3843bacb3b",
+    "pypath_commit": "fc6c262a6e1127720238b0ebde54f5d5951044af",
+    "initial_migration_commit": "04174202ecafd0e65c918bef71dc232fd762ee27"
+  },
+  "preflight.json": {
+    "validated_at": "2026-09-30T09:22:00.823593+00:00",
+    "release_id": "2026.9.30.1",
+    "manifest_sha256": "91a853954cf1a5056ebf3bdd219814f258e479f0c22fc77ee97be74a15e1e146",
+    "seconds": 0.141265,
+    "artifacts": [
+      {
+        "resource": "chemont",
+        "version": "2026.9.5.17",
+        "name": "entities.parquet",
+        "rows": 4825,
+        "size_bytes": 526882,
+        "sha256": "ae6177f1388b53e70478940a8befd335e44049b906423177df870b4c38474690"
+      },
+      {
+        "resource": "chemont",
+        "version": "2026.9.5.17",
+        "name": "relations.parquet",
+        "rows": 4824,
+        "size_bytes": 486595,
+        "sha256": "b6eef6a202a61185dc39af50e5637075cc1866e887f4661d854cc7809d24b86e"
+      },
+      {
+        "resource": "chemont",
+        "version": "2026.9.5.17",
+        "name": "evidence_payloads.parquet",
+        "rows": 4825,
+        "size_bytes": 474384,
+        "sha256": "e351ec67dde69c41aa8d81d2dde85f7342905c9fdc783a907e205215b4b27687"
+      },
+      {
+        "resource": "rhea",
+        "version": "2026.9.5.17",
+        "name": "entities.parquet",
+        "rows": 260434,
+        "size_bytes": 22932470,
+        "sha256": "cfc8af78602111b82e0cb132a2a67a54305a307dd50f0729fdd28151b51c4668"
+      },
+      {
+        "resource": "rhea",
+        "version": "2026.9.5.17",
+        "name": "relations.parquet",
+        "rows": 404486,
+        "size_bytes": 40542644,
+        "sha256": "f69c99146924adbafc9b66a61bfaff970e02613e2b35da555572c3a3cd9b486c"
+      },
+      {
+        "resource": "rhea",
+        "version": "2026.9.5.17",
+        "name": "evidence_payloads.parquet",
+        "rows": 842046,
+        "size_bytes": 51126278,
+        "sha256": "a8f8325c91233b4b65510fd1f3d404b9dff5b83025f820db8f40251bf759f03c"
+      },
+      {
+        "resource": "signor",
+        "version": "2026.9.5.17",
+        "name": "entities.parquet",
+        "rows": 11067,
+        "size_bytes": 2987940,
+        "sha256": "5b85f4ecbc638e2ad3bc35ec5a72a9021a467918e96c658b93dbef1827b0db49"
+      },
+      {
+        "resource": "signor",
+        "version": "2026.9.5.17",
+        "name": "relations.parquet",
+        "rows": 35553,
+        "size_bytes": 9189021,
+        "sha256": "c34b00a159cac8ea0ba0cca1d4dbcee6b979263db4a48fa8138c3faa0bfd7487"
+      },
+      {
+        "resource": "signor",
+        "version": "2026.9.5.17",
+        "name": "evidence_payloads.parquet",
+        "rows": 45674,
+        "size_bytes": 12704627,
+        "sha256": "b66f26180cab5548f89f028be23b40034447f61b5b3e3106b92ad61a50a3ae34"
+      }
+    ],
+    "total_bytes": 140970841,
+    "protected_services": {
+      "omnipath-service-7hebzw-omnipath-next-postgres-1": {
+        "id": "b57be06fb505d1227df6c275a11a0bc73a9a8e17e0a0a12cbfeb8f7de9718230",
+        "started_at": "2026-09-06T06:15:47.404463232Z",
+        "running": "true"
+      },
+      "full_parquet-api-1": {
+        "id": "f1d0bd05b147dab44f0d7affb15c4f4c35f0281675e25daf22aa45c2eda4e19e",
+        "started_at": "2026-09-12T08:33:28.170643719Z",
+        "running": "true"
+      },
+      "full_parquet-web-1": {
+        "id": "62e7a71194af93d8aa1c40143cdd7d030e43d20e10d2848c9e11542fc5456588",
+        "started_at": "2026-09-12T08:50:24.095753903Z",
+        "running": "true"
+      },
+      "full_parquet-data-1": {
+        "id": "0f8947bfc748e247f0ba9af4ae3998096f1d6fc28671e85d17cf1861febd9346",
+        "started_at": "2026-09-06T17:16:07.311619613Z",
+        "running": "true"
+      }
+    }
+  },
+  "attempt1-result.json": {
+    "status": "failed",
+    "total_seconds": 624.212194,
+    "error_type": "QueryCanceled",
+    "error": "canceling statement due to user request",
+    "events": [
+      {
+        "event": "load_start",
+        "elapsed_seconds": 0.0,
+        "at": "2026-09-30T09:23:19.929212+00:00",
+        "release": "2026.9.30.1",
+        "schema": "pilot_20260930",
+        "batch_size": 1024
+      },
+      {
+        "event": "resource_start",
+        "elapsed_seconds": 0.184,
+        "at": "2026-09-30T09:23:20.113295+00:00",
+        "resource": "chemont",
+        "version": "2026.9.5.17"
+      },
+      {
+        "event": "resource_done",
+        "elapsed_seconds": 1.491,
+        "at": "2026-09-30T09:23:21.419493+00:00",
+        "resource": "chemont",
+        "counts": {
+          "entities": 4825,
+          "identifiers": 42099,
+          "annotations": 5697,
+          "relations": 4824,
+          "evidence": 4824,
+          "payloads": 4825
+        },
+        "seconds": 1.306
+      },
+      {
+        "event": "resource_start",
+        "elapsed_seconds": 1.491,
+        "at": "2026-09-30T09:23:21.419612+00:00",
+        "resource": "rhea",
+        "version": "2026.9.5.17"
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 5.761,
+        "at": "2026-09-30T09:23:25.690321+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 28319,
+          "identifiers": 207693,
+          "annotations": 13988
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 10.349,
+        "at": "2026-09-30T09:23:30.277538+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 56658,
+          "identifiers": 415262,
+          "annotations": 28080
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 14.979,
+        "at": "2026-09-30T09:23:34.907745+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 85141,
+          "identifiers": 623413,
+          "annotations": 41446
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 19.763,
+        "at": "2026-09-30T09:23:39.692241+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 113174,
+          "identifiers": 831104,
+          "annotations": 55722
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 24.455,
+        "at": "2026-09-30T09:23:44.384317+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 141388,
+          "identifiers": 1038542,
+          "annotations": 70070
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 29.092,
+        "at": "2026-09-30T09:23:49.020768+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 169461,
+          "identifiers": 1246189,
+          "annotations": 84350
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 33.713,
+        "at": "2026-09-30T09:23:53.642062+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 197524,
+          "identifiers": 1454320,
+          "annotations": 98156
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 38.401,
+        "at": "2026-09-30T09:23:58.329517+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 226147,
+          "identifiers": 1661921,
+          "annotations": 111932
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 42.966,
+        "at": "2026-09-30T09:24:02.895125+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 254660,
+          "identifiers": 1869444,
+          "annotations": 125896
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 50.547,
+        "at": "2026-09-30T09:24:10.476219+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 64455,
+          "evidence": 134165
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 58.897,
+        "at": "2026-09-30T09:24:18.826427+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 145704,
+          "evidence": 302916
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 67.632,
+        "at": "2026-09-30T09:24:27.560721+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 226701,
+          "evidence": 471919
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 76.343,
+        "at": "2026-09-30T09:24:36.271652+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 307934,
+          "evidence": 640686
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 85.02,
+        "at": "2026-09-30T09:24:44.949237+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 388966,
+          "evidence": 809654
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 117.274,
+        "at": "2026-09-30T09:25:17.203050+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 404486,
+          "evidence": 842046,
+          "payloads": 202088
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 132.179,
+        "at": "2026-09-30T09:25:32.107501+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 404486,
+          "evidence": 842046,
+          "payloads": 452088
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 166.896,
+        "at": "2026-09-30T09:26:06.825233+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 404486,
+          "evidence": 842046,
+          "payloads": 702088
+        }
+      },
+      {
+        "event": "resource_done",
+        "elapsed_seconds": 176.364,
+        "at": "2026-09-30T09:26:16.292610+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 404486,
+          "evidence": 842046,
+          "payloads": 842046
+        },
+        "seconds": 174.873
+      },
+      {
+        "event": "resource_start",
+        "elapsed_seconds": 176.364,
+        "at": "2026-09-30T09:26:16.292768+00:00",
+        "resource": "signor",
+        "version": "2026.9.5.17"
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 180.393,
+        "at": "2026-09-30T09:26:20.322028+00:00",
+        "resource": "signor",
+        "counts": {
+          "entities": 4825,
+          "identifiers": 243639,
+          "annotations": 1536
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 184.561,
+        "at": "2026-09-30T09:26:24.490260+00:00",
+        "resource": "signor",
+        "counts": {
+          "entities": 9817,
+          "identifiers": 487118,
+          "annotations": 3065
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 191.373,
+        "at": "2026-09-30T09:26:31.301656+00:00",
+        "resource": "signor",
+        "counts": {
+          "entities": 11067,
+          "identifiers": 552560,
+          "annotations": 162243,
+          "relations": 10822,
+          "evidence": 13308
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 199.142,
+        "at": "2026-09-30T09:26:39.071054+00:00",
+        "resource": "signor",
+        "counts": {
+          "entities": 11067,
+          "identifiers": 552560,
+          "annotations": 379190,
+          "relations": 25670,
+          "evidence": 31513
+        }
+      },
+      {
+        "event": "resource_done",
+        "elapsed_seconds": 206.646,
+        "at": "2026-09-30T09:26:46.574730+00:00",
+        "resource": "signor",
+        "counts": {
+          "entities": 11067,
+          "identifiers": 552560,
+          "annotations": 522996,
+          "relations": 35553,
+          "evidence": 43594,
+          "payloads": 45674
+        },
+        "seconds": 30.282
+      },
+      {
+        "event": "loaded_validation_start",
+        "elapsed_seconds": 206.833,
+        "at": "2026-09-30T09:26:46.761940+00:00"
+      },
+      {
+        "event": "loaded_validation_done",
+        "elapsed_seconds": 322.504,
+        "at": "2026-09-30T09:28:42.433054+00:00",
+        "seconds": 115.671
+      },
+      {
+        "event": "base_indexes_start",
+        "elapsed_seconds": 322.504,
+        "at": "2026-09-30T09:28:42.433154+00:00"
+      },
+      {
+        "event": "base_indexes_done",
+        "elapsed_seconds": 338.357,
+        "at": "2026-09-30T09:28:58.286024+00:00",
+        "seconds": 15.853
+      },
+      {
+        "event": "derived_start",
+        "elapsed_seconds": 338.357,
+        "at": "2026-09-30T09:28:58.286118+00:00"
+      },
+      {
+        "event": "rebuild_ontology_start",
+        "elapsed_seconds": 346.604,
+        "at": "2026-09-30T09:29:06.532783+00:00"
+      },
+      {
+        "event": "rebuild_ontology_done",
+        "elapsed_seconds": 359.564,
+        "at": "2026-09-30T09:29:19.493337+00:00",
+        "seconds": 12.961
+      },
+      {
+        "event": "rebuild_reactions_start",
+        "elapsed_seconds": 362.437,
+        "at": "2026-09-30T09:29:22.365965+00:00"
+      },
+      {
+        "event": "load_failed",
+        "elapsed_seconds": 624.212,
+        "at": "2026-09-30T09:33:44.141042+00:00",
+        "error_type": "QueryCanceled",
+        "error": "canceling statement due to user request"
+      }
+    ]
+  },
+  "load-result.json": {
+    "status": "success",
+    "result": {
+      "release": "2026.9.30.1",
+      "schema": "pilot_20260930",
+      "manifest_sha256": "91a853954cf1a5056ebf3bdd219814f258e479f0c22fc77ee97be74a15e1e146",
+      "resources": {
+        "chemont": "2026.9.5.17",
+        "rhea": "2026.9.5.17",
+        "signor": "2026.9.5.17"
+      },
+      "counts": {
+        "entities": 276326,
+        "identifiers": 2507201,
+        "relations": 444863,
+        "evidence": 890464,
+        "annotations": 657097,
+        "payloads": 892545
+      },
+      "phase_seconds": {
+        "validate_files": 0.132631,
+        "copy_and_validate": 313.030646,
+        "indexes_and_derived": 384.527406,
+        "recheck_files": 0.127281
+      }
+    },
+    "total_seconds": 697.877085,
+    "events": [
+      {
+        "event": "load_start",
+        "elapsed_seconds": 0.0,
+        "at": "2026-09-30T09:36:55.947139+00:00",
+        "release": "2026.9.30.1",
+        "schema": "pilot_20260930",
+        "batch_size": 1024
+      },
+      {
+        "event": "resource_start",
+        "elapsed_seconds": 0.223,
+        "at": "2026-09-30T09:36:56.169305+00:00",
+        "resource": "chemont",
+        "version": "2026.9.5.17"
+      },
+      {
+        "event": "resource_done",
+        "elapsed_seconds": 1.554,
+        "at": "2026-09-30T09:36:57.500713+00:00",
+        "resource": "chemont",
+        "counts": {
+          "entities": 4825,
+          "identifiers": 42099,
+          "annotations": 5697,
+          "relations": 4824,
+          "evidence": 4824,
+          "payloads": 4825
+        },
+        "seconds": 1.331
+      },
+      {
+        "event": "resource_start",
+        "elapsed_seconds": 1.554,
+        "at": "2026-09-30T09:36:57.500844+00:00",
+        "resource": "rhea",
+        "version": "2026.9.5.17"
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 6.085,
+        "at": "2026-09-30T09:37:02.031769+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 28319,
+          "identifiers": 207693,
+          "annotations": 13988
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 10.616,
+        "at": "2026-09-30T09:37:06.562509+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 56658,
+          "identifiers": 415262,
+          "annotations": 28080
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 14.892,
+        "at": "2026-09-30T09:37:10.838535+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 85141,
+          "identifiers": 623413,
+          "annotations": 41446
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 19.401,
+        "at": "2026-09-30T09:37:15.347925+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 113174,
+          "identifiers": 831104,
+          "annotations": 55722
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 24.105,
+        "at": "2026-09-30T09:37:20.051392+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 141388,
+          "identifiers": 1038542,
+          "annotations": 70070
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 28.823,
+        "at": "2026-09-30T09:37:24.769246+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 169461,
+          "identifiers": 1246189,
+          "annotations": 84350
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 33.678,
+        "at": "2026-09-30T09:37:29.624682+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 197524,
+          "identifiers": 1454320,
+          "annotations": 98156
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 38.384,
+        "at": "2026-09-30T09:37:34.331051+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 226147,
+          "identifiers": 1661921,
+          "annotations": 111932
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 42.937,
+        "at": "2026-09-30T09:37:38.884152+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 254660,
+          "identifiers": 1869444,
+          "annotations": 125896
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 50.627,
+        "at": "2026-09-30T09:37:46.573338+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 64455,
+          "evidence": 134165
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 59.557,
+        "at": "2026-09-30T09:37:55.503564+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 145704,
+          "evidence": 302916
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 68.495,
+        "at": "2026-09-30T09:38:04.441584+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 226701,
+          "evidence": 471919
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 77.29,
+        "at": "2026-09-30T09:38:13.236678+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 307934,
+          "evidence": 640686
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 86.04,
+        "at": "2026-09-30T09:38:21.986934+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 388966,
+          "evidence": 809654
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 118.886,
+        "at": "2026-09-30T09:38:54.832828+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 404486,
+          "evidence": 842046,
+          "payloads": 202088
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 134.752,
+        "at": "2026-09-30T09:39:10.698556+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 404486,
+          "evidence": 842046,
+          "payloads": 452088
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 164.745,
+        "at": "2026-09-30T09:39:40.691653+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 404486,
+          "evidence": 842046,
+          "payloads": 702088
+        }
+      },
+      {
+        "event": "resource_done",
+        "elapsed_seconds": 175.738,
+        "at": "2026-09-30T09:39:51.684681+00:00",
+        "resource": "rhea",
+        "counts": {
+          "entities": 260434,
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "relations": 404486,
+          "evidence": 842046,
+          "payloads": 842046
+        },
+        "seconds": 174.184
+      },
+      {
+        "event": "resource_start",
+        "elapsed_seconds": 175.738,
+        "at": "2026-09-30T09:39:51.684882+00:00",
+        "resource": "signor",
+        "version": "2026.9.5.17"
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 179.904,
+        "at": "2026-09-30T09:39:55.850753+00:00",
+        "resource": "signor",
+        "counts": {
+          "entities": 4825,
+          "identifiers": 243639,
+          "annotations": 1536
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 184.176,
+        "at": "2026-09-30T09:40:00.122649+00:00",
+        "resource": "signor",
+        "counts": {
+          "entities": 9817,
+          "identifiers": 487118,
+          "annotations": 3065
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 191.457,
+        "at": "2026-09-30T09:40:07.403916+00:00",
+        "resource": "signor",
+        "counts": {
+          "entities": 11067,
+          "identifiers": 552560,
+          "annotations": 162243,
+          "relations": 10822,
+          "evidence": 13308
+        }
+      },
+      {
+        "event": "resource_progress",
+        "elapsed_seconds": 199.582,
+        "at": "2026-09-30T09:40:15.528755+00:00",
+        "resource": "signor",
+        "counts": {
+          "entities": 11067,
+          "identifiers": 552560,
+          "annotations": 379190,
+          "relations": 25670,
+          "evidence": 31513
+        }
+      },
+      {
+        "event": "resource_done",
+        "elapsed_seconds": 207.379,
+        "at": "2026-09-30T09:40:23.325643+00:00",
+        "resource": "signor",
+        "counts": {
+          "entities": 11067,
+          "identifiers": 552560,
+          "annotations": 522996,
+          "relations": 35553,
+          "evidence": 43594,
+          "payloads": 45674
+        },
+        "seconds": 31.641
+      },
+      {
+        "event": "loaded_validation_start",
+        "elapsed_seconds": 210.587,
+        "at": "2026-09-30T09:40:26.533611+00:00"
+      },
+      {
+        "event": "loaded_validation_done",
+        "elapsed_seconds": 313.176,
+        "at": "2026-09-30T09:42:09.122515+00:00",
+        "seconds": 102.589
+      },
+      {
+        "event": "base_indexes_start",
+        "elapsed_seconds": 313.176,
+        "at": "2026-09-30T09:42:09.122636+00:00"
+      },
+      {
+        "event": "base_indexes_done",
+        "elapsed_seconds": 327.646,
+        "at": "2026-09-30T09:42:23.592605+00:00",
+        "seconds": 14.47
+      },
+      {
+        "event": "derived_start",
+        "elapsed_seconds": 327.646,
+        "at": "2026-09-30T09:42:23.592734+00:00"
+      },
+      {
+        "event": "rebuild_ontology_start",
+        "elapsed_seconds": 337.718,
+        "at": "2026-09-30T09:42:33.664359+00:00"
+      },
+      {
+        "event": "rebuild_ontology_done",
+        "elapsed_seconds": 351.549,
+        "at": "2026-09-30T09:42:47.495607+00:00",
+        "seconds": 13.831
+      },
+      {
+        "event": "rebuild_reactions_start",
+        "elapsed_seconds": 353.94,
+        "at": "2026-09-30T09:42:49.887018+00:00"
+      },
+      {
+        "event": "reaction_plan",
+        "elapsed_seconds": 353.984,
+        "at": "2026-09-30T09:42:49.930316+00:00",
+        "estimated_rows": 55247
+      },
+      {
+        "event": "reaction_first_fetch",
+        "elapsed_seconds": 354.553,
+        "at": "2026-09-30T09:42:50.499913+00:00",
+        "seconds": 0.564,
+        "rows": 256
+      },
+      {
+        "event": "rebuild_reactions_done",
+        "elapsed_seconds": 692.897,
+        "at": "2026-09-30T09:48:28.843340+00:00",
+        "seconds": 338.956
+      },
+      {
+        "event": "derived_done",
+        "elapsed_seconds": 692.897,
+        "at": "2026-09-30T09:48:28.843426+00:00",
+        "seconds": 365.251
+      },
+      {
+        "event": "load_committed",
+        "elapsed_seconds": 697.877,
+        "at": "2026-09-30T09:48:33.823840+00:00",
+        "release": "2026.9.30.1",
+        "schema": "pilot_20260930",
+        "manifest_sha256": "91a853954cf1a5056ebf3bdd219814f258e479f0c22fc77ee97be74a15e1e146",
+        "resources": {
+          "chemont": "2026.9.5.17",
+          "rhea": "2026.9.5.17",
+          "signor": "2026.9.5.17"
+        },
+        "counts": {
+          "entities": 276326,
+          "identifiers": 2507201,
+          "relations": 444863,
+          "evidence": 890464,
+          "annotations": 657097,
+          "payloads": 892545
+        },
+        "phase_seconds": {
+          "validate_files": 0.132631,
+          "copy_and_validate": 313.030646,
+          "indexes_and_derived": 384.527406,
+          "recheck_files": 0.127281
+        },
+        "total_seconds": 697.877085
+      }
+    ]
+  },
+  "verification.json": {
+    "release": "2026.9.30.1",
+    "checks": {
+      "flattened_identifiers": {
+        "rows": [
+          {
+            "violations": 0
+          }
+        ],
+        "seconds": 6.24
+      },
+      "flattened_evidence": {
+        "rows": [
+          {
+            "violations": 0
+          }
+        ],
+        "seconds": 4.733
+      },
+      "flattened_annotations": {
+        "rows": [
+          {
+            "violations": 0
+          }
+        ],
+        "seconds": 6.058
+      },
+      "ontology_direct_edges": {
+        "rows": [
+          {
+            "violations": 0
+          }
+        ],
+        "seconds": 0.02
+      },
+      "ontology_valid_paths": {
+        "rows": [
+          {
+            "violations": 0
+          },
+          {
+            "violations": 0
+          }
+        ],
+        "seconds": 0.011
+      },
+      "ontology_release_paths": {
+        "rows": [
+          {
+            "violations": 0
+          }
+        ],
+        "seconds": 0.019
+      },
+      "ontology_transitive_paths": {
+        "rows": [
+          {
+            "violations": 0
+          },
+          {
+            "violations": 0
+          }
+        ],
+        "seconds": 0.068
+      },
+      "reaction_evidence_occurrences": {
+        "rows": [
+          {
+            "violations": 0
+          },
+          {
+            "violations": 0
+          }
+        ],
+        "seconds": 5.945
+      },
+      "reaction_payload_text": {
+        "rows": [
+          {
+            "violations": 0
+          }
+        ],
+        "seconds": 86.511
+      },
+      "reaction_coefficients": {
+        "rows": [
+          {
+            "violations": 0
+          }
+        ],
+        "seconds": 2.698
+      },
+      "indexes_valid": {
+        "rows": [
+          {
+            "violations": 0
+          }
+        ],
+        "seconds": 0.007
+      },
+      "constraints_valid": {
+        "rows": [
+          {
+            "violations": 0
+          }
+        ],
+        "seconds": 0.003
+      }
+    },
+    "statistics": {
+      "resource_versions": [
+        {
+          "resource": "chemont",
+          "version": "2026.9.5.17",
+          "manifest_sha256": "b6b64441f84c7ea1450d5c092ddac2a74aef5725adb6b340c168ccbccd8bd20d",
+          "parquet_checksums": {
+            "entities.parquet": "ae6177f1388b53e70478940a8befd335e44049b906423177df870b4c38474690",
+            "relations.parquet": "b6eef6a202a61185dc39af50e5637075cc1866e887f4661d854cc7809d24b86e",
+            "evidence_payloads.parquet": "e351ec67dde69c41aa8d81d2dde85f7342905c9fdc783a907e205215b4b27687"
+          }
+        },
+        {
+          "resource": "rhea",
+          "version": "2026.9.5.17",
+          "manifest_sha256": "af16a348988cc1c6be1e456297ec24b0c6049969c18a543290fc3ce912729216",
+          "parquet_checksums": {
+            "entities.parquet": "cfc8af78602111b82e0cb132a2a67a54305a307dd50f0729fdd28151b51c4668",
+            "relations.parquet": "f69c99146924adbafc9b66a61bfaff970e02613e2b35da555572c3a3cd9b486c",
+            "evidence_payloads.parquet": "a8f8325c91233b4b65510fd1f3d404b9dff5b83025f820db8f40251bf759f03c"
+          }
+        },
+        {
+          "resource": "signor",
+          "version": "2026.9.5.17",
+          "manifest_sha256": "cfd6112c76fec4ad1807b75ac6e0dba4aa3066e9b6720561189eb0ca93c2943c",
+          "parquet_checksums": {
+            "entities.parquet": "5b85f4ecbc638e2ad3bc35ec5a72a9021a467918e96c658b93dbef1827b0db49",
+            "relations.parquet": "c34b00a159cac8ea0ba0cca1d4dbcee6b979263db4a48fa8138c3faa0bfd7487",
+            "evidence_payloads.parquet": "b66f26180cab5548f89f028be23b40034447f61b5b3e3106b92ad61a50a3ae34"
+          }
+        }
+      ],
+      "release_metadata": [
+        {
+          "release_id": "2026.9.30.1",
+          "manifest_sha256": "91a853954cf1a5056ebf3bdd219814f258e479f0c22fc77ee97be74a15e1e146"
+        }
+      ],
+      "nested_counts": {
+        "chemont": {
+          "identifiers": 42099,
+          "annotations": 5697,
+          "evidence": 4824
+        },
+        "rhea": {
+          "identifiers": 1912542,
+          "annotations": 128404,
+          "evidence": 842046
+        },
+        "signor": {
+          "identifiers": 552560,
+          "annotations": 522996,
+          "evidence": 43594
+        }
+      },
+      "index_count": 39,
+      "statement_kinds": [
+        {
+          "resource": "chemont",
+          "statement_kind": "ontology",
+          "count": 4824
+        },
+        {
+          "resource": "rhea",
+          "statement_kind": "relation",
+          "count": 404486
+        },
+        {
+          "resource": "signor",
+          "statement_kind": "relation",
+          "count": 35553
+        }
+      ],
+      "reaction_contexts": [
+        {
+          "resource": "rhea",
+          "dataset": "metabolic_reactions",
+          "direction": null,
+          "transport": false,
+          "diagnostics": [],
+          "count": 16858
+        },
+        {
+          "resource": "rhea",
+          "dataset": "reactions",
+          "direction": null,
+          "transport": false,
+          "diagnostics": [],
+          "count": 18343
+        },
+        {
+          "resource": "rhea",
+          "dataset": "transport_reactions",
+          "direction": null,
+          "transport": true,
+          "diagnostics": [],
+          "count": 1485
+        }
+      ],
+      "reaction_participants": [
+        {
+          "role": "enzyme",
+          "context_status": "unavailable",
+          "participants": 658434,
+          "known_compartments": 0,
+          "coefficient_annotations": 0
+        },
+        {
+          "role": "product",
+          "context_status": "verified_member_ordinal",
+          "participants": 90298,
+          "known_compartments": 542,
+          "coefficient_annotations": 0
+        },
+        {
+          "role": "reactant",
+          "context_status": "verified_member_ordinal",
+          "participants": 82510,
+          "known_compartments": 4986,
+          "coefficient_annotations": 0
+        }
+      ],
+      "typed_measurements": [],
+      "ontology": [
+        {
+          "resource": "chemont",
+          "hierarchy_kind": "subclass",
+          "paths": 22365,
+          "max_depth": 11
+        }
+      ],
+      "database_bytes": 8268853731,
+      "table_sizes": [
+        {
+          "relname": "payloads",
+          "bytes": 3966582784
+        },
+        {
+          "relname": "identifiers",
+          "bytes": 972898304
+        },
+        {
+          "relname": "relations",
+          "bytes": 946839552
+        },
+        {
+          "relname": "evidence",
+          "bytes": 758210560
+        },
+        {
+          "relname": "entities",
+          "bytes": 488882176
+        },
+        {
+          "relname": "reaction_participant",
+          "bytes": 468779008
+        },
+        {
+          "relname": "annotations",
+          "bytes": 422060032
+        },
+        {
+          "relname": "entity_relation_counts",
+          "bytes": 95174656
+        },
+        {
+          "relname": "entity_source_count",
+          "bytes": 65323008
+        },
+        {
+          "relname": "reaction_context",
+          "bytes": 46424064
+        },
+        {
+          "relname": "ontology_closure",
+          "bytes": 11132928
+        },
+        {
+          "relname": "ontology_ancestor",
+          "bytes": 9625600
+        },
+        {
+          "relname": "entity_ontology_term",
+          "bytes": 3809280
+        },
+        {
+          "relname": "entity_ontology_relation",
+          "bytes": 3227648
+        },
+        {
+          "relname": "resource_versions",
+          "bytes": 49152
+        },
+        {
+          "relname": "resource_overlap_summary",
+          "bytes": 32768
+        },
+        {
+          "relname": "release_metadata",
+          "bytes": 32768
+        }
+      ]
+    },
+    "row_comparisons": {
+      "chemont/entities": {
+        "records": 4825,
+        "seconds": 0.224
+      },
+      "chemont/relations": {
+        "records": 4824,
+        "seconds": 0.164
+      },
+      "chemont/payloads": {
+        "records": 4825,
+        "seconds": 0.055
+      },
+      "rhea/entities": {
+        "records": 260434,
+        "seconds": 10.525
+      },
+      "rhea/relations": {
+        "records": 404486,
+        "seconds": 19.005
+      },
+      "rhea/payloads": {
+        "records": 842046,
+        "seconds": 24.885
+      },
+      "signor/entities": {
+        "records": 11067,
+        "seconds": 1.602
+      },
+      "signor/relations": {
+        "records": 35553,
+        "seconds": 4.612
+      },
+      "signor/payloads": {
+        "records": 45674,
+        "seconds": 0.927
+      }
+    },
+    "at": "2026-09-30T09:55:28.950522+00:00",
+    "protected_services_after": {
+      "omnipath-service-7hebzw-omnipath-next-postgres-1": {
+        "id": "b57be06fb505d1227df6c275a11a0bc73a9a8e17e0a0a12cbfeb8f7de9718230",
+        "started_at": "2026-09-06T06:15:47.404463232Z",
+        "running": "true"
+      },
+      "full_parquet-api-1": {
+        "id": "f1d0bd05b147dab44f0d7affb15c4f4c35f0281675e25daf22aa45c2eda4e19e",
+        "started_at": "2026-09-12T08:33:28.170643719Z",
+        "running": "true"
+      },
+      "full_parquet-web-1": {
+        "id": "62e7a71194af93d8aa1c40143cdd7d030e43d20e10d2848c9e11542fc5456588",
+        "started_at": "2026-09-12T08:50:24.095753903Z",
+        "running": "true"
+      },
+      "full_parquet-data-1": {
+        "id": "0f8947bfc748e247f0ba9af4ae3998096f1d6fc28671e85d17cf1861febd9346",
+        "started_at": "2026-09-06T17:16:07.311619613Z",
+        "running": "true"
+      }
+    },
+    "seconds": 176.281485,
+    "status": "success"
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "resource": "swisslipids",
+  "kind": "relation",
+  "note": "SwissLipids ID and its cross-references.",
+  "v2_seconds": 62.1,
+  "legacy_seconds": 17.7,
+  "legacy_pairs": 1325241,
+  "legacy_pairs_found_in_v2": 1140644,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 184597,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 184597,
+    "neither": 0
+  },
+  "v2_relations": 1140649,
+  "v2_relations_without_legacy_pair": 5,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 1140649
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "000000249",
+        "-"
+      ],
+      [
+        "000000784",
+        "74546 | 82922"
+      ],
+      [
+        "000001105",
+        "NONE"
+      ],
+      [
+        "000001251",
+        "NONE"
+      ],
+      [
+        "000001252",
+        "NONE"
+      ],
+      [
+        "000001253",
+        "NONE"
+      ],
+      [
+        "000001254",
+        "NONE"
+      ],
+      [
+        "000001255",
+        "NONE"
+      ],
+      [
+        "000001256",
+        "NONE"
+      ],
+      [
+        "000001257",
+        "NONE"
+      ],
+      [
+        "000001258",
+        "NONE"
+      ],
+      [
+        "000001259",
+        "NONE"
+      ],
+      [
+        "000001260",
+        "NONE"
+      ],
+      [
+        "000001261",
+        "NONE"
+      ],
+      [
+        "000001262",
+        "NONE"
+      ],
+      [
+        "000001263",
+        "NONE"
+      ],
+      [
+        "000001264",
+        "NONE"
+      ],
+      [
+        "000001265",
+        "NONE"
+      ],
+      [
+        "000001266",
+        "NONE"
+      ],
+      [
+        "000001267",
+        "NONE"
+      ],
+      [
+        "000001268",
+        "NONE"
+      ],
+      [
+        "000001269",
+        "NONE"
+      ],
+      [
+        "000001270",
+        "NONE"
+      ],
+      [
+        "000001271",
+        "NONE"
+      ],
+      [
+        "000001272",
+        "NONE"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://swisslipids.org/api/file.php?cas=download_files&file=lipids.tsv",
+      "path": "/root/data/pypath-cache/swisslipids/lipids.tsv.gz",
+      "size": 76772233,
+      "sha256": "fd0b5a3c794e2f8d1854387d75a281a66d6ed55ee6db5090b8f9aa0b6b332417",
+      "mtime": "2026-05-07"
+    },
+    {
+      "side": "legacy",
+      "url": "https://swisslipids.org/api/file.php?cas=download_files&file=lipids.tsv",
+      "path": "/root/data/pypath-cache/swisslipids/lipids.tsv.gz",
+      "size": 76772233,
+      "sha256": "fd0b5a3c794e2f8d1854387d75a281a66d6ed55ee6db5090b8f9aa0b6b332417",
+      "mtime": "2026-05-07"
+    }
+  ]
+}

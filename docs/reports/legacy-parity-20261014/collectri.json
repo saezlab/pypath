@@ -1,0 +1,178 @@
+{
+  "resource": "collectri",
+  "kind": "relation",
+  "note": "Legacy collectri_raw with miRNA targets, before translation to UniProt.",
+  "v2_seconds": 4.6,
+  "legacy_seconds": 0.5,
+  "legacy_pairs": 43536,
+  "legacy_pairs_found_in_v2": 43416,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 120,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 120,
+    "neither": 0
+  },
+  "v2_relations": 43536,
+  "v2_relations_without_legacy_pair": 120,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 23920,
+    "+": 13898,
+    "-": 5718
+  },
+  "signs_compared": 19587,
+  "signs_agree": 19587,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "CEBPA",
+        "HSA-MIR-223"
+      ],
+      [
+        "NFIA",
+        "HSA-MIR-223"
+      ],
+      [
+        "AP1",
+        "HSA-MIR-155"
+      ],
+      [
+        "AP1",
+        "HSA-MIR-21"
+      ],
+      [
+        "ESRRG",
+        "HSA-MIR-127"
+      ],
+      [
+        "ESRRG",
+        "HSA-MIR-433"
+      ],
+      [
+        "NR0B2",
+        "HSA-MIR-127"
+      ],
+      [
+        "NR0B2",
+        "HSA-MIR-433"
+      ],
+      [
+        "TP53",
+        "HSA-MIR-192"
+      ],
+      [
+        "IRF1",
+        "HSA-MIR-342"
+      ],
+      [
+        "IRF9",
+        "HSA-MIR-342"
+      ],
+      [
+        "SPI1",
+        "HSA-MIR-342"
+      ],
+      [
+        "TP53",
+        "HSA-MIR-145"
+      ],
+      [
+        "POU5F1",
+        "HSA-MIR-145"
+      ],
+      [
+        "NFKB",
+        "HSA-MIR-143"
+      ],
+      [
+        "CEBPA",
+        "HSA-MIR-661"
+      ],
+      [
+        "MTA1",
+        "HSA-MIR-661"
+      ],
+      [
+        "NR0B2",
+        "HSA-MIR-206"
+      ],
+      [
+        "YY1",
+        "HSA-MIR-206"
+      ],
+      [
+        "AP1",
+        "HSA-MIR-206"
+      ],
+      [
+        "JUN",
+        "HSA-MIR-206"
+      ],
+      [
+        "ESRRG",
+        "HSA-MIR-206"
+      ],
+      [
+        "E2F1",
+        "HSA-MIR-223"
+      ],
+      [
+        "MLXIP",
+        "HSA-MIR-223"
+      ],
+      [
+        "STAT1",
+        "HSA-MIR-221"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['CEBPA'] -[affects]-> ['MIR223']",
+      "['NFIA'] -[affects]-> ['MIR223']",
+      "['AP1'] -[affects]-> ['MIR155']",
+      "['AP1'] -[affects]-> ['MIR21']",
+      "['ESRRG'] -[affects]-> ['MIR127']",
+      "['ESRRG'] -[affects]-> ['MIR433']",
+      "['NR0B2'] -[affects]-> ['MIR127']",
+      "['NR0B2'] -[affects]-> ['MIR433']",
+      "['TP53'] -[affects]-> ['MIR192']",
+      "['IRF1'] -[affects]-> ['MIR342']",
+      "['IRF9'] -[affects]-> ['MIR342']",
+      "['SPI1'] -[affects]-> ['MIR342']",
+      "['TP53'] -[affects]-> ['MIR145']",
+      "['POU5F1'] -[affects]-> ['MIR145']",
+      "['NFKB'] -[affects]-> ['MIR143']",
+      "['CEBPA'] -[affects]-> ['MIR661']",
+      "['MTA1'] -[affects]-> ['MIR661']",
+      "['NR0B2'] -[affects]-> ['MIR206']",
+      "['YY1'] -[affects]-> ['MIR206']",
+      "['AP1'] -[affects]-> ['MIR206']",
+      "['JUN'] -[affects]-> ['MIR206']",
+      "['ESRRG'] -[affects]-> ['MIR206']",
+      "['E2F1'] -[affects]-> ['MIR223']",
+      "['MLXIP'] -[affects]-> ['MIR223']",
+      "['STAT1'] -[affects]-> ['MIR221']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/CollecTRI.csv",
+      "path": "/root/data/pypath-cache/collectri/CollecTRI.csv",
+      "size": 2577882,
+      "sha256": "86c90b30f2cc75c189da1f0a8c353d1547287cd656a9fac1c678634285bcb4e0",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/CollecTRI.csv",
+      "path": "/root/data/pypath-cache/collectri/CollecTRI.csv",
+      "size": 2577882,
+      "sha256": "86c90b30f2cc75c189da1f0a8c353d1547287cd656a9fac1c678634285bcb4e0",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

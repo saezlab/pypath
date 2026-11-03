@@ -1,0 +1,51 @@
+{
+  "resource": "trrust",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.9,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 8427,
+  "legacy_pairs_found_in_v2": 8427,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 9396,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 4325,
+    "+": 3149,
+    "-": 1922
+  },
+  "signs_compared": 4859,
+  "signs_agree": 4859,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://www.grnpedia.org/trrust/data/trrust_rawdata.human.tsv",
+      "path": "/root/data/pypath-cache/trrust/trrust_rawdata.human.tsv",
+      "size": 297659,
+      "sha256": "9b909319ccc8e36588b5a1bd3640e0dfba03936c6fc154cc4304d742bec11bed",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://www.grnpedia.org/trrust/data/trrust_rawdata.human.tsv",
+      "path": "/root/data/pypath-cache/trrust/trrust_rawdata.human.tsv",
+      "size": 297659,
+      "sha256": "9b909319ccc8e36588b5a1bd3640e0dfba03936c6fc154cc4304d742bec11bed",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

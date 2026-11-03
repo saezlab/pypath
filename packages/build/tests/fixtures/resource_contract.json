@@ -1,0 +1,819 @@
+[
+  [
+    {
+      "entity_key": "1a9071afea216ae14582343d30b13e01ea5f7549a49335d9bd63a0aadbf4c10b",
+      "entity_type": "protein",
+      "namespace": "uniprot",
+      "identifier": "P4",
+      "taxon": "",
+      "label": "P4",
+      "has_hierarchy": false,
+      "parent_count": 0,
+      "child_count": 0,
+      "identifiers": [
+        {
+          "ns": "uniprot",
+          "id": "P4",
+          "is_canonical": true,
+          "source": "canonical"
+        },
+        {
+          "ns": "uniprot",
+          "id": "P4",
+          "is_canonical": true,
+          "source": "fixture"
+        },
+        {
+          "ns": "uniprot",
+          "id": "P4",
+          "is_canonical": true,
+          "source": "resolver"
+        }
+      ],
+      "annotations": []
+    },
+    {
+      "entity_key": "2fb3c94e9bea8a945d86bf36fda7a129d0f0a41f56752d0af9f225486c1c1dd1",
+      "entity_type": "protein",
+      "namespace": "uniprot",
+      "identifier": "P02340",
+      "taxon": "10090",
+      "label": "Trp53",
+      "has_hierarchy": false,
+      "parent_count": 0,
+      "child_count": 0,
+      "identifiers": [
+        {
+          "ns": "uniprot",
+          "id": "P02340",
+          "is_canonical": true,
+          "source": "canonical"
+        },
+        {
+          "ns": "uniprot",
+          "id": "P02340",
+          "is_canonical": true,
+          "source": "fixture"
+        },
+        {
+          "ns": "uniprot",
+          "id": "P02340",
+          "is_canonical": true,
+          "source": "resolver"
+        },
+        {
+          "ns": "entrez",
+          "id": "22059",
+          "is_canonical": false,
+          "source": "resolver"
+        },
+        {
+          "ns": "genesymbol",
+          "id": "Trp53",
+          "is_canonical": false,
+          "source": "resolver"
+        },
+        {
+          "ns": "genesymbol-syn",
+          "id": "TP53",
+          "is_canonical": false,
+          "source": "resolver"
+        },
+        {
+          "ns": "uniprot_entry",
+          "id": "P53_MOUSE",
+          "is_canonical": false,
+          "source": "resolver"
+        }
+      ],
+      "annotations": []
+    },
+    {
+      "entity_key": "35ed85f267fc96b55eb8a846b5dda0bb3a913d091644e7419bcc14545407ab77",
+      "entity_type": "protein",
+      "namespace": "uniprot",
+      "identifier": "P3",
+      "taxon": "",
+      "label": "P3",
+      "has_hierarchy": false,
+      "parent_count": 0,
+      "child_count": 0,
+      "identifiers": [
+        {
+          "ns": "uniprot",
+          "id": "P3",
+          "is_canonical": true,
+          "source": "canonical"
+        },
+        {
+          "ns": "uniprot",
+          "id": "P3",
+          "is_canonical": true,
+          "source": "fixture"
+        },
+        {
+          "ns": "uniprot",
+          "id": "P3",
+          "is_canonical": true,
+          "source": "resolver"
+        }
+      ],
+      "annotations": []
+    },
+    {
+      "entity_key": "444a849843071f858e108c59ba4294efd1a8c0e3a719e2f9988d43829a42e252",
+      "entity_type": "protein",
+      "namespace": "uniprot",
+      "identifier": "P2",
+      "taxon": "",
+      "label": "P2",
+      "has_hierarchy": false,
+      "parent_count": 0,
+      "child_count": 0,
+      "identifiers": [
+        {
+          "ns": "uniprot",
+          "id": "P2",
+          "is_canonical": true,
+          "source": "canonical"
+        },
+        {
+          "ns": "uniprot",
+          "id": "P2",
+          "is_canonical": true,
+          "source": "fixture"
+        },
+        {
+          "ns": "uniprot",
+          "id": "P2",
+          "is_canonical": true,
+          "source": "resolver"
+        }
+      ],
+      "annotations": []
+    },
+    {
+      "entity_key": "5873c73baa6634e401fd5df2cb8cd1aac0e62cec3580de5f31820ba1a6f9d81c",
+      "entity_type": "protein",
+      "namespace": "uniprot",
+      "identifier": "P1",
+      "taxon": "10090",
+      "label": "Alpha",
+      "has_hierarchy": false,
+      "parent_count": 0,
+      "child_count": 0,
+      "identifiers": [
+        {
+          "ns": "uniprot",
+          "id": "P1",
+          "is_canonical": true,
+          "source": "canonical"
+        },
+        {
+          "ns": "uniprot",
+          "id": "P1",
+          "is_canonical": true,
+          "source": "fixture"
+        },
+        {
+          "ns": "uniprot",
+          "id": "P1",
+          "is_canonical": true,
+          "source": "resolver"
+        },
+        {
+          "ns": "genesymbol",
+          "id": "Alpha",
+          "is_canonical": false,
+          "source": "fixture"
+        },
+        {
+          "ns": "genesymbol",
+          "id": "Alpha",
+          "is_canonical": false,
+          "source": "resolver"
+        },
+        {
+          "ns": "genesymbol",
+          "id": "Beta",
+          "is_canonical": false,
+          "source": "fixture"
+        },
+        {
+          "ns": "genesymbol",
+          "id": "Beta",
+          "is_canonical": false,
+          "source": "resolver"
+        },
+        {
+          "ns": "genesymbol",
+          "id": "Zulu",
+          "is_canonical": false,
+          "source": "fixture"
+        },
+        {
+          "ns": "genesymbol",
+          "id": "Zulu",
+          "is_canonical": false,
+          "source": "resolver"
+        }
+      ],
+      "annotations": []
+    },
+    {
+      "entity_key": "b92bab86c83bf0f99b5eb2f38593b5b66107e3315f8c4f90cc385002014c01cf",
+      "entity_type": "protein",
+      "namespace": "uniprot",
+      "identifier": "P04637",
+      "taxon": "9606",
+      "label": "TP53",
+      "has_hierarchy": false,
+      "parent_count": 0,
+      "child_count": 0,
+      "identifiers": [
+        {
+          "ns": "uniprot",
+          "id": "P04637",
+          "is_canonical": true,
+          "source": "canonical"
+        },
+        {
+          "ns": "uniprot",
+          "id": "P04637",
+          "is_canonical": true,
+          "source": "fixture"
+        },
+        {
+          "ns": "uniprot",
+          "id": "P04637",
+          "is_canonical": true,
+          "source": "resolver"
+        },
+        {
+          "ns": "ensg",
+          "id": "ENSG00000141510",
+          "is_canonical": false,
+          "source": "resolver"
+        },
+        {
+          "ns": "entrez",
+          "id": "7157",
+          "is_canonical": false,
+          "source": "resolver"
+        },
+        {
+          "ns": "genesymbol",
+          "id": "TP53",
+          "is_canonical": false,
+          "source": "resolver"
+        },
+        {
+          "ns": "genesymbol-syn",
+          "id": "P53",
+          "is_canonical": false,
+          "source": "resolver"
+        },
+        {
+          "ns": "hgnc",
+          "id": "HGNC:11998",
+          "is_canonical": false,
+          "source": "resolver"
+        },
+        {
+          "ns": "uniprot-sec",
+          "id": "Q15086",
+          "is_canonical": false,
+          "source": "resolver"
+        },
+        {
+          "ns": "uniprot_entry",
+          "id": "P53_HUMAN",
+          "is_canonical": false,
+          "source": "resolver"
+        }
+      ],
+      "annotations": []
+    },
+    {
+      "entity_key": "84d355500dc4679a7567fd5412842ae967caced531c771e753c04898faa6aea4",
+      "entity_type": "ontology_class",
+      "namespace": "go",
+      "identifier": "GO:1",
+      "taxon": "",
+      "label": "GO:1",
+      "has_hierarchy": false,
+      "parent_count": 0,
+      "child_count": 0,
+      "identifiers": [
+        {
+          "ns": "go",
+          "id": "GO:1",
+          "is_canonical": true,
+          "source": "canonical"
+        },
+        {
+          "ns": "go",
+          "id": "GO:1",
+          "is_canonical": true,
+          "source": "fixture"
+        },
+        {
+          "ns": "go",
+          "id": "GO:1",
+          "is_canonical": true,
+          "source": "resolver"
+        }
+      ],
+      "annotations": [
+        {
+          "term": "subclass_of",
+          "value": "GO:2",
+          "quantity": null,
+          "source": "fixture",
+          "dataset": "interactions"
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "relation_key": "37fe75550553b58ba0f28712d53f64fbd053876455876161d6ba5d5e4e969d21",
+      "statement_kind": "relation",
+      "subject_entity_key": "b92bab86c83bf0f99b5eb2f38593b5b66107e3315f8c4f90cc385002014c01cf",
+      "subject_label": "TP53",
+      "subject_type": "protein",
+      "predicate": "affects",
+      "object_entity_key": "2fb3c94e9bea8a945d86bf36fda7a129d0f0a41f56752d0af9f225486c1c1dd1",
+      "object_label": "Trp53",
+      "object_type": "protein",
+      "taxon": "",
+      "is_directed": true,
+      "sign": 0,
+      "category": "interaction",
+      "interaction_class": "directed",
+      "sources": [
+        "fixture"
+      ],
+      "evidence_count": 1,
+      "evidence": [
+        {
+          "source": "fixture",
+          "dataset": "interactions",
+          "row_id": "matched",
+          "upstream_id": "matched",
+          "annotations": []
+        }
+      ],
+      "annotations": []
+    },
+    {
+      "relation_key": "4bb31475bbfe1da668b607099efdc78bb6572eb31d66bfe7164f7d9e06770d8f",
+      "statement_kind": "relation",
+      "subject_entity_key": "444a849843071f858e108c59ba4294efd1a8c0e3a719e2f9988d43829a42e252",
+      "subject_label": "P2",
+      "subject_type": "protein",
+      "predicate": "interacts_with",
+      "object_entity_key": "5873c73baa6634e401fd5df2cb8cd1aac0e62cec3580de5f31820ba1a6f9d81c",
+      "object_label": "Alpha",
+      "object_type": "protein",
+      "taxon": "10090",
+      "is_directed": false,
+      "sign": 0,
+      "category": "interaction",
+      "interaction_class": "undirected",
+      "sources": [
+        "fixture"
+      ],
+      "evidence_count": 2,
+      "evidence": [
+        {
+          "source": "fixture",
+          "dataset": "interactions",
+          "row_id": "symmetric:0",
+          "upstream_id": "symmetric:0",
+          "annotations": []
+        },
+        {
+          "source": "fixture",
+          "dataset": "interactions",
+          "row_id": "symmetric:1",
+          "upstream_id": "symmetric:1",
+          "annotations": []
+        }
+      ],
+      "annotations": []
+    },
+    {
+      "relation_key": "fe46f7d95776b31eb5842a3a02eec30d574f097693bc1f850ab2e21b928b6bfd",
+      "statement_kind": "relation",
+      "subject_entity_key": "5873c73baa6634e401fd5df2cb8cd1aac0e62cec3580de5f31820ba1a6f9d81c",
+      "subject_label": "Alpha",
+      "subject_type": "protein",
+      "predicate": "part_of",
+      "object_entity_key": "35ed85f267fc96b55eb8a846b5dda0bb3a913d091644e7419bcc14545407ab77",
+      "object_label": "P3",
+      "object_type": "protein",
+      "taxon": "10090",
+      "is_directed": true,
+      "sign": 0,
+      "category": "membership",
+      "interaction_class": "directed",
+      "sources": [
+        "fixture"
+      ],
+      "evidence_count": 1,
+      "evidence": [
+        {
+          "source": "fixture",
+          "dataset": "interactions",
+          "row_id": "part:0",
+          "upstream_id": "part:0",
+          "annotations": []
+        }
+      ],
+      "annotations": []
+    },
+    {
+      "relation_key": "b1e9ed0212eeadb37b2dd752764d252cbcca966b99a8719607eec20a3eb1cef3",
+      "statement_kind": "relation",
+      "subject_entity_key": "5873c73baa6634e401fd5df2cb8cd1aac0e62cec3580de5f31820ba1a6f9d81c",
+      "subject_label": "Alpha",
+      "subject_type": "protein",
+      "predicate": "part_of",
+      "object_entity_key": "1a9071afea216ae14582343d30b13e01ea5f7549a49335d9bd63a0aadbf4c10b",
+      "object_label": "P4",
+      "object_type": "protein",
+      "taxon": "10090",
+      "is_directed": true,
+      "sign": 0,
+      "category": "membership",
+      "interaction_class": "directed",
+      "sources": [
+        "fixture"
+      ],
+      "evidence_count": 1,
+      "evidence": [
+        {
+          "source": "fixture",
+          "dataset": "interactions",
+          "row_id": "part:1",
+          "upstream_id": "part:1",
+          "annotations": []
+        }
+      ],
+      "annotations": []
+    },
+    {
+      "relation_key": "9cbcbb19020dba57a2a3da60eaf05f9d56290dddc43fa9b3530064ce3333b1cc",
+      "statement_kind": "relation",
+      "subject_entity_key": "5873c73baa6634e401fd5df2cb8cd1aac0e62cec3580de5f31820ba1a6f9d81c",
+      "subject_label": "Alpha",
+      "subject_type": "protein",
+      "predicate": "affects",
+      "object_entity_key": "444a849843071f858e108c59ba4294efd1a8c0e3a719e2f9988d43829a42e252",
+      "object_label": "P2",
+      "object_type": "protein",
+      "taxon": "10090",
+      "is_directed": true,
+      "sign": 1,
+      "category": "interaction",
+      "interaction_class": "directed_stimulatory",
+      "sources": [
+        "fixture"
+      ],
+      "evidence_count": 3,
+      "evidence": [
+        {
+          "source": "fixture",
+          "dataset": "interactions",
+          "row_id": "0",
+          "upstream_id": "0",
+          "annotations": [
+            {
+              "term": "object_direction_qualifier",
+              "value": "increased",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "relation"
+            },
+            {
+              "term": "description",
+              "value": "support",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "relation"
+            },
+            {
+              "term": "name",
+              "value": "Zulu",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "subject"
+            },
+            {
+              "term": "in_taxon",
+              "value": "NCBITaxon:9606",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "subject"
+            }
+          ]
+        },
+        {
+          "source": "fixture",
+          "dataset": "interactions",
+          "row_id": "1",
+          "upstream_id": "1",
+          "annotations": [
+            {
+              "term": "object_direction_qualifier",
+              "value": "increased",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "relation"
+            },
+            {
+              "term": "description",
+              "value": "support",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "relation"
+            },
+            {
+              "term": "name",
+              "value": "Alpha",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "subject"
+            },
+            {
+              "term": "in_taxon",
+              "value": "NCBITaxon:10090",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "subject"
+            }
+          ]
+        },
+        {
+          "source": "fixture",
+          "dataset": "interactions",
+          "row_id": "2",
+          "upstream_id": "2",
+          "annotations": [
+            {
+              "term": "object_direction_qualifier",
+              "value": "increased",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "relation"
+            },
+            {
+              "term": "description",
+              "value": "support",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "relation"
+            },
+            {
+              "term": "name",
+              "value": "Beta",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "subject"
+            },
+            {
+              "term": "in_taxon",
+              "value": "NCBITaxon:9606",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "subject"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "term": "description",
+          "value": "support",
+          "quantity": null,
+          "source": "fixture",
+          "dataset": "interactions",
+          "scope": "relation"
+        },
+        {
+          "term": "in_taxon",
+          "value": "NCBITaxon:10090",
+          "quantity": null,
+          "source": "fixture",
+          "dataset": "interactions",
+          "scope": "subject"
+        },
+        {
+          "term": "in_taxon",
+          "value": "NCBITaxon:9606",
+          "quantity": null,
+          "source": "fixture",
+          "dataset": "interactions",
+          "scope": "subject"
+        },
+        {
+          "term": "name",
+          "value": "Alpha",
+          "quantity": null,
+          "source": "fixture",
+          "dataset": "interactions",
+          "scope": "subject"
+        },
+        {
+          "term": "name",
+          "value": "Beta",
+          "quantity": null,
+          "source": "fixture",
+          "dataset": "interactions",
+          "scope": "subject"
+        },
+        {
+          "term": "name",
+          "value": "Zulu",
+          "quantity": null,
+          "source": "fixture",
+          "dataset": "interactions",
+          "scope": "subject"
+        },
+        {
+          "term": "object_direction_qualifier",
+          "value": "increased",
+          "quantity": null,
+          "source": "fixture",
+          "dataset": "interactions",
+          "scope": "relation"
+        }
+      ]
+    },
+    {
+      "relation_key": "1eba427134745baed95ec936cc289cc8f834886fe9b72fa01ad7a6eaf7f19e1f",
+      "statement_kind": "relation",
+      "subject_entity_key": "5873c73baa6634e401fd5df2cb8cd1aac0e62cec3580de5f31820ba1a6f9d81c",
+      "subject_label": "Alpha",
+      "subject_type": "protein",
+      "predicate": "affects",
+      "object_entity_key": "444a849843071f858e108c59ba4294efd1a8c0e3a719e2f9988d43829a42e252",
+      "object_label": "P2",
+      "object_type": "protein",
+      "taxon": "10090",
+      "is_directed": true,
+      "sign": -1,
+      "category": "interaction",
+      "interaction_class": "directed_inhibitory",
+      "sources": [
+        "fixture"
+      ],
+      "evidence_count": 1,
+      "evidence": [
+        {
+          "source": "fixture",
+          "dataset": "interactions",
+          "row_id": "opposite",
+          "upstream_id": "opposite",
+          "annotations": [
+            {
+              "term": "object_direction_qualifier",
+              "value": "decreased",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "relation"
+            },
+            {
+              "term": "name",
+              "value": "Zulu",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "subject"
+            },
+            {
+              "term": "in_taxon",
+              "value": "NCBITaxon:9606",
+              "quantity": null,
+              "source": "fixture",
+              "dataset": "interactions",
+              "scope": "subject"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "term": "in_taxon",
+          "value": "NCBITaxon:9606",
+          "quantity": null,
+          "source": "fixture",
+          "dataset": "interactions",
+          "scope": "subject"
+        },
+        {
+          "term": "name",
+          "value": "Zulu",
+          "quantity": null,
+          "source": "fixture",
+          "dataset": "interactions",
+          "scope": "subject"
+        },
+        {
+          "term": "object_direction_qualifier",
+          "value": "decreased",
+          "quantity": null,
+          "source": "fixture",
+          "dataset": "interactions",
+          "scope": "relation"
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "relation_key": null,
+      "entity_key": "84d355500dc4679a7567fd5412842ae967caced531c771e753c04898faa6aea4",
+      "source": "fixture",
+      "row_id": "ontology",
+      "payload_json": "{\"annotations\":[{\"term\":\"subclass_of\",\"value\":\"GO:2\"}],\"identifiers\":[{\"type\":\"go\",\"value\":\"GO:1\"}],\"type\":\"ontology_class\"}"
+    },
+    {
+      "relation_key": "4bb31475bbfe1da668b607099efdc78bb6572eb31d66bfe7164f7d9e06770d8f",
+      "entity_key": null,
+      "source": "fixture",
+      "row_id": "symmetric:1",
+      "payload_json": "{\"annotations\":[],\"object\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P1\"}],\"type\":\"protein\"},\"predicate\":\"interacts_with\",\"subject\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P2\"}],\"type\":\"protein\"}}"
+    },
+    {
+      "relation_key": "4bb31475bbfe1da668b607099efdc78bb6572eb31d66bfe7164f7d9e06770d8f",
+      "entity_key": null,
+      "source": "fixture",
+      "row_id": "symmetric:0",
+      "payload_json": "{\"annotations\":[],\"object\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P2\"}],\"type\":\"protein\"},\"predicate\":\"interacts_with\",\"subject\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P1\"}],\"type\":\"protein\"}}"
+    },
+    {
+      "relation_key": "fe46f7d95776b31eb5842a3a02eec30d574f097693bc1f850ab2e21b928b6bfd",
+      "entity_key": null,
+      "source": "fixture",
+      "row_id": "part:0",
+      "payload_json": "{\"annotations\":[],\"object\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P3\"}],\"type\":\"protein\"},\"predicate\":\"part_of\",\"subject\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P1\"}],\"type\":\"protein\"}}"
+    },
+    {
+      "relation_key": "b1e9ed0212eeadb37b2dd752764d252cbcca966b99a8719607eec20a3eb1cef3",
+      "entity_key": null,
+      "source": "fixture",
+      "row_id": "part:1",
+      "payload_json": "{\"annotations\":[],\"object\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P4\"}],\"type\":\"protein\"},\"predicate\":\"part_of\",\"subject\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P1\"}],\"type\":\"protein\"}}"
+    },
+    {
+      "relation_key": "1eba427134745baed95ec936cc289cc8f834886fe9b72fa01ad7a6eaf7f19e1f",
+      "entity_key": null,
+      "source": "fixture",
+      "row_id": "opposite",
+      "payload_json": "{\"annotations\":[{\"term\":\"object_direction_qualifier\",\"value\":\"decreased\"}],\"object\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P2\"}],\"type\":\"protein\"},\"predicate\":\"affects\",\"subject\":{\"annotations\":[{\"term\":\"name\",\"value\":\"Zulu\"},{\"term\":\"in_taxon\",\"value\":\"NCBITaxon:9606\"}],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P1\"},{\"type\":\"genesymbol\",\"value\":\"Zulu\"}],\"type\":\"protein\"}}"
+    },
+    {
+      "relation_key": "9cbcbb19020dba57a2a3da60eaf05f9d56290dddc43fa9b3530064ce3333b1cc",
+      "entity_key": null,
+      "source": "fixture",
+      "row_id": "1",
+      "payload_json": "{\"annotations\":[{\"term\":\"object_direction_qualifier\",\"value\":\"increased\"},{\"term\":\"description\",\"value\":\"support\"}],\"object\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P2\"}],\"type\":\"protein\"},\"predicate\":\"affects\",\"subject\":{\"annotations\":[{\"term\":\"name\",\"value\":\"Alpha\"},{\"term\":\"in_taxon\",\"value\":\"NCBITaxon:10090\"}],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P1\"},{\"type\":\"genesymbol\",\"value\":\"Alpha\"}],\"type\":\"protein\"}}"
+    },
+    {
+      "relation_key": "9cbcbb19020dba57a2a3da60eaf05f9d56290dddc43fa9b3530064ce3333b1cc",
+      "entity_key": null,
+      "source": "fixture",
+      "row_id": "2",
+      "payload_json": "{\"annotations\":[{\"term\":\"object_direction_qualifier\",\"value\":\"increased\"},{\"term\":\"description\",\"value\":\"support\"}],\"object\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P2\"}],\"type\":\"protein\"},\"predicate\":\"affects\",\"subject\":{\"annotations\":[{\"term\":\"name\",\"value\":\"Beta\"},{\"term\":\"in_taxon\",\"value\":\"NCBITaxon:9606\"}],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P1\"},{\"type\":\"genesymbol\",\"value\":\"Beta\"}],\"type\":\"protein\"}}"
+    },
+    {
+      "relation_key": "9cbcbb19020dba57a2a3da60eaf05f9d56290dddc43fa9b3530064ce3333b1cc",
+      "entity_key": null,
+      "source": "fixture",
+      "row_id": "0",
+      "payload_json": "{\"annotations\":[{\"term\":\"object_direction_qualifier\",\"value\":\"increased\"},{\"term\":\"description\",\"value\":\"support\"}],\"object\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P2\"}],\"type\":\"protein\"},\"predicate\":\"affects\",\"subject\":{\"annotations\":[{\"term\":\"name\",\"value\":\"Zulu\"},{\"term\":\"in_taxon\",\"value\":\"NCBITaxon:9606\"}],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P1\"},{\"type\":\"genesymbol\",\"value\":\"Zulu\"}],\"type\":\"protein\"}}"
+    },
+    {
+      "relation_key": "37fe75550553b58ba0f28712d53f64fbd053876455876161d6ba5d5e4e969d21",
+      "entity_key": null,
+      "source": "fixture",
+      "row_id": "matched",
+      "payload_json": "{\"object\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P02340\"}],\"type\":\"protein\"},\"predicate\":\"affects\",\"subject\":{\"annotations\":[],\"identifiers\":[{\"type\":\"uniprot\",\"value\":\"P04637\"}],\"type\":\"protein\"}}"
+    }
+  ]
+]

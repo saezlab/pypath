@@ -1,0 +1,51 @@
+{
+  "resource": "arn",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.0,
+  "legacy_seconds": 0.0,
+  "legacy_pairs": 95,
+  "legacy_pairs_found_in_v2": 95,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 95,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 67,
+    "+": 17,
+    "-": 11
+  },
+  "signs_compared": 28,
+  "signs_agree": 28,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/arn_curated.csv",
+      "path": "/root/data/pypath-cache/arn/arn_curated.csv",
+      "size": 4697,
+      "sha256": "a1a221d663a18acc7bcd6bfbd21088b163cd2b53cd9af336fb5f872861e349ef",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://rescued.omnipathdb.org/arn_curated.csv",
+      "path": "/root/data/pypath-cache/arn/arn_curated.csv",
+      "size": 4697,
+      "sha256": "a1a221d663a18acc7bcd6bfbd21088b163cd2b53cd9af336fb5f872861e349ef",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

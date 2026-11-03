@@ -1,0 +1,176 @@
+{
+  "resource": "mppi",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.6,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 465,
+  "legacy_pairs_found_in_v2": 383,
+  "legacy_pairs_reversed_in_v2": 47,
+  "legacy_pairs_missing_in_v2": 35,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 27,
+    "neither": 8
+  },
+  "v2_relations": 1388,
+  "v2_relations_without_legacy_pair": 767,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 1388
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "-",
+        "-"
+      ],
+      [
+        "P06400",
+        "-"
+      ],
+      [
+        "P29354_2",
+        "P00813"
+      ],
+      [
+        "P00813",
+        "P29354_2"
+      ],
+      [
+        "P29354_2",
+        "P30530"
+      ],
+      [
+        "P30530",
+        "P29354_2"
+      ],
+      [
+        "O43432",
+        "P04765 (EIF4A1) OR SP"
+      ],
+      [
+        "O43432",
+        "-"
+      ],
+      [
+        "O43177",
+        "P04765 (EIF4A1) OR SP"
+      ],
+      [
+        "O43177",
+        "-"
+      ],
+      [
+        "P42229",
+        "P27361 (ERK1) OR SP"
+      ],
+      [
+        "P27361 (ERK1) OR SP",
+        "P42229"
+      ],
+      [
+        "P11171",
+        "Q14980 (Z11583) OR SP"
+      ],
+      [
+        "Q14980 (Z11583) OR SP",
+        "P11171"
+      ],
+      [
+        "P29354_2",
+        "P07910"
+      ],
+      [
+        "P07910",
+        "P29354_2"
+      ],
+      [
+        "Q13287",
+        "Q14803 OR SP"
+      ],
+      [
+        "Q9UNH0 (MAD1) OR TREMBL",
+        "Q14803 OR SP"
+      ],
+      [
+        "Q14803 OR SP",
+        "Q9UNH0 (MAD1) OR TREMBL"
+      ],
+      [
+        "P01106",
+        "Q14803 OR SP"
+      ],
+      [
+        "Q14803 OR SP",
+        "P01106"
+      ],
+      [
+        "P29354_2",
+        "Q15300"
+      ],
+      [
+        "Q15300",
+        "P29354_2"
+      ],
+      [
+        "P07949",
+        "P29354_2"
+      ],
+      [
+        "P29354_2",
+        "P07949"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['P27005', 'calgranulin A (migration inhibitory factor-related protein 8)', 'S100A8', 'CAGA', 'MRP8'] -[interacts_with]-> ['P31725', 'calgranulin B (migration inhibitory factor-related protein 14)', 'S100A9', 'CAGB', 'MRP14']",
+      "['P08047', 'transcription factor Sp1', 'SP1', 'TSFP1'] -[interacts_with]-> ['O09106', 'histone deacetylase 1', 'HDAC1']",
+      "['P08047', 'transcription factor Sp1', 'SP1', 'TSFP1'] -[interacts_with]-> ['O09106', 'histone deacetylase 1', 'HDAC1']",
+      "['Q16637', 'survival motor neuron protein', 'SMN', 'SMN1'] -[interacts_with]-> ['Q9JJV2', 'profilin, isoform II', 'PFN2']",
+      "['Q16637', 'survival motor neuron protein', 'SMN', 'SMN1'] -[interacts_with]-> ['P10924', 'profilin, isoform I', 'PFN1']",
+      "['Q16637', 'survival motor neuron protein', 'SMN', 'SMN1'] -[interacts_with]-> ['P10924', 'profilin, isoform I', 'PFN1']",
+      "['Q16637', 'survival motor neuron protein', 'SMN', 'SMN1'] -[interacts_with]-> ['Q9JJV2', 'profilin, isoform II', 'PFN2']",
+      "['A54101', 'peroxisome proliferator-activated receptor gamma', 'PPARG', 'NR1C'] -[interacts_with]-> ['Q13772', 'nuclear receptor coactivator 4 (ARA70)', 'NCOA4', 'ARA70', 'RFG', 'ELE1']",
+      "['A54101', 'peroxisome proliferator-activated receptor gamma', 'PPARG', 'NR1C'] -[interacts_with]-> ['Q13772', 'nuclear receptor coactivator 4 (ARA70)', 'NCOA4', 'ARA70', 'RFG', 'ELE1']",
+      "['P00507', 'mitochondrial aspartate aminotransferase precursor (pmAAT)', 'GOT2', 'MAAT'] -[interacts_with]-> ['P19120', 'heat shock cognate 71 kDa protein', 'HSPA8', 'HSC70']",
+      "['P27005', 'calgranulin A (migration inhibitory factor-related protein 8)', 'S100A8', 'CAGA', 'MRP8'] -[interacts_with]-> ['P27005', 'calgranulin A (migration inhibitory factor-related protein 8)', 'S100A8', 'CAGA', 'MRP8']",
+      "['P31725', 'calgranulin B (migration inhibitory factor-related protein 14)', 'S100A9', 'CAGB', 'MRP14'] -[interacts_with]-> ['P31725', 'calgranulin B (migration inhibitory factor-related protein 14)', 'S100A9', 'CAGB', 'MRP14']",
+      "['O35274', 'spinophilin (neurabin II)', 'PPP1R9B'] -[interacts_with]-> ['P18871', 'Alpha-2A adrenergic receptor', 'ADRA2A']",
+      "['O35274', 'spinophilin (neurabin II)', 'PPP1R9B'] -[interacts_with]-> ['P19328', 'alpha-2B adrenergic receptor', 'ADRA2B']",
+      "['O35274', 'spinophilin (neurabin II)', 'PPP1R9B'] -[interacts_with]-> ['P22086', 'alpha-2C adrenergic receptor', 'ADRA2C']",
+      "['O35274', 'spinophilin (neurabin II)', 'PPP1R9B'] -[interacts_with]-> ['P22909', 'Alpha-2A adrenergic receptor', 'ADRA2A']",
+      "['O35274', 'spinophilin (neurabin II)', 'PPP1R9B'] -[interacts_with]-> ['P19328', 'alpha-2B adrenergic receptor', 'ADRA2B']",
+      "['O35274', 'spinophilin (neurabin II)', 'PPP1R9B'] -[interacts_with]-> ['P22086', 'alpha-2C adrenergic receptor', 'ADRA2C']",
+      "['Q9QUH1', 'F-box protein FWD2', 'FWD2'] -[interacts_with]-> ['Q9WTX5', 'SCF complex protein SKP1', 'TCEB1L']",
+      "['Q9UQF2', 'C-jun-amino-terminal kinase interacting protein 1 (JNK-interacting protein 1) (JIP-1)', 'JIP-1'] -[interacts_with]-> ['P97433', 'Rho-guanine nucleotide exchange factor (Rho-interacting protein 2) (RhoGEF)', 'RGNEF', 'RHOIP2']",
+      "['Q9UQF2', 'C-jun-amino-terminal kinase interacting protein 1 (JNK-interacting protein 1) (JIP-1)', 'JIP-1'] -[interacts_with]-> ['P97433', 'Rho-guanine nucleotide exchange factor (Rho-interacting protein 2) (RhoGEF)', 'RGNEF', 'RHOIP2']",
+      "['Q9UQF2', 'C-jun-amino-terminal kinase interacting protein 1 (JNK-interacting protein 1) (JIP-1)', 'JIP-1'] -[interacts_with]-> ['P97433', 'Rho-guanine nucleotide exchange factor (Rho-interacting protein 2) (RhoGEF)', 'RGNEF', 'RHOIP2']",
+      "['P48025', 'Tyrosine-protein kinase SYK (Spleen tyrosine kinase)', 'SYK'] -[interacts_with]-> ['P22681', 'Signal transduction protein CBL (Proto-oncogene c-CBL)', 'CBL', 'CBL2']",
+      "['Q62469', 'Integrin alpha-2 precursor', 'ITGA2'] -[interacts_with]-> ['P09055', 'Integrin beta-1 precursor', 'ITGB1']",
+      "['Q62469', 'Integrin alpha-2 precursor', 'ITGA2'] -[interacts_with]-> ['Q61735', 'Integrin-associated protein', 'ITGP']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/mppi.gz",
+      "path": "/root/data/pypath-cache/mppi/mppi.gz",
+      "size": 104776,
+      "sha256": "c854823dcefc5ff54c73f8aab583df582a5638c94ef30c9f81812d9d3bc534c0",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/mppi.gz",
+      "path": "/root/data/pypath-cache/mppi/mppi.gz",
+      "size": 104776,
+      "sha256": "c854823dcefc5ff54c73f8aab583df582a5638c94ef30c9f81812d9d3bc534c0",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

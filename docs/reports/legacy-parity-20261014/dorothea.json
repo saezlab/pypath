@@ -1,0 +1,51 @@
+{
+  "resource": "dorothea",
+  "kind": "relation",
+  "note": "All confidence levels on both sides.",
+  "v2_seconds": 147.0,
+  "legacy_seconds": 17.4,
+  "legacy_pairs": 1019144,
+  "legacy_pairs_found_in_v2": 1019144,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 1019220,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 1013518,
+    "+": 4111,
+    "-": 1591
+  },
+  "signs_compared": 5702,
+  "signs_agree": 5702,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://github.com/saezlab/dorothea/raw/master/data/entire_database.rda",
+      "path": "/root/data/pypath-cache/dorothea/dorothea_entire_database.rda",
+      "size": 2787988,
+      "sha256": "b09e2b8cdeaba95ada550e033d8288b6fa7f17e707f7201abc6052cc528ee901",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://github.com/saezlab/dorothea/raw/master/data/entire_database.rda",
+      "path": "/root/data/pypath-cache/dorothea/dorothea_entire_database.rda",
+      "size": 2787988,
+      "sha256": "b09e2b8cdeaba95ada550e033d8288b6fa7f17e707f7201abc6052cc528ee901",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

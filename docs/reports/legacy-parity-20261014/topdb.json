@@ -1,0 +1,150 @@
+{
+  "resource": "topdb",
+  "kind": "relation",
+  "note": "The proteins only: legacy reads the regions, v2 the protein classes.",
+  "v2_seconds": 8.1,
+  "legacy_seconds": 9.6,
+  "legacy_pairs": 9341,
+  "legacy_pairs_found_in_v2": 8321,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 1020,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 1020,
+    "neither": 0
+  },
+  "v2_relations": 8321,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 8321
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "2K3C_A",
+        "PROTEIN"
+      ],
+      [
+        "2WSC_2",
+        "PROTEIN"
+      ],
+      [
+        "2WSC_3",
+        "PROTEIN"
+      ],
+      [
+        "2WSE_3",
+        "PROTEIN"
+      ],
+      [
+        "2WSF_3",
+        "PROTEIN"
+      ],
+      [
+        "3A7K_A",
+        "PROTEIN"
+      ],
+      [
+        "2KSY_A",
+        "PROTEIN"
+      ],
+      [
+        "1YQ3_C",
+        "PROTEIN"
+      ],
+      [
+        "3MKT_A",
+        "PROTEIN"
+      ],
+      [
+        "3NYM_A",
+        "PROTEIN"
+      ],
+      [
+        "3ORG_A",
+        "PROTEIN"
+      ],
+      [
+        "3RKO_N",
+        "PROTEIN"
+      ],
+      [
+        "2L0L_A",
+        "PROTEIN"
+      ],
+      [
+        "3RKO_A",
+        "PROTEIN"
+      ],
+      [
+        "2L0N_A",
+        "PROTEIN"
+      ],
+      [
+        "3RKO_J",
+        "PROTEIN"
+      ],
+      [
+        "3RHW_C",
+        "PROTEIN"
+      ],
+      [
+        "3RIF_A",
+        "PROTEIN"
+      ],
+      [
+        "2LKG_A",
+        "PROTEIN"
+      ],
+      [
+        "3RIF_C",
+        "PROTEIN"
+      ],
+      [
+        "2LX0_A",
+        "PROTEIN"
+      ],
+      [
+        "4AIQ_A",
+        "PROTEIN"
+      ],
+      [
+        "2AHZ_A",
+        "PROTEIN"
+      ],
+      [
+        "1XIO_A",
+        "PROTEIN"
+      ],
+      [
+        "4FUV_A",
+        "PROTEIN"
+      ]
+    ],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://topdb.unitmp.org/data/TOPDB/data/v3.3/sets/topdb_all.xml",
+      "path": "/root/data/pypath-cache/topdb/topdb_all.xml",
+      "size": 256019745,
+      "sha256": "de2e1ff6f84e49e48cad0f63a3de0f640ca2ffb98588f62275e40ebf6127c979",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://topdb.unitmp.org/data/TOPDB/data/v3.3/sets/topdb_all.xml",
+      "path": "/root/data/pypath-cache/topdb/topdb_all.xml",
+      "size": 256019745,
+      "sha256": "de2e1ff6f84e49e48cad0f63a3de0f640ca2ffb98588f62275e40ebf6127c979",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

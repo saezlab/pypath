@@ -1,0 +1,56 @@
+{
+  "resource": "signor_complexes",
+  "kind": "keyed_complex",
+  "note": "",
+  "v2_seconds": 0.2,
+  "legacy_seconds": 0.1,
+  "legacy_ids": 681,
+  "v2_ids": 690,
+  "both": 681,
+  "legacy_only": 0,
+  "v2_only": 9,
+  "both_with_nested_members": 49,
+  "both_flat_members_equal": 632,
+  "both_flat_members_differ": 0,
+  "samples": {
+    "legacy_only": [],
+    "v2_only": [
+      "SIGNOR-C205",
+      "SIGNOR-C206",
+      "SIGNOR-C311",
+      "SIGNOR-C322",
+      "SIGNOR-C323",
+      "SIGNOR-C325",
+      "SIGNOR-C339",
+      "SIGNOR-C474",
+      "SIGNOR-C85"
+    ],
+    "members_differ": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://signor.uniroma2.it/download_complexes.php",
+      "path": "/root/data/pypath-cache/signor/signor_complexes.txt",
+      "size": 50327,
+      "sha256": "e7ed4a0f39bbdcf2b69791b1b7335385292cbdd800f05c514ea947cc0f80abb6",
+      "mtime": "2026-09-03"
+    },
+    {
+      "side": "legacy",
+      "url": "https://signor.uniroma2.it/download_complexes.php",
+      "path": "/root/data/pypath-cache/signor/signor_protein_families.txt",
+      "size": 11694,
+      "sha256": "c3a91f7bd4371db4b795c5f50878724f31511d6f541684808921391d3cb25841",
+      "mtime": "2026-09-03"
+    },
+    {
+      "side": "legacy",
+      "url": "https://signor.uniroma2.it/download_complexes.php",
+      "path": "/root/data/pypath-cache/signor/signor_complexes.txt",
+      "size": 50327,
+      "sha256": "e7ed4a0f39bbdcf2b69791b1b7335385292cbdd800f05c514ea947cc0f80abb6",
+      "mtime": "2026-09-03"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+# A curator's changes to the list, with a reason for each.
+#
+# add:  an entity the list should hold, whatever the derivation finds.
+# veto: an entity the list must not hold in that class, whatever added it.
+#
+# Both take  {class: <class>, namespace: <namespace>, id: <identifier>, note: <why>}.
+add: []
+veto: []

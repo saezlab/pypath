@@ -1,0 +1,35 @@
+{
+  "resource": "havugimana",
+  "kind": "complex",
+  "note": "",
+  "v2_seconds": 0.0,
+  "legacy_seconds": 0.0,
+  "legacy_keys": 622,
+  "v2_keys": 622,
+  "both": 622,
+  "legacy_only": 0,
+  "v2_only": 0,
+  "samples": {
+    "legacy_only": [],
+    "v2_only": []
+  },
+  "legacy_only_with_all_members_in_v2": 0,
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/havugimana2012-mmc3.xls",
+      "path": "/root/data/pypath-cache/havugimana/havugimana2012-mmc3.xls",
+      "size": 614400,
+      "sha256": "346541d9e863229e022436791426583157484d525a9adeb2b628181b063fb26d",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/havugimana2012-mmc3.xls",
+      "path": "/root/data/pypath-cache/havugimana/havugimana2012-mmc3.xls",
+      "size": 614400,
+      "sha256": "346541d9e863229e022436791426583157484d525a9adeb2b628181b063fb26d",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "resource": "cellcall",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.2,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 1141,
+  "legacy_pairs_found_in_v2": 1141,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 1453,
+  "v2_relations_without_legacy_pair": 306,
+  "v2_relations_reversed_in_legacy": 1,
+  "v2_signs": {
+    "None": 1453
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [
+      "['CCL26', '10344'] -[interacts_with]-> ['CXCR3', '2833']",
+      "['CXCL13', '10563'] -[interacts_with]-> ['XCR1', '2829']",
+      "['CLDN16', '10686'] -[interacts_with]-> ['CLDN18', '51208']",
+      "['CGA', '1081'] -[interacts_with]-> ['DRD5', '1816']",
+      "['IL24', '11009'] -[interacts_with]-> ['IL23R', '149233']",
+      "['ADCYAP1', '116'] -[interacts_with]-> ['GIPR', '2696']",
+      "['CNTF', '1270'] -[interacts_with]-> ['LEPR', '3953']",
+      "['CLDN4', '1364'] -[interacts_with]-> ['CLDN2', '9075']",
+      "['CLDN3', '1365'] -[interacts_with]-> ['CLDN7', '1366']",
+      "['CLDN3', '1365'] -[interacts_with]-> ['CLDN15', '24146']",
+      "['CLDN3', '1365'] -[interacts_with]-> ['CLDN11', '5010']",
+      "['CLDN7', '1366'] -[interacts_with]-> ['CLDN3', '1365']",
+      "['CLDN7', '1366'] -[interacts_with]-> ['CLDN18', '51208']",
+      "['CLDN23', '137075'] -[interacts_with]-> ['CLDN19', '149461']",
+      "['CLDN23', '137075'] -[interacts_with]-> ['CLDN11', '5010']",
+      "['CLDN23', '137075'] -[interacts_with]-> ['CLDN2', '9075']",
+      "['CSF1', '1435'] -[interacts_with]-> ['EGFR', '1956']",
+      "['CSF1', '1435'] -[interacts_with]-> ['PDGFRA', '5156']",
+      "['CSF2', '1437'] -[interacts_with]-> ['IFNAR1', '3454']",
+      "['CSF2', '1437'] -[interacts_with]-> ['IFNAR2', '3455']",
+      "['CSF2', '1437'] -[interacts_with]-> ['IFNGR1', '3459']",
+      "['CSF2', '1437'] -[interacts_with]-> ['MPL', '4352']",
+      "['CSF3', '1440'] -[interacts_with]-> ['IL3RA', '3563']",
+      "['CSF3', '1440'] -[interacts_with]-> ['PDGFRB', '5159']",
+      "['CLDN19', '149461'] -[interacts_with]-> ['CLDN23', '137075']"
+    ],
+    "v2_reversed_in_legacy": [
+      "['CLDN2', '9075'] -[interacts_with]-> ['CLDN1', '9076']"
+    ],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs.txt",
+      "path": "/root/data/pypath-cache/cellcall/cellcall_new_ligand_receptor_TFs.txt",
+      "size": 1285426,
+      "sha256": "badcf63f9334b6129faaf0aee1cde0a9bdb3ffaf3ce74a9f3303bb3d5bb371c6",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "v2",
+      "url": "https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs_extended.txt",
+      "path": "/root/data/pypath-cache/cellcall/cellcall_new_ligand_receptor_TFs_extended.txt",
+      "size": 296865,
+      "sha256": "0398f238a5fc28b034d6cc406bc9be17c48392c82d138016b19b60afd7a34073",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs.txt",
+      "path": "/root/data/pypath-cache/cellcall/cellcall_new_ligand_receptor_TFs.txt",
+      "size": 1285426,
+      "sha256": "badcf63f9334b6129faaf0aee1cde0a9bdb3ffaf3ce74a9f3303bb3d5bb371c6",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

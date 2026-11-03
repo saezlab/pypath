@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omnipath-client"
+version = "0.1.0"
+description = "Install versioned OmniPath Parquet resources and query them locally"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "duckdb>=1.5,<3",
+    "httpx>=0.27,<1",
+    "platformdirs>=3",
+]
+
+[project.optional-dependencies]
+pandas = ["pandas>=2"]
+# The tests compare the macros with the API's queries and build fixtures with core.
+test = ["pytest>=8", "omnipath-core>=0.1.0,<0.2.0", "omnipath-api>=0.1.0,<0.2.0"]
+
+[project.scripts]
+omnipath-client = "omnipath_client.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["omnipath_client*"]
+
+[tool.setuptools.package-data]
+omnipath_client = ["py.typed", "sql/*.sql", "sql/contract.json"]
+
+[tool.uv.sources]
+omnipath-api = { workspace = true }
+omnipath-core = { workspace = true }

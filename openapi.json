@@ -1,0 +1,7316 @@
+{
+  "components": {
+    "schemas": {
+      "AdminJobRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "action": {
+            "enum": [
+              "export_hubs",
+              "build_resource",
+              "build_resources"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "batch_size": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Size"
+          },
+          "force_refresh": {
+            "default": false,
+            "title": "Force Refresh",
+            "type": "boolean"
+          },
+          "hubs": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hubs"
+          },
+          "include_dictionaries": {
+            "default": true,
+            "title": "Include Dictionaries",
+            "type": "boolean"
+          },
+          "max_records": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Records"
+          },
+          "parallel": {
+            "anyOf": [
+              {
+                "maximum": 32.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": 1,
+            "title": "Parallel"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "sources": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sources"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9]+(?:\\.[0-9]+)*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "versions": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Versions"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "title": "AdminJobRequest",
+        "type": "object"
+      },
+      "AdminJobResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "action": {
+            "title": "Action",
+            "type": "string"
+          },
+          "cancel_requested": {
+            "default": false,
+            "title": "Cancel Requested",
+            "type": "boolean"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "number"
+          },
+          "elapsed_seconds": {
+            "default": 0,
+            "title": "Elapsed Seconds",
+            "type": "number"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "log_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Log Path"
+          },
+          "logs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Logs",
+            "type": "array"
+          },
+          "params": {
+            "additionalProperties": true,
+            "title": "Params",
+            "type": "object"
+          },
+          "result": {
+            "title": "Result"
+          },
+          "seq": {
+            "default": 0,
+            "title": "Seq",
+            "type": "integer"
+          },
+          "stages": {
+            "items": {
+              "$ref": "#/components/schemas/AdminStage"
+            },
+            "title": "Stages",
+            "type": "array"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "done",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "status",
+          "created_at"
+        ],
+        "title": "AdminJobResponse",
+        "type": "object"
+      },
+      "AdminJobsResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "job": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AdminJobResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "jobs": {
+            "items": {
+              "$ref": "#/components/schemas/AdminJobResponse"
+            },
+            "title": "Jobs",
+            "type": "array"
+          }
+        },
+        "title": "AdminJobsResponse",
+        "type": "object"
+      },
+      "AdminStage": {
+        "additionalProperties": true,
+        "properties": {
+          "counts": {
+            "additionalProperties": true,
+            "title": "Counts",
+            "type": "object"
+          },
+          "current": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current"
+          },
+          "elapsed_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elapsed Seconds"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "message": {
+            "default": "",
+            "title": "Message",
+            "type": "string"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
+          }
+        },
+        "required": [
+          "id",
+          "status"
+        ],
+        "title": "AdminStage",
+        "type": "object"
+      },
+      "BuildManifest": {
+        "additionalProperties": true,
+        "properties": {
+          "buildId": {
+            "title": "Buildid",
+            "type": "string"
+          },
+          "builtAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Builtat"
+          },
+          "engine": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Engine"
+          },
+          "partialBuild": {
+            "default": false,
+            "title": "Partialbuild",
+            "type": "boolean"
+          },
+          "resources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Resources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "buildId"
+        ],
+        "title": "BuildManifest",
+        "type": "object"
+      },
+      "EntitiesResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "entities": {
+            "items": {
+              "$ref": "#/components/schemas/EntitySummary"
+            },
+            "title": "Entities",
+            "type": "array"
+          },
+          "matches": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Matches",
+            "type": "array"
+          }
+        },
+        "title": "EntitiesResponse",
+        "type": "object"
+      },
+      "EntityDetailsResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "annotations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Annotations",
+            "type": "array"
+          },
+          "entity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EntitySummary"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity"
+          },
+          "relationships": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Relationships",
+            "type": "array"
+          },
+          "relationshipsTotal": {
+            "default": 0,
+            "title": "Relationshipstotal",
+            "type": "integer"
+          },
+          "summary": {
+            "additionalProperties": true,
+            "title": "Summary",
+            "type": "object"
+          }
+        },
+        "title": "EntityDetailsResponse",
+        "type": "object"
+      },
+      "EntityExamplesResponse": {
+        "additionalProperties": true,
+        "description": "The explorer's landing examples, as entities and as the grouped view's cards.",
+        "properties": {
+          "entities": {
+            "items": {
+              "$ref": "#/components/schemas/EntitySummary"
+            },
+            "title": "Entities",
+            "type": "array"
+          },
+          "groups": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "kind": {
+            "default": "examples",
+            "title": "Kind",
+            "type": "string"
+          },
+          "nextCursor": {
+            "title": "Nextcursor",
+            "type": "null"
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
+          }
+        },
+        "title": "EntityExamplesResponse",
+        "type": "object"
+      },
+      "EntityFilterOptions": {
+        "additionalProperties": true,
+        "properties": {
+          "entity_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Entity Types",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "taxonomy_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Taxonomy Ids",
+            "type": "array"
+          }
+        },
+        "title": "EntityFilterOptions",
+        "type": "object"
+      },
+      "EntityGroupsRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cursor"
+          },
+          "detail_field": {
+            "anyOf": [
+              {
+                "enum": [
+                  "identifiers",
+                  "entityAttributes"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail Field"
+          },
+          "detail_limit": {
+            "default": 20,
+            "maximum": 500.0,
+            "minimum": 1.0,
+            "title": "Detail Limit",
+            "type": "integer"
+          },
+          "detail_offset": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Detail Offset",
+            "type": "integer"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/SearchFilters"
+          },
+          "group_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Key"
+          },
+          "include_details": {
+            "default": false,
+            "title": "Include Details",
+            "type": "boolean"
+          },
+          "limit": {
+            "default": 20,
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "member_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Member Cursor"
+          },
+          "member_limit": {
+            "default": 5,
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Member Limit",
+            "type": "integer"
+          },
+          "query": {
+            "default": "",
+            "title": "Query",
+            "type": "string"
+          },
+          "resources": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resources"
+          },
+          "strategy": {
+            "default": "chemical_connectivity",
+            "enum": [
+              "auto",
+              "chemical_connectivity",
+              "gene_reference"
+            ],
+            "title": "Strategy",
+            "type": "string"
+          }
+        },
+        "title": "EntityGroupsRequest",
+        "type": "object"
+      },
+      "EntityIdentifier": {
+        "additionalProperties": true,
+        "properties": {
+          "curie": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Curie"
+          },
+          "entityPk": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entitypk"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identifier"
+          },
+          "identifierType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identifiertype"
+          },
+          "isCanonical": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Iscanonical"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          }
+        },
+        "title": "EntityIdentifier",
+        "type": "object"
+      },
+      "EntityMolecularEvidence": {
+        "additionalProperties": true,
+        "properties": {
+          "annotations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Annotations",
+            "type": "array"
+          },
+          "dataset": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dataset"
+          },
+          "molecular_form": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MolecularForm"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "row_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Id"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "upstream_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstream Id"
+          }
+        },
+        "title": "EntityMolecularEvidence",
+        "type": "object"
+      },
+      "EntityPksRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "entityPks": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Entitypks",
+            "type": "array"
+          },
+          "pks": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Pks",
+            "type": "array"
+          }
+        },
+        "title": "EntityPksRequest",
+        "type": "object"
+      },
+      "EntityPublicIdsRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "publicIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Publicids",
+            "type": "array"
+          },
+          "public_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Public Ids",
+            "type": "array"
+          }
+        },
+        "title": "EntityPublicIdsRequest",
+        "type": "object"
+      },
+      "EntityResolveRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "identifiers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Identifiers",
+            "type": "array"
+          }
+        },
+        "title": "EntityResolveRequest",
+        "type": "object"
+      },
+      "EntitySearchCursor": {
+        "additionalProperties": true,
+        "description": "Where a search continues: its match phase and the entities already returned.",
+        "properties": {
+          "offset": {
+            "minimum": 0.0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "phase": {
+            "enum": [
+              "all",
+              "key",
+              "prefix",
+              "contains"
+            ],
+            "title": "Phase",
+            "type": "string"
+          },
+          "queryKey": {
+            "title": "Querykey",
+            "type": "string"
+          }
+        },
+        "required": [
+          "phase",
+          "offset",
+          "queryKey"
+        ],
+        "title": "EntitySearchCursor",
+        "type": "object"
+      },
+      "EntitySearchRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "cursor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EntitySearchCursor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "entity_types": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Types"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/SearchFilters"
+          },
+          "limit": {
+            "default": 20,
+            "maximum": 1000.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "q": {
+            "default": "",
+            "title": "Q",
+            "type": "string"
+          },
+          "query": {
+            "default": "",
+            "title": "Query",
+            "type": "string"
+          },
+          "resources": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resources"
+          },
+          "shape": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass 'web' for the explorer payload.",
+            "title": "Shape"
+          },
+          "taxon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taxon"
+          }
+        },
+        "title": "EntitySearchRequest",
+        "type": "object"
+      },
+      "EntitySearchResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count"
+          },
+          "elapsed_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elapsed Ms"
+          },
+          "entities": {
+            "items": {
+              "$ref": "#/components/schemas/EntitySummary"
+            },
+            "title": "Entities",
+            "type": "array"
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EntitySearchCursor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/EntitySearchRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
+          }
+        },
+        "title": "EntitySearchResponse",
+        "type": "object"
+      },
+      "EntitySearchRow": {
+        "additionalProperties": true,
+        "properties": {
+          "entity_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Key"
+          },
+          "entity_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Type"
+          },
+          "identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identifier"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "namespace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Namespace"
+          },
+          "taxon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taxon"
+          }
+        },
+        "title": "EntitySearchRow",
+        "type": "object"
+      },
+      "EntitySummary": {
+        "additionalProperties": true,
+        "properties": {
+          "annotations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Annotations",
+            "type": "array"
+          },
+          "annotationsTotal": {
+            "default": 0,
+            "title": "Annotationstotal",
+            "type": "integer"
+          },
+          "canonicalIdentifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Canonicalidentifier"
+          },
+          "canonicalIdentifierType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Canonicalidentifiertype"
+          },
+          "childCount": {
+            "default": 0,
+            "title": "Childcount",
+            "type": "integer"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "displayName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Displayname"
+          },
+          "entityAttributes": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entityattributes"
+          },
+          "entityFacetHints": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "title": "Entityfacethints",
+            "type": "object"
+          },
+          "entityPk": {
+            "title": "Entitypk",
+            "type": "string"
+          },
+          "entityType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entitytype"
+          },
+          "geneReferenceKeys": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Genereferencekeys",
+            "type": "array"
+          },
+          "hasHierarchy": {
+            "default": false,
+            "title": "Hashierarchy",
+            "type": "boolean"
+          },
+          "identifiers": {
+            "items": {
+              "$ref": "#/components/schemas/EntityIdentifier"
+            },
+            "title": "Identifiers",
+            "type": "array"
+          },
+          "identifiersTotal": {
+            "default": 0,
+            "title": "Identifierstotal",
+            "type": "integer"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "molecularEvidence": {
+            "items": {
+              "$ref": "#/components/schemas/EntityMolecularEvidence"
+            },
+            "title": "Molecularevidence",
+            "type": "array"
+          },
+          "molecularEvidenceTotal": {
+            "default": 0,
+            "title": "Molecularevidencetotal",
+            "type": "integer"
+          },
+          "ontologyHierarchy": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ontologyhierarchy"
+          },
+          "parentCount": {
+            "default": 0,
+            "title": "Parentcount",
+            "type": "integer"
+          },
+          "primaryIdentifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primaryidentifier"
+          },
+          "primaryNamespace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primarynamespace"
+          },
+          "referenceEntityKey": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Referenceentitykey"
+          },
+          "relationCount": {
+            "default": 0,
+            "title": "Relationcount",
+            "type": "integer"
+          },
+          "resolutionStatus": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolutionstatus"
+          },
+          "resources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Resources",
+            "type": "array"
+          },
+          "sourceCount": {
+            "default": 0,
+            "title": "Sourcecount",
+            "type": "integer"
+          },
+          "sourceEntityPks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sourceentitypks",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "taxon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taxon"
+          },
+          "taxonomyId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taxonomyid"
+          },
+          "taxonomyName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taxonomyname"
+          }
+        },
+        "required": [
+          "entityPk"
+        ],
+        "title": "EntitySummary",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "ExportRequest": {
+        "additionalProperties": true,
+        "description": "A relation slice, defined by filters (entity and group keys included).",
+        "properties": {
+          "filters": {
+            "$ref": "#/components/schemas/SearchFilters"
+          },
+          "format": {
+            "const": "parquet",
+            "default": "parquet",
+            "title": "Format",
+            "type": "string"
+          },
+          "limit": {
+            "default": 100000,
+            "maximum": 100000.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "resources": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resources"
+          }
+        },
+        "title": "ExportRequest",
+        "type": "object"
+      },
+      "FacetCount": {
+        "additionalProperties": true,
+        "properties": {
+          "facetCategory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facetcategory"
+          },
+          "facetLabel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facetlabel"
+          },
+          "facetName": {
+            "title": "Facetname",
+            "type": "string"
+          },
+          "facetValue": {
+            "title": "Facetvalue",
+            "type": "string"
+          },
+          "scopedCount": {
+            "default": 0,
+            "title": "Scopedcount",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "facetName",
+          "facetValue"
+        ],
+        "title": "FacetCount",
+        "type": "object"
+      },
+      "FacetOption": {
+        "additionalProperties": true,
+        "description": "A filter option the current selection leaves.",
+        "properties": {
+          "facetCategory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facetcategory"
+          },
+          "facetLabel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facetlabel"
+          },
+          "facetName": {
+            "title": "Facetname",
+            "type": "string"
+          },
+          "facetValue": {
+            "title": "Facetvalue",
+            "type": "string"
+          }
+        },
+        "required": [
+          "facetName",
+          "facetValue"
+        ],
+        "title": "FacetOption",
+        "type": "object"
+      },
+      "GroupRelationshipsRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "filters": {
+            "$ref": "#/components/schemas/SearchFilters"
+          },
+          "group_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Key"
+          },
+          "limit": {
+            "default": 50,
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "member_keys": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Member Keys",
+            "type": "array"
+          },
+          "offset": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "query": {
+            "default": "",
+            "title": "Query",
+            "type": "string"
+          },
+          "resources": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resources"
+          },
+          "strategy": {
+            "default": "chemical_connectivity",
+            "enum": [
+              "auto",
+              "chemical_connectivity",
+              "gene_reference"
+            ],
+            "title": "Strategy",
+            "type": "string"
+          }
+        },
+        "title": "GroupRelationshipsRequest",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "engine": {
+            "default": "duckdb-parquet",
+            "title": "Engine",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "MolecularCoordinateReference": {
+        "additionalProperties": true,
+        "properties": {
+          "coordinate_system": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coordinate System"
+          },
+          "identifier": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MolecularIdentifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "position_base": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position Base"
+          }
+        },
+        "title": "MolecularCoordinateReference",
+        "type": "object"
+      },
+      "MolecularForm": {
+        "additionalProperties": true,
+        "description": "Occurrence context. Missing fields assert neither canonical isoform nor wild type.",
+        "properties": {
+          "isoform_identifier": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MolecularIdentifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "modifications": {
+            "items": {
+              "$ref": "#/components/schemas/MolecularModification"
+            },
+            "title": "Modifications",
+            "type": "array"
+          },
+          "protein_entity_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protein Entity Key"
+          },
+          "regions": {
+            "items": {
+              "$ref": "#/components/schemas/MolecularRegion"
+            },
+            "title": "Regions",
+            "type": "array"
+          },
+          "sequence_identifiers": {
+            "items": {
+              "$ref": "#/components/schemas/MolecularIdentifier"
+            },
+            "title": "Sequence Identifiers",
+            "type": "array"
+          },
+          "transcript_entity_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transcript Entity Key"
+          },
+          "variants": {
+            "items": {
+              "$ref": "#/components/schemas/MolecularVariant"
+            },
+            "title": "Variants",
+            "type": "array"
+          }
+        },
+        "title": "MolecularForm",
+        "type": "object"
+      },
+      "MolecularIdentifier": {
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "ns": {
+            "title": "Ns",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ns",
+          "id"
+        ],
+        "title": "MolecularIdentifier",
+        "type": "object"
+      },
+      "MolecularModification": {
+        "additionalProperties": true,
+        "properties": {
+          "coordinate_reference": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MolecularCoordinateReference"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "end_position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Position"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "residue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Residue"
+          },
+          "term": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Term"
+          }
+        },
+        "title": "MolecularModification",
+        "type": "object"
+      },
+      "MolecularRegion": {
+        "additionalProperties": true,
+        "properties": {
+          "coordinate_reference": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MolecularCoordinateReference"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "end_position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Position"
+          },
+          "identifier": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MolecularIdentifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          }
+        },
+        "title": "MolecularRegion",
+        "type": "object"
+      },
+      "MolecularVariant": {
+        "additionalProperties": true,
+        "properties": {
+          "alternate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alternate"
+          },
+          "coordinate_reference": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MolecularCoordinateReference"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "end_position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Position"
+          },
+          "identifier": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MolecularIdentifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          }
+        },
+        "title": "MolecularVariant",
+        "type": "object"
+      },
+      "OntologyChild": {
+        "additionalProperties": true,
+        "properties": {
+          "entityPk": {
+            "title": "Entitypk",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "ontologyId": {
+            "title": "Ontologyid",
+            "type": "string"
+          },
+          "termId": {
+            "title": "Termid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "termId",
+          "name",
+          "label",
+          "entityPk",
+          "ontologyId"
+        ],
+        "title": "OntologyChild",
+        "type": "object"
+      },
+      "OntologyChildrenResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "children": {
+            "items": {
+              "$ref": "#/components/schemas/OntologyChild"
+            },
+            "title": "Children",
+            "type": "array"
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextcursor"
+          },
+          "termId": {
+            "title": "Termid",
+            "type": "string"
+          },
+          "total": {
+            "default": 0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "termId"
+        ],
+        "title": "OntologyChildrenResponse",
+        "type": "object"
+      },
+      "OntologySearchRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "entityPks": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Entitypks",
+            "type": "array"
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "maximum": 1000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit"
+          },
+          "offset": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Offset"
+          },
+          "ontologyIds": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ontologyids"
+          },
+          "prefixes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prefixes"
+          },
+          "q": {
+            "default": "",
+            "title": "Q",
+            "type": "string"
+          },
+          "query": {
+            "default": "",
+            "title": "Query",
+            "type": "string"
+          },
+          "selectionScope": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selectionscope"
+          },
+          "termIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Termids",
+            "type": "array"
+          }
+        },
+        "title": "OntologySearchRequest",
+        "type": "object"
+      },
+      "OntologyTerm": {
+        "additionalProperties": true,
+        "properties": {
+          "annotatedEntityCount": {
+            "default": 0,
+            "title": "Annotatedentitycount",
+            "type": "integer"
+          },
+          "annotatedItemCount": {
+            "default": 0,
+            "title": "Annotateditemcount",
+            "type": "integer"
+          },
+          "annotatedRelationCount": {
+            "default": 0,
+            "title": "Annotatedrelationcount",
+            "type": "integer"
+          },
+          "definition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Definition"
+          },
+          "entityPk": {
+            "title": "Entitypk",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "ontologyId": {
+            "title": "Ontologyid",
+            "type": "string"
+          },
+          "ontologyPrefix": {
+            "title": "Ontologyprefix",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "synonyms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Synonyms",
+            "type": "array"
+          },
+          "termId": {
+            "title": "Termid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entityPk",
+          "termId",
+          "ontologyPrefix",
+          "ontologyId"
+        ],
+        "title": "OntologyTerm",
+        "type": "object"
+      },
+      "OntologyTreeRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "ontologyId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ontologyid"
+          },
+          "ontology_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ontology Id"
+          },
+          "termIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Termids",
+            "type": "array"
+          },
+          "term_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Term Ids",
+            "type": "array"
+          }
+        },
+        "title": "OntologyTreeRequest",
+        "type": "object"
+      },
+      "QuerySlots": {
+        "additionalProperties": true,
+        "properties": {
+          "running": {
+            "title": "Running",
+            "type": "integer"
+          },
+          "slots": {
+            "title": "Slots",
+            "type": "integer"
+          },
+          "waiting": {
+            "title": "Waiting",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "running",
+          "slots",
+          "waiting"
+        ],
+        "title": "QuerySlots",
+        "type": "object"
+      },
+      "RelationEvidenceResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "annotations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Annotations",
+            "type": "array"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/RelationMolecularEvidence"
+            },
+            "title": "Evidence",
+            "type": "array"
+          }
+        },
+        "title": "RelationEvidenceResponse",
+        "type": "object"
+      },
+      "RelationFilterOptions": {
+        "additionalProperties": true,
+        "properties": {
+          "interactionTypes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Interactiontypes",
+            "type": "array"
+          },
+          "predicatesByCategory": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "title": "Predicatesbycategory",
+            "type": "object"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "title": "RelationFilterOptions",
+        "type": "object"
+      },
+      "RelationMolecularEvidence": {
+        "additionalProperties": true,
+        "properties": {
+          "dataset": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dataset"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "objectAttributes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Objectattributes",
+            "type": "array"
+          },
+          "objectMolecularForm": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MolecularForm"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "recordAttributes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Recordattributes",
+            "type": "array"
+          },
+          "relationEvidencePk": {
+            "title": "Relationevidencepk",
+            "type": "string"
+          },
+          "relationPk": {
+            "title": "Relationpk",
+            "type": "string"
+          },
+          "rowId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rowid"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "subjectAttributes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Subjectattributes",
+            "type": "array"
+          },
+          "subjectMolecularForm": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MolecularForm"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "upstreamId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstreamid"
+          }
+        },
+        "required": [
+          "relationPk",
+          "relationEvidencePk",
+          "source"
+        ],
+        "title": "RelationMolecularEvidence",
+        "type": "object"
+      },
+      "RelationPayloadsResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "payloads": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Payloads",
+            "type": "array"
+          },
+          "relationPk": {
+            "title": "Relationpk",
+            "type": "string"
+          }
+        },
+        "required": [
+          "relationPk"
+        ],
+        "title": "RelationPayloadsResponse",
+        "type": "object"
+      },
+      "RelationRow": {
+        "additionalProperties": true,
+        "properties": {
+          "objectEntity": {
+            "$ref": "#/components/schemas/EntitySummary"
+          },
+          "relation": {
+            "$ref": "#/components/schemas/RelationSummary"
+          },
+          "subjectEntity": {
+            "$ref": "#/components/schemas/EntitySummary"
+          }
+        },
+        "required": [
+          "relation",
+          "subjectEntity",
+          "objectEntity"
+        ],
+        "title": "RelationRow",
+        "type": "object"
+      },
+      "RelationSearchRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "filters": {
+            "$ref": "#/components/schemas/SearchFilters"
+          },
+          "limit": {
+            "default": 20,
+            "maximum": 1000.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "resources": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resources"
+          }
+        },
+        "title": "RelationSearchRequest",
+        "type": "object"
+      },
+      "RelationSearchResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "elapsed_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elapsed Ms"
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextcursor"
+          },
+          "relations": {
+            "items": {
+              "$ref": "#/components/schemas/RelationSummary"
+            },
+            "title": "Relations",
+            "type": "array"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/RelationRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "total": {
+            "default": 0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "title": "RelationSearchResponse",
+        "type": "object"
+      },
+      "RelationSummary": {
+        "additionalProperties": true,
+        "properties": {
+          "displayLabel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Displaylabel"
+          },
+          "evidenceCount": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidencecount"
+          },
+          "interactionClass": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interactionclass"
+          },
+          "isDirected": {
+            "default": false,
+            "title": "Isdirected",
+            "type": "boolean"
+          },
+          "objectEntityPk": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objectentitypk"
+          },
+          "objectReferenceEntityKey": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objectreferenceentitykey"
+          },
+          "participantTypes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Participanttypes",
+            "type": "array"
+          },
+          "predicate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Predicate"
+          },
+          "qualifiers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Effect qualifiers keyed by term: object_direction_qualifier, object_aspect_qualifier, causal_mechanism_qualifier.",
+            "title": "Qualifiers",
+            "type": "object"
+          },
+          "relationCategory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relationcategory"
+          },
+          "relationPk": {
+            "title": "Relationpk",
+            "type": "string"
+          },
+          "sign": {
+            "default": 0,
+            "title": "Sign",
+            "type": "integer"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "subjectEntityPk": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subjectentitypk"
+          },
+          "subjectReferenceEntityKey": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subjectreferenceentitykey"
+          }
+        },
+        "required": [
+          "relationPk"
+        ],
+        "title": "RelationSummary",
+        "type": "object"
+      },
+      "ResourceDownloadRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "include_evidence": {
+            "default": false,
+            "description": "Include evidence_payloads.parquet in the zip. Omitted by default.",
+            "title": "Include Evidence",
+            "type": "boolean"
+          },
+          "resource_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Resource Ids",
+            "type": "array"
+          }
+        },
+        "title": "ResourceDownloadRequest",
+        "type": "object"
+      },
+      "ResourceFile": {
+        "additionalProperties": true,
+        "properties": {
+          "columns": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "rows": {
+            "default": 0,
+            "title": "Rows",
+            "type": "integer"
+          },
+          "size_bytes": {
+            "default": 0,
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Immutable versioned artifact URL for downloads and remote Parquet queries, when static hosting is configured.",
+            "title": "Url"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "ResourceFile",
+        "type": "object"
+      },
+      "ResourceFilesResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceFile"
+            },
+            "title": "Files",
+            "type": "array"
+          },
+          "resource_id": {
+            "title": "Resource Id",
+            "type": "string"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "resource_id"
+        ],
+        "title": "ResourceFilesResponse",
+        "type": "object"
+      },
+      "ResourceLicenseUse": {
+        "additionalProperties": true,
+        "properties": {
+          "academic": {
+            "default": "unknown",
+            "enum": [
+              "allowed",
+              "requires_permission",
+              "not_allowed",
+              "unknown"
+            ],
+            "title": "Academic",
+            "type": "string"
+          },
+          "commercial": {
+            "default": "unknown",
+            "enum": [
+              "allowed",
+              "requires_permission",
+              "not_allowed",
+              "unknown"
+            ],
+            "title": "Commercial",
+            "type": "string"
+          }
+        },
+        "title": "ResourceLicenseUse",
+        "type": "object"
+      },
+      "ResourceRecord": {
+        "additionalProperties": true,
+        "properties": {
+          "dataset_subset": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dataset Subset"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "downloaded_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Downloaded At"
+          },
+          "entities_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entities Count"
+          },
+          "entity_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Count"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceFile"
+            },
+            "title": "Files",
+            "type": "array"
+          },
+          "input_module_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Module Url"
+          },
+          "interaction_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interaction Count"
+          },
+          "key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key"
+          },
+          "license": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License"
+          },
+          "license_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Url"
+          },
+          "license_use": {
+            "$ref": "#/components/schemas/ResourceLicenseUse"
+          },
+          "max_records": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Records"
+          },
+          "metadata_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata Source"
+          },
+          "queryable": {
+            "default": true,
+            "title": "Queryable",
+            "type": "boolean"
+          },
+          "relations_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relations Count"
+          },
+          "resolution_stats": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Stats"
+          },
+          "resource": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource"
+          },
+          "resource_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Id"
+          },
+          "resource_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Name"
+          },
+          "sample_build": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Build"
+          },
+          "tags": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceTag"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "total_size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Size Bytes"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website"
+          }
+        },
+        "title": "ResourceRecord",
+        "type": "object"
+      },
+      "ResourceTag": {
+        "additionalProperties": true,
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "dimension": {
+            "enum": [
+              "topic",
+              "content",
+              "knowledge_origin"
+            ],
+            "title": "Dimension",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "dimension",
+          "description"
+        ],
+        "title": "ResourceTag",
+        "type": "object"
+      },
+      "ResourceTopic": {
+        "additionalProperties": true,
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "resources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Resources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "description"
+        ],
+        "title": "ResourceTopic",
+        "type": "object"
+      },
+      "ResourceTopicsResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "topics": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceTopic"
+            },
+            "title": "Topics",
+            "type": "array"
+          }
+        },
+        "title": "ResourceTopicsResponse",
+        "type": "object"
+      },
+      "ResourcesResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "resources": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceRecord"
+            },
+            "title": "Resources",
+            "type": "array"
+          }
+        },
+        "title": "ResourcesResponse",
+        "type": "object"
+      },
+      "ScopedEntityFacetsRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "annotationTermIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Annotationtermids",
+            "type": "array"
+          },
+          "entityIds": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Entityids",
+            "type": "array"
+          },
+          "entityTypes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Entitytypes",
+            "type": "array"
+          },
+          "facetLimit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facetlimit"
+          },
+          "ncbi_tax_id": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Ncbi Tax Id",
+            "type": "array"
+          },
+          "query": {
+            "default": "",
+            "title": "Query",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "title": "ScopedEntityFacetsRequest",
+        "type": "object"
+      },
+      "ScopedRelationFacetsRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "annotationTermIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Annotationtermids",
+            "type": "array"
+          },
+          "causal_mechanism_qualifier": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Causal Mechanism Qualifier",
+            "type": "array"
+          },
+          "endpointMode": {
+            "anyOf": [
+              {
+                "enum": [
+                  "any",
+                  "both"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "any",
+            "title": "Endpointmode"
+          },
+          "entityIds": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Entityids",
+            "type": "array"
+          },
+          "entity_ids": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Entity Ids",
+            "type": "array"
+          },
+          "filters": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SearchFilters"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "interactionTypes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Interactiontypes",
+            "type": "array"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "enum": [
+                  "union",
+                  "intersection"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          },
+          "object_aspect_qualifier": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Object Aspect Qualifier",
+            "type": "array"
+          },
+          "object_direction_qualifier": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Object Direction Qualifier",
+            "type": "array"
+          },
+          "partnerTypes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Partnertypes",
+            "type": "array"
+          },
+          "predicates": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Predicates",
+            "type": "array"
+          },
+          "relation_categories": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Relation Categories",
+            "type": "array"
+          },
+          "resources": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resources"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "taxonomyIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Taxonomyids",
+            "type": "array"
+          },
+          "taxonomyLimit": {
+            "anyOf": [
+              {
+                "maximum": 10000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taxonomylimit"
+          },
+          "taxonomyQuery": {
+            "default": "",
+            "title": "Taxonomyquery",
+            "type": "string"
+          }
+        },
+        "title": "ScopedRelationFacetsRequest",
+        "type": "object"
+      },
+      "SearchFilters": {
+        "additionalProperties": true,
+        "description": "One internal filter contract, accepting historical wire aliases once.",
+        "properties": {
+          "annotation_term_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Annotation Term Ids",
+            "type": "array"
+          },
+          "causal_mechanism_qualifier": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Causal Mechanism Qualifier",
+            "type": "array"
+          },
+          "entity_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Entity Ids",
+            "type": "array"
+          },
+          "entity_pks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Entity Pks",
+            "type": "array"
+          },
+          "entity_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Entity Types",
+            "type": "array"
+          },
+          "gene_mode": {
+            "default": "any",
+            "enum": [
+              "any",
+              "both",
+              "source",
+              "source_only",
+              "target",
+              "target_only"
+            ],
+            "title": "Gene Mode",
+            "type": "string"
+          },
+          "interaction_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Interaction Types",
+            "type": "array"
+          },
+          "is_directed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Directed"
+          },
+          "isoform_identifiers": {
+            "description": "Exact namespace:id; unspecified forms do not match.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Isoform Identifiers",
+            "type": "array"
+          },
+          "min_evidence_count": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Evidence Count"
+          },
+          "molecular_endpoint_mode": {
+            "default": "any",
+            "enum": [
+              "any",
+              "both",
+              "source",
+              "target"
+            ],
+            "title": "Molecular Endpoint Mode",
+            "type": "string"
+          },
+          "object_aspect_qualifier": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Object Aspect Qualifier",
+            "type": "array"
+          },
+          "object_direction_qualifier": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Object Direction Qualifier",
+            "type": "array"
+          },
+          "partner_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Partner Types",
+            "type": "array"
+          },
+          "predicates": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Predicates",
+            "type": "array"
+          },
+          "protein_entity_keys": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Protein Entity Keys",
+            "type": "array"
+          },
+          "reference_entity_keys": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reference Entity Keys",
+            "type": "array"
+          },
+          "relation_categories": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Relation Categories",
+            "type": "array"
+          },
+          "scope_endpoint_mode": {
+            "default": "any",
+            "enum": [
+              "any",
+              "both",
+              "source",
+              "source_only",
+              "target",
+              "target_only"
+            ],
+            "title": "Scope Endpoint Mode",
+            "type": "string"
+          },
+          "scope_entity_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scope Entity Ids",
+            "type": "array"
+          },
+          "sign": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sign"
+          },
+          "signs": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Signs",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "taxonomy_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Taxonomy Ids",
+            "type": "array"
+          },
+          "transcript_entity_keys": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Transcript Entity Keys",
+            "type": "array"
+          }
+        },
+        "title": "SearchFilters",
+        "type": "object"
+      },
+      "SelectionScopeRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "annotationTermIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Annotationtermids",
+            "type": "array"
+          },
+          "entityPks": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Entitypks",
+            "type": "array"
+          },
+          "includeAssociatedEntities": {
+            "default": true,
+            "title": "Includeassociatedentities",
+            "type": "boolean"
+          },
+          "includeMembersParticipants": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Includemembersparticipants"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "enum": [
+                  "union",
+                  "intersection"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          }
+        },
+        "title": "SelectionScopeRequest",
+        "type": "object"
+      },
+      "SelectionScopeResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "criteriaCount": {
+            "default": 0,
+            "title": "Criteriacount",
+            "type": "integer"
+          },
+          "entityPks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Entitypks",
+            "type": "array"
+          },
+          "expandedEntityCount": {
+            "default": 0,
+            "title": "Expandedentitycount",
+            "type": "integer"
+          },
+          "ontologyTermIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Ontologytermids",
+            "type": "array"
+          },
+          "seedEntityPks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Seedentitypks",
+            "type": "array"
+          },
+          "termEntityPks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Termentitypks",
+            "type": "array"
+          }
+        },
+        "title": "SelectionScopeResponse",
+        "type": "object"
+      },
+      "ServingStatus": {
+        "additionalProperties": true,
+        "description": "Coarse serving load; ``state`` is ok, busy (every query slot in use, high load or\nslow responses) or queued (requests are waiting for a slot).",
+        "properties": {
+          "cpuLoad": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cpuload"
+          },
+          "medianResponseMs": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Medianresponsems"
+          },
+          "memory": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory"
+          },
+          "queries": {
+            "$ref": "#/components/schemas/QuerySlots"
+          },
+          "requestsLastMinute": {
+            "title": "Requestslastminute",
+            "type": "integer"
+          },
+          "state": {
+            "enum": [
+              "ok",
+              "busy",
+              "queued"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state",
+          "queries",
+          "requestsLastMinute"
+        ],
+        "title": "ServingStatus",
+        "type": "object"
+      },
+      "StatsEntityType": {
+        "additionalProperties": true,
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "entityType": {
+            "title": "Entitytype",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entityType",
+          "count"
+        ],
+        "title": "StatsEntityType",
+        "type": "object"
+      },
+      "StatsInteractionType": {
+        "additionalProperties": true,
+        "properties": {
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          },
+          "interactionClass": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interactionclass"
+          },
+          "interactionType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interactiontype"
+          }
+        },
+        "title": "StatsInteractionType",
+        "type": "object"
+      },
+      "StatsSource": {
+        "additionalProperties": true,
+        "properties": {
+          "associationCount": {
+            "default": 0,
+            "title": "Associationcount",
+            "type": "integer"
+          },
+          "entityCount": {
+            "default": 0,
+            "title": "Entitycount",
+            "type": "integer"
+          },
+          "full": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full"
+          },
+          "identifierCount": {
+            "default": 0,
+            "title": "Identifiercount",
+            "type": "integer"
+          },
+          "interactionCount": {
+            "default": 0,
+            "title": "Interactioncount",
+            "type": "integer"
+          },
+          "ontologyTermCount": {
+            "default": 0,
+            "title": "Ontologytermcount",
+            "type": "integer"
+          },
+          "short": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Short"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug"
+        ],
+        "title": "StatsSource",
+        "type": "object"
+      },
+      "TermsRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "termIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Termids",
+            "type": "array"
+          },
+          "term_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Term Ids",
+            "type": "array"
+          }
+        },
+        "title": "TermsRequest",
+        "type": "object"
+      },
+      "TermsResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "terms": {
+            "additionalProperties": true,
+            "title": "Terms",
+            "type": "object"
+          }
+        },
+        "title": "TermsResponse",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "REST API for querying OmniPath knowledge graphs directly from nested Parquet files via DuckDB. The Svelte explorer uses `/api/*` (and `/app-api/*` as an application alias). Interactive docs: `/api/docs`.",
+    "title": "OmniPath Parquet API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Root",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/admin/jobs": {
+      "get": {
+        "operationId": "admin_jobs_admin_jobs_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminJobsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Admin Jobs",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "operationId": "start_admin_job_admin_jobs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminJobRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminJobResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Start Admin Job",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/jobs/{job_id}": {
+      "get": {
+        "operationId": "get_admin_job_admin_jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminJobResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Admin Job",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/jobs/{job_id}/cancel": {
+      "post": {
+        "operationId": "cancel_admin_job_admin_jobs__job_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminJobResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Cancel Admin Job",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/jobs/{job_id}/events": {
+      "get": {
+        "operationId": "admin_job_events_admin_jobs__job_id__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Admin Job Events",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/logs/{kind}/{name}": {
+      "get": {
+        "operationId": "admin_read_log_admin_logs__kind___name__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "kind",
+            "required": true,
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Admin Read Log Admin Logs  Kind   Name  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Admin Read Log",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/releases": {
+      "post": {
+        "operationId": "publish_release_admin_releases_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Payload",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Publish Release Admin Releases Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Publish Release",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/resources/{resource}/versions/{version}": {
+      "delete": {
+        "operationId": "delete_admin_resource_version_admin_resources__resource__versions__version__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource",
+            "required": true,
+            "schema": {
+              "title": "Resource",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Delete Admin Resource Version Admin Resources  Resource  Versions  Version  Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Delete Admin Resource Version",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/resources/{resource}/{version}": {
+      "delete": {
+        "operationId": "delete_admin_resource_version_admin_resources__resource___version__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource",
+            "required": true,
+            "schema": {
+              "title": "Resource",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Delete Admin Resource Version Admin Resources  Resource   Version  Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Delete Admin Resource Version",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/sources": {
+      "get": {
+        "description": "Discoverable inputs_v2 sources (slow first call).",
+        "operationId": "admin_sources_admin_sources_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Admin Sources Admin Sources Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Admin Sources",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/status": {
+      "get": {
+        "description": "Resolver files, built resources, and the current admin job.",
+        "operationId": "admin_status_admin_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Admin Status Admin Status Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Admin Status",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/entities/by-pks": {
+      "post": {
+        "description": "Hydrate entities by primary key.",
+        "operationId": "entities_by_pks_entities_by_pks_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntityPksRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntitiesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Entities By Pks",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/by-public-ids": {
+      "post": {
+        "description": "Hydrate entities by public identifier.",
+        "operationId": "entities_by_public_ids_entities_by_public_ids_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntityPublicIdsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntitiesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Entities By Public Ids",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/examples": {
+      "get": {
+        "description": "Curated landing suggestions from the selected release; not a search page.",
+        "operationId": "entity_examples_entities_examples_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityExamplesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Entity Examples",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/filter-options": {
+      "get": {
+        "description": "Distinct entity types, sources, and taxa for explorer filters.",
+        "operationId": "entity_filter_options_entities_filter_options_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityFilterOptions"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Entity Filter Options",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/group-relationships": {
+      "post": {
+        "operationId": "group_relationships_entities_group_relationships_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupRelationshipsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Group Relationships",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/groups": {
+      "post": {
+        "description": "Group matching entities using an explicit grouping strategy.\n\nCounts and member pagination are scoped to the current query and filters.\nAuto groups chemicals by the first 14 InChIKey characters and biological\nentities by a shared gene reference, in one ordered page. Missing or\nconflicting references remain separate singleton results. Explicit gene\nreference and chemical connectivity strategies remain available.",
+        "operationId": "connectivity_groups_entities_groups_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntityGroupsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Connectivity Groups",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/resolve": {
+      "post": {
+        "description": "Resolve raw identifiers to canonical entities.",
+        "operationId": "resolve_entities_entities_resolve_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntityResolveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntitiesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Resolve Entities",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/scoped-facets": {
+      "post": {
+        "description": "Facet counts for the current entity selection.",
+        "operationId": "scoped_entity_facets_entities_scoped_facets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScopedEntityFacetsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FacetCount"
+                  },
+                  "title": "Response Scoped Entity Facets Entities Scoped Facets Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Scoped Entity Facets",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/search": {
+      "get": {
+        "description": "Autocomplete-style entity search used by GET callers.",
+        "operationId": "search_entities_get_entities_search_get",
+        "parameters": [
+          {
+            "description": "Identifier or label substring.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "default": "",
+              "description": "Identifier or label substring.",
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 1000,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "JSON object `{relationCount, entityPk}`.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "JSON object `{relationCount, entityPk}`.",
+              "title": "Cursor"
+            }
+          },
+          {
+            "description": "JSON object of search filters.",
+            "in": "query",
+            "name": "filters",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "JSON object of search filters.",
+              "title": "Filters"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntitySearchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Search Entities Get",
+        "tags": [
+          "entities"
+        ]
+      },
+      "post": {
+        "description": "Entity search with JSON filters, cursor pagination, and optional resource scope.",
+        "operationId": "search_entities_post_entities_search_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntitySearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntitySearchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Search Entities Post",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/{entity_id}": {
+      "get": {
+        "description": "Fetch one entity by its exact entity key. No identifier or text fallback.\n\n``detail_field`` pages one collection (identifiers or attributes) on its own.",
+        "operationId": "get_entity_entities__entity_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_id",
+            "required": true,
+            "schema": {
+              "title": "Entity Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "includeRelationships",
+            "required": false,
+            "schema": {
+              "default": true,
+              "title": "Includerelationships",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "detail_limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Detail Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "detail_offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Detail Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "detail_field",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "identifiers",
+                    "entityAttributes"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Detail Field"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityDetailsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Entity",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/{entity_id}/evidence": {
+      "get": {
+        "description": "A page of the entity's molecular evidence: where and how sources state it.",
+        "operationId": "entity_evidence_entities__entity_id__evidence_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_id",
+            "required": true,
+            "schema": {
+              "title": "Entity Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Entity Evidence",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/{entity_id}/molecular-context": {
+      "get": {
+        "operationId": "molecular_context_entities__entity_id__molecular_context_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_id",
+            "required": true,
+            "schema": {
+              "title": "Entity Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "view",
+            "required": false,
+            "schema": {
+              "default": "reference",
+              "enum": [
+                "reference",
+                "product"
+              ],
+              "title": "View",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "isoform_identifier",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Isoform Identifier"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Molecular Context",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/{entity_id}/relationships": {
+      "get": {
+        "operationId": "entity_relationships_entities__entity_id__relationships_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_id",
+            "required": true,
+            "schema": {
+              "title": "Entity Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Entity Relationships",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/export": {
+      "post": {
+        "description": "A filtered relation slice as Parquet: at most 100,000 relations, with their\nannotations and evidence.",
+        "operationId": "export_slice_export_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Export Slice",
+        "tags": [
+          "export"
+        ]
+      }
+    },
+    "/facets": {
+      "post": {
+        "description": "Facet payload for filtered relation searches.",
+        "operationId": "relation_facets_facets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScopedRelationFacetsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Relation facet counts",
+        "tags": [
+          "relations"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/ontology/children": {
+      "get": {
+        "description": "Direct child terms of an ontology term.",
+        "operationId": "ontology_children_ontology_children_get",
+        "parameters": [
+          {
+            "description": "Term identifier.",
+            "in": "query",
+            "name": "termId",
+            "required": false,
+            "schema": {
+              "default": "",
+              "description": "Term identifier.",
+              "title": "Termid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ontologyId",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ontologyid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 1000,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OntologyChildrenResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Ontology Children",
+        "tags": [
+          "ontology"
+        ]
+      }
+    },
+    "/ontology/entity-ids": {
+      "post": {
+        "operationId": "ontology_entity_ids_ontology_entity_ids_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OntologySearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "title": "Response Ontology Entity Ids Ontology Entity Ids Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Ontology Entity Ids",
+        "tags": [
+          "ontology"
+        ]
+      }
+    },
+    "/ontology/ontology-id-counts": {
+      "post": {
+        "operationId": "ontology_id_counts_ontology_ontology_id_counts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OntologySearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {},
+                  "title": "Response Ontology Id Counts Ontology Ontology Id Counts Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Ontology Id Counts",
+        "tags": [
+          "ontology"
+        ]
+      }
+    },
+    "/ontology/prefix-counts": {
+      "post": {
+        "operationId": "ontology_prefix_counts_ontology_prefix_counts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OntologySearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {},
+                  "title": "Response Ontology Prefix Counts Ontology Prefix Counts Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Ontology Prefix Counts",
+        "tags": [
+          "ontology"
+        ]
+      }
+    },
+    "/ontology/prefixes": {
+      "get": {
+        "operationId": "ontology_prefixes_ontology_prefixes_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "title": "Response Ontology Prefixes Ontology Prefixes Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Ontology Prefixes",
+        "tags": [
+          "ontology"
+        ]
+      }
+    },
+    "/ontology/scoped-search": {
+      "post": {
+        "operationId": "ontology_search_post_ontology_scoped_search_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OntologySearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {},
+                  "title": "Response Ontology Search Post Ontology Scoped Search Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Ontology Search Post",
+        "tags": [
+          "ontology"
+        ]
+      }
+    },
+    "/ontology/search": {
+      "get": {
+        "operationId": "ontology_search_get_ontology_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 24,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {},
+                  "title": "Response Ontology Search Get Ontology Search Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Ontology Search Get",
+        "tags": [
+          "ontology"
+        ]
+      },
+      "post": {
+        "operationId": "ontology_search_post_ontology_search_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OntologySearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OntologyTerm"
+                  },
+                  "title": "Response Ontology Search Post Ontology Search Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Ontology Search Post",
+        "tags": [
+          "ontology"
+        ]
+      }
+    },
+    "/ontology/source-counts": {
+      "post": {
+        "operationId": "ontology_source_counts_ontology_source_counts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OntologySearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {},
+                  "title": "Response Ontology Source Counts Ontology Source Counts Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Ontology Source Counts",
+        "tags": [
+          "ontology"
+        ]
+      }
+    },
+    "/ontology/tree": {
+      "post": {
+        "description": "Ancestor tree for one or more ontology terms.",
+        "operationId": "ontology_tree_ontology_tree_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OntologyTreeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Ontology Tree Ontology Tree Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Ontology Tree",
+        "tags": [
+          "ontology"
+        ]
+      }
+    },
+    "/relations/filter-options": {
+      "get": {
+        "description": "Predicate/source/type enumerations for the relation explorer.",
+        "operationId": "relation_filter_options_relations_filter_options_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelationFilterOptions"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Relation Filter Options",
+        "tags": [
+          "relations"
+        ]
+      }
+    },
+    "/relations/scoped-facets": {
+      "post": {
+        "description": "The relation filter options the selection and the other groups' filters leave.",
+        "operationId": "scoped_relation_facets_relations_scoped_facets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScopedRelationFacetsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FacetOption"
+                  },
+                  "title": "Response Scoped Relation Facets Relations Scoped Facets Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Scoped Relation Facets",
+        "tags": [
+          "relations"
+        ]
+      }
+    },
+    "/relations/search": {
+      "post": {
+        "description": "Filtered relation search with offset pagination.",
+        "operationId": "search_relations_relations_search_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RelationSearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelationSearchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Search Relations",
+        "tags": [
+          "relations"
+        ]
+      }
+    },
+    "/relations/{relation_pk}": {
+      "get": {
+        "description": "Fetch one relation plus hydrated endpoints.",
+        "operationId": "get_relation_relations__relation_pk__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "relation_pk",
+            "required": true,
+            "schema": {
+              "title": "Relation Pk",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Relation Relations  Relation Pk  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Relation",
+        "tags": [
+          "relations"
+        ]
+      }
+    },
+    "/relations/{relation_pk}/evidence": {
+      "get": {
+        "description": "Nested evidence and annotations for one relation.",
+        "operationId": "relation_evidence_relations__relation_pk__evidence_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "relation_pk",
+            "required": true,
+            "schema": {
+              "title": "Relation Pk",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "filters",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Filters"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelationEvidenceResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Relation Evidence",
+        "tags": [
+          "relations"
+        ]
+      }
+    },
+    "/relations/{relation_pk}/payloads": {
+      "get": {
+        "description": "Raw source payloads attached to a relation.",
+        "operationId": "relation_payloads_relations__relation_pk__payloads_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "relation_pk",
+            "required": true,
+            "schema": {
+              "title": "Relation Pk",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelationPayloadsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Relation Payloads",
+        "tags": [
+          "relations"
+        ]
+      }
+    },
+    "/releases": {
+      "get": {
+        "operationId": "list_releases_releases_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Releases Releases Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List Releases",
+        "tags": [
+          "resources"
+        ]
+      }
+    },
+    "/resources": {
+      "get": {
+        "description": "List indexed resources. `shape=svelte` returns the explorer catalog.",
+        "operationId": "list_resources_resources_get",
+        "parameters": [
+          {
+            "description": "Pass `svelte` for the explorer catalog shape.",
+            "in": "query",
+            "name": "shape",
+            "required": false,
+            "schema": {
+              "default": "web",
+              "description": "Pass `svelte` for the explorer catalog shape.",
+              "title": "Shape",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourcesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List Resources",
+        "tags": [
+          "resources"
+        ]
+      }
+    },
+    "/resources/download": {
+      "post": {
+        "description": "Zip parquet files for one or more resources. Evidence payloads are omitted unless requested.",
+        "operationId": "download_resources_resources_download_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourceDownloadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Download Resources",
+        "tags": [
+          "resources"
+        ]
+      }
+    },
+    "/resources/topics": {
+      "get": {
+        "description": "The biological topics of the release, each with the resources that have it.",
+        "operationId": "list_resource_topics_resources_topics_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceTopicsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List Resource Topics",
+        "tags": [
+          "resources"
+        ]
+      }
+    },
+    "/resources/{resource_id}/download": {
+      "get": {
+        "description": "Download resource parquet files as a zip. Evidence payloads are omitted unless requested.",
+        "operationId": "download_resource_resources__resource_id__download_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_id",
+            "required": true,
+            "schema": {
+              "title": "Resource Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Include evidence_payloads.parquet in the zip.",
+            "in": "query",
+            "name": "include_evidence",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "Include evidence_payloads.parquet in the zip.",
+              "title": "Include Evidence",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Download Resource",
+        "tags": [
+          "resources"
+        ]
+      }
+    },
+    "/resources/{resource_id}/files": {
+      "get": {
+        "description": "List downloadable parquet artifacts (and column schema) for a resource.",
+        "operationId": "list_resource_files_resources__resource_id__files_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_id",
+            "required": true,
+            "schema": {
+              "title": "Resource Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Include evidence_payloads.parquet in the listing.",
+            "in": "query",
+            "name": "include_evidence",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "Include evidence_payloads.parquet in the listing.",
+              "title": "Include Evidence",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceFilesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List Resource Files",
+        "tags": [
+          "resources"
+        ]
+      }
+    },
+    "/resources/{resource_id}/files/{filename}": {
+      "get": {
+        "description": "Download one parquet file from a resource release.",
+        "operationId": "download_resource_file_resources__resource_id__files__filename__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_id",
+            "required": true,
+            "schema": {
+              "title": "Resource Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "filename",
+            "required": true,
+            "schema": {
+              "title": "Filename",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Download Resource File",
+        "tags": [
+          "resources"
+        ]
+      }
+    },
+    "/selection/scope": {
+      "post": {
+        "description": "Expand the current explorer selection to associated entities.",
+        "operationId": "selection_scope_selection_scope_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectionScopeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectionScopeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Selection Scope",
+        "tags": [
+          "selection"
+        ]
+      }
+    },
+    "/stats/build-manifest": {
+      "get": {
+        "operationId": "stats_build_manifest_stats_build_manifest_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildManifest"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Stats Build Manifest",
+        "tags": [
+          "stats"
+        ]
+      }
+    },
+    "/stats/entity-types": {
+      "get": {
+        "operationId": "stats_entity_types_stats_entity_types_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StatsEntityType"
+                  },
+                  "title": "Response Stats Entity Types Stats Entity Types Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Stats Entity Types",
+        "tags": [
+          "stats"
+        ]
+      }
+    },
+    "/stats/interaction-types": {
+      "get": {
+        "operationId": "stats_interaction_types_stats_interaction_types_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StatsInteractionType"
+                  },
+                  "title": "Response Stats Interaction Types Stats Interaction Types Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Stats Interaction Types",
+        "tags": [
+          "stats"
+        ]
+      }
+    },
+    "/stats/sources": {
+      "get": {
+        "operationId": "stats_sources_stats_sources_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StatsSource"
+                  },
+                  "title": "Response Stats Sources Stats Sources Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Stats Sources",
+        "tags": [
+          "stats"
+        ]
+      }
+    },
+    "/status": {
+      "get": {
+        "description": "How busy the service is: query slots in use and waiting, the median response time\nof the last minute, and the container's CPU load and memory use (fractions).",
+        "operationId": "serving_status_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServingStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Serving Status",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/terms": {
+      "post": {
+        "description": "Batch lookup of ontology term metadata.",
+        "operationId": "terms_info_terms_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TermsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TermsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Terms Info",
+        "tags": [
+          "ontology"
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "description": "Liveness and engine identity.",
+      "name": "health"
+    },
+    {
+      "description": "Indexed Parquet resources and catalogs.",
+      "name": "resources"
+    },
+    {
+      "description": "Entity search, lookup, and facets.",
+      "name": "entities"
+    },
+    {
+      "description": "Relation search, evidence, and facets.",
+      "name": "relations"
+    },
+    {
+      "description": "Ontology navigation (partial on parquet serving).",
+      "name": "ontology"
+    },
+    {
+      "description": "Selection-scope expansion for the explorer.",
+      "name": "selection"
+    },
+    {
+      "description": "Aggregate counts for the resources dashboard.",
+      "name": "stats"
+    },
+    {
+      "description": "Binary slice export (Parquet, Arrow, CSV, JSON).",
+      "name": "export"
+    },
+    {
+      "description": "Inspect resolver/resources and trigger build jobs.",
+      "name": "admin"
+    }
+  ]
+}

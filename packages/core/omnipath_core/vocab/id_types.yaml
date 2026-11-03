@@ -1,0 +1,1180 @@
+# Unified registry of biological identifier types.
+# Each top-level key is our canonical short name.
+# Fields:
+#   label          — human-readable name
+#   entity_type    — protein | gene | transcript | small_molecule | mirna | probe
+#   curie_prefix   — Bioregistry CURIE prefix (omitted when none known)
+#   url_pattern    — optional URL template for a resolvable link; {$id} is the
+#                    identifier placeholder. Omit to derive the Bioregistry
+#                    resolver template from curie_prefix; set it to point at a
+#                    provider's native page instead.
+#   id_pattern     — optional regular expression a valid identifier matches
+#   backends       — mapping to backend-specific column names
+#   aliases        — alternative names that resolve to this type
+
+# ===================================================================
+# Protein identifiers
+# ===================================================================
+
+uniprot:
+  label: UniProt AC
+  entity_type: protein
+  curie_prefix: uniprot
+  id_pattern: '^([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2})$'
+  backends:
+    uniprot: accession
+    uploadlists: UniProtKB
+    uniprot_from: UniProtKB_AC-ID
+    uniprot_to: UniProtKB
+    ensembl: uniprotswissprot
+    oma: null
+    hmdb: uniprot_id
+    ramp: uniprot
+  aliases:
+    - uniprot_ac
+    - uniprotkb
+
+swissprot:
+  label: UniProt/SwissProt AC
+  entity_type: protein
+  curie_prefix: uniprot
+  backends:
+    uniprot: accession
+    uploadlists: UniProtKB
+    uniprot_from: UniProtKB_AC-ID
+    uniprot_to: UniProtKB-Swiss-Prot
+    ensembl: uniprotswissprot
+    oma: UniProtKB/SwissProt
+  aliases:
+    - swiss_prot
+    - uniprot_swissprot
+
+trembl:
+  label: UniProt/TrEMBL AC
+  entity_type: protein
+  curie_prefix: uniprot
+  backends:
+    uniprot: accession
+    uploadlists: UniProtKB
+    uniprot_from: UniProtKB_AC-ID
+    uniprot_to: UniProtKB
+    ensembl: uniprotsptrembl
+    oma: UniProtKB/TrEMBL
+  aliases:
+    - uniprot_trembl
+    - tr
+
+uniprot_entry:
+  label: UniProt entry name
+  entity_type: protein
+  curie_prefix: uniprot
+  backends:
+    uniprot: id
+    uploadlists: UniProtKB
+    uniprot_from: UniProtKB_AC-ID
+    uniprot_to: UniProtKB
+    oma: UniProtKB/SwissProt
+  aliases:
+    - uniprot_id
+    - entry_name
+
+uniprot-sec:
+  label: UniProt secondary AC
+  entity_type: protein
+  curie_prefix: uniprot
+  backends: {}
+  aliases:
+    - uniprot_sec
+    - uniprot_secondary
+
+uniprot-pri:
+  label: UniProt primary AC
+  entity_type: protein
+  curie_prefix: uniprot
+  backends: {}
+  aliases:
+    - uniprot_pri
+    - uniprot_primary
+
+# Deleted UniProt accessions (007 US2 deprecated-ID recovery): a marker id_type.
+# Rows are self-referential (source_id = target_id = the deleted AC) so the recovery
+# stage can report a deprecated AC as explicitly *deleted* rather than empty.
+uniprot-deleted:
+  label: UniProt deleted AC
+  entity_type: protein
+  curie_prefix: uniprot
+  backends: {}
+  aliases:
+    - uniprot_deleted
+
+protein_name:
+  label: Protein name
+  entity_type: protein
+  backends:
+    uniprot: protein_name
+  aliases:
+    - protein_names
+
+refseqp:
+  label: RefSeq protein
+  entity_type: protein
+  curie_prefix: refseq
+  backends:
+    uniprot: xref_refseq
+    uploadlists: RefSeq_Protein
+  aliases:
+    - refseq_protein
+    - refseq_prot
+
+ncbiprotein:
+  label: NCBI protein
+  entity_type: protein
+  curie_prefix: ncbiprotein
+  backends:
+    ramp: ncbiprotein
+  aliases:
+    - ncbi_protein
+
+pir:
+  label: PIR
+  entity_type: protein
+  backends:
+    uniprot: xref_pir
+    uploadlists: PIR
+  aliases: []
+
+pdb:
+  label: PDB
+  entity_type: protein
+  curie_prefix: pdb
+  backends:
+    uniprot: xref_pdb
+    uploadlists: PDB
+    hmdb: pbd_id
+    ensembl: pbd
+  aliases:
+    - pbd
+
+ipi:
+  label: IPI
+  entity_type: protein
+  backends: {}
+  aliases:
+    - ipi_id
+
+# ===================================================================
+# Gene identifiers
+# ===================================================================
+
+genesymbol:
+  label: Gene Symbol
+  entity_type: gene
+  curie_prefix: hgnc.symbol
+  backends:
+    uniprot: gene_primary
+    uploadlists: Gene_Name
+    ensembl: external_gene_name
+    ramp: gene_symbol
+  aliases:
+    - gene_symbol
+    - gene_name
+    - genesymbol_primary
+
+genesymbol-syn:
+  label: Gene Symbol synonym
+  entity_type: gene
+  curie_prefix: hgnc.symbol
+  backends:
+    uniprot: gene_synonym
+    ensembl: external_synonym
+  aliases:
+    - genesymbol_syn
+    - gene_synonym
+
+genesymbol_uniprot:
+  label: Gene Symbol (UniProt)
+  entity_type: gene
+  curie_prefix: hgnc.symbol
+  backends:
+    ensembl: uniprot_gn_symbol
+  aliases: []
+
+hgnc:
+  label: HGNC ID
+  entity_type: gene
+  curie_prefix: hgnc
+  backends:
+    uniprot: xref_hgnc
+    uploadlists: HGNC
+    hmdb: hgnc_id
+  aliases:
+    - hgnc_id
+
+hgnc_symbol:
+  label: HGNC symbol
+  entity_type: gene
+  curie_prefix: hgnc.symbol
+  backends:
+    ensembl: hgnc_symbol
+  aliases: []
+
+entrez:
+  label: NCBI Gene / Entrez
+  entity_type: gene
+  curie_prefix: ncbigene
+  backends:
+    uniprot: xref_geneid
+    uploadlists: GeneID
+    oma: EntrezGene
+    ramp: entrez
+  aliases:
+    - entrezgene
+    - geneid
+    - ncbi_gene
+    - ncbigene
+    - gene_id
+
+# Retired NCBI Gene (Entrez) ids (007 US2). gene_history.gz: discontinued GeneID ->
+# current GeneID it was merged into. A retired id with no successor is stored
+# self-referentially (source_id = target_id) to mark it explicitly discontinued.
+entrez-history:
+  label: NCBI Gene history (retired Entrez)
+  entity_type: gene
+  curie_prefix: ncbigene
+  backends: {}
+  aliases:
+    - entrez_history
+    - gene_history
+
+kegg_gene:
+  label: KEGG gene
+  entity_type: gene
+  curie_prefix: kegg.genes
+  backends: {}
+  aliases:
+    - kegg_genes
+    - kegggene
+
+gi:
+  label: GI number
+  entity_type: gene
+  backends:
+    uploadlists: GI_number
+  aliases:
+    - gi_number
+
+wikigene_name:
+  label: WikiGene name
+  entity_type: gene
+  backends:
+    ensembl: wikigene_name
+  aliases:
+    - wikigene
+
+genecard:
+  label: GeneCards
+  entity_type: gene
+  backends:
+    hmdb: genecard_id
+  aliases:
+    - genecards
+    - genecard_id
+
+geneatlas:
+  label: Gene Atlas
+  entity_type: gene
+  backends:
+    hmdb: geneatlas_id
+  aliases:
+    - geneatlas_id
+
+gene_desc:
+  label: Gene description
+  entity_type: gene
+  backends:
+    ensembl: description
+  aliases:
+    - gene_description
+
+# ===================================================================
+# Ensembl identifiers
+# ===================================================================
+
+ensembl:
+  label: Ensembl gene ID
+  entity_type: gene
+  curie_prefix: ensembl
+  backends:
+    uploadlists: Ensembl
+    ensembl: ensembl_gene_id
+    oma: Ensembl Gene
+    ramp: ensembl
+  aliases:
+    - ensembl_gene
+    - ensembl_gene_id
+
+ensg:
+  label: Ensembl gene ID
+  entity_type: gene
+  curie_prefix: ensembl
+  backends:
+    uploadlists: Ensembl
+    ensembl: ensembl_gene_id
+    oma: Ensembl Gene
+    ramp: ensembl
+  aliases:
+    - ensembl_gene_id_alt
+
+# Retired Ensembl gene ids (007 US2). Ensembl ID-history: an old/retired ENSG ->
+# its closest current ENSG. Used only by the deprecated-ID recovery stage.
+ensembl-history:
+  label: Ensembl gene ID history (retired ENSG)
+  entity_type: gene
+  curie_prefix: ensembl
+  backends: {}
+  aliases:
+    - ensembl_history
+    - ensg_history
+
+ensp:
+  label: Ensembl protein ID
+  entity_type: protein
+  curie_prefix: ensembl
+  backends:
+    uploadlists: Ensembl_Protein
+    ensembl: ensembl_peptide_id
+  aliases:
+    - ensembl_protein
+    - ensembl_peptide_id
+
+enst:
+  label: Ensembl transcript ID
+  entity_type: transcript
+  curie_prefix: ensembl
+  backends:
+    uniprot: xref_ensembl
+    uploadlists: Ensembl_Transcript
+    ensembl: ensembl_transcript_id
+  aliases:
+    - ensembl_transcript
+    - ensembl_transcript_id
+
+ensgg:
+  label: Ensembl Genomes gene
+  entity_type: gene
+  curie_prefix: ensembl
+  backends:
+    uploadlists: Ensembl_Genomes
+    ensembl: ensembl_gene_id
+  aliases:
+    - ensembl_genomes
+
+ensgp:
+  label: Ensembl Genomes protein
+  entity_type: protein
+  curie_prefix: ensembl
+  backends:
+    uploadlists: Ensembl_Genomes_Protein
+    ensembl: ensembl_peptide_id
+  aliases:
+    - ensembl_genomes_protein
+
+ensgt:
+  label: Ensembl Genomes transcript
+  entity_type: transcript
+  curie_prefix: ensembl
+  backends:
+    uploadlists: Ensembl_Genomes_Transcript
+    ensembl: ensembl_transcript_id
+  aliases:
+    - ensembl_genomes_transcript
+
+transcript_name:
+  label: Transcript name
+  entity_type: transcript
+  backends:
+    ensembl: external_transcript_name
+  aliases:
+    - hgnc_trans_name
+
+# ===================================================================
+# Nucleotide / sequence identifiers
+# ===================================================================
+
+embl:
+  label: EMBL / GenBank / DDBJ
+  entity_type: gene
+  curie_prefix: insdc
+  backends:
+    uniprot: xref_embl
+    uploadlists: EMBL-GenBank-DDBJ
+  aliases:
+    - genbank
+    - ddbj
+    - ena
+
+embl_id:
+  label: EMBL CDS
+  entity_type: gene
+  backends:
+    uploadlists: EMBL-GenBank-DDBJ_CDS
+  aliases:
+    - embl_cds
+
+refseqn:
+  label: RefSeq nucleotide
+  entity_type: transcript
+  curie_prefix: refseq
+  backends:
+    uploadlists: RefSeq_Nucleotide
+  aliases:
+    - refseq_nucleotide
+    - refseq_mrna
+
+refseq:
+  label: RefSeq
+  entity_type: protein
+  curie_prefix: refseq
+  backends:
+    oma: RefSeq
+  aliases:
+    - refseq_id
+
+ccds:
+  label: CCDS
+  entity_type: transcript
+  curie_prefix: ccds
+  backends:
+    uniprot: xref_ccds
+  aliases:
+    - ccds_id
+
+genbank_gene:
+  label: GenBank gene
+  entity_type: gene
+  curie_prefix: insdc
+  backends:
+    hmdb: genbank_gene_id
+  aliases:
+    - genbank_gene_id
+
+genbank_protein:
+  label: GenBank protein
+  entity_type: protein
+  curie_prefix: insdc
+  backends:
+    hmdb: genbank_protein_id
+  aliases:
+    - genbank_protein_id
+
+rnacentral:
+  label: RNAcentral
+  entity_type: transcript
+  curie_prefix: rnacentral
+  backends:
+    ensembl: rnacentral
+  aliases: []
+
+# ===================================================================
+# InterPro
+# ===================================================================
+
+ipro:
+  label: InterPro
+  entity_type: protein
+  curie_prefix: interpro
+  backends:
+    ensembl: interpro
+  aliases:
+    - interpro
+
+ipro_desc:
+  label: InterPro description
+  entity_type: protein
+  backends:
+    ensembl: interpro_description
+  aliases:
+    - interpro_description
+
+ipro_sdesc:
+  label: InterPro short description
+  entity_type: protein
+  backends:
+    ensembl: interpro_short_description
+  aliases:
+    - interpro_short_description
+
+# ===================================================================
+# Small molecule identifiers
+# ===================================================================
+
+hmdb:
+  label: HMDB
+  entity_type: small_molecule
+  curie_prefix: hmdb
+  backends:
+    hmdb: accession
+    chalmers_gem: metHMDBID
+    metanetx: hmdb
+    ramp: hmdb
+  aliases:
+    - hmdb_id
+
+chebi:
+  label: ChEBI
+  entity_type: small_molecule
+  curie_prefix: chebi
+  backends:
+    hmdb: chebi_id
+    chebi: chebi_id
+    chalmers_gem: metChEBIID
+    metanetx: chebi
+    ramp: chebi
+    kegg_compound: chebi
+  aliases:
+    - chebi_id
+
+pubchem:
+  label: PubChem Compound
+  entity_type: small_molecule
+  curie_prefix: pubchem.compound
+  backends:
+    hmdb: pubchem_compound_id
+    pubchem: cid
+    chalmers_gem: metPubChemID
+    ramp: pubchem
+  aliases:
+    - pubchem_compound
+    - pubchem_cid
+    - pubchem_compound_id
+
+kegg:
+  label: KEGG Compound
+  entity_type: small_molecule
+  curie_prefix: kegg.compound
+  backends:
+    hmdb: kegg_id
+    chalmers_gem: metKEGGID
+    metanetx: kegg
+    ramp: kegg
+    kegg_compound: kegg
+  aliases:
+    - kegg_id
+    - kegg_compound
+
+cas:
+  label: CAS registry number
+  entity_type: small_molecule
+  curie_prefix: cas
+  backends:
+    hmdb: cas_registry_number
+    ramp: CAS
+  aliases:
+    - cas_registry_number
+    - cas_number
+    - cas_id
+
+drugbank:
+  label: DrugBank
+  entity_type: small_molecule
+  curie_prefix: drugbank
+  backends:
+    hmdb: drugbank_id
+  aliases:
+    - drugbank_id
+
+lipidmaps:
+  label: LIPID MAPS
+  entity_type: small_molecule
+  curie_prefix: lipidmaps
+  backends:
+    lipidmaps: LM_ID
+    chalmers_gem: metLipidMapsID
+    metanetx: lipidmaps
+    ramp: LIPIDMAPS
+  aliases:
+    - lipid_maps
+    - lm_id
+
+chemspider:
+  label: ChemSpider
+  entity_type: small_molecule
+  curie_prefix: chemspider
+  backends:
+    hmdb: chemspider_id
+    ramp: chemspider
+  aliases:
+    - chemspider_id
+
+inchi:
+  label: InChI
+  entity_type: small_molecule
+  curie_prefix: inchi
+  backends:
+    hmdb: inchi
+    chebi: inchi
+    chembl: standard_inchi
+    lipidmaps: INCHI
+    pubchem: inchi
+    swisslipids: InChI (pH7.3)
+  aliases: []
+
+inchikey:
+  label: InChIKey
+  entity_type: small_molecule
+  curie_prefix: inchikey
+  backends:
+    hmdb: inchikey
+    chebi: inchikey
+    chembl: standard_inchi_key
+    lipidmaps: INCHI_KEY
+    pubchem: inchikey
+    swisslipids: InChI key (pH7.3)
+  aliases: []
+
+smiles:
+  label: SMILES
+  entity_type: small_molecule
+  backends:
+    hmdb: smiles
+    chebi: smiles
+    chembl: canonical_smiles
+    lipidmaps: SMILES
+    swisslipids: SMILES (pH7.3)
+  aliases: []
+
+name:
+  label: Name
+  entity_type: small_molecule
+  backends:
+    chebi: name
+    chembl: pref_name
+    hmdb: name
+    kegg_compound: name
+  aliases:
+    - compound_name
+    - primary_name
+
+iupac:
+  label: IUPAC name
+  entity_type: small_molecule
+  backends:
+    hmdb: iupac_name
+  aliases:
+    - iupac_name
+
+traditional_iupac:
+  label: Traditional IUPAC name
+  entity_type: small_molecule
+  backends:
+    hmdb: traditional_iupac
+  aliases: []
+
+foodb:
+  label: FooDB
+  entity_type: small_molecule
+  backends:
+    hmdb: foodb_id
+  aliases:
+    - foodb_id
+
+phenol_explorer:
+  label: Phenol-Explorer
+  entity_type: small_molecule
+  backends:
+    hmdb: phenol_explorer_compound_id
+  aliases:
+    - phenolexplorer
+    - phenol_explorer_cid
+
+knapsack:
+  label: KNApSAcK
+  entity_type: small_molecule
+  backends:
+    hmdb: knapsack_id
+  aliases:
+    - knapsack_id
+
+biocyc:
+  label: BioCyc
+  entity_type: small_molecule
+  backends:
+    hmdb: biocyc_id
+  aliases:
+    - biocyc_id
+
+bigg:
+  label: BiGG
+  entity_type: small_molecule
+  backends:
+    hmdb: bigg_id
+    chalmers_gem: metBiGGID
+    metanetx: bigg
+  aliases:
+    - bigg_id
+
+wikipedia:
+  label: Wikipedia
+  entity_type: small_molecule
+  backends:
+    hmdb: wikipedia_id
+  aliases:
+    - wikipedia_id
+
+metlin:
+  label: METLIN
+  entity_type: small_molecule
+  backends:
+    hmdb: metlin_id
+  aliases:
+    - metlin_id
+
+vmh:
+  label: VMH
+  entity_type: small_molecule
+  backends:
+    hmdb: vmh_id
+  aliases:
+    - vmh_id
+
+fbonto:
+  label: FoodB ontology
+  entity_type: small_molecule
+  backends:
+    hmdb: fbonto_id
+  aliases:
+    - fbonto_id
+
+synonym:
+  label: Synonym
+  entity_type: small_molecule
+  backends:
+    hmdb: synonyms
+    chebi: synonyms
+    chembl: synonyms
+  aliases:
+    - synonyms
+
+wikidata:
+  label: Wikidata
+  entity_type: small_molecule
+  curie_prefix: wikidata
+  backends:
+    ramp: wikidata
+  aliases:
+    - wikidata_id
+
+swisslipids:
+  label: SwissLipids
+  entity_type: small_molecule
+  curie_prefix: swisslipids
+  backends:
+    swisslipids: Lipid ID
+    ramp: swisslipids
+  aliases:
+    - swiss_lipids
+
+lipidbank:
+  label: LipidBank
+  entity_type: small_molecule
+  backends:
+    ramp: lipidbank
+  aliases: []
+
+plantfa:
+  label: PlantFA
+  entity_type: small_molecule
+  backends:
+    ramp: plantfa
+  aliases: []
+
+kegg_glycan:
+  label: KEGG Glycan
+  entity_type: small_molecule
+  curie_prefix: kegg.glycan
+  backends:
+    ramp: kegg_glycan
+  aliases: []
+
+polymer:
+  label: Polymer
+  entity_type: small_molecule
+  backends:
+    ramp: polymer
+  aliases: []
+
+# ===================================================================
+# Metabolic atlas / GEM identifiers
+# ===================================================================
+
+metabolicatlas:
+  label: Metabolic Atlas
+  entity_type: small_molecule
+  backends:
+    chalmers_gem: metsNoComp
+  aliases:
+    - metabolic_atlas
+
+metabolicatlas_comp:
+  label: Metabolic Atlas (with compartment)
+  entity_type: small_molecule
+  backends:
+    chalmers_gem: mets
+  aliases:
+    - metabolic_atlas_comp
+
+ehmn:
+  label: EHMN
+  entity_type: small_molecule
+  backends:
+    chalmers_gem: metEHMNID
+  aliases:
+    - ehmn_id
+
+hepatonet:
+  label: HepatoNET
+  entity_type: small_molecule
+  backends:
+    chalmers_gem: metHepatoNET1ID
+  aliases:
+    - hepatonet_id
+    - hepatonet1
+
+recon3d:
+  label: Recon3D
+  entity_type: small_molecule
+  backends:
+    chalmers_gem: metRecon3DID
+  aliases:
+    - recon3d_id
+
+metanetx:
+  label: MetaNetX
+  entity_type: small_molecule
+  curie_prefix: metanetx.chemical
+  backends:
+    chalmers_gem: metMetaNetXID
+    metanetx: metanetx
+  aliases:
+    - metanetx_id
+
+hmr2:
+  label: HMR2
+  entity_type: small_molecule
+  backends:
+    chalmers_gem: metHMR2ID
+  aliases:
+    - hmr2_id
+
+# ===================================================================
+# Reaction identifiers
+# ===================================================================
+
+rhea:
+  label: Rhea
+  entity_type: small_molecule
+  curie_prefix: rhea
+  backends:
+    ramp: rhea-comp
+  aliases:
+    - rhea_comp
+
+brenda:
+  label: BRENDA
+  entity_type: protein
+  curie_prefix: brenda
+  backends:
+    ramp: brenda
+  aliases: []
+
+ec:
+  label: Enzyme Commission number
+  entity_type: protein
+  curie_prefix: eccode
+  backends: {}
+  aliases:
+    - ec_number
+    - enzyme_commission
+
+# ===================================================================
+# OMA identifiers
+# ===================================================================
+
+oma:
+  label: OMA
+  entity_type: protein
+  backends:
+    oma: OMA
+  aliases:
+    - oma_id
+
+source:
+  label: OMA source
+  entity_type: protein
+  backends:
+    oma: SourceID
+  aliases:
+    - oma_source
+
+source_ac:
+  label: OMA source AC
+  entity_type: protein
+  backends:
+    oma: SourceAC
+  aliases:
+    - oma_source_ac
+
+# ===================================================================
+# RaMP identifiers
+# ===================================================================
+
+en:
+  label: EN
+  entity_type: gene
+  backends:
+    ramp: EN
+  aliases: []
+
+# ===================================================================
+# Model organism database identifiers
+# ===================================================================
+
+flybase:
+  label: FlyBase
+  entity_type: gene
+  curie_prefix: flybase
+  backends:
+    uniprot: xref_flybase
+  aliases:
+    - flybase_id
+
+wormbase:
+  label: WormBase
+  entity_type: gene
+  curie_prefix: wormbase
+  backends:
+    uniprot: xref_wormbase
+  aliases:
+    - wormbase_id
+
+zfin:
+  label: ZFIN
+  entity_type: gene
+  curie_prefix: zfin
+  backends:
+    uniprot: xref_zfin
+  aliases:
+    - zfin_id
+
+xenbase:
+  label: Xenbase
+  entity_type: gene
+  curie_prefix: xenbase
+  backends:
+    uniprot: xref_xenbase
+  aliases:
+    - xenbase_id
+
+# ===================================================================
+# miRNA identifiers
+# ===================================================================
+
+mir-pre:
+  label: miRBase precursor
+  entity_type: mirna
+  curie_prefix: mirbase
+  backends:
+    mirbase: mir-pre
+  aliases:
+    - mir_pre
+    - mirbase_precursor
+
+mir-mat-name:
+  label: miRBase mature name
+  entity_type: mirna
+  curie_prefix: mirbase
+  backends:
+    mirbase: mir-mat-name
+  aliases:
+    - mir_mat_name
+    - mirbase_mature_name
+    - mirbase_mature
+
+mir-name:
+  label: miRBase name
+  entity_type: mirna
+  curie_prefix: mirbase
+  backends:
+    mirbase: mir-name
+  aliases:
+    - mir_name
+    - mirbase_name
+
+# ===================================================================
+# Microarray probe identifiers
+# ===================================================================
+
+affy:
+  label: Affymetrix
+  entity_type: probe
+  backends: {}
+  aliases:
+    - affymetrix
+    - affy_id
+
+illumina:
+  label: Illumina
+  entity_type: probe
+  backends: {}
+  aliases:
+    - illumina_id
+
+agilent:
+  label: Agilent
+  entity_type: probe
+  backends: {}
+  aliases:
+    - agilent_id
+
+codelink:
+  label: CodeLink
+  entity_type: probe
+  backends: {}
+  aliases:
+    - codelink_id
+
+phalanx:
+  label: Phalanx
+  entity_type: probe
+  backends: {}
+  aliases:
+    - phalanx_id
+
+mirbase:
+  label: miRBase Accession
+  entity_type: mirna
+  curie_prefix: mirbase
+  backends:
+    mirbase: mirbase
+  aliases:
+    - mirbase_ac
+    - mirbase_accession
+
+chembl:
+  label: ChEMBL ID
+  entity_type: small_molecule
+  curie_prefix: chembl.compound
+  backends:
+    unichem: chembl
+    chembl: chembl_id
+  aliases:
+    - chembl_id
+    - chembl_compound
+
+# ===================================================================
+# UniChem sources (auto-discovery baseline)
+# ===================================================================
+
+rscb_pdb:
+  label: RSCB PDB
+  entity_type: small_molecule
+  backends:
+    unichem: rscb_pdb
+  aliases:
+    - rscb_pdb_id
+
+guide_to_pharmacology:
+  label: Guide to Pharmacology
+  entity_type: small_molecule
+  curie_prefix: gtopdb
+  backends:
+    unichem: guide_to_pharmacology
+  aliases:
+    - gtopdb
+    - gtop
+
+pdbe:
+  label: PDBe
+  entity_type: small_molecule
+  backends:
+    unichem: pdbe
+  aliases:
+    - pdbe_id
+
+fda_srs:
+  label: FDA SRS
+  entity_type: small_molecule
+  backends:
+    unichem: fda_srs
+  aliases:
+    - fda
+    - srs
+
+surechembl:
+  label: SureChEMBL
+  entity_type: small_molecule
+  backends:
+    unichem: surechembl
+  aliases:
+    - surechembl_id
+
+nmrshiftdb:
+  label: NMRShiftDB
+  entity_type: small_molecule
+  backends:
+    unichem: nmrshiftdb
+  aliases:
+    - nmrshiftdb_id
+
+molport:
+  label: MolPort
+  entity_type: small_molecule
+  backends:
+    unichem: molport
+  aliases:
+    - molport_id
+
+bindingdb:
+  label: BindingDB
+  entity_type: small_molecule
+  backends:
+    unichem: bindingdb
+  aliases:
+    - bindingdb_id
+
+drugcentral:
+  label: DrugCentral
+  entity_type: small_molecule
+  backends:
+    unichem: drugcentral
+  aliases:
+    - drugcentral_id
+
+probes_drugs:
+  label: Probes&Drugs
+  entity_type: small_molecule
+  backends:
+    unichem: probes_drugs
+  aliases:
+    - probes_and_drugs
+    - probes&drugs
+
+csd:
+  label: CSD
+  entity_type: small_molecule
+  backends:
+    unichem: csd
+  aliases:
+    - csd_id
+
+# ===================================================================
+# RaMP-specific types not in UniChem
+# ===================================================================
+
+refmet:
+  label: RefMet
+  entity_type: small_molecule
+  backends:
+    ramp: refmet
+  aliases:
+    - refmet_id

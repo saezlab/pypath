@@ -1,0 +1,184 @@
+{
+  "status": "failed",
+  "created_at": "2026-10-04T19:04:21.075459+00:00",
+  "data_root": "/root/projects/omnipath-releases/20261004-molecular-forms/data",
+  "resources": [
+    {
+      "resource": "signor/2026.10.4.1",
+      "status": "passed",
+      "elapsed_seconds": 33.647,
+      "coverage": {
+        "relation_side_forms": 67997,
+        "standalone_forms": 3811,
+        "isoforms": 88,
+        "modifications": 12869,
+        "variants": 0,
+        "sequence_identifiers": 162,
+        "paired_occurrences": 26498,
+        "distinct_referenced_products": 8288
+      },
+      "client_snapshot": null,
+      "failed_checks": [],
+      "unavailable_checks": [
+        {
+          "name": "observed.variants",
+          "status": "unavailable",
+          "reason": "No such molecular case is present in the selected dataset"
+        },
+        {
+          "name": "api.opposite_endpoint_constraints_1",
+          "status": "unavailable",
+          "reason": "Paired occurrence has no subject product or no object isoform"
+        },
+        {
+          "name": "api.opposite_endpoint_constraints_2",
+          "status": "unavailable",
+          "reason": "Paired occurrence has no subject product or no object isoform"
+        },
+        {
+          "name": "client.offline_snapshot",
+          "status": "unavailable",
+          "reason": "Temporary hardlink unavailable (Invalid cross-device link); escaping symlinks are unsupported and full Parquets are not copied"
+        }
+      ],
+      "slowest_timings": [
+        {
+          "operation": "molecular.reusable_uniprot_products",
+          "kind": "sql",
+          "elapsed_ms": 3388.855
+        },
+        {
+          "operation": "GET /entities/b4ac0bdabc82ea94bba4ae7fdd6b9bbddce61849fa4a4aed36fd7093fbe592db/molecular-context",
+          "kind": "api",
+          "elapsed_ms": 1806.74,
+          "status_code": 200,
+          "parameters": {
+            "view": "product",
+            "limit": 5,
+            "isoform_identifier": "uniprot:P17861-2"
+          }
+        },
+        {
+          "operation": "baseline.product_examples",
+          "kind": "sql",
+          "elapsed_ms": 1564.655
+        },
+        {
+          "operation": "GET /entities/001f10727e716892cd34dc3f27d1e198a683be3dccfb9682ffc82be316313975/molecular-context",
+          "kind": "api",
+          "elapsed_ms": 1355.341,
+          "status_code": 200,
+          "parameters": {
+            "view": "product",
+            "limit": 5
+          }
+        },
+        {
+          "operation": "baseline.isoform_examples",
+          "kind": "sql",
+          "elapsed_ms": 1190.978
+        },
+        {
+          "operation": "GET /entities/980c403d06131daeb60ed518d6e3e27de92ff6aa879776db1d39b4ed7c154467/molecular-context",
+          "kind": "api",
+          "elapsed_ms": 1149.702,
+          "status_code": 200,
+          "parameters": {
+            "view": "product",
+            "limit": 5,
+            "isoform_identifier": "uniprot:Q8IZD2-8"
+          }
+        },
+        {
+          "operation": "GET /entities/0012daf05dacf7f83125165ba54915bd5cc259c8d45a93ad76d9fa76eb619f82/molecular-context",
+          "kind": "api",
+          "elapsed_ms": 902.349,
+          "status_code": 200,
+          "parameters": {
+            "view": "product",
+            "limit": 5
+          }
+        },
+        {
+          "operation": "baseline.paired_examples",
+          "kind": "sql",
+          "elapsed_ms": 899.217
+        }
+      ]
+    },
+    {
+      "resource": "intact/2026.10.4.1",
+      "status": "failed",
+      "elapsed_seconds": 534.008,
+      "coverage": {
+        "relation_side_forms": 2386336,
+        "standalone_forms": 0,
+        "isoforms": 152185,
+        "modifications": 1553,
+        "variants": 31917,
+        "sequence_identifiers": 160945,
+        "paired_occurrences": 1165480,
+        "distinct_referenced_products": 45092
+      },
+      "client_snapshot": null,
+      "failed_checks": [
+        {
+          "name": "validator.execution",
+          "status": "failed",
+          "error": "OutOfMemoryException: Out of Memory Error: failed to allocate data of size 256.0 KiB (1.8 GiB/1.8 GiB used)\n\nPossible solutions:\n* Reducing the number of threads (SET threads=X)\n* Disabling insertion-order preservation (SET preserve_insertion_order=false)\n* Increasing the memory limit (SET memory_limit='...GB')\n\nSee also https://duckdb.org/docs/stable/guides/performance/how_to_tune_workloads"
+        }
+      ],
+      "unavailable_checks": [
+        {
+          "name": "observed.standalone_forms",
+          "status": "unavailable",
+          "reason": "No such molecular case is present in the selected dataset"
+        }
+      ],
+      "slowest_timings": [
+        {
+          "operation": "molecular.reusable_uniprot_products",
+          "kind": "sql",
+          "elapsed_ms": 257136.247
+        },
+        {
+          "operation": "molecular.paired_occurrences",
+          "kind": "sql",
+          "elapsed_ms": 27454.674
+        },
+        {
+          "operation": "molecular.coverage",
+          "kind": "sql",
+          "elapsed_ms": 4419.469
+        },
+        {
+          "operation": "relations.evidence_count",
+          "kind": "sql",
+          "elapsed_ms": 2300.393
+        },
+        {
+          "operation": "payloads.owner_closure",
+          "kind": "sql",
+          "elapsed_ms": 392.036
+        },
+        {
+          "operation": "entities.supported_gene_references",
+          "kind": "sql",
+          "elapsed_ms": 175.555
+        },
+        {
+          "operation": "relations.reference_consistency",
+          "kind": "sql",
+          "elapsed_ms": 113.655
+        },
+        {
+          "operation": "relations.endpoint_closure_and_source_type",
+          "kind": "sql",
+          "elapsed_ms": 91.707
+        }
+      ]
+    }
+  ],
+  "preserved_server_directory": "reports/attempt2-validator-failed",
+  "diagnosis": "Correlated expansion of nested evidence through six delimiter join branches caused disproportionate spill and 2GB DuckDB OOM; source/build outputs remain unchanged. Offline client snapshot staging on /tmp failed cross-device hardlinks."
+}

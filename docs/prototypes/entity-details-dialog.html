@@ -1,0 +1,679 @@
+<title>Entity Details Prototypes</title>
+<style>
+/* Layout: a toolbar to pick variant and entity, then the dialog drawn at its real size (max-w-5xl, 700px tall). */
+:root {
+  --bg: #f4f5f6; --surface: #ffffff; --raised: #f7f8f9; --sunk: #eef0f2;
+  --fg: #16191d; --muted: #5d6670; --faint: #8a939c; --line: #e1e4e8; --line-strong: #cdd2d8;
+  --accent: #0f766e; --accent-fg: #ffffff; --accent-soft: #e2f3f1;
+  --gene: #b4235a; --gene-soft: #fbe7ee; --protein: #2563eb; --protein-soft: #e6eeff;
+  --chem: #15803d; --chem-soft: #e3f4e8; --react: #4f46e5; --react-soft: #ebeafd;
+  --path: #0e7490; --path-soft: #e0f3f7; --cplx: #b45309; --cplx-soft: #fbefdc;
+  --dis: #7c3aed; --dis-soft: #f1e9fe; --lit: #57606a; --lit-soft: #eceef1;
+  --pos: #15803d; --neg: #c2410c; --warn: #b45309; --warn-soft: #fdf3e1; --bad: #b91c1c; --bad-soft: #fde8e8;
+  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 12px 32px rgba(16,24,40,.10);
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b0d0f; --surface: #15181b; --raised: #1b1f23; --sunk: #101315;
+  --fg: #e8ebee; --muted: #9aa4ae; --faint: #6d7782; --line: #262b30; --line-strong: #353c43;
+  --accent: #2dd4bf; --accent-fg: #062b27; --accent-soft: #0f2f2c;
+  --gene: #f472a6; --gene-soft: #3a1324; --protein: #7aa7ff; --protein-soft: #142347;
+  --chem: #5fd38a; --chem-soft: #10301d; --react: #a5a1ff; --react-soft: #1f1d47;
+  --path: #4fc3dc; --path-soft: #0d2b33; --cplx: #f0b25a; --cplx-soft: #36250c;
+  --dis: #c4a2ff; --dis-soft: #2a1b47; --lit: #a7b0ba; --lit-soft: #22272c;
+  --pos: #5fd38a; --neg: #fb8b5b; --warn: #f0b25a; --warn-soft: #33250f; --bad: #f87171; --bad-soft: #3a1515;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.45);
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0b0d0f; --surface: #15181b; --raised: #1b1f23; --sunk: #101315;
+  --fg: #e8ebee; --muted: #9aa4ae; --faint: #6d7782; --line: #262b30; --line-strong: #353c43;
+  --accent: #2dd4bf; --accent-fg: #062b27; --accent-soft: #0f2f2c;
+  --gene: #f472a6; --gene-soft: #3a1324; --protein: #7aa7ff; --protein-soft: #142347;
+  --chem: #5fd38a; --chem-soft: #10301d; --react: #a5a1ff; --react-soft: #1f1d47;
+  --path: #4fc3dc; --path-soft: #0d2b33; --cplx: #f0b25a; --cplx-soft: #36250c;
+  --dis: #c4a2ff; --dis-soft: #2a1b47; --lit: #a7b0ba; --lit-soft: #22272c;
+  --pos: #5fd38a; --neg: #fb8b5b; --warn: #f0b25a; --warn-soft: #33250f; --bad: #f87171; --bad-soft: #3a1515;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.45);
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 14px; line-height: 1.45; }
+.page { max-width: 1120px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 48px; display: grid; gap: 16px; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+a { color: inherit; }
+.mono { font-family: var(--mono); font-size: 12px; }
+.muted { color: var(--muted); }
+.faint { color: var(--faint); }
+
+/* toolbar */
+.bar { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; justify-content: space-between; }
+.bar h1 { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: -.01em; }
+.bar p { margin: 2px 0 0; color: var(--muted); max-width: 62ch; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px; }
+.seg { display: inline-flex; flex-wrap: wrap; background: var(--sunk); border: 1px solid var(--line); border-radius: 9px; padding: 3px; gap: 2px; }
+.seg button { padding: 5px 10px; border-radius: 6px; color: var(--muted); font-size: 13px; white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 2px rgba(0,0,0,.12); font-weight: 560; }
+.note { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; color: var(--muted); display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.note b { color: var(--fg); font-weight: 600; }
+
+/* dialog frame */
+.dialog { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); height: 700px; display: flex; flex-direction: column; overflow: hidden; position: relative; min-width: 0; }
+.dialog.free { height: auto; }
+.x { position: absolute; top: 14px; right: 14px; width: 28px; height: 28px; border-radius: 6px; color: var(--muted); display: grid; place-items: center; z-index: 3; }
+.x:hover { background: var(--sunk); }
+
+/* identity header */
+.ident { padding: 20px 56px 14px 24px; display: grid; gap: 10px; border-bottom: 1px solid var(--line); }
+.ident.compact { padding: 18px 20px 14px; border-bottom: 0; }
+.title-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+.ename { margin: 0; font-size: 24px; font-weight: 680; letter-spacing: -.015em; line-height: 1.15; }
+.fullname { color: var(--muted); font-size: 15px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 560; background: var(--sunk); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.t-gene { color: var(--gene); background: var(--gene-soft); border-color: transparent; }
+.t-protein { color: var(--protein); background: var(--protein-soft); border-color: transparent; }
+.t-chemical_entity { color: var(--chem); background: var(--chem-soft); border-color: transparent; }
+.t-molecular_activity { color: var(--react); background: var(--react-soft); border-color: transparent; }
+.t-pathway { color: var(--path); background: var(--path-soft); border-color: transparent; }
+.t-macromolecular_complex, .t-physical_entity, .t-protein_family { color: var(--cplx); background: var(--cplx-soft); border-color: transparent; }
+.t-ontology_class { color: var(--dis); background: var(--dis-soft); border-color: transparent; }
+.t-information_content_entity { color: var(--lit); background: var(--lit-soft); border-color: transparent; }
+.ids { display: flex; flex-wrap: wrap; gap: 6px; }
+.id { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 7px; padding: 3px 8px; background: var(--raised); font-size: 12px; text-decoration: none; }
+.id span:first-child { color: var(--faint); }
+.id:hover { border-color: var(--line-strong); }
+.id .mono { color: var(--fg); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 7px; border: 1px solid var(--line-strong); background: var(--surface); font-size: 13px; font-weight: 540; }
+.btn:hover { background: var(--sunk); }
+.btn.primary { background: var(--accent); color: var(--accent-fg); border-color: transparent; }
+.link { color: var(--accent); font-weight: 560; font-size: 13px; }
+.link:hover { text-decoration: underline; }
+
+/* tabs */
+.tabs { display: flex; gap: 2px; padding: 0 20px; border-bottom: 1px solid var(--line); overflow-x: auto; flex: none; }
+.tabs button { padding: 10px 10px 9px; color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; font-weight: 520; }
+.tabs button[aria-selected="true"] { color: var(--fg); border-color: var(--fg); }
+.tabs .n { color: var(--faint); font-size: 12px; margin-left: 4px; font-variant-numeric: tabular-nums; }
+.body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.pad { padding: 18px 24px 28px; }
+
+/* sections */
+.h { margin: 0 0 8px; font-size: 12px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); display: flex; gap: 8px; align-items: baseline; }
+.h .n { letter-spacing: 0; text-transform: none; font-weight: 500; }
+.h2 { margin: 0; font-size: 16px; font-weight: 650; }
+.stack { display: grid; gap: 22px; }
+.cols { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 28px; }
+.desc { margin: 0; max-width: 68ch; color: var(--fg); }
+.desc.clamp { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.empty { color: var(--faint); font-style: italic; margin: 0; }
+.facts { display: grid; grid-template-columns: max-content minmax(0,1fr); gap: 6px 16px; margin: 0; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+
+/* members (products / forms) */
+.members { display: grid; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.member { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px 12px; padding: 9px 12px; border-top: 1px solid var(--line); align-items: center; text-align: left; width: 100%; }
+.member:first-child { border-top: 0; }
+button.member:hover { background: var(--raised); }
+.member .nm { font-weight: 600; }
+.member .sub { color: var(--muted); font-size: 12px; }
+.member .cnt { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; text-align: right; }
+.member[aria-pressed="true"] { background: var(--accent-soft); }
+.member[aria-pressed="true"] .nm { color: var(--accent); }
+
+/* glance bars */
+.glance { display: grid; gap: 2px; }
+.gl { display: grid; grid-template-columns: 9.5em minmax(0,1fr) 2.5em; gap: 10px; align-items: center; padding: 5px 6px; border-radius: 6px; text-align: left; width: 100%; }
+.gl:hover { background: var(--raised); }
+.gl .track { height: 8px; background: var(--sunk); border-radius: 4px; overflow: hidden; }
+.gl .fill { height: 100%; border-radius: 4px; }
+.gl .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.k-regulation { --k: var(--neg); } .k-interaction { --k: var(--protein); } .k-reaction { --k: var(--react); }
+.k-complex { --k: var(--cplx); } .k-pathway { --k: var(--path); } .k-disease { --k: var(--dis); } .k-literature { --k: var(--lit); }
+.gl .fill { background: var(--k); }
+.srcs { display: flex; flex-wrap: wrap; gap: 6px; }
+.src { font-size: 11.5px; padding: 1px 7px; border-radius: 5px; background: var(--sunk); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* relation filters */
+.filters { display: grid; gap: 10px; }
+.frow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.flabel { font-size: 12px; color: var(--faint); min-width: 4.5em; }
+.pill { height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--line); font-size: 12.5px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; background: var(--surface); }
+.pill .c { font-variant-numeric: tabular-nums; color: var(--faint); }
+.pill[aria-pressed="true"] { border-color: var(--fg); color: var(--fg); font-weight: 560; }
+.pill[aria-pressed="true"] .c { color: var(--fg); }
+.pill:disabled { opacity: .4; cursor: default; }
+.pill .sw { width: 8px; height: 8px; border-radius: 2px; background: var(--k, var(--faint)); }
+.search { height: 30px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--fg); padding: 0 10px; font: inherit; font-size: 13px; width: 220px; max-width: 100%; }
+
+/* relation list */
+.rgroup { display: grid; }
+.rgroup + .rgroup { margin-top: 18px; }
+.rhead { display: flex; align-items: baseline; gap: 8px; padding: 0 0 6px; border-bottom: 1px solid var(--line); }
+.rhead b { font-size: 13px; font-weight: 650; }
+.rhead .sw { width: 9px; height: 9px; border-radius: 2px; background: var(--k); align-self: center; }
+.rhead .c { color: var(--faint); font-variant-numeric: tabular-nums; font-size: 12px; }
+.rrow { display: grid; grid-template-columns: 7.5em minmax(0,1fr) auto; gap: 4px 12px; padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; width: 100%; align-items: baseline; }
+.rrow:hover { background: var(--raised); }
+.rrow[aria-expanded="true"], .rrow[aria-current="true"] { background: var(--accent-soft); }
+.rrow .verb { color: var(--muted); font-size: 12.5px; }
+.verb.pos { color: var(--pos); } .verb.neg { color: var(--neg); }
+.rrow .who { min-width: 0; overflow-wrap: anywhere; }
+.rrow .who b { font-weight: 560; }
+.rrow .tdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 7px; vertical-align: 1px; background: currentColor; }
+.rrow .meta { display: flex; gap: 6px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+.rrow .ev { font-size: 12px; color: var(--faint); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.scopebadges { display: flex; gap: 4px; margin-top: 3px; flex-wrap: wrap; }
+.sb { font-family: var(--mono); font-size: 10.5px; padding: 0 5px; border-radius: 4px; border: 1px solid var(--line); color: var(--faint); }
+.sb.gene { font-family: var(--sans); font-style: italic; }
+.more { padding: 8px 6px; text-align: left; }
+.inline-ev { grid-column: 1 / -1; padding: 10px 6px 14px 7.5em; border-bottom: 1px solid var(--line); background: var(--accent-soft); }
+
+/* evidence panel */
+.evp { display: grid; gap: 14px; align-content: start; }
+.evp .sentence { font-size: 15px; font-weight: 600; line-height: 1.35; margin: 0; overflow-wrap: anywhere; }
+.evp .sentence .verb { font-weight: 500; }
+.evcard { border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; display: grid; gap: 6px; background: var(--surface); }
+.evcard .top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.evcard .top b { text-transform: none; }
+.illus { font-size: 11.5px; color: var(--faint); }
+
+/* Variant B: section rail */
+.bwrap { display: grid; grid-template-columns: 184px minmax(0,1fr); flex: 1; min-height: 0; }
+.rail { border-right: 1px solid var(--line); padding: 14px 10px; overflow-y: auto; display: grid; align-content: start; gap: 1px; }
+.rail a { text-decoration: none; padding: 5px 10px; border-radius: 6px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
+.rail a.sub { padding-left: 22px; font-size: 12.5px; }
+.rail a:hover { background: var(--sunk); color: var(--fg); }
+.rail a .c { color: var(--faint); font-variant-numeric: tabular-nums; }
+.bsec { padding: 20px 24px 6px; scroll-margin-top: 0; }
+.bsec + .bsec { border-top: 1px solid var(--line); }
+.drawer { position: absolute; top: 0; right: 0; bottom: 0; width: min(420px, 92%); background: var(--surface); border-left: 1px solid var(--line-strong); box-shadow: var(--shadow); padding: 18px 20px; overflow-y: auto; z-index: 4; display: grid; gap: 14px; align-content: start; }
+
+/* Variant C: summary sidebar + workspace */
+.cwrap { display: grid; grid-template-columns: 296px minmax(0,1fr); flex: 1; min-height: 0; }
+.side { border-right: 1px solid var(--line); overflow-y: auto; background: var(--raised); }
+.side .blk { padding: 14px 20px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
+.side .members { background: var(--surface); }
+.work { display: grid; grid-template-rows: auto minmax(0,1fr); min-height: 0; }
+.work .top { padding: 14px 20px 12px; border-bottom: 1px solid var(--line); display: grid; gap: 10px; }
+.work .split { display: grid; grid-template-columns: minmax(0,1fr); min-height: 0; }
+.work .split.open { grid-template-columns: minmax(0,1fr) minmax(0, 330px); }
+.work .list { overflow-y: auto; padding: 4px 20px 24px; min-height: 0; }
+.work .evcol { border-left: 1px solid var(--line); overflow-y: auto; padding: 16px 18px; min-height: 0; }
+.ktabs { display: flex; gap: 4px; overflow-x: auto; }
+.ktabs button { padding: 5px 10px; border-radius: 6px; font-size: 12.5px; color: var(--muted); white-space: nowrap; display: inline-flex; gap: 6px; align-items: center; }
+.ktabs button .c { color: var(--faint); font-variant-numeric: tabular-nums; }
+.ktabs button[aria-selected="true"] { background: var(--sunk); color: var(--fg); font-weight: 600; }
+.ktabs .sw { width: 8px; height: 8px; border-radius: 2px; background: var(--k); }
+
+/* findings */
+.findings { padding: 24px; display: grid; gap: 26px; }
+.fgrid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.f { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; align-content: start; }
+.f h3 { margin: 0; font-size: 14px; font-weight: 650; display: flex; gap: 8px; align-items: baseline; }
+.f p { margin: 0; color: var(--muted); }
+.f q { font-family: var(--mono); font-size: 12px; color: var(--fg); quotes: none; background: var(--sunk); padding: 0 4px; border-radius: 4px; }
+.sev { font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; flex: none; }
+.sev.hi { color: var(--bad); background: var(--bad-soft); }
+.sev.md { color: var(--warn); background: var(--warn-soft); }
+.sev.lo { color: var(--muted); background: var(--sunk); }
+.princ { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 80ch; }
+.vcards { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+.vcard { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; text-align: left; align-content: start; }
+.vcard:hover { border-color: var(--line-strong); background: var(--raised); }
+.vcard b { font-size: 14px; }
+.vcard span { color: var(--muted); }
+
+.struct { border: 1px solid var(--line); border-radius: 10px; background: var(--raised); display: grid; place-items: center; padding: 10px; }
+.struct svg { width: 100%; max-width: 220px; height: auto; }
+
+@media (max-width: 860px) {
+  .dialog { height: auto; }
+  .cols, .fgrid, .vcards { grid-template-columns: minmax(0,1fr); }
+  .bwrap, .cwrap { grid-template-columns: minmax(0,1fr); }
+  .rail { display: none; }
+  .side { border-right: 0; border-bottom: 1px solid var(--line); }
+  .work .split.open { grid-template-columns: minmax(0,1fr); }
+  .work .evcol { border-left: 0; border-top: 1px solid var(--line); }
+  .body, .work .list, .side { overflow: visible; }
+  .rrow { grid-template-columns: minmax(0,1fr) auto; }
+  .rrow .verb { grid-column: 1 / -1; }
+  .inline-ev { padding-left: 6px; }
+  .ident { padding-right: 48px; }
+}
+@media (prefers-reduced-motion: no-preference) { .drawer { animation: slide .18s ease-out; } @keyframes slide { from { transform: translateX(16px); opacity: .6; } } }
+</style>
+<div class="page">
+  <div class="bar">
+    <div><h1>Entity details dialog</h1><p>Review of the current dialog and three layouts to compare, built on real TP53 and glucose data from the capped build.</p></div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="View">
+        <button data-view="findings">Findings</button><button data-view="a">A · Tidy tabs</button><button data-view="b">B · One scroll</button><button data-view="c">C · Summary + relations</button>
+      </div>
+      <div class="seg" role="group" aria-label="Entity" id="entseg">
+        <button data-ent="tp53">TP53 · gene group</button><button data-ent="glc">Glucose · chemical group</button>
+      </div>
+    </div>
+  </div>
+  <div class="note" id="vnote"></div>
+  <div id="root"></div>
+</div>
+<script>
+const TP53_REL=[{"k":"disease","v":"associated with","o":"adrenocortical carcinoma, hereditary","t":"ontology_class","s":["mondo"],"n":1,"m":[],"id":"MONDO:0008734","pred":"associated_with"},{"k":"disease","v":"associated with","o":"choroid plexus papilloma","t":"ontology_class","s":["mondo"],"n":1,"m":[],"id":"MONDO:0009837","pred":"associated_with"},{"k":"pathway","v":"participates in","o":"Amyotrophic lateral sclerosis","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05014","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Apoptosis","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04210","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Basal cell carcinoma","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05217","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Bladder cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05219","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Breast cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05224","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Cell cycle","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04110","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Cellular senescence","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04218","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Central carbon metabolism in cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05230","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Chronic myeloid leukemia","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05220","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Colorectal cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05210","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Endocrine resistance","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa01522","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Endometrial cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05213","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Epstein-Barr virus infection","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05169","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Ferroptosis","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04216","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Fluid shear stress and atherosclerosis","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05418","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Gastric cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05226","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Glioma","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05214","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Hepatitis B","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05161","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Hepatitis C","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05160","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Hepatocellular carcinoma","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05225","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Herpes simplex virus 1 infection","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05168","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Human T-cell leukemia virus 1 infection","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05166","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Human cytomegalovirus infection","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05163","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Human papillomavirus infection","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05165","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Huntington disease","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05016","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Kaposi sarcoma-associated herpesvirus infection","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05167","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Lipid and atherosclerosis","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05417","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Longevity regulating pathway","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04211","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"MAPK signaling pathway","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04010","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Measles","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05162","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Melanoma","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05218","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"MicroRNAs in cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05206","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Mitophagy - animal","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04137","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Neurotrophin signaling pathway","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04722","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Non-small cell lung cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05223","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"PI3K-Akt signaling pathway","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04151","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Pancreatic cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05212","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Parkinson disease","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05012","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Pathways in cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05200","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Platinum drug resistance","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa01524","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Prostate cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05215","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Proteoglycans in cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05205","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Shigellosis","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05131","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Small cell lung cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05222","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Sphingolipid signaling pathway","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04071","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Thyroid cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05216","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Thyroid hormone signaling pathway","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04919","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Transcriptional misregulation in cancer","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05202","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Viral carcinogenesis","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa05203","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"Wnt signaling pathway","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04310","pred":"has_participant"},{"k":"pathway","v":"participates in","o":"p53 signaling pathway","t":"pathway","s":["kegg"],"n":3,"m":["K7PPA8","P04637","Q53GA5"],"id":"hsa04115","pred":"has_participant"},{"k":"literature","v":"mentioned in","o":"De Novo Assembly of 20 Chicken Genomes Reveals the Undetectable Phenomenon for Thousands of Core Genes on Microchromosomes and Subtelomeric Regions","t":"information_content_entity","s":["pfocr"],"n":1,"m":[],"id":"PMC9021737__F5","pred":"mentions"},{"k":"regulation","v":"activated by","o":"CDKN2AIP","t":"protein","s":["signor"],"n":1,"m":["P04637"],"id":"55602","pred":"affects"},{"k":"regulation","v":"activated by","o":"CID:586427","t":"chemical_entity","s":["stitch"],"n":1,"m":["P04637"],"id":"BWHPKBOLJFNCPW-UHFFFAOYSA-N","pred":"affects"},{"k":"regulation","v":"activated by","o":"MAPK9","t":"protein","s":["signor"],"n":1,"m":["P04637"],"id":"5601","pred":"affects"},{"k":"regulation","v":"activated by","o":"Nutlin-3","t":"chemical_entity","s":["signor"],"n":1,"m":["P04637"],"id":"BDUHCSBCVGXTJM-UHFFFAOYSA-N","pred":"affects"},{"k":"regulation","v":"activated by","o":"RPS6KA3","t":"protein","s":["signor"],"n":1,"m":["P04637"],"id":"6197","pred":"affects"},{"k":"regulation","v":"inhibited by","o":"SIGNOR-FP3","t":"protein_family","s":["signor"],"n":1,"m":["P04637"],"id":"SIGNOR-FP3","pred":"affects"},{"k":"regulation","v":"inhibits","o":"GMPS","t":"protein","s":["signor"],"n":1,"m":["P04637"],"id":"8833","pred":"affects"},{"k":"regulation","v":"activates","o":"OGG1","t":"protein","s":["signor"],"n":1,"m":["P04637"],"id":"4968","pred":"affects"},{"k":"regulation","v":"activates","o":"PHB","t":"protein","s":["signor"],"n":1,"m":["P04637"],"id":"5245","pred":"affects"},{"k":"regulation","v":"activated by","o":"VRK2","t":"protein","s":["signor"],"n":1,"m":["P04637"],"id":"7444","pred":"affects"},{"k":"interaction","v":"binds","o":"CREBBP","t":"protein","s":["intact"],"n":2,"m":["P04637"],"id":"1387","pred":"interacts_with"},{"k":"interaction","v":"binds","o":"JMY","t":"protein","s":["intact"],"n":1,"m":["P04637"],"id":"133746","pred":"interacts_with"},{"k":"interaction","v":"binds","o":"MDM2","t":"protein","s":["intact"],"n":1,"m":["P04637"],"id":"4193","pred":"interacts_with"},{"k":"interaction","v":"binds","o":"29031019","t":"protein","s":["intact"],"n":1,"m":["P04637"],"id":"29031019","pred":"interacts_with"},{"k":"interaction","v":"binds","o":"EP300","t":"protein","s":["intact"],"n":1,"m":["P04637"],"id":"2033","pred":"interacts_with"},{"k":"interaction","v":"binds","o":"TNFRSF10D","t":"protein","s":["cellinker"],"n":1,"m":["P04637"],"id":"8793","pred":"interacts_with"},{"k":"complex","v":"member of","o":"CNS-P53 complex","t":"macromolecular_complex","s":["corum"],"n":1,"m":["P04637"],"id":"df29de453faa48cd765392eeb4adc0c4a9340624f58378be86b71177c59efa63","pred":"has_member"},{"k":"complex","v":"member of","o":"FHL2-p53-HIPK2 complex","t":"macromolecular_complex","s":["corum"],"n":1,"m":["P04637"],"id":"50c1979bd247f8c3a9eb3245894a9702840a1d6653bc0066a681b6a247b7e3d1","pred":"has_member"},{"k":"complex","v":"member of","o":"MSH2/6-BLM-p53-RAD51 complex","t":"macromolecular_complex","s":["corum"],"n":1,"m":["P04637"],"id":"b7ec07370ba6e64a2e93cc199429fb14a0a9ac5aa8fb6fd63079453a4f905f88","pred":"has_member"},{"k":"complex","v":"member of","o":"RNF128,TRAF3,TRAF6,RHOA,TP53","t":"physical_entity","s":["reactome"],"n":1,"m":["P04637"],"id":"R-HSA-5690846","pred":"has_member"},{"k":"complex","v":"member of","o":"TP53,MDM2,MDM4,FOXO4,PTEN","t":"physical_entity","s":["reactome"],"n":1,"m":["P04637"],"id":"R-HSA-5689977","pred":"has_member"},{"k":"complex","v":"member of","o":"p300-MDM2-p53 protein complex","t":"macromolecular_complex","s":["corum"],"n":1,"m":["P04637"],"id":"99be2e44f661e12d97282c8d6c77cb6207ef62c3c34095ce5443e565a77b0550","pred":"has_member"}];
+const GLC_REL=[{"k":"reaction","v":"consumed by","o":"D-glucose + O2 = 2-dehydro-D-glucose + H2O2","t":"molecular_activity","s":["kegg","rhea"],"n":3,"m":["d"],"id":"rhea:10552","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"D-glucose:quinone 1-oxidoreductase","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"kegg_reaction:R00305","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"ATP:D-glucose 6-phosphotransferase","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:17825","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"D-glucose(out) + ATP + H2O = D-glucose(in) + ADP + phosphate + H(+)","t":"molecular_activity","s":["rhea"],"n":1,"m":["d"],"id":"rhea:60184","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"dATP:D-glucose 6-phosphotransferase","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"metanetx_reaction:MNXR192053","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"beta-D-glucose + O2 = D-glucono-1,5-lactone + H2O2","t":"molecular_activity","s":["rhea"],"n":2,"m":["beta"],"id":"rhea:11428","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"D-glucose(out) + H(+)(out) = D-glucose(in) + H(+)(in)","t":"molecular_activity","s":["rhea"],"n":1,"m":["d"],"id":"rhea:69556","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"D-glucose(out) + Na(+)(out) = D-glucose(in) + Na(+)(in)","t":"molecular_activity","s":["rhea"],"n":1,"m":["d"],"id":"rhea:70571","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"sn-glycerol 3-phosphate + D-glucose = D-glucose 6-phosphate + glycerol","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:21288","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"D-glucose + NAD(+) = D-glucono-1,5-lactone + NADH + H(+)","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:14293","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"D-glucose + ADP = D-glucose 6-phosphate + AMP + H(+)","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:11460","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"D-glucose 1-epimerase","t":"molecular_activity","s":["metatlas"],"n":2,"m":["beta"],"id":"human_gem_reaction:MAR07745","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"D-glucose + UDP-alpha-D-galactose = lactose + UDP + H(+)","t":"molecular_activity","s":["kegg","rhea"],"n":3,"m":["d"],"id":"rhea:12404","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"1,3-beta-D-glucan glucanohydrolase","t":"molecular_activity","s":["kegg"],"n":1,"m":["beta"],"id":"kegg_reaction:R00308","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"D-glucose(out) + 2 Na(+)(out) = D-glucose(in) + 2 Na(+)(in)","t":"molecular_activity","s":["rhea"],"n":1,"m":["d"],"id":"rhea:70495","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"ITP:D-glucose 6-phosphotransferase","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"metanetx_reaction:MNXR192051","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"D-glucose(out) = D-glucose(in)","t":"molecular_activity","s":["rhea"],"n":1,"m":["d"],"id":"rhea:60376","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"D-fructose + D-glucose = D-glucono-1,5-lactone + D-sorbitol","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:20637","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"D-glucose:NADP+ 1-oxidoreductase","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"metanetx_reaction:MNXR191208","pred":"has_input"},{"k":"reaction","v":"consumed by","o":"[(1->2)-beta-D-glucosyl](n)(in) + ATP + H2O = [(1->2)-beta-D-glucosyl](n)(out) + ADP + phosphate + H(+)","t":"molecular_activity","s":["rhea"],"n":1,"m":["beta"],"id":"rhea:18453","pred":"has_input"},{"k":"complex","v":"member of","o":"Ligands of CD36","t":"physical_entity","s":["reactome"],"n":1,"m":["beta"],"id":"reactome:R-HSA-2247490","pred":"has_member"},{"k":"complex","v":"member of","o":"Gal, Glc","t":"physical_entity","s":["reactome"],"n":1,"m":["d"],"id":"reactome:R-ALL-189254","pred":"has_member"},{"k":"complex","v":"member of","o":"Fru, Gal, Glc","t":"physical_entity","s":["reactome"],"n":1,"m":["d"],"id":"reactome:R-ALL-189219","pred":"has_member"},{"k":"complex","v":"member of","o":"Gal, Glc","t":"physical_entity","s":["reactome"],"n":1,"m":["d"],"id":"reactome:R-ALL-189227","pred":"has_member"},{"k":"complex","v":"member of","o":"Sweet taste compounds","t":"physical_entity","s":["reactome"],"n":1,"m":["d"],"id":"reactome:R-ALL-444679","pred":"has_member"},{"k":"complex","v":"member of","o":"Ligands of CD36","t":"physical_entity","s":["reactome"],"n":1,"m":["beta"],"id":"reactome:R-HSA-2187232","pred":"has_member"},{"k":"complex","v":"member of","o":"Ligands of COLEC12","t":"physical_entity","s":["reactome"],"n":1,"m":["beta"],"id":"reactome:R-HSA-2981036","pred":"has_member"},{"k":"complex","v":"member of","o":"Ligands of COLEC12","t":"physical_entity","s":["reactome"],"n":1,"m":["beta"],"id":"reactome:R-HSA-2187235","pred":"has_member"},{"k":"complex","v":"member of","o":"Fru,Glc,urate","t":"physical_entity","s":["reactome"],"n":1,"m":["d"],"id":"reactome:R-ALL-429078","pred":"has_member"},{"k":"complex","v":"member of","o":"hexoses transported by SGLT4","t":"physical_entity","s":["reactome"],"n":1,"m":["d"],"id":"reactome:R-ALL-429628","pred":"has_member"},{"k":"complex","v":"member of","o":"hexoses transported by GLUT7/11","t":"physical_entity","s":["reactome"],"n":1,"m":["d"],"id":"reactome:R-ALL-428802","pred":"has_member"},{"k":"complex","v":"member of","o":"Ligands of SCARF1","t":"physical_entity","s":["reactome"],"n":1,"m":["beta"],"id":"reactome:R-NUL-9038449","pred":"has_member"},{"k":"complex","v":"member of","o":"hexoses transported by SGLT4","t":"physical_entity","s":["reactome"],"n":1,"m":["d"],"id":"reactome:R-ALL-429620","pred":"has_member"},{"k":"complex","v":"member of","o":"Fru,Glc,urate","t":"physical_entity","s":["reactome"],"n":1,"m":["d"],"id":"reactome:R-ALL-429148","pred":"has_member"},{"k":"complex","v":"member of","o":"hexoses transported by GLUT7/11","t":"physical_entity","s":["reactome"],"n":1,"m":["d"],"id":"reactome:R-ALL-428819","pred":"has_member"},{"k":"complex","v":"member of","o":"Fru, Gal, Glc","t":"physical_entity","s":["reactome"],"n":1,"m":["d"],"id":"reactome:R-ALL-189246","pred":"has_member"},{"k":"complex","v":"member of","o":"Ligands of SCARF1","t":"physical_entity","s":["reactome"],"n":1,"m":["beta"],"id":"reactome:R-NUL-9038450","pred":"has_member"},{"k":"reaction","v":"produced by","o":"6-phospho-beta-D-glucosyl-(1->4)-D-glucose + H2O = D-glucose 6-phosphate + D-glucose","t":"molecular_activity","s":["kegg","rhea"],"n":3,"m":["d"],"id":"rhea:10772","pred":"has_output"},{"k":"reaction","v":"produced by","o":"2 1-O-galloyl-beta-D-glucose = 1,6-bis-O-galloyl-beta-D-glucose + D-glucose","t":"molecular_activity","s":["kegg","rhea"],"n":3,"m":["d"],"id":"rhea:11416","pred":"has_output"},{"k":"reaction","v":"produced by","o":"6-acetyl-D-glucose + H2O = D-glucose + acetate + H(+)","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:18485","pred":"has_output"},{"k":"reaction","v":"produced by","o":"alpha-D-glucose = beta-D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["beta"],"id":"rhea:10264","pred":"has_output"},{"k":"reaction","v":"produced by","o":"sucrose glucohydrolase","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"metanetx_reaction:MNXR146419","pred":"has_output"},{"k":"reaction","v":"produced by","o":"D-maltose + H2O = alpha-D-glucose + D-glucose","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:68796","pred":"has_output"},{"k":"reaction","v":"produced by","o":"lactose + H2O = beta-D-galactose + D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:10076","pred":"has_output"},{"k":"reaction","v":"produced by","o":"alpha-maltose 6'-phosphate + H2O = D-glucose 6-phosphate + D-glucose","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:20421","pred":"has_output"},{"k":"reaction","v":"produced by","o":"1,3-beta-D-glucan glucanohydrolase","t":"molecular_activity","s":["kegg"],"n":2,"m":["beta","d"],"id":"kegg_reaction:R00308","pred":"has_output"},{"k":"reaction","v":"produced by","o":"a beta-D-glucosyl-(1<->1')-N-acylsphing-4-enine + H2O = an N-acylsphing-4-enine + D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:13269","pred":"has_output"},{"k":"reaction","v":"produced by","o":"melibiose + H2O = D-galactose + D-glucose","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:28663","pred":"has_output"},{"k":"reaction","v":"produced by","o":"alpha,alpha-trehalose 6-phosphate + H2O = D-glucose 6-phosphate + D-glucose","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:23008","pred":"has_output"},{"k":"reaction","v":"produced by","o":"4-O-(beta-D-glucosyl)-(E)-coniferol + H2O = (E)-coniferol + D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:12252","pred":"has_output"},{"k":"reaction","v":"produced by","o":"D-cellobiose + H2O = beta-D-glucose + D-glucose","t":"molecular_activity","s":["kegg"],"n":1,"m":["beta"],"id":"rhea:30679","pred":"has_output"},{"k":"reaction","v":"produced by","o":"D-glucose-1-phosphate:riboflavin 5'-phosphotransferase","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:20409","pred":"has_output"},{"k":"reaction","v":"produced by","o":"D-cellobiose + phosphate = alpha-D-glucose 1-phosphate + D-glucose","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:19493","pred":"has_output"},{"k":"reaction","v":"produced by","o":"GDP-alpha-D-glucose + H2O = D-glucose + GDP + H(+)","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:15049","pred":"has_output"},{"k":"reaction","v":"produced by","o":"cholesteryl 3-beta-D-glucoside + H2O = cholesterol + D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:11956","pred":"has_output"},{"k":"reaction","v":"produced by","o":"kojibiose + phosphate = beta-D-glucose 1-phosphate + D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:11176","pred":"has_output"},{"k":"reaction","v":"produced by","o":"(5R)-5-O-[alpha-D-glucosyl-(1->2)-beta-D-galactosyl]-5-hydroxy-L-lysyl-[collagen] + H2O = (5R)-5-O-(beta-D-galactosyl)-5-hydroxy-L-lysyl-[collagen] + D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:11068","pred":"has_output"},{"k":"reaction","v":"produced by","o":"a di-trans,poly-cis-dolichyl beta-D-glucosyl phosphate + H2O = a di-trans,poly-cis-dolichyl phosphate + D-glucose + H(+)","t":"molecular_activity","s":["kegg","rhea"],"n":3,"m":["d"],"id":"rhea:13857","pred":"has_output"},{"k":"reaction","v":"produced by","o":"D-glucose 6-sulfate + H2O = sulfate + D-glucose + H(+)","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:19145","pred":"has_output"},{"k":"reaction","v":"produced by","o":"1-O-(4-hydroxy-3,5-dimethoxycinnamoyl)-beta-D-glucoside:1-O-(4-hydroxy-3,5-dimethoxycinnamoyl-beta-D-glucoside 1-O-sinapoyltransferase","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:22664","pred":"has_output"},{"k":"reaction","v":"produced by","o":"(R)-amygdalin + H2O = (R)-prunasin + D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:14177","pred":"has_output"},{"k":"reaction","v":"produced by","o":"D-glucose-1-phosphate phosphohydrolase","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:19933","pred":"has_output"},{"k":"reaction","v":"produced by","o":"1-O-(trans-sinapoyl)-beta-D-glucose + choline = O-sinapoylcholine + D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:12024","pred":"has_output"},{"k":"reaction","v":"produced by","o":"1-O-(trans-sinapoyl)-beta-D-glucose + (S)-malate = sinapoyl (S)-malate + D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:12625","pred":"has_output"},{"k":"reaction","v":"produced by","o":"3-beta-D-glucosyl-D-glucose:phosphate alpha-D-glucosyltransferase","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:16617","pred":"has_output"},{"k":"reaction","v":"produced by","o":"[6)-beta-D-fructofuranosyl-(2->](n) alpha-D-glucopyranoside + sucrose = [6)-beta-D-fructofuranosyl-(2->](n+1) alpha-D-glucopyranoside + D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:13653","pred":"has_output"},{"k":"reaction","v":"produced by","o":"cellobiose glucohydrolase","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"metanetx_reaction:MNXR151542","pred":"has_output"},{"k":"reaction","v":"produced by","o":"3alpha(S)-strictosidine + H2O = strictosidine aglycone + D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:12917","pred":"has_output"},{"k":"reaction","v":"produced by","o":"alpha,alpha-trehalose + H2O = alpha-D-glucose + beta-D-glucose","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:32675","pred":"has_output"},{"k":"reaction","v":"produced by","o":"avenacoside A + H2O = 26-desgluco-avenacoside A + D-glucose","t":"molecular_activity","s":["rhea"],"n":2,"m":["d"],"id":"rhea:12468","pred":"has_output"},{"k":"reaction","v":"produced by","o":"2 D-glucopyranose 1-phosphate = D-glucose 1,6-bisphosphate + D-glucose","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:16397","pred":"has_output"},{"k":"reaction","v":"produced by","o":"2 sucrose = 1(F)-beta-D-fructosylsucrose + D-glucose","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:23312","pred":"has_output"},{"k":"reaction","v":"produced by","o":"D-glucose 6-phosphate + H2O = D-glucose + phosphate","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"rhea:16689","pred":"has_output"},{"k":"reaction","v":"produced by","o":"lactose galactohydrolase","t":"molecular_activity","s":["kegg"],"n":1,"m":["d"],"id":"kegg_reaction:R01100","pred":"has_output"}];
+const KIND = {
+  regulation: { label: 'Regulation', one: 'regulation' },
+  interaction: { label: 'Physical interactions', one: 'interaction' },
+  reaction: { label: 'Reactions', one: 'reaction' },
+  complex: { label: 'Complexes and sets', one: 'membership' },
+  pathway: { label: 'Pathways', one: 'pathway' },
+  disease: { label: 'Diseases', one: 'disease' },
+  literature: { label: 'Literature', one: 'figure' },
+};
+const KIND_ORDER = ['regulation', 'interaction', 'reaction', 'complex', 'pathway', 'disease', 'literature'];
+const TYPE_LABEL = {
+  gene: 'Gene', protein: 'Protein', chemical_entity: 'Chemical', molecular_activity: 'Reaction', pathway: 'Pathway',
+  macromolecular_complex: 'Complex', physical_entity: 'Physical entity', protein_family: 'Protein family',
+  ontology_class: 'Disease', information_content_entity: 'Publication figure',
+};
+
+const ENT = {
+  tp53: {
+    name: 'TP53', fullname: 'tumor protein p53', type: 'gene', typeLabel: 'Gene',
+    groupNote: 'Gene group · 1 gene + 3 products', organism: 'Human · 9606',
+    ids: [['Entrez Gene', '7157'], ['HGNC', 'HGNC:11998'], ['Ensembl', 'ENSG00000141510'], ['UniProt', 'P04637']],
+    synonyms: ['P53'],
+    description: null,
+    members: [
+      { id: 'P04637', name: 'TP53', sub: 'UniProt P04637 · reviewed', type: 'protein' },
+      { id: 'K7PPA8', name: 'TP53', sub: 'UniProt K7PPA8 · unreviewed', type: 'protein' },
+      { id: 'Q53GA5', name: 'Q53GA5_HUMAN', sub: 'UniProt Q53GA5 · unreviewed', type: 'protein' },
+    ],
+    memberNoun: 'Products', geneLevel: true,
+    counts: { identifiers: 22, publications: 0, annotations: 0 },
+    rel: TP53_REL,
+  },
+  glc: {
+    name: 'Glucose', fullname: 'D-glucose and beta-D-glucose', type: 'chemical_entity', typeLabel: 'Chemical',
+    groupNote: 'Structure group · 2 forms', organism: null,
+    ids: [['HMDB', 'HMDB0000122'], ['ChEBI', 'CHEBI:4167'], ['KEGG', 'C00031'], ['InChIKey', 'WQZGKKKJIJFFOK']],
+    synonyms: ['Dextrose', 'Grape sugar', 'D-Glc'],
+    description: 'Glucose is a monosaccharide containing six carbon atoms and an aldehyde group. It is referred to as an aldohexose. The glucose molecule can exist in an open-chain (acyclic) and ring (cyclic) form, the latter being the result of an intramolecular reaction between the aldehyde C atom and the C-5 hydroxyl group to form an intramolecular hemiacetal. In aqueous solution, both forms are in equilibrium and at pH 7 the cyclic one is predominant. Glucose is a primary source of energy for all living organisms.',
+    descSource: 'HMDB',
+    members: [
+      { id: 'd', name: 'D-glucose', sub: 'WQZGKKKJIJFFOK-GASJEMHNSA-N', type: 'chemical_entity' },
+      { id: 'beta', name: 'beta-D-glucose', sub: 'WQZGKKKJIJFFOK-VFUOTHLCSA-N', type: 'chemical_entity' },
+    ],
+    memberNoun: 'Forms', geneLevel: false,
+    counts: { identifiers: 155, publications: 19, annotations: 4 },
+    facts: [['Formula', 'C6H12O6'], ['Monoisotopic mass', '180.0634 Da'], ['Class', 'Hexoses']],
+    rel: GLC_REL,
+  },
+};
+
+const VARIANTS = {
+  findings: { label: 'Findings' },
+  a: { label: 'A · Tidy tabs', note: '<b>A · Tidy tabs.</b> The smallest change. Same dialog and tabs, cut down to four. Every entity opens on an Overview with a summary. All relations live in one Relations tab with a product (or form) scope. Evidence opens inline under the row you click.' },
+  b: { label: 'B · One scroll', note: '<b>B · One scroll.</b> No tabs. One page you can scroll, with a section index on the left. Relations show the top rows per kind with "show all". Evidence opens in a drawer over the right side of the dialog.' },
+  c: { label: 'C · Summary + relations', note: '<b>C · Summary + relations.</b> Relations first. The identity summary stays pinned on the left, and its product list doubles as the scope filter. The right side is a relations workspace with kind tabs, and evidence opens in a third column.' },
+};
+
+const state = { view: 'findings', ent: 'tp53', tab: 'overview', kind: 'all', scope: 'all', q: '', sel: null, showAll: {}, descOpen: false };
+try { const s = JSON.parse(localStorage.getItem('edp-state') || '{}'); if (s.view) state.view = s.view; if (s.ent) state.ent = s.ent; } catch (e) {}
+
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const ent = () => ENT[state.ent];
+
+function inScope(r) {
+  if (state.scope === 'all') return true;
+  if (state.scope === 'gene') return r.m.length === 0;
+  return r.m.includes(state.scope);
+}
+function rows({ ignoreKind = false } = {}) {
+  const q = state.q.trim().toLowerCase();
+  return ent().rel.filter((r) => inScope(r) && (ignoreKind || state.kind === 'all' || r.k === state.kind) && (!q || r.o.toLowerCase().includes(q) || r.s.join(' ').includes(q)));
+}
+function kindCounts(list) {
+  const c = {};
+  for (const r of list) c[r.k] = (c[r.k] || 0) + 1;
+  return KIND_ORDER.filter((k) => c[k]).map((k) => [k, c[k]]);
+}
+function scopeCount(id) {
+  const e = ent();
+  if (id === 'all') return e.rel.length;
+  if (id === 'gene') return e.rel.filter((r) => !r.m.length).length;
+  return e.rel.filter((r) => r.m.includes(id)).length;
+}
+function sourceCounts(list) {
+  const c = {};
+  for (const r of list) for (const s of r.s) c[s] = (c[s] || 0) + 1;
+  return Object.entries(c).sort((a, b) => b[1] - a[1]);
+}
+const verbClass = (v) => (/activat/.test(v) ? 'pos' : /inhibit/.test(v) ? 'neg' : '');
+
+/* ---------- shared pieces ---------- */
+function identity({ compact = false, actions = true } = {}) {
+  const e = ent();
+  return `<header class="ident ${compact ? 'compact' : ''}">
+    <div class="title-row"><h2 class="ename">${esc(e.name)}</h2><span class="fullname">${esc(e.fullname)}</span></div>
+    <div class="chips">
+      <span class="chip t-${e.type}"><span class="dot"></span>${esc(e.typeLabel)}</span>
+      <span class="chip">${esc(e.groupNote)}</span>
+      ${e.organism ? `<span class="chip">${esc(e.organism)}</span>` : ''}
+    </div>
+    <div class="ids">${e.ids.map(([k, v]) => `<a class="id" href="#" onclick="return false"><span>${esc(k)}</span><span class="mono">${esc(v)}</span><span class="faint" aria-hidden="true">↗</span></a>`).join('')}</div>
+    ${actions ? `<div class="actions"><button class="btn primary" type="button">＋ Add to selection</button><button class="btn" type="button">Open in relations explorer</button></div>` : ''}
+  </header>`;
+}
+
+function description({ clamp = true } = {}) {
+  const e = ent();
+  if (!e.description) return `<p class="empty">No description in this release. UniProt function text would go here once UniProt annotations are built in full.</p>`;
+  const cl = clamp && !state.descOpen;
+  return `<div style="display:grid;gap:4px"><p class="desc ${cl ? 'clamp' : ''}">${esc(e.description)}</p>
+    <div class="muted" style="font-size:12px">Source: ${esc(e.descSource)} ${clamp ? `· <button class="link" data-act="desc">${state.descOpen ? 'Show less' : 'Show more'}</button>` : ''}</div></div>`;
+}
+
+function structure() {
+  return `<div class="struct" aria-label="2D structure"><svg viewBox="0 0 240 170" role="img" aria-label="Glucopyranose ring sketch">
+    <g fill="none" stroke="var(--fg)" stroke-width="2" stroke-linejoin="round">
+      <polygon points="70,60 120,40 170,60 170,110 120,130 70,110"/>
+      <line x1="170" y1="60" x2="200" y2="40"/><line x1="170" y1="110" x2="200" y2="130"/>
+      <line x1="120" y1="130" x2="120" y2="158"/><line x1="70" y1="110" x2="40" y2="130"/>
+      <line x1="120" y1="40" x2="120" y2="14"/><line x1="120" y1="14" x2="150" y2="6"/>
+    </g>
+    <g fill="var(--muted)" font-family="var(--sans)" font-size="13" font-weight="600">
+      <rect x="61" y="51" width="18" height="18" fill="var(--raised)"/><text x="64" y="65" fill="var(--bad)">O</text>
+      <text x="203" y="42">OH</text><text x="203" y="138">OH</text><text x="110" y="168" dy="0">OH</text>
+      <text x="12" y="138">HO</text><text x="153" y="10">OH</text>
+    </g></svg></div>`;
+}
+
+function members({ asScope = false, compactRows = false } = {}) {
+  const e = ent();
+  const items = e.members.map((m) => {
+    const n = scopeCount(m.id);
+    const tag = asScope ? 'button' : 'button';
+    return `<${tag} class="member" data-act="scope" data-v="${m.id}" ${asScope ? `aria-pressed="${state.scope === m.id}"` : ''}>
+      <div><div class="nm">${esc(m.name)}</div><div class="sub ${e.type === 'gene' ? '' : 'mono'}">${esc(m.sub)}</div></div>
+      <div class="cnt">${n} relations${asScope ? '' : ' →'}</div></${tag}>`;
+  });
+  if (asScope) {
+    items.unshift(`<button class="member" data-act="scope" data-v="all" aria-pressed="${state.scope === 'all'}"><div><div class="nm">All of ${esc(e.name)}</div><div class="sub">${e.type === 'gene' ? 'Gene and every product' : 'Every form in the group'}</div></div><div class="cnt">${scopeCount('all')} relations</div></button>`);
+    if (e.geneLevel) items.push(`<button class="member" data-act="scope" data-v="gene" aria-pressed="${state.scope === 'gene'}"><div><div class="nm">Gene level only</div><div class="sub">Evidence that names no product</div></div><div class="cnt">${scopeCount('gene')} relations</div></button>`);
+  }
+  return `<div class="members">${items.join('')}</div>`;
+}
+
+function glance(list, act = 'kind') {
+  const kc = kindCounts(list);
+  const max = Math.max(...kc.map(([, n]) => n), 1);
+  return `<div class="glance">${kc.map(([k, n]) => `<button class="gl k-${k}" data-act="${act}" data-v="${k}"><span>${KIND[k].label}</span><span class="track"><span class="fill" style="display:block;width:${Math.max(4, (100 * n) / max)}%"></span></span><span class="v">${n}</span></button>`).join('')}</div>`;
+}
+
+function sources(list) {
+  return `<div class="srcs">${sourceCounts(list).map(([s, n]) => `<span class="src">${esc(s)} · ${n}</span>`).join('')}</div>`;
+}
+
+function scopeFilter() {
+  const e = ent();
+  const opts = [['all', `All of ${e.name}`], ...e.members.map((m) => [m.id, e.type === 'gene' ? m.id : m.name])];
+  if (e.geneLevel) opts.push(['gene', 'Gene level only']);
+  return `<div class="frow"><span class="flabel">${e.type === 'gene' ? 'Product' : 'Form'}</span>${opts.map(([v, l]) => `<button class="pill" data-act="scope" data-v="${v}" aria-pressed="${state.scope === v}">${esc(l)} <span class="c">${scopeCount(v)}</span></button>`).join('')}</div>`;
+}
+function kindFilter() {
+  const base = rows({ ignoreKind: true });
+  const kc = kindCounts(base);
+  return `<div class="frow"><span class="flabel">Kind</span><button class="pill" data-act="kind" data-v="all" aria-pressed="${state.kind === 'all'}">All <span class="c">${base.length}</span></button>${kc.map(([k, n]) => `<button class="pill k-${k}" data-act="kind" data-v="${k}" aria-pressed="${state.kind === k}"><span class="sw"></span>${KIND[k].label} <span class="c">${n}</span></button>`).join('')}
+  <input class="search" id="relq" type="search" placeholder="Filter by partner or source" value="${esc(state.q)}" aria-label="Filter relations"></div>`;
+}
+
+function rowHtml(r, i, mode) {
+  const e = ent();
+  const selected = state.sel === i;
+  const badges = e.type === 'gene'
+    ? (r.m.length ? (r.m.length === e.members.length ? `<span class="sb">all products</span>` : r.m.map((m) => `<span class="sb">${m}</span>`).join('')) : `<span class="sb gene">gene level</span>`)
+    : r.m.map((m) => `<span class="sb">${m === 'beta' ? 'beta-D-glucose' : 'D-glucose'}</span>`).join('');
+  const attr = mode === 'inline' ? `aria-expanded="${selected}"` : `aria-current="${selected}"`;
+  let html = `<button class="rrow" data-act="sel" data-v="${i}" ${attr}>
+    <span class="verb ${verbClass(r.v)}">${esc(r.v)}</span>
+    <span class="who"><span class="t-${r.t}" style="background:none"><span class="tdot"></span></span><b>${esc(r.o)}</b><span class="faint" style="font-size:12px"> · ${esc(TYPE_LABEL[r.t] || r.t)}</span><span class="scopebadges">${badges}</span></span>
+    <span class="meta">${r.s.map((s) => `<span class="src">${esc(s)}</span>`).join('')}<span class="ev">${r.n} ev.</span></span>
+  </button>`;
+  if (mode === 'inline' && selected) html += `<div class="inline-ev">${evidence(r, { compact: true })}</div>`;
+  return html;
+}
+
+function relationGroups(list, { mode = 'inline', limit = 0 } = {}) {
+  if (!list.length) return `<p class="empty">No relations match these filters.</p>`;
+  const all = ent().rel;
+  return KIND_ORDER.filter((k) => list.some((r) => r.k === k)).map((k) => {
+    const g = list.filter((r) => r.k === k);
+    const lim = limit && !state.showAll[k] ? limit : Infinity;
+    const shown = g.slice(0, lim);
+    return `<section class="rgroup k-${k}" id="rel-${k}"><div class="rhead"><span class="sw"></span><b>${KIND[k].label}</b><span class="c">${g.length}</span></div>
+      ${shown.map((r) => rowHtml(r, all.indexOf(r), mode)).join('')}
+      ${g.length > shown.length ? `<button class="more link" data-act="showall" data-v="${k}">Show all ${g.length} ${KIND[k].label.toLowerCase()}</button>` : ''}</section>`;
+  }).join('');
+}
+
+function evidence(r, { compact = false } = {}) {
+  const e = ent();
+  const named = e.type === 'gene'
+    ? (r.m.length ? `Names ${r.m.length === e.members.length ? 'all three products' : r.m.join(', ')}` : 'Reported for the gene. No product named.')
+    : `Reported for ${r.m.map((m) => (m === 'beta' ? 'beta-D-glucose' : 'D-glucose')).join(' and ')}`;
+  const per = Math.max(1, Math.round(r.n / r.s.length));
+  const cards = r.s.map((s) => `<div class="evcard"><div class="top"><b>${esc(s)}</b><span class="faint" style="font-size:12px">${per} record${per > 1 ? 's' : ''}</span></div>
+      <dl class="facts" style="font-size:13px"><dt>Molecular form</dt><dd>${esc(named)}</dd><dt>Relation</dt><dd class="mono">${esc(r.pred)}</dd>${r.k === 'regulation' ? `<dt>Effect</dt><dd>${/inhibit/.test(r.v) ? 'Inhibition' : 'Activation'}</dd>` : ''}</dl></div>`).join('');
+  return `<div class="evp">
+    ${compact ? '' : '<div class="h">Evidence</div>'}
+    <p class="sentence">${esc(e.name)} <span class="verb ${verbClass(r.v)}">${esc(r.v)}</span> ${esc(r.o)}</p>
+    <div class="chips"><span class="chip t-${r.t}"><span class="dot"></span>${esc(TYPE_LABEL[r.t] || r.t)}</span><span class="chip">${r.n} evidence record${r.n > 1 ? 's' : ''}</span></div>
+    ${cards}
+    <div class="actions"><button class="btn" type="button">Open ${esc(r.o.length > 28 ? 'partner' : r.o)}</button><button class="btn" type="button">Full evidence</button></div>
+    <div class="illus">Record fields are illustrative. The real panel reuses InteractionDetails.</div>
+  </div>`;
+}
+
+function identifiersBlock() {
+  const e = ent();
+  const groups = e.type === 'gene'
+    ? [['Primary', [['Entrez Gene', '7157'], ['HGNC', 'HGNC:11998'], ['Ensembl gene', 'ENSG00000141510'], ['Gene symbol', 'TP53']]], ['Products', [['UniProt', 'P04637, K7PPA8, Q53GA5 + 11 more']]], ['Synonyms', [['Gene symbol synonym', 'P53']]], ['Internal', [['RaMP gene', 'RAMP_G_000008249']]]]
+    : [['Primary', [['InChIKey', 'WQZGKKKJIJFFOK-GASJEMHNSA-N'], ['HMDB', 'HMDB0000122'], ['ChEBI', 'CHEBI:4167, CHEBI:15903 + 9 more'], ['KEGG', 'C00031'], ['PubChem', 'CID 5793']]], ['Cross-references', [['BiGG', 'glc__D, glc__bD + 3 more'], ['CAS', '50-99-7, 492-61-5'], ['MetaNetX', 'MNXM1137670']]], ['Names', [['Synonyms', 'Dextrose, Grape sugar, D-Glc + 31 more']]]];
+  return `<div class="stack">${groups.map(([h, items]) => `<div><div class="h">${h}</div><dl class="facts">${items.map(([k, v]) => `<dt>${esc(k)}</dt><dd class="mono">${esc(v)}</dd>`).join('')}</dl></div>`).join('')}
+    <div><button class="link">Show all ${e.counts.identifiers} identifiers</button></div></div>`;
+}
+
+function literatureBlock() {
+  const e = ent();
+  if (!e.counts.publications && !e.counts.annotations) return `<p class="empty">No annotations or publications in this release.</p>`;
+  return `<div class="stack"><div><div class="h">Annotations <span class="n">${e.counts.annotations}</span></div><dl class="facts"><dt>SBO term</dt><dd class="mono">SBO:0000247 <span class="faint">imm1415</span></dd><dt>Source records</dt><dd>4 Reactome records <span class="faint">reactome</span></dd></dl></div>
+    <div><div class="h">Publications <span class="n">${e.counts.publications}</span></div><dl class="facts"><dt class="mono">PMID:32033212</dt><dd>HMDB</dd><dt class="mono">PMID:19212411</dt><dd>HMDB</dd><dt class="mono">PMID:16736954</dt><dd>HMDB</dd></dl><button class="link" style="margin-top:6px">Show all ${e.counts.publications} publications</button></div></div>`;
+}
+
+/* ---------- variant A ---------- */
+function variantA() {
+  const e = ent();
+  const tabs = [['overview', 'Overview'], ['relations', 'Relations', e.rel.length], ['identifiers', 'Identifiers', e.counts.identifiers], ['more', 'Annotations & publications', e.counts.publications + e.counts.annotations || null]];
+  let body = '';
+  if (state.tab === 'overview') {
+    body = `<div class="pad"><div class="cols">
+      <div class="stack">
+        <div><div class="h">About</div>${description()}</div>
+        ${e.facts ? `<div><div class="h">Properties</div><dl class="facts">${e.facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl></div>` : ''}
+        <div><div class="h">${e.memberNoun} in this group <span class="n">${e.members.length}</span></div>${members()}</div>
+      </div>
+      <div class="stack">
+        ${e.type === 'chemical_entity' ? structure() : ''}
+        <div><div class="h">Relations <span class="n">${e.rel.length}</span></div>${glance(e.rel, 'gokind')}<div style="margin-top:8px"><button class="link" data-act="tab" data-v="relations">See all relations →</button></div></div>
+        <div><div class="h">Sources</div>${sources(e.rel)}</div>
+        ${e.synonyms.length ? `<div><div class="h">Also known as</div><div class="muted">${e.synonyms.map(esc).join(', ')}</div></div>` : ''}
+      </div></div></div>`;
+  } else if (state.tab === 'relations') {
+    body = `<div class="pad stack" style="gap:16px"><div class="filters">${scopeFilter()}${kindFilter()}</div>${relationGroups(rows(), { mode: 'inline' })}</div>`;
+  } else if (state.tab === 'identifiers') {
+    body = `<div class="pad">${identifiersBlock()}</div>`;
+  } else {
+    body = `<div class="pad">${literatureBlock()}</div>`;
+  }
+  return `<div class="dialog"><button class="x" aria-label="Close">✕</button>${identity()}
+    <nav class="tabs" role="tablist">${tabs.map(([v, l, n]) => `<button role="tab" data-act="tab" data-v="${v}" aria-selected="${state.tab === v}">${l}${n ? `<span class="n">${n}</span>` : ''}</button>`).join('')}</nav>
+    <div class="body">${body}</div></div>`;
+}
+
+/* ---------- variant B ---------- */
+function variantB() {
+  const e = ent();
+  const kc = kindCounts(rows({ ignoreKind: true }));
+  const sel = state.sel != null ? e.rel[state.sel] : null;
+  return `<div class="dialog"><button class="x" aria-label="Close">✕</button>${identity()}
+    <div class="bwrap">
+      <nav class="rail" aria-label="Sections">
+        <a href="#b-overview" data-jump="b-overview">Overview</a>
+        <a href="#b-members" data-jump="b-members">${e.memberNoun}<span class="c">${e.members.length}</span></a>
+        <a href="#b-relations" data-jump="b-relations">Relations<span class="c">${e.rel.length}</span></a>
+        ${kc.map(([k, n]) => `<a class="sub" href="#rel-${k}" data-jump="rel-${k}">${KIND[k].label}<span class="c">${n}</span></a>`).join('')}
+        <a href="#b-ids" data-jump="b-ids">Identifiers<span class="c">${e.counts.identifiers}</span></a>
+        <a href="#b-lit" data-jump="b-lit">Annotations & publications</a>
+      </nav>
+      <div class="body" id="bscroll">
+        <section class="bsec" id="b-overview"><div class="cols"><div class="stack" style="gap:14px"><div class="h">About</div>${description()}${e.facts ? `<dl class="facts">${e.facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>` : ''}</div>
+          <div class="stack" style="gap:14px">${e.type === 'chemical_entity' ? structure() : `<div><div class="h">Sources</div>${sources(e.rel)}</div>`}</div></div></section>
+        <section class="bsec" id="b-members"><div class="h">${e.memberNoun} <span class="n">${e.members.length}</span></div><p class="muted" style="margin:0 0 10px">Pick one to narrow the relations below to evidence that names it.</p>${members({ asScope: true })}</section>
+        <section class="bsec" id="b-relations"><div class="h">Relations <span class="n">${rows().length} of ${e.rel.length}</span></div><div class="filters" style="margin-bottom:14px">${kindFilter()}</div>${relationGroups(rows(), { mode: 'drawer', limit: 5 })}</section>
+        <section class="bsec" id="b-ids"><div class="h" style="margin-bottom:12px">Identifiers</div>${identifiersBlock()}</section>
+        <section class="bsec" id="b-lit" style="padding-bottom:28px"><div class="h" style="margin-bottom:12px">Annotations & publications</div>${literatureBlock()}</section>
+      </div>
+    </div>
+    ${sel ? `<aside class="drawer" aria-label="Evidence"><div style="display:flex;justify-content:space-between;align-items:center"><div class="h" style="margin:0">Evidence</div><button class="btn" data-act="sel" data-v="${state.sel}">Close</button></div>${evidence(sel, { compact: true })}</aside>` : ''}
+  </div>`;
+}
+
+/* ---------- variant C ---------- */
+function variantC() {
+  const e = ent();
+  const base = rows({ ignoreKind: true });
+  const kc = kindCounts(base);
+  const list = rows();
+  const sel = state.sel != null ? e.rel[state.sel] : null;
+  return `<div class="dialog"><button class="x" aria-label="Close">✕</button>
+    <div class="cwrap">
+      <aside class="side">
+        ${identity({ compact: true, actions: false })}
+        <div class="blk">${description()}</div>
+        <div class="blk"><div class="h" style="margin:0">${e.memberNoun} <span class="n">scope for relations</span></div>${members({ asScope: true })}</div>
+        ${e.type === 'chemical_entity' ? `<div class="blk">${structure()}</div>` : ''}
+        <div class="blk"><div class="h" style="margin:0">Reference</div>
+          <button class="link" style="text-align:left">All identifiers (${e.counts.identifiers})</button>
+          ${e.counts.publications ? `<button class="link" style="text-align:left">Publications (${e.counts.publications})</button>` : ''}
+          ${e.counts.annotations ? `<button class="link" style="text-align:left">Annotations (${e.counts.annotations})</button>` : ''}
+          ${e.synonyms.length ? `<div class="muted" style="font-size:12.5px">Also known as ${e.synonyms.map(esc).join(', ')}</div>` : ''}</div>
+        <div class="blk"><button class="btn primary" style="justify-content:center">＋ Add to selection</button></div>
+      </aside>
+      <div class="work">
+        <div class="top">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap"><h3 class="h2">Relations <span class="faint" style="font-weight:500;font-size:14px">${base.length}${state.scope !== 'all' ? ` for ${esc(state.scope === 'gene' ? 'gene level' : (e.members.find((m) => m.id === state.scope) || {}).name + (e.type === 'gene' ? ' ' + state.scope : ''))}` : ''}</span></h3>
+            <input class="search" id="relq" type="search" placeholder="Filter by partner or source" value="${esc(state.q)}" aria-label="Filter relations"></div>
+          <div class="ktabs" role="tablist"><button role="tab" data-act="kind" data-v="all" aria-selected="${state.kind === 'all'}">All <span class="c">${base.length}</span></button>${kc.map(([k, n]) => `<button role="tab" class="k-${k}" data-act="kind" data-v="${k}" aria-selected="${state.kind === k}"><span class="sw"></span>${KIND[k].label}<span class="c">${n}</span></button>`).join('')}</div>
+        </div>
+        <div class="split ${sel ? 'open' : ''}">
+          <div class="list">${relationGroups(list, { mode: 'side' })}</div>
+          ${sel ? `<div class="evcol"><div style="display:flex;justify-content:flex-end"><button class="btn" data-act="sel" data-v="${state.sel}">Close</button></div>${evidence(sel)}</div>` : ''}
+        </div>
+      </div>
+    </div></div>`;
+}
+
+/* ---------- findings ---------- */
+function findings() {
+  const F = [
+    ['hi', 'Relations are split over two tabs', 'For TP53 the <q>Relationships 6</q> tab holds only complex membership. The other 70 relations (51 pathways, 10 regulations, 6 interactions, 2 diseases, 1 figure) sit inside <q>Products and molecular evidence</q>, below the products and forms. The 6 memberships show up in both tabs.'],
+    ['hi', 'Clicking a relation seems to do nothing', 'The evidence renders at the very bottom of the Products tab, after up to 100 standalone observation cards. Nothing changes near the row you clicked.'],
+    ['hi', 'No summary, everything weighs the same', 'Below the name, one muted line mixes type, <q>gene, protein source records</q>, <q>Grouped · 4 matched entities</q>, taxon and a raw ID. Nothing tells you what the entity is or how much is known about it.'],
+    ['md', 'The landing tab changes per entity', 'TP53 opens on a raw identifier table because it has no description, so the General tab is dropped. Glucose opens on a 400-word HMDB paragraph.'],
+    ['md', 'The Products tab mixes five things', 'A raw key line (<q>Gene reference: entrez:7157</q>), two buttons that both read <q>TP53 · protein</q>, the same three products again as form cards, relations as <q>Apoptosis · has_participant · TP53</q> with no sources or counts, then repeated <q>kegg · Protein reference TP53 · P04637</q> cards.'],
+    ['md', 'A single protein shows the whole gene', 'Opening P04637 ungrouped shows the same 76 gene-wide relations, because the molecular view defaults to the gene reference.'],
+    ['md', 'Glucose: the tab errors', '<q>Products and molecular evidence</q> is offered for the chemical group and shows <q>Unable to load molecular evidence</q>. The endpoint returns 404 for <q>connectivity:…</q> keys.'],
+    ['md', 'Internal provenance is shown as content', 'Relationship properties list <q>Prov:wasDerivedFrom: urn:sha256:…</q> and <q>Dcterms:type: object</q>. The same Rhea reaction appears as two rows, one per source.'],
+    ['lo', 'Footer shows on every tab', '<q>Load more details · Names and annotations load 20 at a time</q> sits under Relationships and Products too, where it does nothing visible.'],
+    ['lo', 'Data issues seen along the way', 'KEGG pathway names prefixed <q>TITLE:</q>. An IntAct partner named <q>29031019</q>. HMDB mojibake <q>world‚Äôs</q>. A GenBank identifier <q>-</q>. <q>Q53GA5_HUMAN</q> stored as a gene symbol.'],
+  ];
+  return `<div class="dialog free"><div class="findings">
+    <div><h2 class="h2" style="font-size:18px">What I found in the current dialog</h2><p class="muted" style="margin:4px 0 0;max-width:72ch">Checked on omnipath-metabo-dev (capped build, 2026.10.6) with TP53 grouped by gene, TP53 P04637 ungrouped, and glucose grouped by structure.</p></div>
+    <div class="fgrid">${F.map(([s, h, p]) => `<div class="f"><h3><span class="sev ${s}">${{ hi: 'High', md: 'Medium', lo: 'Low' }[s]}</span>${h}</h3><p>${p}</p></div>`).join('')}</div>
+    <div><h2 class="h2">What all three prototypes share</h2>
+    <ul class="princ" style="margin-top:8px">
+      <li>One identity block on top: name, full name, type, group, organism, and the key identifiers as links. It looks the same for every entity.</li>
+      <li>One place for relations. A gene group gets a product scope (all of TP53, P04637, K7PPA8, Q53GA5, gene level only) instead of a separate tab. A chemical group gets the same control for its forms.</li>
+      <li>Relations read from the entity's side (<em>activated by</em> MAPK9, <em>participates in</em> Apoptosis), grouped by kind with counts, with sources and evidence counts on every row.</li>
+      <li>Evidence opens next to the row you clicked.</li>
+      <li>Identifiers, annotations and publications are reference material. They stay reachable but never the landing view. Identifiers are grouped into primary, cross-references and synonyms.</li>
+      <li>Provenance hashes and RDF types are hidden. Rows for the same partner from different sources merge into one row with several source chips.</li>
+    </ul></div>
+    <div><h2 class="h2">The three layouts</h2><div class="vcards" style="margin-top:8px">
+      <button class="vcard" data-act="view" data-v="a"><b>A · Tidy tabs</b><span>Keep the dialog and tabs. Overview first, one Relations tab with scope, evidence inline. The cheapest change.</span></button>
+      <button class="vcard" data-act="view" data-v="b"><b>B · One scroll</b><span>No tabs. Sections with an index on the left, top 5 per relation kind, evidence in a drawer.</span></button>
+      <button class="vcard" data-act="view" data-v="c"><b>C · Summary + relations</b><span>A pinned summary on the left whose product list scopes the relations. A relations workspace on the right with an evidence column.</span></button>
+    </div></div>
+    <p class="illus" style="margin:0">The relations in the prototypes are the real ones from the capped build. Which product each relation names is approximated by source, and the evidence fields are illustrative.</p>
+  </div></div>`;
+}
+
+/* ---------- render + events ---------- */
+const root = document.getElementById('root');
+function render() {
+  document.querySelectorAll('[data-view]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.view === state.view));
+  document.querySelectorAll('[data-ent]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.ent === state.ent));
+  document.getElementById('entseg').hidden = state.view === 'findings';
+  const v = VARIANTS[state.view];
+  document.getElementById('vnote').innerHTML = v.note ? `<span>${v.note}</span>` : '<span>Start with the findings, then open a layout. Each layout works for <b>TP53</b> (gene group) and <b>Glucose</b> (chemical group). Click relations, product chips and kind filters.</span>';
+  const scroller = root.querySelector('#bscroll');
+  const keep = scroller ? scroller.scrollTop : 0;
+  root.innerHTML = state.view === 'findings' ? findings() : state.view === 'a' ? variantA() : state.view === 'b' ? variantB() : variantC();
+  const ns = root.querySelector('#bscroll');
+  if (ns) ns.scrollTop = keep;
+  try { localStorage.setItem('edp-state', JSON.stringify({ view: state.view, ent: state.ent })); } catch (e) {}
+}
+function reset() { state.kind = 'all'; state.scope = 'all'; state.q = ''; state.sel = null; state.showAll = {}; state.descOpen = false; }
+
+document.addEventListener('click', (ev) => {
+  const vb = ev.target.closest('[data-view]');
+  if (vb) { state.view = vb.dataset.view; state.tab = 'overview'; reset(); render(); return; }
+  const eb = ev.target.closest('[data-ent]');
+  if (eb) { state.ent = eb.dataset.ent; state.tab = 'overview'; reset(); render(); return; }
+  const j = ev.target.closest('[data-jump]');
+  if (j) { ev.preventDefault(); const t = root.querySelector('#' + j.dataset.jump); const sc = root.querySelector('#bscroll'); if (t && sc) sc.scrollTo({ top: t.offsetTop - sc.offsetTop, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); return; }
+  const a = ev.target.closest('[data-act]');
+  if (!a) return;
+  const v = a.dataset.v;
+  switch (a.dataset.act) {
+    case 'view': state.view = v; state.tab = 'overview'; reset(); break;
+    case 'tab': state.tab = v; state.sel = null; break;
+    case 'kind': state.kind = v; state.sel = null; break;
+    case 'gokind': state.tab = 'relations'; state.kind = v; state.sel = null; break;
+    case 'scope':
+      state.scope = state.view !== 'a' && state.scope === v && v !== 'all' ? 'all' : v;
+      state.sel = null;
+      if (state.view === 'a') state.tab = 'relations';
+      if (state.kind !== 'all' && !rows().length) state.kind = 'all';
+      break;
+    case 'sel': state.sel = state.sel === Number(v) ? null : Number(v); break;
+    case 'showall': state.showAll[v] = true; break;
+    case 'desc': state.descOpen = !state.descOpen; break;
+    default: return;
+  }
+  render();
+});
+document.addEventListener('input', (ev) => {
+  if (ev.target.id !== 'relq') return;
+  state.q = ev.target.value; state.sel = null;
+  const pos = ev.target.selectionStart;
+  render();
+  const n = document.getElementById('relq'); if (n) { n.focus(); n.setSelectionRange(pos, pos); }
+});
+render();
+</script>

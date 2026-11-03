@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omnipath-postgres"
+version = "0.1.0"
+description = "Load pinned, resolved OmniPath Parquet releases into PostgreSQL"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "certifi>=2023.7.22",
+    "omnipath-core>=0.1.0,<0.2.0",
+    "omnipath-resolver>=0.1.0,<0.2.0",
+    "omnipath-subsets>=0.1.0,<0.2.0",
+    "duckdb>=1.5,<2",
+    "pyarrow>=14",
+    "psycopg2-binary>=2.9,<3",
+    "PyYAML>=6,<7",
+    "pypath-omnipath",
+]
+
+[project.scripts]
+omnipath-postgres = "omnipath_postgres.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["omnipath_postgres*"]
+
+[tool.uv.sources]
+omnipath-core = { workspace = true }
+omnipath-resolver = { workspace = true }
+omnipath-subsets = { workspace = true }
+
+[tool.setuptools.package-data]
+omnipath_postgres = ["relational/**/*.sql", "relational/**/*.yaml"]

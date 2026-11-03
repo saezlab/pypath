@@ -1,0 +1,237 @@
+<title>Explorer Header Options</title>
+<style>
+/* Layout: toolbar for the variant, then a scaled-down explorer page (header, search, results, filters). */
+:root {
+  --bg: #f4f5f6; --app: #ffffff; --panel: #ffffff; --raised: #f5f6f8; --sunk: #eef0f2;
+  --fg: #15181c; --muted: #5f6771; --faint: #8c949d; --line: #e2e5e9; --line-strong: #cdd2d8;
+  --primary: #0f766e; --primary-fg: #ffffff; --primary-soft: #dff2ef; --sel: #16a34a;
+  --gene: rgba(234,88,12,.06); --gene-i: rgba(234,88,12,.15);
+  --sans: "Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #050506; --app: #0a0a0b; --panel: #111214; --raised: #18191c; --sunk: #0d0e10;
+  --fg: #eceef1; --muted: #9aa2ac; --faint: #6b737d; --line: #23262b; --line-strong: #33373e;
+  --primary: #0f766e; --primary-fg: #ecfdf9; --primary-soft: #0e2a27; --sel: #22c55e;
+  --gene: rgba(251,146,60,.07); --gene-i: rgba(251,146,60,.15);
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #050506; --app: #0a0a0b; --panel: #111214; --raised: #18191c; --sunk: #0d0e10;
+  --fg: #eceef1; --muted: #9aa2ac; --faint: #6b737d; --line: #23262b; --line-strong: #33373e;
+  --primary: #0f766e; --primary-fg: #ecfdf9; --primary-soft: #0e2a27; --sel: #22c55e;
+  --gene: rgba(251,146,60,.07); --gene-i: rgba(251,146,60,.15);
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 13px; line-height: 1.4; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.page { max-width: 1240px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 48px; display: grid; gap: 14px; }
+.bar { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; justify-content: space-between; }
+.bar h1 { margin: 0; font-size: 18px; font-weight: 650; }
+.bar p { margin: 2px 0 0; color: var(--muted); max-width: 66ch; font-size: 14px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px; }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 9px; background: var(--sunk); border: 1px solid var(--line); }
+.seg button { padding: 5px 10px; border-radius: 6px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--panel); color: var(--fg); font-weight: 560; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+.note { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; color: var(--muted); font-size: 14px; }
+.note b { color: var(--fg); }
+.note ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 3px; }
+
+/* app frame */
+.app { background: var(--app); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; position: relative; }
+.hdr { display: flex; align-items: center; gap: 18px; height: 48px; padding: 0 16px; }
+.logo { display: flex; align-items: center; gap: 8px; font-weight: 650; font-size: 15px; flex: none; }
+.logo i { width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #d9f99d, #65a30d 60%, #3f6212); display: block; }
+.nav { display: flex; gap: 2px; height: 100%; align-items: center; }
+.nav a { padding: 0 9px; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; height: 100%; border-bottom: 2px solid transparent; }
+.nav a.on { color: var(--fg); font-weight: 560; border-color: var(--fg); }
+.nav a.dim { color: color-mix(in srgb, var(--muted) 50%, transparent); }
+.count { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--primary); color: var(--primary-fg); font-size: 11px; font-weight: 650; display: inline-grid; place-items: center; font-variant-numeric: tabular-nums; }
+.right { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--muted); }
+.release { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 9px; border: 1px solid var(--line); border-radius: 7px; font-size: 12px; color: var(--muted); }
+.release b { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+.release .tag { font-size: 10.5px; padding: 1px 5px; border-radius: 4px; background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+:root[data-theme="dark"] .release .tag { color: #5eead4; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .release .tag { color: #5eead4; } }
+.ico { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 6px; color: var(--muted); }
+.ico svg, .sv { width: 15px; height: 15px; }
+
+.tabs { display: inline-flex; padding: 2px; border-radius: 7px; background: var(--sunk); border: 1px solid var(--line); flex: none; }
+.tabs span { padding: 5px 11px; border-radius: 5px; color: var(--muted); font-weight: 520; }
+.tabs span.on { background: var(--panel); color: var(--fg); box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.ulTabs { display: flex; gap: 16px; align-self: stretch; }
+.ulTabs span { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); border-bottom: 2px solid transparent; padding-top: 2px; }
+.ulTabs span.on { color: var(--fg); border-color: var(--fg); font-weight: 560; }
+.ulTabs span em { font-style: normal; color: var(--faint); font-size: 12px; font-variant-numeric: tabular-nums; }
+.search { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--panel); min-width: 0; flex: 1; }
+.search .q { flex: 1; color: var(--fg); min-width: 0; }
+.search .ph { color: var(--faint); }
+.kbd { font-family: var(--mono); font-size: 11px; color: var(--faint); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; line-height: 18px; }
+.btn { height: 34px; padding: 0 14px; border-radius: 7px; background: var(--primary); color: var(--primary-fg); font-weight: 560; display: inline-flex; align-items: center; }
+.toggle { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); white-space: nowrap; }
+.toggle i { width: 26px; height: 15px; border-radius: 8px; background: var(--primary); position: relative; display: block; }
+.toggle i::after { content: ""; position: absolute; right: 2px; top: 2px; width: 11px; height: 11px; border-radius: 50%; background: #fff; }
+.toggle.off i { background: var(--line-strong); }
+.toggle.off i::after { right: auto; left: 2px; }
+
+.row2 { display: flex; align-items: center; gap: 10px; padding: 8px 16px 10px; }
+.row2.center { justify-content: center; }
+.row2.center > .inner { display: flex; gap: 8px; align-items: center; width: min(100%, 640px); }
+
+/* body grid */
+.body { display: grid; grid-template-columns: minmax(0, 1fr) 200px 200px; gap: 10px; padding: 0 16px 16px; }
+.pnl { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; min-width: 0; overflow: hidden; }
+.pnl > header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 12px; border-bottom: 1px solid var(--line); font-weight: 600; }
+.pnl > header .sub { color: var(--faint); font-weight: 500; font-variant-numeric: tabular-nums; }
+.pnl > header .tools { display: flex; align-items: center; gap: 12px; font-weight: 500; }
+.list { display: grid; }
+.list.inset { margin: 12px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.list.flush { border-top: 0; }
+.rowx { display: grid; grid-template-columns: 28px minmax(0,1fr) auto; gap: 0 10px; align-items: center; padding: 7px 12px; background: var(--gene); border-bottom: 1px solid var(--line); }
+.rowx .tile { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; background: var(--gene-i); font-size: 14px; }
+.rowx .n { font-weight: 600; }
+.rowx .id { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-left: 6px; }
+.rowx .m { color: var(--muted); font-size: 12px; }
+.rowx .add { width: 24px; height: 24px; border-radius: 6px; display: grid; place-items: center; color: var(--muted); }
+.rowx .add.on { background: var(--sel); color: #fff; }
+.facet { padding: 6px 12px 10px; display: grid; gap: 4px; }
+.facet .it { display: flex; align-items: center; gap: 8px; color: var(--fg); }
+.facet .it .cb { width: 13px; height: 13px; border: 1px solid var(--line-strong); border-radius: 3px; flex: none; }
+.facet .it .lb { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.facet .it .c { color: var(--faint); font-variant-numeric: tabular-nums; }
+.facet .it.zero { color: var(--faint); }
+.facet .more { color: var(--primary); font-weight: 560; text-align: left; margin-top: 2px; }
+:root[data-theme="dark"] .facet .more { color: #5eead4; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .facet .more { color: #5eead4; } }
+.stack { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.float { position: absolute; right: 18px; bottom: 18px; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 18px; background: var(--primary); color: var(--primary-fg); font-weight: 600; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+.float .count { background: rgba(255,255,255,.25); }
+.callout { position: absolute; font-size: 11px; font-weight: 650; color: #fff; background: #db2777; border-radius: 10px; width: 20px; height: 20px; display: grid; place-items: center; box-shadow: 0 0 0 3px var(--app); z-index: 2; }
+
+@media (max-width: 900px) {
+  .body { grid-template-columns: minmax(0,1fr); }
+  .body .stack { display: none; }
+  .nav a:not(.keep) { display: none; }
+  .hdr { gap: 10px; }
+  .row2 { flex-wrap: wrap; }
+  .hide-sm { display: none; }
+}
+</style>
+
+<div class="page">
+  <div class="bar">
+    <div><h1>Explorer header</h1><p>The header, search bar and selection, redesigned. The page below the header uses the new list rows and the cleaned-up filters, so the layout reads as a whole.</p></div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Variant"><button data-v="cur">Current</button><button data-v="a">A · Aligned toolbar</button><button data-v="b">B · Search in header</button></div>
+      <div class="seg" role="group" aria-label="Selection"><button data-s="0">Nothing selected</button><button data-s="4">4 selected</button></div>
+    </div>
+  </div>
+  <div class="note" id="note"></div>
+  <div class="app" id="app"></div>
+</div>
+
+<script>
+const ICON = {
+  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  sliders: '<path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>',
+  chevron: '<path d="m6 9 6 6 6-6"/>',
+  plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  arrow: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  sort: '<path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="M11 4h10"/><path d="M11 8h7"/><path d="M11 12h4"/>',
+};
+const svg = (k) => `<svg class="sv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
+
+const ROWS = [
+  ['TP53', 'Entrez Gene 7157', 'Gene · Human (9606) · 4 records'],
+  ['TP53RK', 'Entrez Gene 112858', 'Gene · Human (9606) · 2 records'],
+  ['Tp53bp2', 'Entrez Gene 209456', 'Gene · House mouse (10090) · 2 records'],
+  ['Tp53', 'Entrez Gene 22059', 'Gene · House mouse (10090) · 2 records'],
+  ['Tp53bp1', 'Entrez Gene 27223', 'Gene · House mouse (10090) · 2 records'],
+  ['TP53INP2', 'Entrez Gene 58476', 'Gene · Human (9606) · 2 records'],
+];
+const SOURCES = [['reactome', 46], ['kegg', 20], ['intact', 6], ['cellinker', 2], ['corum', 2], ['signor', 2], ['stitch', 2], ['wikipathways', 2], ['mondo', 1], ['pfocr', 1]];
+const TYPES = [['🧬', 'Protein', 38], ['🧩', 'Macromolecular complex', 21], ['⚗️', 'Molecular activity', 18], ['🛣️', 'Pathway', 3], ['🧬', 'Gene', 2], ['📦', 'Physical entity', 2]];
+const TAXA = [['Human (9606)', 34], ['House mouse (10090)', 8], ['Domestic cattle (9913)', 1]];
+
+const state = { v: 'a', s: '4' };
+try { Object.assign(state, JSON.parse(localStorage.getItem('hdr-proto') || '{}')); } catch (e) {}
+
+const NOTES = {
+  cur: `<b>Current.</b> Two bars: the navigation, then a centred search row that does not line up with the panels. The Group switch disappears on the Relations tab and the search box changes width. Selection is greyed out when empty and otherwise shown as a floating button over the filters. "Latest" does not say which release is loaded.`,
+  a: `<b>A · Aligned toolbar.</b> The smallest change. The second row starts at the panels' left edge. Entities and Relations become underlined tabs with counts. The search fills the rest of the row, and Enter searches (the ↵ hint replaces the Search button, as on the Resources page). Group moves into the Results header next to sorting, so nothing moves when you switch tabs.<ul><li>Selection is a normal header link with a count, never greyed out. Empty, it opens a page that says how to add entities. The floating button is gone.</li><li>The release shows its version: "2026.10.6 · latest".</li><li>Filters hide zero-count sources behind "Show 36 more" and drop the repeated 📚 and 🌿 icons.</li></ul>`,
+  b: `<b>B · Search in header.</b> One bar fewer. The search moves into the header between the navigation and the release, as on GitHub or Linear. Entities and Relations become tabs on the Results panel, where they switch what the panel lists. Group sits next to them. This frees about 50px of height for results, but the search box is narrower, and other pages (Resources, Selection) would need their own search placement. Selection, release and filters as in A.`,
+};
+
+function header(v, sel) {
+  const selLink = v === 'cur'
+    ? `<a href="#" class="${sel ? '' : 'dim'}">Selection</a>`
+    : `<a href="#" class="keep">Selection${sel ? ` <span class="count">${sel}</span>` : ''}</a>`;
+  const release = v === 'cur'
+    ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:12px">Latest ${svg('chevron')}</span>`
+    : `<span class="release"><span class="hide-sm">Release</span> <b>2026.10.6</b> <span class="tag">latest</span>${svg('chevron')}</span>`;
+  const search = v === 'b'
+    ? `<div class="search" style="max-width:460px">${svg('search')}<span class="q">TP53</span><span class="kbd">↵</span></div>`
+    : '';
+  return `<div class="hdr"><span class="logo"><i></i>OmniPath</span>
+    <nav class="nav"><a href="#" class="on keep">Explore</a>${selLink}<a href="#">Resources</a><a href="#">Skills</a></nav>
+    ${search}
+    <div class="right"><span class="hide-sm" style="font-size:12px">Documentation ↗</span>${release}<span class="ico">${svg('sliders')}</span></div></div>`;
+}
+
+function searchRow(v) {
+  if (v === 'cur') return `<div class="row2 center"><div class="inner"><span class="tabs"><span class="on">Entities</span><span>Relations</span></span>
+      <div class="search">${svg('search')}<span class="q">TP53</span></div><span class="toggle">Group <i></i></span><span class="btn">Search</span></div></div>`;
+  if (v === 'a') return `<div class="row2" style="height:46px;padding-block:0;border-bottom:1px solid var(--line);margin-bottom:10px">
+      <div class="ulTabs"><span class="on">Entities <em>40</em></span><span>Relations <em>76</em></span></div>
+      <div class="search" style="margin-left:8px">${svg('search')}<span class="q">TP53</span><span class="kbd">↵ to search</span></div></div>`;
+  return '<div style="height:10px"></div>';
+}
+
+function results(v, sel) {
+  const head = v === 'cur'
+    ? `<header>Results</header>`
+    : v === 'a'
+      ? `<header><span>Results <span class="sub">40 entities</span></span><span class="tools"><span class="toggle">Group by gene/structure <i></i></span><span style="display:inline-flex;gap:5px;align-items:center;color:var(--muted)">${svg('sort')} Relevance</span></span></header>`
+      : `<header><span class="ulTabs" style="gap:14px"><span class="on">Entities <em>40</em></span><span>Relations <em>76</em></span></span><span class="tools"><span class="toggle">Group <i></i></span><span style="display:inline-flex;gap:5px;align-items:center;color:var(--muted)">${svg('sort')} Relevance</span></span></header>`;
+  const rows = ROWS.map(([n, id, m], i) => {
+    const on = sel && i === 0;
+    return `<div class="rowx" style="${on ? 'box-shadow: inset 0 0 0 1px var(--sel)' : ''}"><span class="tile">🧬</span><div><span class="n">${n}</span><span class="id">${id}</span><div class="m">${m}</div></div><span class="add ${on ? 'on' : ''}">${svg(on ? 'check' : 'plus')}</span></div>`;
+  }).join('');
+  return `<section class="pnl">${head}<div class="list ${v === 'cur' ? 'inset' : 'flush'}">${rows}</div></section>`;
+}
+
+function facets(v) {
+  const cleaned = v !== 'cur';
+  const src = cleaned
+    ? SOURCES.map(([s, n]) => `<div class="it"><span class="cb"></span><span class="lb">${s}</span><span class="c">${n}</span></div>`).join('') + `<button class="more">Show 36 more</button>`
+    : [...SOURCES, ['bindingdb', 0], ['brenda', 0], ['cellchat', 0]].map(([s, n]) => `<div class="it ${n ? '' : 'zero'}"><span class="cb"></span>📚<span class="lb">${s}</span><span class="c">${n}</span></div>`).join('');
+  const types = TYPES.map(([e, t, n]) => `<div class="it"><span class="cb"></span>${e}<span class="lb" title="${t}">${t}</span><span class="c">${n}</span></div>`).join('');
+  const taxa = TAXA.map(([t, n]) => `<div class="it"><span class="cb"></span>${cleaned ? '' : '🌿'}<span class="lb" title="${t}">${t}</span><span class="c">${n}</span></div>`).join('');
+  return `<div class="stack"><section class="pnl"><header>Sources</header><div class="facet">${src}</div></section></div>
+    <div class="stack"><section class="pnl"><header>Entity types</header><div class="facet">${types}</div></section><section class="pnl"><header>Taxonomy</header><div class="facet">${taxa}</div></section></div>`;
+}
+
+function pins(v) {
+  if (v !== 'cur') return '';
+  const p = (n, x, y) => `<span class="callout" style="left:${x};top:${y}">${n}</span>`;
+  return p(1, 'calc(50% - 330px)', '58px') + p(2, 'calc(50% + 205px)', '58px') + p(3, 'calc(100% - 140px)', '14px') + p(4, '178px', '14px') + p(5, 'calc(100% - 160px)', 'calc(100% - 48px)');
+}
+
+function render() {
+  document.querySelectorAll('[data-v]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.v === state.v));
+  document.querySelectorAll('[data-s]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.s === state.s));
+  document.getElementById('note').innerHTML = NOTES[state.v];
+  const sel = Number(state.s);
+  const v = state.v;
+  document.getElementById('app').innerHTML = header(v, sel) + searchRow(v) +
+    `<div class="body">${results(v, sel)}${facets(v)}</div>` +
+    (v === 'cur' && sel ? `<span class="float">Open Selection <span class="count">${sel}</span>${svg('arrow')}</span>` : '');
+  try { localStorage.setItem('hdr-proto', JSON.stringify(state)); } catch (e) {}
+}
+document.addEventListener('click', (e) => {
+  const v = e.target.closest('[data-v]'); if (v) { state.v = v.dataset.v; render(); }
+  const s = e.target.closest('[data-s]'); if (s) { state.s = s.dataset.s; render(); }
+});
+render();
+</script>

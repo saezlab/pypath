@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OmniPath Core Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: a narrow rail with only the page links, one ~74ch column of prose; the rail becomes a wrapping top row on phones. */
+:root {
+  --bg: #f5f6f4;
+  --panel: #ffffff;
+  --ink: #1d2422;
+  --muted: #5d6a66;
+  --line: #dde2df;
+  --accent: #0e6e63;
+  --accent-soft: #e2f0ed;
+  --code-bg: #eef1ef;
+  --decision: #8a5a12;
+  --decision-soft: #f8f0e1;
+  --font-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121615; --panel: #191e1d; --ink: #e3e8e6; --muted: #98a5a1; --line: #2b3331;
+    --accent: #5cc4b4; --accent-soft: #1b3330; --code-bg: #1f2624;
+    --decision: #e0b066; --decision-soft: #2a2216; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121615; --panel: #191e1d; --ink: #e3e8e6; --muted: #98a5a1; --line: #2b3331;
+  --accent: #5cc4b4; --accent-soft: #1b3330; --code-bg: #1f2624;
+  --decision: #e0b066; --decision-soft: #2a2216; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 15.5px/1.62 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+.shell { display: grid; grid-template-columns: 220px minmax(0, 1fr); min-height: 100vh; }
+
+/* Rail: page links only */
+.rail {
+  position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; height: 100vh; overflow-y: auto;
+  border-right: 1px solid var(--line); background: var(--panel); padding: 28px 14px;
+}
+.nav { display: flex; flex-direction: column; gap: 2px; }
+.nav a { padding: 7px 12px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 14.5px; }
+.nav a:hover { background: var(--bg); }
+.nav a[aria-current="page"] { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+
+/* Content */
+main { padding-block: 48px 96px; padding-inline: clamp(16px, 5vw, 64px); min-width: 0; }
+.doc { max-width: 74ch; margin: 0 auto; min-width: 0; }
+.doc h1 { font: 600 clamp(30px, 4vw, 38px)/1.1 var(--font-display); letter-spacing: -0.005em; margin: 0 0 18px; text-wrap: balance; }
+.doc h2 { font: 600 23px/1.25 var(--font-display); margin: 44px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); text-wrap: balance; }
+.doc h3 { font: 600 17px/1.3 var(--font-body); margin: 28px 0 8px; text-wrap: balance; }
+.doc h1 + p { font-size: 17px; color: var(--muted); }
+.doc p, .doc ul, .doc ol { margin: 0 0 14px; }
+.doc ul, .doc ol { padding-left: 22px; }
+.doc li { margin: 4px 0; }
+.doc li > p { margin: 0 0 8px; }
+.doc li::marker { color: var(--muted); }
+.doc strong { font-weight: 600; }
+.doc :is(h2, h3) { scroll-margin-top: 24px; }
+.doc :is(h2, h3) .anchor { opacity: 0; margin-left: 6px; text-decoration: none; font-weight: 400; color: var(--muted); }
+.doc :is(h2, h3):hover .anchor, .doc :is(h2, h3) .anchor:focus-visible { opacity: 1; }
+
+.doc code { font: 0.87em/1.5 var(--font-mono); background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.doc pre { background: var(--code-bg); border-radius: 8px; padding: 14px 16px; overflow-x: auto; margin: 0 0 18px; }
+.doc pre code { background: none; padding: 0; font-size: 13px; overflow-wrap: normal; }
+
+.table-wrap { overflow-x: auto; margin: 0 0 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+.doc table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.doc th, .doc td { text-align: left; vertical-align: top; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+.doc tr:last-child td { border-bottom: 0; }
+.doc th { font: 500 11.5px/1.3 var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+.doc td code { white-space: nowrap; }
+
+.diagram { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 0 0 20px; overflow-x: auto; text-align: center; }
+.diagram svg { max-width: 100%; height: auto; }
+
+/* Decision blocks: a blockquote that starts with "Decision:" */
+.doc blockquote { margin: 0 0 18px; padding: 10px 16px; border-left: 3px solid var(--line); color: var(--muted); }
+.doc blockquote p:last-child { margin-bottom: 0; }
+.doc blockquote.decision {
+  color: var(--ink); background: var(--decision-soft); border: 0; border-radius: 8px;
+  padding: 14px 18px 14px 18px; position: relative;
+}
+.doc blockquote.decision::before {
+  content: "Decision"; display: block; margin-bottom: 4px;
+  font: 500 11px/1.4 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--decision);
+}
+.doc blockquote.decision > p:first-child > strong:first-child { color: var(--ink); }
+.doc blockquote.decision em { font-style: normal; font-weight: 600; color: var(--decision); }
+
+/* Glossary */
+a.ref-term { color: inherit; text-decoration: underline dotted var(--accent); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+.doc.page-glossary h3 { margin: 22px 0 2px; color: var(--accent); font-size: 16px; }
+.doc.page-glossary h3 + p { margin-top: 0; }
+
+.pop {
+  position: absolute; z-index: 20; max-width: min(380px, calc(100vw - 32px));
+  background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14); padding: 12px 14px; font-size: 13.5px; line-height: 1.5;
+}
+.pop b { display: block; font: 600 14px/1.3 var(--font-body); margin-bottom: 4px; }
+.pop p { margin: 0 0 6px; }
+.pop p:last-child { margin: 0; }
+.pop code { font: 0.88em var(--font-mono); background: var(--code-bg); padding: 0 4px; border-radius: 3px; }
+
+.pager { display: flex; justify-content: space-between; gap: 16px; margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.pager a { text-decoration: none; display: flex; flex-direction: column; gap: 2px; }
+.pager a small { font: 500 11px/1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.pager a.next { text-align: right; margin-left: auto; }
+
+.notice { background: var(--decision-soft); border-radius: 8px; padding: 16px 18px; }
+.notice pre { margin: 10px 0 0; }
+
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; }
+  .rail { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 10px 16px; }
+  .nav { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+  .nav a { padding: 5px 10px; font-size: 14px; }
+  main { padding-block: 28px 64px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="rail"><nav class="nav" id="nav" aria-label="Pages"></nav></aside>
+  <main><article class="doc" id="doc" aria-live="polite"><p>Loading…</p></article></main>
+</div>
+<div class="pop" id="pop" role="tooltip" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+(() => {
+  const PAGES = [
+    { id: "overview", file: "overview.md", title: "Overview" },
+    { id: "glossary", file: "glossary.md", title: "Glossary" },
+    { id: "entities", file: "entities.md", title: "Entities and relations" },
+    { id: "resolution", file: "resolution.md", title: "Entity resolution" },
+    { id: "postgres", file: "postgres.md", title: "PostgreSQL" },
+    { id: "subsets", file: "subsets.md", title: "Subsets" },
+  ];
+  const REPO = "https://github.com/saezlab/omnipath-build/blob/main/";
+  const byFile = Object.fromEntries(PAGES.map(p => [p.file, p]));
+  const sources = {};
+  const terms = {};  // glossary slug -> {title, html}
+
+  const docEl = document.getElementById("doc");
+  const navEl = document.getElementById("nav");
+  const popEl = document.getElementById("pop");
+
+  const slug = s => s.toLowerCase().replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "-");
+  const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  // Routes use "#page" or "#page~section" so they survive as a plain anchor.
+  const parseRoute = () => {
+    const [page, section] = decodeURIComponent(location.hash.slice(1)).split("~");
+    return { page: byFile[page + ".md"] ? page : "overview", section: section || "" };
+  };
+  const href = (pageId, section) => "#" + pageId + (section ? "~" + section : "");
+
+  function render(md, pageId) {
+    const tpl = document.createElement("template");
+    tpl.innerHTML = marked.parse(md, { gfm: true });
+    const root = tpl.content;
+
+    // Rewrite links first: sibling pages route in-app, repo paths go to GitHub.
+    root.querySelectorAll("a[href]").forEach(a => {
+      const raw = a.getAttribute("href");
+      if (/^(https?:|mailto:)/.test(raw)) { a.target = "_blank"; a.rel = "noopener"; return; }
+      if (raw.startsWith("#")) { a.href = href(pageId, raw.slice(1)); return; }
+      const [path, frag] = raw.split("#");
+      if (byFile[path]) {
+        const target = byFile[path].id;
+        a.href = href(target, frag || "");
+        if (target === "glossary" && frag) { a.classList.add("ref-term"); a.dataset.term = frag; }
+        return;
+      }
+      if (path.startsWith("../")) {
+        a.href = REPO + path.replace(/^(\.\.\/)+/, "") + (frag ? "#" + frag : "");
+        a.target = "_blank"; a.rel = "noopener";
+      }
+    });
+
+    root.querySelectorAll("h2, h3").forEach(h => {
+      h.id = slug(h.textContent);
+      const a = document.createElement("a");
+      a.className = "anchor"; a.href = href(pageId, h.id); a.textContent = "#";
+      a.setAttribute("aria-label", "Link to this section");
+      h.appendChild(a);
+    });
+
+    root.querySelectorAll("blockquote").forEach(q => {
+      const lead = q.querySelector("p > strong:first-child");
+      if (lead && /^Decision:/.test(lead.textContent)) {
+        q.classList.add("decision");
+        const text = lead.textContent.replace(/^Decision:\s*/, "");
+        lead.textContent = text.charAt(0).toUpperCase() + text.slice(1);
+      }
+    });
+
+    root.querySelectorAll("table").forEach(t => {
+      const w = document.createElement("div"); w.className = "table-wrap";
+      t.replaceWith(w); w.appendChild(t);
+    });
+
+    root.querySelectorAll("pre > code.language-mermaid").forEach(code => {
+      const div = document.createElement("div");
+      div.className = "diagram mermaid-src";
+      div.dataset.src = code.textContent;
+      code.parentElement.replaceWith(div);
+    });
+    return root;
+  }
+
+  function isDark() {
+    const t = document.documentElement.dataset.theme;
+    return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  async function drawDiagrams() {
+    const nodes = [...docEl.querySelectorAll(".mermaid-src")];
+    if (!nodes.length || !window.mermaid) return;
+    mermaid.initialize({ startOnLoad: false, theme: isDark() ? "dark" : "neutral", fontFamily: "IBM Plex Sans, system-ui, sans-serif", flowchart: { htmlLabels: true, curve: "basis" } });
+    for (const [i, n] of nodes.entries()) {
+      try {
+        const { svg } = await mermaid.render("mmd-" + Date.now() + "-" + i, n.dataset.src);
+        n.innerHTML = svg;
+      } catch (e) {
+        n.innerHTML = "<pre><code>" + esc(n.dataset.src) + "</code></pre>";
+      }
+    }
+  }
+
+  function indexGlossary() {
+    const g = render(sources["glossary.md"], "glossary");
+    g.querySelectorAll("h3").forEach(h => {
+      const parts = []; let n = h.nextElementSibling;
+      while (n && !/^H[1-3]$/.test(n.tagName)) { parts.push(n.outerHTML); n = n.nextElementSibling; }
+      terms[h.id] = { title: h.firstChild.textContent, html: parts.join("") };
+    });
+  }
+
+  function renderNav(active) {
+    navEl.innerHTML = PAGES.map(p =>
+      `<a href="${href(p.id)}"${p.id === active ? ' aria-current="page"' : ""}>${esc(p.title)}</a>`
+    ).join("");
+  }
+
+  let lastPage = null;
+  function show() {
+    const { page, section } = parseRoute();
+    const p = byFile[page + ".md"];
+    if (page !== lastPage) {
+      docEl.className = "doc page-" + p.id;
+      docEl.replaceChildren(render(sources[p.file], p.id));
+      const i = PAGES.indexOf(p), prev = PAGES[i - 1], next = PAGES[i + 1];
+      const pager = document.createElement("nav");
+      pager.className = "pager"; pager.setAttribute("aria-label", "Previous and next page");
+      pager.innerHTML = (prev ? `<a href="${href(prev.id)}"><small>Previous</small>${esc(prev.title)}</a>` : "") +
+                        (next ? `<a class="next" href="${href(next.id)}"><small>Next</small>${esc(next.title)}</a>` : "");
+      docEl.appendChild(pager);
+      renderNav(p.id);
+      document.title = p.id === "overview" ? "OmniPath Core Docs" : p.title + " · OmniPath Core Docs";
+      lastPage = page;
+      drawDiagrams();
+    }
+    const target = section && document.getElementById(section);
+    if (target) target.scrollIntoView({ block: "start" }); else window.scrollTo(0, 0);
+  }
+
+  // Glossary pop-ups on hover or keyboard focus.
+  let hideTimer = null;
+  function showPop(a) {
+    const entry = terms[a.dataset.term];
+    if (!entry) return;
+    clearTimeout(hideTimer);
+    popEl.innerHTML = `<b>${esc(entry.title)}</b>${entry.html}`;
+    popEl.hidden = false;
+    const r = a.getBoundingClientRect();
+    const left = Math.min(Math.max(16, r.left + window.scrollX), window.scrollX + document.documentElement.clientWidth - popEl.offsetWidth - 16);
+    let top = r.bottom + window.scrollY + 8;
+    if (r.bottom + popEl.offsetHeight + 16 > window.innerHeight) top = r.top + window.scrollY - popEl.offsetHeight - 8;
+    popEl.style.left = left + "px"; popEl.style.top = top + "px";
+  }
+  function hidePop() { hideTimer = setTimeout(() => { popEl.hidden = true; }, 120); }
+  document.addEventListener("mouseover", e => {
+    const a = e.target.closest("a.ref-term");
+    if (a) showPop(a); else if (!popEl.hidden && !e.target.closest("#pop")) hidePop();
+  });
+  document.addEventListener("focusin", e => { const a = e.target.closest("a.ref-term"); if (a) showPop(a); else hidePop(); });
+  popEl.addEventListener("mouseenter", () => clearTimeout(hideTimer));
+  popEl.addEventListener("mouseleave", hidePop);
+  document.addEventListener("keydown", e => { if (e.key === "Escape") popEl.hidden = true; });
+
+  // Redraw diagrams in the right colors when the theme changes, keeping the scroll position.
+  const redraw = () => { if (!lastPage) return; const y = window.scrollY; lastPage = null; show(); window.scrollTo(0, y); };
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw);
+  new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  async function boot() {
+    try {
+      const texts = await Promise.all(PAGES.map(p => fetch(p.file).then(r => { if (!r.ok) throw new Error(p.file); return r.text(); })));
+      PAGES.forEach((p, i) => { sources[p.file] = texts[i]; });
+    } catch (err) {
+      docEl.innerHTML = `<h1>Can't load the pages</h1><div class="notice">The viewer reads the Markdown files next to it, so it must be served over HTTP rather than opened as a file. From the repository root, run:<pre><code>make docs</code></pre>then open <a href="http://127.0.0.1:8090">http://127.0.0.1:8090</a>. The same pages also render on GitHub in <code>core_documentation/</code>.</div>`;
+      return;
+    }
+    indexGlossary();
+    window.addEventListener("hashchange", show);
+    show();
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

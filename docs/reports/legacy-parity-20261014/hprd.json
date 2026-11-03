@@ -1,0 +1,88 @@
+{
+  "resource": "hprd",
+  "kind": "relation",
+  "note": "Enzyme-substrate pairs, legacy with the in vitro ones as inputs_v2; legacy gives no sign.",
+  "v2_seconds": 3.8,
+  "legacy_seconds": 1.0,
+  "legacy_pairs": 4264,
+  "legacy_pairs_found_in_v2": 4256,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 8,
+  "missing_by_ids_known_to_v2": {
+    "both": 2,
+    "one": 5,
+    "neither": 1
+  },
+  "v2_relations": 8398,
+  "v2_relations_without_legacy_pair": 5,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 8398
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "PAM",
+        "NP_000930.1"
+      ],
+      [
+        "PAM",
+        "NP_001030333.1"
+      ],
+      [
+        "FBXO11",
+        "NP_000537.3"
+      ],
+      [
+        "TGM2",
+        "NP_000925.2"
+      ],
+      [
+        "F13A1",
+        "NP_000925.2"
+      ],
+      [
+        "TGM2",
+        "NP_002954.2"
+      ],
+      [
+        "PAM",
+        "FXYD1"
+      ],
+      [
+        "PAM",
+        "FXYD1"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['06663'] -[affects]-> ['NP_057626.2', '06663', '06663_1']",
+      "['06663'] -[affects]-> ['NP_001035917.1', '06663', '06663_2']",
+      "['06663'] -[affects]-> ['NP_001035918.1', '06663', '06663_3']",
+      "['11791'] -[affects]-> ['NP_057737.2', '11791', '11791_1']",
+      "['11791'] -[affects]-> ['NP_057737.2', '11791', '11791_1']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/HPRD_FLAT_FILES_041310.tar.gz",
+      "path": "/root/data/pypath-cache/hprd/HPRD_FLAT_FILES_041310.tar.gz",
+      "size": 33125299,
+      "sha256": "8138a71c7cc21f1022014bb329cf5771702c9eff96120b7d9067c3c4c9d50a90",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/HPRD_FLAT_FILES_041310.tar.gz",
+      "path": "/root/data/pypath-cache/hprd/HPRD_FLAT_FILES_041310.tar.gz",
+      "size": 33125299,
+      "sha256": "8138a71c7cc21f1022014bb329cf5771702c9eff96120b7d9067c3c4c9d50a90",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

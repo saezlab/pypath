@@ -1,0 +1,162 @@
+{
+  "resource": "netpath",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 1.4,
+  "legacy_seconds": 0.9,
+  "legacy_pairs": 4216,
+  "legacy_pairs_found_in_v2": 2233,
+  "legacy_pairs_reversed_in_v2": 150,
+  "legacy_pairs_missing_in_v2": 1833,
+  "missing_by_ids_known_to_v2": {
+    "both": 1318,
+    "one": 363,
+    "neither": 152
+  },
+  "v2_relations": 2928,
+  "v2_relations_without_legacy_pair": 3,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 2928
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "3566",
+        "3566"
+      ],
+      [
+        "3561",
+        "3561"
+      ],
+      [
+        "3561",
+        "3565"
+      ],
+      [
+        "3565",
+        "3565"
+      ],
+      [
+        "3716",
+        "3716"
+      ],
+      [
+        "2242",
+        "2242"
+      ],
+      [
+        "5777",
+        "5777"
+      ],
+      [
+        "5781",
+        "5781"
+      ],
+      [
+        "5777",
+        "5295"
+      ],
+      [
+        "5777",
+        "5296"
+      ],
+      [
+        "5295",
+        "5295"
+      ],
+      [
+        "5295",
+        "5296"
+      ],
+      [
+        "3717",
+        "3717"
+      ],
+      [
+        "5590",
+        "5590"
+      ],
+      [
+        "8660",
+        "8660"
+      ],
+      [
+        "8660",
+        "5296"
+      ],
+      [
+        "2242",
+        "5295"
+      ],
+      [
+        "2242",
+        "5296"
+      ],
+      [
+        "3718",
+        "3718"
+      ],
+      [
+        "3667",
+        "3667"
+      ],
+      [
+        "3667",
+        "5296"
+      ],
+      [
+        "3667",
+        "6654"
+      ],
+      [
+        "2885",
+        "2885"
+      ],
+      [
+        "5747",
+        "5747"
+      ],
+      [
+        "157",
+        "157"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['971', 'NP_001773.1', '00118', '107272', 'CD72', 'CD72 antigen', 'B cell differentiation antigen CD72', 'LYB2', 'RP11-331F9.9', 'CD72b', 'OTTHUMP00000045360'] -[interacts_with]-> ['971', 'NP_001773.1', '00118', '107272', 'CD72', 'CD72 antigen', 'B cell differentiation antigen CD72', 'LYB2', 'RP11-331F9.9', 'CD72b', 'OTTHUMP00000045360']",
+      "['54472', 'NP_061882.2', '05887', '606277', 'TOLLIP', 'TOL interacting protein', 'IL-1RAcPIP'] -[interacts_with]-> ['54472', 'NP_061882.2', '05887', '606277', 'TOLLIP', 'TOL interacting protein', 'IL-1RAcPIP']",
+      "['54472', 'NP_061882.2', '05887', '606277', 'TOLLIP', 'TOL interacting protein', 'IL-1RAcPIP'] -[interacts_with]-> ['54472', 'NP_061882.2', '05887', '606277', 'TOLLIP', 'TOL interacting protein', 'IL-1RAcPIP']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/NetPath_PSI-MI.zip",
+      "path": "/root/data/pypath-cache/netpath/NetPath_PSI-MI.zip",
+      "size": 610117,
+      "sha256": "1f8d6f549c2df22b07faf783baad72b9d3e6fc290c72049ffb100bb3247e2162",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://rescued.omnipathdb.org/NetPath_PSI-MI.zip",
+      "path": "/root/data/pypath-cache/netpath/NetPath_PSI-MI.zip",
+      "size": 610117,
+      "sha256": "1f8d6f549c2df22b07faf783baad72b9d3e6fc290c72049ffb100bb3247e2162",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/netpath-browse.html",
+      "path": "/root/data/pypath-cache/netpath/netpath-browse.html",
+      "size": 20843,
+      "sha256": "d3aec36d4a6ff4296fcf4b3d23e4a5e0e9c5f594c9bad79080d3fc6f5f9c39e7",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omnipath-api"
+version = "0.1.0"
+description = "REST API over the OmniPath resource Parquet files"
+authors = [{ name = "OmniPath Team" }]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "omnipath-core>=0.1.0,<0.2.0",
+    "duckdb>=1.5,<2",
+    "pyarrow>=14.0.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic>=2.0.0",
+    "urllib3>=2.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "httpx>=0.27.0",
+]
+build = [
+    "omnipath-build",
+]
+
+[project.scripts]
+omnipath-api = "omnipath_api.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["omnipath_api*"]
+
+[tool.uv.sources]
+omnipath-core = { workspace = true }
+omnipath-build = { workspace = true }

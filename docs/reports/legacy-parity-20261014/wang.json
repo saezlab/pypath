@@ -1,0 +1,152 @@
+{
+  "resource": "wang",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 6.5,
+  "legacy_seconds": 0.9,
+  "legacy_pairs": 62937,
+  "legacy_pairs_found_in_v2": 60684,
+  "legacy_pairs_reversed_in_v2": 2128,
+  "legacy_pairs_missing_in_v2": 125,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 119,
+    "neither": 6
+  },
+  "v2_relations": 60684,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "+": 33313,
+    "None": 19425,
+    "-": 7946
+  },
+  "signs_compared": 41259,
+  "signs_agree": 41259,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "92170",
+        "5894"
+      ],
+      [
+        "280979",
+        "7430"
+      ],
+      [
+        "6654",
+        "92170"
+      ],
+      [
+        "92170",
+        "5334"
+      ],
+      [
+        "5138",
+        "820"
+      ],
+      [
+        "50818",
+        "1956"
+      ],
+      [
+        "50818",
+        "5535"
+      ],
+      [
+        "820",
+        "1260"
+      ],
+      [
+        "50818",
+        "5704"
+      ],
+      [
+        "92170",
+        "1730"
+      ],
+      [
+        "280979",
+        "5962"
+      ],
+      [
+        "820",
+        "5595"
+      ],
+      [
+        "820",
+        "10411"
+      ],
+      [
+        "50818",
+        "4082"
+      ],
+      [
+        "50818",
+        "3672"
+      ],
+      [
+        "50818",
+        "8877"
+      ],
+      [
+        "280979",
+        "4082"
+      ],
+      [
+        "280979",
+        "8826"
+      ],
+      [
+        "50818",
+        "4842"
+      ],
+      [
+        "387",
+        "280979"
+      ],
+      [
+        "317",
+        "51761"
+      ],
+      [
+        "387",
+        "50818"
+      ],
+      [
+        "7434",
+        "820"
+      ],
+      [
+        "55811",
+        "92170"
+      ],
+      [
+        "207",
+        "280979"
+      ]
+    ],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/WangLab_HumanSignalingNetwork_v6-format2.csv",
+      "path": "/root/data/pypath-cache/wang/WangLab_HumanSignalingNetwork_v6-format2.csv",
+      "size": 961015,
+      "sha256": "b5190f7374aaf74733d74b8a6b1c4034a22dac19bf08336eb5cb23b02edc029e",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/WangLab_HumanSignalingNetwork_v6-format2.csv",
+      "path": "/root/data/pypath-cache/wang/WangLab_HumanSignalingNetwork_v6-format2.csv",
+      "size": 961015,
+      "sha256": "b5190f7374aaf74733d74b8a6b1c4034a22dac19bf08336eb5cb23b02edc029e",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

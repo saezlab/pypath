@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omnipath-build"
+version = "0.1.0"
+description = "Direct, source-neutral pipeline turning inputs_v2 datasets into the resource Parquet tables"
+authors = [{ name = "OmniPath Team" }]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "omnipath-core>=0.1.0,<0.2",
+    "omnipath-resolver>=0.1.0,<0.2",
+    "duckdb>=1.5,<2",
+    "pyarrow>=14.0.0",
+    "lmdb>=1.8.1,<2",
+    "urllib3>=2.0.0",
+    "pyyaml>=6.0",
+    "psutil>=5.9",
+    "pygoslin>=2,<3",
+    "pypath-omnipath[inputs-v2]>=0.16.31,<0.17",
+    "rdkit>=2025.3,<2027",
+]
+
+[project.optional-dependencies]
+goslin-native = ["Cython>=3,<4", "setuptools>=61"]
+
+[project.scripts]
+omnipath-build = "omnipath_build.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["omnipath_build*"]
+
+[tool.uv.sources]
+omnipath-core = { workspace = true }
+omnipath-resolver = { workspace = true }

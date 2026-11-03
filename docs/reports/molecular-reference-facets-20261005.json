@@ -1,0 +1,72 @@
+{
+  "status": "passed",
+  "time": "2026-10-05T05:33:13.936373+00:00",
+  "candidate_commit": "f07cc3ec93cc474dc40f8338a7a716a0c35013d8",
+  "helper_sha256": "82cf588e5cd841df998fd1644f46c722d7c96f0a66c74d38dfcd83fff4dd7757",
+  "outputs": [
+    {
+      "mode": "raw",
+      "query": "entrez:11052",
+      "entity_types": {
+        "protein": 4,
+        "gene": 1,
+        "rna_product": 1,
+        "transcript": 1
+      },
+      "sources": {
+        "intact": 5,
+        "signor": 2
+      },
+      "group": "gene:entrez:11052",
+      "members": 5,
+      "milliseconds": 730.257
+    },
+    {
+      "mode": "raw",
+      "query": "uniprot:P33316",
+      "entity_types": {
+        "protein": 2
+      },
+      "sources": {
+        "intact": 1,
+        "signor": 1
+      },
+      "group": "gene:entrez:1854",
+      "members": 1,
+      "milliseconds": 261.684
+    },
+    {
+      "mode": "projected",
+      "query": "entrez:11052",
+      "entity_types": {
+        "protein": 4,
+        "gene": 1,
+        "rna_product": 1,
+        "transcript": 1
+      },
+      "sources": {
+        "intact": 5,
+        "signor": 2
+      },
+      "group": "gene:entrez:11052",
+      "members": 5,
+      "milliseconds": 394.676
+    },
+    {
+      "mode": "projected",
+      "query": "uniprot:P33316",
+      "entity_types": {
+        "protein": 2
+      },
+      "sources": {
+        "intact": 1,
+        "signor": 1
+      },
+      "group": "gene:entrez:1854",
+      "members": 1,
+      "milliseconds": 125.295
+    }
+  ],
+  "raw_projected_equivalence": true,
+  "production_changed": false
+}

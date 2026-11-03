@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "core-docs",
+      "runtimeExecutable": "make",
+      "runtimeArgs": ["docs"],
+      "port": 8090
+    },
+    {
+      "name": "web-dev",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "cd packages/web && API_SERVICE_URL=http://127.0.0.1:18285 pnpm dev --host 127.0.0.1 --port 8083"],
+      "port": 8083
+    }
+  ]
+}

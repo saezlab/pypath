@@ -1,0 +1,176 @@
+{
+  "resource": "mirecords",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.3,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 2611,
+  "legacy_pairs_found_in_v2": 2387,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 224,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 220,
+    "neither": 4
+  },
+  "v2_relations": 3098,
+  "v2_relations_without_legacy_pair": 199,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 3098
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "OAR-MIR-127",
+        "UNKNOWN"
+      ],
+      [
+        "OAR-MIR-136",
+        "UNKNOWN"
+      ],
+      [
+        "OAR-MIR-432",
+        "UNKNOWN"
+      ],
+      [
+        "HSA-MIR-32",
+        "UNKNOWN"
+      ],
+      [
+        "MMU-MIR-192",
+        "UNKNOWN"
+      ],
+      [
+        "HSA-MIR-124",
+        "UNKNOWN"
+      ],
+      [
+        "[MIR-129]",
+        "NM_017617"
+      ],
+      [
+        "[MIR-23B]",
+        "NM_017617"
+      ],
+      [
+        "[MIR-24]",
+        "NM_017617"
+      ],
+      [
+        "[MIR-27B]",
+        "NM_017617"
+      ],
+      [
+        "[MIR-30A]",
+        "NM_017617"
+      ],
+      [
+        "[MIR-34A]",
+        "NM_017617"
+      ],
+      [
+        "HSA-MIR-1",
+        "UNKNOWN"
+      ],
+      [
+        "[MIR-200]",
+        "NM_015753"
+      ],
+      [
+        "[MIR-200]",
+        "NM_030751"
+      ],
+      [
+        "[MIR-200]",
+        "NM_014795"
+      ],
+      [
+        "[MIR-106B]",
+        "E2F1"
+      ],
+      [
+        "[MIR-93]",
+        "E2F1"
+      ],
+      [
+        "[MIR-106B]",
+        "CDKN1A"
+      ],
+      [
+        "[MIR-93]",
+        "CDKN1A"
+      ],
+      [
+        "[MIR-20A]",
+        "NM_003376"
+      ],
+      [
+        "[MIR-20B]",
+        "NM_003376"
+      ],
+      [
+        "[MIR-93]",
+        "NM_003376"
+      ],
+      [
+        "[MIR-106B]",
+        "NM_003376"
+      ],
+      [
+        "[MIR-302D]",
+        "NM_003376"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['miR-129'] -[affects]-> ['NOTCH1', 'NM_017617']",
+      "['miR-23b'] -[affects]-> ['NOTCH1', 'NM_017617']",
+      "['miR-24'] -[affects]-> ['NOTCH1', 'NM_017617']",
+      "['miR-27b'] -[affects]-> ['NOTCH1', 'NM_017617']",
+      "['miR-30a'] -[affects]-> ['NOTCH1', 'NM_017617']",
+      "['miR-34a'] -[affects]-> ['NOTCH1', 'NM_017617']",
+      "['miR-200'] -[affects]-> ['Zeb2', 'NM_015753']",
+      "['miR-200'] -[affects]-> ['ZEB1', 'NM_030751']",
+      "['miR-200'] -[affects]-> ['ZEB2', 'NM_014795']",
+      "['miR-106b'] -[affects]-> ['E2F1', 'NM_005225']",
+      "['miR-93'] -[affects]-> ['E2F1', 'NM_005225']",
+      "['miR-106b'] -[affects]-> ['CDKN1A', 'NM_078467']",
+      "['miR-93'] -[affects]-> ['CDKN1A', 'NM_078467']",
+      "['miR-20a'] -[affects]-> ['VEGFA', 'NM_003376']",
+      "['miR-20b'] -[affects]-> ['VEGFA', 'NM_003376']",
+      "['miR-93'] -[affects]-> ['VEGFA', 'NM_003376']",
+      "['miR-106b'] -[affects]-> ['VEGFA', 'NM_003376']",
+      "['miR-302d'] -[affects]-> ['VEGFA', 'NM_003376']",
+      "['miR-373'] -[affects]-> ['VEGFA', 'NM_003376']",
+      "['miR-330'] -[affects]-> ['VEGFA', 'NM_003376']",
+      "['miR-378'] -[affects]-> ['VEGFA', 'NM_003376']",
+      "['miR-122'] -[affects]-> ['GYS1', 'NM_002103']",
+      "['miR-122'] -[affects]-> ['GTF2B', 'NM_001514']",
+      "['miR-122'] -[affects]-> ['SLC7A1', 'NM_003045']",
+      "['miR-122'] -[affects]-> ['ALDOA', 'NM_184043']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/miRecords_v4.xls",
+      "path": "/root/data/pypath-cache/mirecords/miRecords_v4.xls",
+      "size": 1388032,
+      "sha256": "4fe1e21180d19249f594c45b5e44d21778f37db464512562b75539c5f559b3b2",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://rescued.omnipathdb.org/miRecords_v4.xls",
+      "path": "/root/data/pypath-cache/mirecords/miRecords_v4.xls",
+      "size": 1388032,
+      "sha256": "4fe1e21180d19249f594c45b5e44d21778f37db464512562b75539c5f559b3b2",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

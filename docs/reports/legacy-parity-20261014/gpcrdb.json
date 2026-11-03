@@ -1,0 +1,92 @@
+{
+  "resource": "gpcrdb",
+  "kind": "relation",
+  "note": "Receptor and its subfamily.",
+  "v2_seconds": 0.0,
+  "legacy_seconds": 0.0,
+  "legacy_pairs": 813,
+  "legacy_pairs_found_in_v2": 811,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 2,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 2,
+    "neither": 0
+  },
+  "v2_relations": 1564,
+  "v2_relations_without_legacy_pair": 753,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 1564
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "Q9UBS5",
+        "GABA<SUB>B</SUB> RECEPTORS"
+      ],
+      [
+        "O75899",
+        "GABA<SUB>B</SUB> RECEPTORS"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://raw.githubusercontent.com/protwis/gpcrdb_data/master/protein_data/proteins_and_families.txt",
+      "path": "/root/data/pypath-cache/gpcrdb/gpcrdb_proteins_and_families.txt",
+      "size": 240439,
+      "sha256": "6124b17283eab0f8dd497a502c9447d3a0e9b385bc452fc7184b1e688ad10cb3",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "v2",
+      "url": "https://gpcrdb.org/services/proteinfamily/",
+      "path": "/root/data/pypath-cache/gpcrdb/gpcrdb_proteinfamily.json",
+      "size": 109308,
+      "sha256": "e789bdc462959d5632f010b0942c856c95c19cf46fb21de8ee66f638ed64a6ff",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://raw.githubusercontent.com/protwis/gpcrdb_data/master/protein_data/proteins_and_families.txt",
+      "path": "/root/data/pypath-cache/gpcrdb/gpcrdb_proteins_and_families.txt",
+      "size": 240439,
+      "sha256": "6124b17283eab0f8dd497a502c9447d3a0e9b385bc452fc7184b1e688ad10cb3",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

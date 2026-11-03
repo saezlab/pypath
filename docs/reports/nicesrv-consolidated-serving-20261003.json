@@ -1,0 +1,257 @@
+{
+  "status": "complete",
+  "date": "2026-10-03",
+  "runtime": {
+    "commit": "5e46fcafd4173ee48921e3964154fa3051ecf8c4",
+    "settings": {
+      "DATA_DIR": "/root/projects/full_parquet/data",
+      "COMPOSE_PROJECT_NAME": "omnipath-consolidated-20261003",
+      "API_IMAGE": "omnipath-api:consolidated-5e46fca",
+      "WEB_IMAGE": "omnipath-web:consolidated-5e46fca",
+      "API_PORT": "8185",
+      "WEB_PORT": "8182",
+      "DATA_PORT": "8180",
+      "PUBLIC_DOMAIN": "omnipath-metabo-dev.schaul.click",
+      "DATA_DOMAIN": "data.omnipath-metabo-dev.schaul.click",
+      "PUBLIC_DATA_URL": "https://data.omnipath-metabo-dev.schaul.click",
+      "PROXY_NETWORK": "dokploy-network",
+      "TLS_RESOLVER": "letsencrypt",
+      "ROUTE_PRIORITY": "100"
+    },
+    "source": "/root/projects/omnipath-releases/20261003-consolidated-5e46fca/source"
+  },
+  "candidate_checks": {
+    "inventory": {
+      "resource_count": 46,
+      "version_map_equal": true
+    },
+    "query_parity": [
+      {
+        "source": "signor",
+        "kind": "entities",
+        "rows": 3,
+        "equal": true,
+        "comparison_seconds": 0.278
+      },
+      {
+        "source": "signor",
+        "kind": "relations",
+        "rows": 3,
+        "equal": true,
+        "comparison_seconds": 0.288
+      },
+      {
+        "source": "rhea",
+        "kind": "entities",
+        "rows": 3,
+        "equal": true,
+        "comparison_seconds": 0.359
+      },
+      {
+        "source": "rhea",
+        "kind": "relations",
+        "rows": 3,
+        "equal": true,
+        "comparison_seconds": 0.318
+      },
+      {
+        "source": "chebi",
+        "kind": "entities",
+        "rows": 3,
+        "equal": true,
+        "comparison_seconds": 0.383
+      },
+      {
+        "source": "chebi",
+        "kind": "relations",
+        "rows": 3,
+        "equal": true,
+        "comparison_seconds": 0.257
+      }
+    ],
+    "web_paths": [
+      "/explore",
+      "/resources",
+      "/api/health"
+    ],
+    "range_download": true,
+    "before_publication_pins": {
+      "metatlas": "2026.9.5.17",
+      "kegg": "2026.9.5.17",
+      "phenol_explorer": "2026.9.5.17",
+      "uniprot": "2026.9.6.4",
+      "connectomedb2025": "2026.9.5.17",
+      "drugcentral": "2026.9.5.17",
+      "nichenet": "2026.9.5.17",
+      "chebi": "2026.9.5.17",
+      "recon3d": "2026.9.8.1",
+      "swisslipids": "2026.9.5.17",
+      "bindingdb": "2026.9.8.1",
+      "stitch": "2026.9.5.17",
+      "rampdb": "2026.9.8.1",
+      "chembl": "2026.9.5.17",
+      "tcdb": "2026.9.8.1",
+      "neuronchat": "2026.9.5.17",
+      "refmet": "2026.9.5.17",
+      "chemont": "2026.9.5.17",
+      "mirbase": "2026.9.5.17",
+      "pfocr": "2026.9.8.1",
+      "hmdb": "2026.9.5.17",
+      "lipidmaps": "2026.9.5.17",
+      "reactome": "2026.9.5.17",
+      "guidetopharma": "2026.9.5.17",
+      "hpo": "2026.9.6.2",
+      "macdb": "2026.9.5.17",
+      "intact": "2026.9.5.17",
+      "cellchat": "2026.9.5.17",
+      "mrclinksdb": "2026.9.5.17",
+      "imm1415": "2026.9.8.1",
+      "corum": "2026.9.5.17",
+      "wikipathways": "2026.9.5.17",
+      "cellinker": "2026.9.5.17",
+      "ptfi": "2026.9.8.1",
+      "brenda": "2026.9.8.1",
+      "go": "2026.9.5.17",
+      "signor": "2026.9.5.17",
+      "mebocost": "2026.9.5.17",
+      "cellphonedb": "2026.9.8.1",
+      "psi_mi": "2026.9.5.17",
+      "omnipath_ontology": "2026.9.5.17",
+      "foodb": "2026.9.8.1",
+      "mondo": "2026.9.8.2",
+      "icellnet": "2026.9.5.17",
+      "rhea": "2026.9.5.17",
+      "slctables": "2026.9.5.17"
+    },
+    "evidence_sources": [
+      "signor",
+      "rhea",
+      "chebi"
+    ],
+    "scoped_csv_export": {
+      "equal": true,
+      "bytes": 13930,
+      "sha256": "2ae48bc595419ab6c8f52a49a41295caf38001264b55a971f2d33ac4ae0630db"
+    }
+  },
+  "cutover": {
+    "public_route_proven_by_candidate_access_logs": true,
+    "old_containers_stopped_and_retained": [
+      "full_parquet-web-1",
+      "full_parquet-api-1",
+      "full_parquet-data-1"
+    ],
+    "protected_containers_unchanged": 27,
+    "cutover_at": "2026-10-03T12:45:00.216939+00:00",
+    "existing_release_https_access": true
+  },
+  "permissions": {
+    "public_files_repaired": [
+      "releases/2026.9.6.3.json",
+      "releases/2026.9.6.4.json",
+      "releases/2026.9.5.12.json",
+      "releases/2026.9.6.1.json",
+      "releases/2026.9.5.15.json",
+      "releases/2026.9.5.13.json",
+      "releases/2026.9.6.2.json",
+      "releases/2026.9.5.10.json",
+      "releases/2026.9.5.16.json",
+      "references/taxonomy/bbec4d6a7f8385f6fafdb7d9205389fc2a66d14c775fcf1635b526b566443840/taxonomy.parquet"
+    ],
+    "bytes_changed": false,
+    "cache_or_full_reference_permissions_changed": false
+  },
+  "final_checks": {
+    "checked_at": "2026-10-03T12:55:39.634963+00:00",
+    "protected_containers_unchanged": 27,
+    "old_containers_stopped_and_retained": [
+      "full_parquet-web-1",
+      "full_parquet-api-1",
+      "full_parquet-data-1"
+    ],
+    "serving": {
+      "omnipath-consolidated-20261003-api-1": {
+        "status": "running",
+        "health": "healthy",
+        "image_id": "sha256:359b5c884e6f485c223bf1a804e4808590e928af9b9270df7f69365ce1dc328c"
+      },
+      "omnipath-consolidated-20261003-web-1": {
+        "status": "running",
+        "health": "healthy",
+        "image_id": "sha256:2a242c416c5a3d27d5ac3fd65c12cce0fc0057052b4a317235e9044406798d17"
+      },
+      "omnipath-consolidated-20261003-data-1": {
+        "status": "running",
+        "health": "healthy",
+        "image_id": "sha256:dc73b49f5124cf2ee538dfbdfbd121f0b4ccdcb20fea30f3a81bd477c02e2bb5"
+      }
+    },
+    "public_api_health": true,
+    "projection_report": {
+      "source": "signor",
+      "resource_version": "2026.9.5.13",
+      "duckdb_version": "1.5.6",
+      "public_release_json_read": true,
+      "local": {
+        "artifact_validation_seconds": 0.002,
+        "projection_seconds": 0.818,
+        "final_hash_check_seconds": 0.002,
+        "prepared_tables": 15,
+        "input_bytes": 86468
+      },
+      "https": {
+        "artifact_validation_seconds": 0.163,
+        "projection_seconds": 1.113,
+        "final_hash_check_seconds": 0.174,
+        "prepared_tables": 15,
+        "input_bytes": 86468
+      },
+      "local_https_counts_dimensions_compatibility_and_row_hashes_equal": true,
+      "postgresql_connected": false,
+      "persistent_parquet_cache_created": false
+    },
+    "public_resource_count": 46,
+    "latest_versions_unchanged": true
+  },
+  "worker_check": {
+    "image": "omnipath-worker:consolidated-c9de08f",
+    "entrypoint_help_success": true,
+    "worker_started_for_jobs": false
+  },
+  "validation": {
+    "python_unit_tests": {
+      "passed": 558,
+      "skipped": 265,
+      "note": "PostgreSQL integration tests are opt-in."
+    },
+    "http_postgres_integration": {
+      "passed": 1,
+      "seconds": 37.94,
+      "note": "Disposable local PostgreSQL fixture; server PostgreSQL not contacted."
+    },
+    "web_tests": {
+      "passed": 26
+    },
+    "svelte_check": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "compose_configuration": "passed, including Traefik override",
+    "changed_python_lint": "passed",
+    "native_reference_helper": "root make target compiled successfully; no reference build",
+    "rendered_explorer": "examples, filters and release selector loaded"
+  },
+  "scope": {
+    "resource_builds_started": 0,
+    "postgresql_builds_started": 0,
+    "new_resource_versions_published": 0,
+    "artifact_root_reused_in_place": true,
+    "api_and_monthly_postgres_schedules_independent": true,
+    "worker_started_for_jobs": false
+  },
+  "https_sample_limit": "One existing 86,468-byte SIGNOR resource from release 2026.9.6.4; not a full-release performance benchmark.",
+  "host_environment_repairs": [
+    "Synced frozen workspace dependencies to install psycopg2-binary 2.9.13.",
+    "Set HOME=/root on the transient diagnostic unit so DuckDB could load httpfs."
+  ]
+}

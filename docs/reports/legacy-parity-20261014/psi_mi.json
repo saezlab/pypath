@@ -1,0 +1,49 @@
+{
+  "resource": "psi_mi",
+  "kind": "relation",
+  "note": "Terms and their is_a parents.",
+  "v2_seconds": 0.1,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 1665,
+  "legacy_pairs_found_in_v2": 1665,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 1665,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 1665
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://raw.githubusercontent.com/HUPO-PSI/psi-mi-CV/master/psi-mi.obo",
+      "path": "/root/data/pypath-cache/psi_mi/psi-mi.obo",
+      "size": 741379,
+      "sha256": "fa33142e1bb3951c3d9a63e2fd659984387f8d6444d8c87d611242afcb2082fe",
+      "mtime": "2026-05-07"
+    },
+    {
+      "side": "legacy",
+      "url": "https://raw.githubusercontent.com/HUPO-PSI/psi-mi-CV/refs/heads/master/psi-mi.obo",
+      "path": "/root/data/pypath-cache/psi_mi/psi-mi.obo",
+      "size": 741379,
+      "sha256": "fa33142e1bb3951c3d9a63e2fd659984387f8d6444d8c87d611242afcb2082fe",
+      "mtime": "2026-05-07"
+    }
+  ]
+}

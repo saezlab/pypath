@@ -1,0 +1,104 @@
+{
+  "resource": "cellphonedb",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.3,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 2903,
+  "legacy_pairs_found_in_v2": 2875,
+  "legacy_pairs_reversed_in_v2": 28,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 2911,
+  "v2_relations_without_legacy_pair": 4,
+  "v2_relations_reversed_in_legacy": 28,
+  "v2_signs": {
+    "None": 2911
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [
+      "['CHEBI:16978', 'LeukotrieneC4'] -[interacts_with]-> ['Q9Y271']",
+      "['CHEBI:16978', 'LeukotrieneC4'] -[interacts_with]-> ['Q9NS75']",
+      "['CHEBI:16978', 'LeukotrieneC4'] -[interacts_with]-> ['Q13304']",
+      "['CHEBI:18397', 'b-PEA'] -[interacts_with]-> ['Q96RJ0']"
+    ],
+    "v2_reversed_in_legacy": [
+      "['P05362'] -[interacts_with]-> ['integrin_aLb2_complex']",
+      "['P05362'] -[interacts_with]-> ['integrin_aMb2_complex']",
+      "['P05362'] -[interacts_with]-> ['integrin_aXb2_complex']",
+      "['P05362'] -[interacts_with]-> ['P16150']",
+      "['Q92692'] -[interacts_with]-> ['Q9NQS3']",
+      "['Q9Y624'] -[interacts_with]-> ['integrin_aLb2_complex']",
+      "['P52799'] -[interacts_with]-> ['O15197']",
+      "['Q15768'] -[interacts_with]-> ['O15197']",
+      "['P17693'] -[interacts_with]-> ['Q8NHL6']",
+      "['Q92633'] -[interacts_with]-> ['P48960']",
+      "['Q9HBW0'] -[interacts_with]-> ['P48960']",
+      "['Q9UBY5'] -[interacts_with]-> ['P48960']",
+      "['Q92692'] -[interacts_with]-> ['Q495A1']",
+      "['Q14242'] -[interacts_with]-> ['P16581']",
+      "['Q14242'] -[interacts_with]-> ['P14151']",
+      "['Q14242'] -[interacts_with]-> ['P16109']",
+      "['Q92854'] -[interacts_with]-> ['P21854']",
+      "['Q92854'] -[interacts_with]-> ['O43157']",
+      "['Q92854'] -[interacts_with]-> ['P08575']",
+      "['P16070'] -[interacts_with]-> ['P16581']",
+      "['P33681'] -[interacts_with]-> ['P10747']",
+      "['P33681'] -[interacts_with]-> ['P16410']",
+      "['P42081'] -[interacts_with]-> ['P10747']",
+      "['P42081'] -[interacts_with]-> ['P16410']",
+      "['P40200'] -[interacts_with]-> ['Q15223']"
+    ],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://raw.githubusercontent.com/ventolab/cellphonedb-data/master/data/interaction_input.csv",
+      "path": "/root/data/pypath-cache/cellphonedb/cellphonedb_interactions.csv",
+      "size": 505620,
+      "sha256": "3cf0ceace45dcb42478f0e6a7be9a50104794eac68d731f7c82d4c13325175ab",
+      "mtime": "2026-09-05"
+    },
+    {
+      "side": "v2",
+      "url": "https://raw.githubusercontent.com/ventolab/cellphonedb-data/master/data/complex_input.csv",
+      "path": "/root/data/pypath-cache/cellphonedb/cellphonedb_complexes.csv",
+      "size": 56886,
+      "sha256": "c761b75f5438d5b23f9fefa5ddaac84acb127fe5dd72fe931d5c07d8a557b362",
+      "mtime": "2026-09-05"
+    },
+    {
+      "side": "legacy",
+      "url": "https://raw.githubusercontent.com/ventolab/cellphonedb-data/master/data/protein_input.csv",
+      "path": "/root/data/pypath-cache/cellphonedb/cellphonedb_proteins.csv",
+      "size": 158940,
+      "sha256": "322f277963ca2fc879c97660eb1409478603a3d2d7442c6606bce79a45f14ae2",
+      "mtime": "2026-10-14"
+    },
+    {
+      "side": "legacy",
+      "url": "https://raw.githubusercontent.com/ventolab/cellphonedb-data/master/data/complex_input.csv",
+      "path": "/root/data/pypath-cache/cellphonedb/cellphonedb_complexes.csv",
+      "size": 56886,
+      "sha256": "c761b75f5438d5b23f9fefa5ddaac84acb127fe5dd72fe931d5c07d8a557b362",
+      "mtime": "2026-09-05"
+    },
+    {
+      "side": "legacy",
+      "url": "https://raw.githubusercontent.com/ventolab/cellphonedb-data/master/data/interaction_input.csv",
+      "path": "/root/data/pypath-cache/cellphonedb/cellphonedb_interactions.csv",
+      "size": 505620,
+      "sha256": "3cf0ceace45dcb42478f0e6a7be9a50104794eac68d731f7c82d4c13325175ab",
+      "mtime": "2026-09-05"
+    }
+  ]
+}

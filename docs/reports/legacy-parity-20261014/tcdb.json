@@ -1,0 +1,83 @@
+{
+  "resource": "tcdb",
+  "kind": "relation",
+  "note": "Protein and TC number.",
+  "v2_seconds": 0.9,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 24747,
+  "legacy_pairs_found_in_v2": 24747,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 24878,
+  "v2_relations_without_legacy_pair": 129,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 24878
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "http://www.tcdb.org/cgi-bin/projectv/public/acc2tcid.py",
+      "path": "/root/data/pypath-cache/tcdb/tcdb_acc2tc.tsv",
+      "size": 485198,
+      "sha256": "6cbe98d97d047e38848341791414180ec9271719197798bba33b8d0bad26f6a5",
+      "mtime": "2026-09-08"
+    },
+    {
+      "side": "v2",
+      "url": "http://www.tcdb.org/cgi-bin/projectv/public/families.py",
+      "path": "/root/data/pypath-cache/tcdb/tcdb_families.html",
+      "size": 138799,
+      "sha256": "3e0a9fcda007e2bce6cde990734c4a966c843cd38bd6f6ee876bc81cb0235978",
+      "mtime": "2026-09-08"
+    },
+    {
+      "side": "legacy",
+      "url": "http://www.tcdb.org/cgi-bin/projectv/public/acc2tcid.py",
+      "path": "/root/data/pypath-cache/tcdb/tcdb_acc2tc.tsv",
+      "size": 485198,
+      "sha256": "6cbe98d97d047e38848341791414180ec9271719197798bba33b8d0bad26f6a5",
+      "mtime": "2026-09-08"
+    }
+  ]
+}

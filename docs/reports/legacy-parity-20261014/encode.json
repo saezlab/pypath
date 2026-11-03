@@ -1,0 +1,49 @@
+{
+  "resource": "encode",
+  "kind": "relation",
+  "note": "The TF-miRNA table; legacy has no function for the TF-gene tables.",
+  "v2_seconds": 0.1,
+  "legacy_seconds": 0.0,
+  "legacy_pairs": 1237,
+  "legacy_pairs_found_in_v2": 1237,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 1237,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 1237
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "http://encodenets.gersteinlab.org/enets10.TF-miRNA.txt",
+      "path": "/root/data/pypath-cache/encode/enets10.TF-miRNA.txt",
+      "size": 48587,
+      "sha256": "7342c1fb96945d0ac835e1394255fc2df22da0fa4b65f9499ef00967bda21341",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://encodenets.gersteinlab.org/enets10.TF-miRNA.txt",
+      "path": "/root/data/pypath-cache/encode/enets10.TF-miRNA.txt",
+      "size": 48587,
+      "sha256": "7342c1fb96945d0ac835e1394255fc2df22da0fa4b65f9499ef00967bda21341",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+[build-system]
+requires = ["maturin>=1.9,<2"]
+build-backend = "maturin"
+
+[project]
+name = "omnipath-resolver"
+version = "0.1.0"
+requires-python = ">=3.11"
+description = "Arrow batch entity resolution against immutable OmniPath references"
+dependencies = [
+    "omnipath-core>=0.1.0,<0.2",
+    "biolink-model==4.4.4",
+    "pyarrow>=14",
+    "duckdb>=1.5,<2",
+    "lmdb>=1.8.1,<2",
+    "msgpack>=1.1,<2",
+    "zstandard>=0.25,<1",
+    "rdkit>=2025.3,<2027",
+    "pygoslin>=2,<3",
+]
+
+[tool.uv.sources]
+omnipath-core = { workspace = true }
+
+[tool.uv]
+# Editable maturin builds: rebuild the native extension when Rust sources change,
+# not only when this file does.
+cache-keys = [
+    { file = "pyproject.toml" },
+    { file = "Cargo.toml" },
+    { file = "Cargo.lock" },
+    { file = "src/**/*.rs" },
+    { file = "rust/reference/Cargo.toml" },
+    { file = "rust/reference/src/**/*.rs" },
+]
+
+[tool.maturin]
+features = ["extension-module"]
+module-name = "omnipath_resolver._omnipath_resolver"
+python-source = "."
+
+include = [
+    { path = "rust/reference/Cargo.toml", format = "sdist" },
+    { path = "rust/reference/Cargo.lock", format = "sdist" },
+    { path = "rust/reference/src/**/*.rs", format = "sdist" },
+    { path = "rust/reference/tests/*.rs", format = "sdist" },
+]

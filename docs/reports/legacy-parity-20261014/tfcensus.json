@@ -1,0 +1,150 @@
+{
+  "resource": "tfcensus",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.0,
+  "legacy_seconds": 0.0,
+  "legacy_pairs": 3821,
+  "legacy_pairs_found_in_v2": 3084,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 737,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 737,
+    "neither": 0
+  },
+  "v2_relations": 1590,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 1590
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "RBM5",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000003756",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "PLXND1",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000004399",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "RBM6",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000004534",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "DVL2",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000004975",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "YBX2",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000006047",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000009307",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "CSDE1",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000011243",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "AKAP8L",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "DEPDC1",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000024526",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "BRD9",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000028310",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "HMGB3",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000029993",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000035499",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "DEPDC1B",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "CUL3",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000036257",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ],
+      [
+        "ENSG00000038219",
+        "HUMAN_TRANSCRIPTION_FACTORS"
+      ]
+    ],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://static-content.springer.com/esm/art%3A10.1038%2Fnrg2538/MediaObjects/41576_2009_BFnrg2538_MOESM6_ESM.txt",
+      "path": "/root/data/pypath-cache/tfcensus/41576_2009_BFnrg2538_MOESM6_ESM.txt",
+      "size": 160972,
+      "sha256": "90034cccb88021c5819dfd95fd7d3d3c37079a63768bb1a792b8a9368f8c3eb3",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://static-content.springer.com/esm/art%3A10.1038%2Fnrg2538/MediaObjects/41576_2009_BFnrg2538_MOESM6_ESM.txt",
+      "path": "/root/data/pypath-cache/tfcensus/41576_2009_BFnrg2538_MOESM6_ESM.txt",
+      "size": 160972,
+      "sha256": "90034cccb88021c5819dfd95fd7d3d3c37079a63768bb1a792b8a9368f8c3eb3",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

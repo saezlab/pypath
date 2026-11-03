@@ -1,0 +1,88 @@
+{
+  "resource": "phosphosite",
+  "kind": "relation",
+  "note": "Kinase-substrate pairs with both proteins human; legacy states no sign.",
+  "v2_seconds": 17.4,
+  "legacy_seconds": 0.2,
+  "legacy_pairs": 7184,
+  "legacy_pairs_found_in_v2": 7183,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 1,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 1,
+    "neither": 0
+  },
+  "v2_relations": 13527,
+  "v2_relations_without_legacy_pair": 70,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 13527
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "Q00535",
+        "NP"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['Q9UQM7', 'CAMK2A', 'CAMK2A'] -[affects]-> ['Q9Z297', 'Pea15', '100736554', 'PEA-15']",
+      "['O14965', 'AURKA', 'AurA'] -[affects]-> ['Q6NUF4', 'tpx2.L', '398174', 'TPX2']",
+      "['O14965', 'AURKA', 'AurA'] -[affects]-> ['Q91636', 'kif2c', '380006', 'KIF2C']",
+      "['O14965', 'AURKA', 'AurA'] -[affects]-> ['Q6NUF4', 'tpx2.L', '398174', 'TPX2']",
+      "['O14965', 'AURKA', 'AurA'] -[affects]-> ['Q6NUF4', 'tpx2.L', '398174', 'TPX2']",
+      "['O14965', 'AURKA', 'AurA'] -[affects]-> ['Q91636', 'kif2c', '380006', 'KIF2C']",
+      "['P17612', 'PRKACA', 'PKACA'] -[affects]-> ['P70114', 'Star', '101844174', 'STAR']",
+      "['P17612', 'PRKACA', 'PKACA'] -[affects]-> ['P08955', 'Cad', '101843763', 'CAD']",
+      "['P17612', 'PRKACA', 'PKACA'] -[affects]-> ['P02718', 'CHNRD', 'nAChRD']",
+      "['P17612', 'PRKACA', 'PKACA'] -[affects]-> ['P02714', 'CHRNG', 'nAChRG']",
+      "['P17612', 'PRKACA', 'PKACA'] -[affects]-> ['P70114', 'Star', '101844174', 'STAR']",
+      "['P17612', 'PRKACA', 'PKACA'] -[affects]-> ['P70114', 'Star', '101844174', 'STAR']",
+      "['P17612', 'PRKACA', 'PKACA'] -[affects]-> ['Q09427', 'ABCC8', 'ABCC8']",
+      "['P27361', 'MAPK3', 'ERK1'] -[affects]-> ['Q98T92', 'ttk', '398219', 'TTK']",
+      "['P27361', 'MAPK3', 'ERK1'] -[affects]-> ['P08955', 'Cad', '101843763', 'CAD']",
+      "['P06493', 'CDK1', 'CDK1'] -[affects]-> ['P30309', 'cdc25c-b', '398119', 'CDC25C']",
+      "['P06493', 'CDK1', 'CDK1'] -[affects]-> ['P30309', 'cdc25c-b', '398119', 'CDC25C']",
+      "['P06493', 'CDK1', 'CDK1'] -[affects]-> ['P30309', 'cdc25c-b', '398119', 'CDC25C']",
+      "['P06493', 'CDK1', 'CDK1'] -[affects]-> ['P30309', 'cdc25c-b', '398119', 'CDC25C']",
+      "['P06493', 'CDK1', 'CDK1'] -[affects]-> ['P30309', 'cdc25c-b', '398119', 'CDC25C']",
+      "['Q91820', 'aurka', 'AurA'] -[affects]-> ['Q91636', 'kif2c', '380006', 'KIF2C']",
+      "['Q91820', 'aurka', 'AurA'] -[affects]-> ['Q91636', 'kif2c', '380006', 'KIF2C']",
+      "['P08538', 'pYV0094', 'yopH'] -[affects]-> ['P06239', 'LCK', '3932', 'Lck']",
+      "['P16788', 'UL97', 'UL97'] -[affects]-> ['P06400', 'RB1', '5925', 'Rb']",
+      "['P16788', 'UL97', 'UL97'] -[affects]-> ['P06400', 'RB1', '5925', 'Rb']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/phosphosite/Kinase_Substrate_Dataset.gz",
+      "path": "/root/data/pypath-cache/phosphosite/Kinase_Substrate_Dataset.gz",
+      "size": 674179,
+      "sha256": "25d9258f5ab99b64c9534c5181b4904cf57a2b83a32418d247069452a8bf30f0",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/phosphosite/Kinase_substrates.owl.gz",
+      "path": "/root/data/pypath-cache/phosphosite/Kinase_substrates.owl.gz",
+      "size": 7634011,
+      "sha256": "a5335c888cc9ee010b35fef86080629b5301c408f0d9f382a753a0d324e9202d",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/phosphosite/Kinase_Substrate_Dataset.gz",
+      "path": "/root/data/pypath-cache/phosphosite/Kinase_Substrate_Dataset.gz",
+      "size": 674179,
+      "sha256": "25d9258f5ab99b64c9534c5181b4904cf57a2b83a32418d247069452a8bf30f0",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

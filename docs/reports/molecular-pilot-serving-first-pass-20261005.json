@@ -1,0 +1,1313 @@
+{
+  "molecular-validation-original.json": {
+    "status": "passed",
+    "source_report": "/root/projects/omnipath-releases/20261004-molecular-forms/reports/molecular-validation-original.json",
+    "source_report_sha256": "79f376043d2d1edfc80e1eecc30ca85fac3ea98828bf7a17fc633d806e063074",
+    "resources": [
+      {
+        "resource": "signor/2026.10.4.1",
+        "status": "passed",
+        "tables": {
+          "entities": {
+            "rows": 19245,
+            "bytes": 3210472,
+            "schema": "entity_key: string\nentity_type: string\nnamespace: string\nidentifier: string\ntaxon: string\nlabel: string\nhas_hierarchy: bool\nparent_count: int64\nchild_count: int64\nidentifiers: list<element: struct<ns: string, id: string, is_canonical: bool, source: string>>\n  child 0, element: struct<ns: string, id: string, is_canonical: bool, source: string>\n      child 0, ns: string\n      child 1, id: string\n      child 2, is_canonical: bool\n      child 3, source: string\nannotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 142 chars omitted)\n  child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 127 chars omitted)\n      child 0, term: string\n      child 1, value: string\n      child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n          child 0, has_numeric_value: double\n          child 1, has_unit: string\n          child 2, has_unit_prefix: string\n          child 3, has_binary_relation: string\n          child 4, source_field: string\n          child 5, comparator: string\n      child 3, source: string\n      child 4, dataset: string\nreference_entity_key: string\ngene_reference_keys: list<element: string>\n  child 0, element: string\nevidence: list<element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotatio (... 1000 chars omitted)\n  child 0, element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotations: list<eleme (... 985 chars omitted)\n      child 0, source: string\n      child 1, dataset: string\n      child 2, row_id: string\n      child 3, upstream_id: string\n      child 4, annotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 142 chars omitted)\n          child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 127 chars omitted)\n              child 0, term: string\n              child 1, value: string\n              child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n                  child 0, has_numeric_value: double\n                  child 1, has_unit: string\n                  child 2, has_unit_prefix: string\n                  child 3, has_binary_relation: string\n                  child 4, source_field: string\n                  child 5, comparator: string\n              child 3, source: string\n              child 4, dataset: string\n      child 5, molecular_form: struct<protein_entity_key: string, transcript_entity_key: string, isoform_identifier: struct<ns: str (... 634 chars omitted)\n          child 0, protein_entity_key: string\n          child 1, transcript_entity_key: string\n          child 2, isoform_identifier: struct<ns: string, id: string>\n              child 0, ns: string\n              child 1, id: string\n          child 3, sequence_identifiers: list<element: struct<ns: string, id: string>>\n              child 0, element: struct<ns: string, id: string>\n                  child 0, ns: string\n                  child 1, id: string\n          child 4, modifications: list<element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate (... 134 chars omitted)\n              child 0, element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate_reference: st (... 119 chars omitted)\n                  child 0, term: string\n                  child 1, residue: string\n                  child 2, position: int64\n                  child 3, end_position: int64\n                  child 4, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 5, description: string\n          child 5, variants: list<element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: strin (... 185 chars omitted)\n              child 0, element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: string, position: i (... 170 chars omitted)\n                  child 0, identifier: struct<ns: string, id: string>\n                      child 0, ns: string\n                      child 1, id: string\n                  child 1, reference: string\n                  child 2, alternate: string\n                  child 3, position: int64\n                  child 4, end_position: int64\n                  child 5, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 6, description: string\n-- schema metadata --\nomnipath_label_policy: 'preferred-name-v1'"
+          },
+          "relations": {
+            "rows": 35630,
+            "bytes": 10827598,
+            "schema": "relation_key: string\nsubject_entity_key: string\nsubject_label: string\nsubject_type: string\npredicate: string\nobject_entity_key: string\nobject_label: string\nobject_type: string\ntaxon: string\nis_directed: bool\nsign: int32\ncategory: string\ninteraction_class: string\nsources: list<element: string>\n  child 0, element: string\nevidence_count: int64\nevidence: list<element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotatio (... 1782 chars omitted)\n  child 0, element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotations: list<eleme (... 1767 chars omitted)\n      child 0, source: string\n      child 1, dataset: string\n      child 2, row_id: string\n      child 3, upstream_id: string\n      child 4, annotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 157 chars omitted)\n          child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 142 chars omitted)\n              child 0, term: string\n              child 1, value: string\n              child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n                  child 0, has_numeric_value: double\n                  child 1, has_unit: string\n                  child 2, has_unit_prefix: string\n                  child 3, has_binary_relation: string\n                  child 4, source_field: string\n                  child 5, comparator: string\n              child 3, source: string\n              child 4, dataset: string\n              child 5, scope: string\n      child 5, subject_molecular_form: struct<protein_entity_key: string, transcript_entity_key: string, isoform_identifier: struct<ns: str (... 634 chars omitted)\n          child 0, protein_entity_key: string\n          child 1, transcript_entity_key: string\n          child 2, isoform_identifier: struct<ns: string, id: string>\n              child 0, ns: string\n              child 1, id: string\n          child 3, sequence_identifiers: list<element: struct<ns: string, id: string>>\n              child 0, element: struct<ns: string, id: string>\n                  child 0, ns: string\n                  child 1, id: string\n          child 4, modifications: list<element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate (... 134 chars omitted)\n              child 0, element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate_reference: st (... 119 chars omitted)\n                  child 0, term: string\n                  child 1, residue: string\n                  child 2, position: int64\n                  child 3, end_position: int64\n                  child 4, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 5, description: string\n          child 5, variants: list<element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: strin (... 185 chars omitted)\n              child 0, element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: string, position: i (... 170 chars omitted)\n                  child 0, identifier: struct<ns: string, id: string>\n                      child 0, ns: string\n                      child 1, id: string\n                  child 1, reference: string\n                  child 2, alternate: string\n                  child 3, position: int64\n                  child 4, end_position: int64\n                  child 5, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 6, description: string\n      child 6, object_molecular_form: struct<protein_entity_key: string, transcript_entity_key: string, isoform_identifier: struct<ns: str (... 634 chars omitted)\n          child 0, protein_entity_key: string\n          child 1, transcript_entity_key: string\n          child 2, isoform_identifier: struct<ns: string, id: string>\n              child 0, ns: string\n              child 1, id: string\n          child 3, sequence_identifiers: list<element: struct<ns: string, id: string>>\n              child 0, element: struct<ns: string, id: string>\n                  child 0, ns: string\n                  child 1, id: string\n          child 4, modifications: list<element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate (... 134 chars omitted)\n              child 0, element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate_reference: st (... 119 chars omitted)\n                  child 0, term: string\n                  child 1, residue: string\n                  child 2, position: int64\n                  child 3, end_position: int64\n                  child 4, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 5, description: string\n          child 5, variants: list<element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: strin (... 185 chars omitted)\n              child 0, element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: string, position: i (... 170 chars omitted)\n                  child 0, identifier: struct<ns: string, id: string>\n                      child 0, ns: string\n                      child 1, id: string\n                  child 1, reference: string\n                  child 2, alternate: string\n                  child 3, position: int64\n                  child 4, end_position: int64\n                  child 5, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 6, description: string\nannotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 157 chars omitted)\n  child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 142 chars omitted)\n      child 0, term: string\n      child 1, value: string\n      child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n          child 0, has_numeric_value: double\n          child 1, has_unit: string\n          child 2, has_unit_prefix: string\n          child 3, has_binary_relation: string\n          child 4, source_field: string\n          child 5, comparator: string\n      child 3, source: string\n      child 4, dataset: string\n      child 5, scope: string\nstatement_kind: string\nsubject_reference_entity_key: string\nobject_reference_entity_key: string"
+          },
+          "evidence_payloads": {
+            "rows": 45765,
+            "bytes": 17364511,
+            "schema": "relation_key: string\nentity_key: string\nsource: string\nrow_id: string\npayload_json: string"
+          }
+        },
+        "elapsed_seconds": 56.622,
+        "coverage": {
+          "relation_side_forms": 67997,
+          "standalone_forms": 3811,
+          "isoforms": 88,
+          "modifications": 12869,
+          "variants": 0,
+          "sequence_identifiers": 162,
+          "paired_occurrences": 26498,
+          "distinct_referenced_products": 8288
+        },
+        "client_snapshot": {
+          "staging": "temporary_hardlinks",
+          "memory_limit": "2GB",
+          "sample_relations": 5,
+          "sample_product_records": 100
+        },
+        "serving_projections": {
+          "entities": {
+            "available": false,
+            "paths": [
+              "/root/projects/omnipath-releases/20261004-molecular-forms/data/resources/signor/2026.10.4.1/entities.parquet"
+            ]
+          },
+          "relations": {
+            "available": false,
+            "paths": [
+              "/root/projects/omnipath-releases/20261004-molecular-forms/data/resources/signor/2026.10.4.1/relations.parquet"
+            ]
+          }
+        },
+        "check_counts": {
+          "passed": 110,
+          "unavailable": 3
+        },
+        "unavailable": [
+          {
+            "name": "observed.variants",
+            "status": "unavailable",
+            "reason": "No such molecular case is present in the selected dataset"
+          },
+          {
+            "name": "api.opposite_endpoint_constraints_1",
+            "status": "unavailable",
+            "reason": "Paired occurrence has no subject product or no object isoform"
+          },
+          {
+            "name": "api.opposite_endpoint_constraints_2",
+            "status": "unavailable",
+            "reason": "Paired occurrence has no subject product or no object isoform"
+          }
+        ],
+        "slowest_operations": [
+          {
+            "operation": "client.product_both.product_records",
+            "kind": "python_client",
+            "elapsed_ms": 3937.351,
+            "parameters": {}
+          },
+          {
+            "operation": "client.product_both.product_count",
+            "kind": "python_client",
+            "elapsed_ms": 3747.344,
+            "parameters": {}
+          },
+          {
+            "operation": "client.product_any.product_count",
+            "kind": "python_client",
+            "elapsed_ms": 3417.142,
+            "parameters": {}
+          },
+          {
+            "operation": "client.product_any.product_records",
+            "kind": "python_client",
+            "elapsed_ms": 3404.803,
+            "parameters": {}
+          },
+          {
+            "operation": "client.isoform_2.product_records",
+            "kind": "python_client",
+            "elapsed_ms": 2144.869,
+            "parameters": {}
+          },
+          {
+            "operation": "client.isoform_2.product_count",
+            "kind": "python_client",
+            "elapsed_ms": 2124.745,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "resource": "intact/2026.10.4.1",
+        "status": "passed",
+        "tables": {
+          "entities": {
+            "rows": 91765,
+            "bytes": 11403034,
+            "schema": "entity_key: string\nentity_type: string\nnamespace: string\nidentifier: string\ntaxon: string\nlabel: string\nhas_hierarchy: bool\nparent_count: int64\nchild_count: int64\nidentifiers: list<element: struct<ns: string, id: string, is_canonical: bool, source: string>>\n  child 0, element: struct<ns: string, id: string, is_canonical: bool, source: string>\n      child 0, ns: string\n      child 1, id: string\n      child 2, is_canonical: bool\n      child 3, source: string\nannotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 142 chars omitted)\n  child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 127 chars omitted)\n      child 0, term: string\n      child 1, value: string\n      child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n          child 0, has_numeric_value: double\n          child 1, has_unit: string\n          child 2, has_unit_prefix: string\n          child 3, has_binary_relation: string\n          child 4, source_field: string\n          child 5, comparator: string\n      child 3, source: string\n      child 4, dataset: string\nreference_entity_key: string\ngene_reference_keys: list<element: string>\n  child 0, element: string\nevidence: list<element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotatio (... 1000 chars omitted)\n  child 0, element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotations: list<eleme (... 985 chars omitted)\n      child 0, source: string\n      child 1, dataset: string\n      child 2, row_id: string\n      child 3, upstream_id: string\n      child 4, annotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 142 chars omitted)\n          child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 127 chars omitted)\n              child 0, term: string\n              child 1, value: string\n              child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n                  child 0, has_numeric_value: double\n                  child 1, has_unit: string\n                  child 2, has_unit_prefix: string\n                  child 3, has_binary_relation: string\n                  child 4, source_field: string\n                  child 5, comparator: string\n              child 3, source: string\n              child 4, dataset: string\n      child 5, molecular_form: struct<protein_entity_key: string, transcript_entity_key: string, isoform_identifier: struct<ns: str (... 634 chars omitted)\n          child 0, protein_entity_key: string\n          child 1, transcript_entity_key: string\n          child 2, isoform_identifier: struct<ns: string, id: string>\n              child 0, ns: string\n              child 1, id: string\n          child 3, sequence_identifiers: list<element: struct<ns: string, id: string>>\n              child 0, element: struct<ns: string, id: string>\n                  child 0, ns: string\n                  child 1, id: string\n          child 4, modifications: list<element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate (... 134 chars omitted)\n              child 0, element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate_reference: st (... 119 chars omitted)\n                  child 0, term: string\n                  child 1, residue: string\n                  child 2, position: int64\n                  child 3, end_position: int64\n                  child 4, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 5, description: string\n          child 5, variants: list<element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: strin (... 185 chars omitted)\n              child 0, element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: string, position: i (... 170 chars omitted)\n                  child 0, identifier: struct<ns: string, id: string>\n                      child 0, ns: string\n                      child 1, id: string\n                  child 1, reference: string\n                  child 2, alternate: string\n                  child 3, position: int64\n                  child 4, end_position: int64\n                  child 5, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 6, description: string\n-- schema metadata --\nomnipath_label_policy: 'preferred-name-v1'"
+          },
+          "relations": {
+            "rows": 730839,
+            "bytes": 132353551,
+            "schema": "relation_key: string\nsubject_entity_key: string\nsubject_label: string\nsubject_type: string\npredicate: string\nobject_entity_key: string\nobject_label: string\nobject_type: string\ntaxon: string\nis_directed: bool\nsign: int32\ncategory: string\ninteraction_class: string\nsources: list<element: string>\n  child 0, element: string\nevidence_count: int64\nevidence: list<element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotatio (... 1782 chars omitted)\n  child 0, element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotations: list<eleme (... 1767 chars omitted)\n      child 0, source: string\n      child 1, dataset: string\n      child 2, row_id: string\n      child 3, upstream_id: string\n      child 4, annotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 157 chars omitted)\n          child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 142 chars omitted)\n              child 0, term: string\n              child 1, value: string\n              child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n                  child 0, has_numeric_value: double\n                  child 1, has_unit: string\n                  child 2, has_unit_prefix: string\n                  child 3, has_binary_relation: string\n                  child 4, source_field: string\n                  child 5, comparator: string\n              child 3, source: string\n              child 4, dataset: string\n              child 5, scope: string\n      child 5, subject_molecular_form: struct<protein_entity_key: string, transcript_entity_key: string, isoform_identifier: struct<ns: str (... 634 chars omitted)\n          child 0, protein_entity_key: string\n          child 1, transcript_entity_key: string\n          child 2, isoform_identifier: struct<ns: string, id: string>\n              child 0, ns: string\n              child 1, id: string\n          child 3, sequence_identifiers: list<element: struct<ns: string, id: string>>\n              child 0, element: struct<ns: string, id: string>\n                  child 0, ns: string\n                  child 1, id: string\n          child 4, modifications: list<element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate (... 134 chars omitted)\n              child 0, element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate_reference: st (... 119 chars omitted)\n                  child 0, term: string\n                  child 1, residue: string\n                  child 2, position: int64\n                  child 3, end_position: int64\n                  child 4, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 5, description: string\n          child 5, variants: list<element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: strin (... 185 chars omitted)\n              child 0, element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: string, position: i (... 170 chars omitted)\n                  child 0, identifier: struct<ns: string, id: string>\n                      child 0, ns: string\n                      child 1, id: string\n                  child 1, reference: string\n                  child 2, alternate: string\n                  child 3, position: int64\n                  child 4, end_position: int64\n                  child 5, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 6, description: string\n      child 6, object_molecular_form: struct<protein_entity_key: string, transcript_entity_key: string, isoform_identifier: struct<ns: str (... 634 chars omitted)\n          child 0, protein_entity_key: string\n          child 1, transcript_entity_key: string\n          child 2, isoform_identifier: struct<ns: string, id: string>\n              child 0, ns: string\n              child 1, id: string\n          child 3, sequence_identifiers: list<element: struct<ns: string, id: string>>\n              child 0, element: struct<ns: string, id: string>\n                  child 0, ns: string\n                  child 1, id: string\n          child 4, modifications: list<element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate (... 134 chars omitted)\n              child 0, element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate_reference: st (... 119 chars omitted)\n                  child 0, term: string\n                  child 1, residue: string\n                  child 2, position: int64\n                  child 3, end_position: int64\n                  child 4, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 5, description: string\n          child 5, variants: list<element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: strin (... 185 chars omitted)\n              child 0, element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: string, position: i (... 170 chars omitted)\n                  child 0, identifier: struct<ns: string, id: string>\n                      child 0, ns: string\n                      child 1, id: string\n                  child 1, reference: string\n                  child 2, alternate: string\n                  child 3, position: int64\n                  child 4, end_position: int64\n                  child 5, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 6, description: string\nannotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 157 chars omitted)\n  child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 142 chars omitted)\n      child 0, term: string\n      child 1, value: string\n      child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n          child 0, has_numeric_value: double\n          child 1, has_unit: string\n          child 2, has_unit_prefix: string\n          child 3, has_binary_relation: string\n          child 4, source_field: string\n          child 5, comparator: string\n      child 3, source: string\n      child 4, dataset: string\n      child 5, scope: string\nstatement_kind: string\nsubject_reference_entity_key: string\nobject_reference_entity_key: string"
+          },
+          "evidence_payloads": {
+            "rows": 1240522,
+            "bytes": 1023465634,
+            "schema": "relation_key: string\nentity_key: string\nsource: string\nrow_id: string\npayload_json: string"
+          }
+        },
+        "elapsed_seconds": 1961.203,
+        "coverage": {
+          "relation_side_forms": 2386336,
+          "standalone_forms": 0,
+          "isoforms": 152185,
+          "modifications": 1553,
+          "variants": 31917,
+          "sequence_identifiers": 160945,
+          "paired_occurrences": 1165480,
+          "distinct_referenced_products": 45092
+        },
+        "client_snapshot": {
+          "staging": "temporary_hardlinks",
+          "memory_limit": "2GB",
+          "sample_relations": 5,
+          "sample_product_records": 100
+        },
+        "serving_projections": {
+          "entities": {
+            "available": false,
+            "paths": [
+              "/root/projects/omnipath-releases/20261004-molecular-forms/data/resources/intact/2026.10.4.1/entities.parquet"
+            ]
+          },
+          "relations": {
+            "available": false,
+            "paths": [
+              "/root/projects/omnipath-releases/20261004-molecular-forms/data/resources/intact/2026.10.4.1/relations.parquet"
+            ]
+          }
+        },
+        "check_counts": {
+          "passed": 94,
+          "unavailable": 3
+        },
+        "unavailable": [
+          {
+            "name": "observed.standalone_forms",
+            "status": "unavailable",
+            "reason": "No such molecular case is present in the selected dataset"
+          },
+          {
+            "name": "api.opposite_endpoint_constraints_1",
+            "status": "unavailable",
+            "reason": "Paired occurrence has no subject product or no object isoform"
+          },
+          {
+            "name": "api.opposite_endpoint_constraints_2",
+            "status": "unavailable",
+            "reason": "Paired occurrence has no subject product or no object isoform"
+          }
+        ],
+        "slowest_operations": [
+          {
+            "operation": "client.product_any.product_count",
+            "kind": "python_client",
+            "elapsed_ms": 187503.485,
+            "parameters": {}
+          },
+          {
+            "operation": "client.product_any.product_records",
+            "kind": "python_client",
+            "elapsed_ms": 184796.052,
+            "parameters": {}
+          },
+          {
+            "operation": "client.product_both.product_count",
+            "kind": "python_client",
+            "elapsed_ms": 183903.366,
+            "parameters": {}
+          },
+          {
+            "operation": "client.product_both.product_records",
+            "kind": "python_client",
+            "elapsed_ms": 180018.482,
+            "parameters": {}
+          },
+          {
+            "operation": "client.isoform_1.product_records",
+            "kind": "python_client",
+            "elapsed_ms": 104950.889,
+            "parameters": {}
+          },
+          {
+            "operation": "client.isoform_1.product_count",
+            "kind": "python_client",
+            "elapsed_ms": 104809.019,
+            "parameters": {}
+          }
+        ]
+      }
+    ]
+  },
+  "molecular-validation-projected.json": {
+    "status": "passed",
+    "source_report": "/root/projects/omnipath-releases/20261004-molecular-forms/reports/molecular-validation-projected.json",
+    "source_report_sha256": "730593c2a73defbffd978681b1adaa550f5d7f4d127376d37b21bef38abbc3ab",
+    "resources": [
+      {
+        "resource": "signor/2026.10.4.1",
+        "status": "passed",
+        "tables": {
+          "entities": {
+            "rows": 19245,
+            "bytes": 3210472,
+            "schema": "entity_key: string\nentity_type: string\nnamespace: string\nidentifier: string\ntaxon: string\nlabel: string\nhas_hierarchy: bool\nparent_count: int64\nchild_count: int64\nidentifiers: list<element: struct<ns: string, id: string, is_canonical: bool, source: string>>\n  child 0, element: struct<ns: string, id: string, is_canonical: bool, source: string>\n      child 0, ns: string\n      child 1, id: string\n      child 2, is_canonical: bool\n      child 3, source: string\nannotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 142 chars omitted)\n  child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 127 chars omitted)\n      child 0, term: string\n      child 1, value: string\n      child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n          child 0, has_numeric_value: double\n          child 1, has_unit: string\n          child 2, has_unit_prefix: string\n          child 3, has_binary_relation: string\n          child 4, source_field: string\n          child 5, comparator: string\n      child 3, source: string\n      child 4, dataset: string\nreference_entity_key: string\ngene_reference_keys: list<element: string>\n  child 0, element: string\nevidence: list<element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotatio (... 1000 chars omitted)\n  child 0, element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotations: list<eleme (... 985 chars omitted)\n      child 0, source: string\n      child 1, dataset: string\n      child 2, row_id: string\n      child 3, upstream_id: string\n      child 4, annotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 142 chars omitted)\n          child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 127 chars omitted)\n              child 0, term: string\n              child 1, value: string\n              child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n                  child 0, has_numeric_value: double\n                  child 1, has_unit: string\n                  child 2, has_unit_prefix: string\n                  child 3, has_binary_relation: string\n                  child 4, source_field: string\n                  child 5, comparator: string\n              child 3, source: string\n              child 4, dataset: string\n      child 5, molecular_form: struct<protein_entity_key: string, transcript_entity_key: string, isoform_identifier: struct<ns: str (... 634 chars omitted)\n          child 0, protein_entity_key: string\n          child 1, transcript_entity_key: string\n          child 2, isoform_identifier: struct<ns: string, id: string>\n              child 0, ns: string\n              child 1, id: string\n          child 3, sequence_identifiers: list<element: struct<ns: string, id: string>>\n              child 0, element: struct<ns: string, id: string>\n                  child 0, ns: string\n                  child 1, id: string\n          child 4, modifications: list<element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate (... 134 chars omitted)\n              child 0, element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate_reference: st (... 119 chars omitted)\n                  child 0, term: string\n                  child 1, residue: string\n                  child 2, position: int64\n                  child 3, end_position: int64\n                  child 4, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 5, description: string\n          child 5, variants: list<element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: strin (... 185 chars omitted)\n              child 0, element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: string, position: i (... 170 chars omitted)\n                  child 0, identifier: struct<ns: string, id: string>\n                      child 0, ns: string\n                      child 1, id: string\n                  child 1, reference: string\n                  child 2, alternate: string\n                  child 3, position: int64\n                  child 4, end_position: int64\n                  child 5, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 6, description: string\n-- schema metadata --\nomnipath_label_policy: 'preferred-name-v1'"
+          },
+          "relations": {
+            "rows": 35630,
+            "bytes": 10827598,
+            "schema": "relation_key: string\nsubject_entity_key: string\nsubject_label: string\nsubject_type: string\npredicate: string\nobject_entity_key: string\nobject_label: string\nobject_type: string\ntaxon: string\nis_directed: bool\nsign: int32\ncategory: string\ninteraction_class: string\nsources: list<element: string>\n  child 0, element: string\nevidence_count: int64\nevidence: list<element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotatio (... 1782 chars omitted)\n  child 0, element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotations: list<eleme (... 1767 chars omitted)\n      child 0, source: string\n      child 1, dataset: string\n      child 2, row_id: string\n      child 3, upstream_id: string\n      child 4, annotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 157 chars omitted)\n          child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 142 chars omitted)\n              child 0, term: string\n              child 1, value: string\n              child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n                  child 0, has_numeric_value: double\n                  child 1, has_unit: string\n                  child 2, has_unit_prefix: string\n                  child 3, has_binary_relation: string\n                  child 4, source_field: string\n                  child 5, comparator: string\n              child 3, source: string\n              child 4, dataset: string\n              child 5, scope: string\n      child 5, subject_molecular_form: struct<protein_entity_key: string, transcript_entity_key: string, isoform_identifier: struct<ns: str (... 634 chars omitted)\n          child 0, protein_entity_key: string\n          child 1, transcript_entity_key: string\n          child 2, isoform_identifier: struct<ns: string, id: string>\n              child 0, ns: string\n              child 1, id: string\n          child 3, sequence_identifiers: list<element: struct<ns: string, id: string>>\n              child 0, element: struct<ns: string, id: string>\n                  child 0, ns: string\n                  child 1, id: string\n          child 4, modifications: list<element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate (... 134 chars omitted)\n              child 0, element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate_reference: st (... 119 chars omitted)\n                  child 0, term: string\n                  child 1, residue: string\n                  child 2, position: int64\n                  child 3, end_position: int64\n                  child 4, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 5, description: string\n          child 5, variants: list<element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: strin (... 185 chars omitted)\n              child 0, element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: string, position: i (... 170 chars omitted)\n                  child 0, identifier: struct<ns: string, id: string>\n                      child 0, ns: string\n                      child 1, id: string\n                  child 1, reference: string\n                  child 2, alternate: string\n                  child 3, position: int64\n                  child 4, end_position: int64\n                  child 5, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 6, description: string\n      child 6, object_molecular_form: struct<protein_entity_key: string, transcript_entity_key: string, isoform_identifier: struct<ns: str (... 634 chars omitted)\n          child 0, protein_entity_key: string\n          child 1, transcript_entity_key: string\n          child 2, isoform_identifier: struct<ns: string, id: string>\n              child 0, ns: string\n              child 1, id: string\n          child 3, sequence_identifiers: list<element: struct<ns: string, id: string>>\n              child 0, element: struct<ns: string, id: string>\n                  child 0, ns: string\n                  child 1, id: string\n          child 4, modifications: list<element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate (... 134 chars omitted)\n              child 0, element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate_reference: st (... 119 chars omitted)\n                  child 0, term: string\n                  child 1, residue: string\n                  child 2, position: int64\n                  child 3, end_position: int64\n                  child 4, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 5, description: string\n          child 5, variants: list<element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: strin (... 185 chars omitted)\n              child 0, element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: string, position: i (... 170 chars omitted)\n                  child 0, identifier: struct<ns: string, id: string>\n                      child 0, ns: string\n                      child 1, id: string\n                  child 1, reference: string\n                  child 2, alternate: string\n                  child 3, position: int64\n                  child 4, end_position: int64\n                  child 5, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 6, description: string\nannotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 157 chars omitted)\n  child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 142 chars omitted)\n      child 0, term: string\n      child 1, value: string\n      child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n          child 0, has_numeric_value: double\n          child 1, has_unit: string\n          child 2, has_unit_prefix: string\n          child 3, has_binary_relation: string\n          child 4, source_field: string\n          child 5, comparator: string\n      child 3, source: string\n      child 4, dataset: string\n      child 5, scope: string\nstatement_kind: string\nsubject_reference_entity_key: string\nobject_reference_entity_key: string"
+          },
+          "evidence_payloads": {
+            "rows": 45765,
+            "bytes": 17364511,
+            "schema": "relation_key: string\nentity_key: string\nsource: string\nrow_id: string\npayload_json: string"
+          }
+        },
+        "elapsed_seconds": 53.73,
+        "coverage": {
+          "relation_side_forms": 67997,
+          "standalone_forms": 3811,
+          "isoforms": 88,
+          "modifications": 12869,
+          "variants": 0,
+          "sequence_identifiers": 162,
+          "paired_occurrences": 26498,
+          "distinct_referenced_products": 8288
+        },
+        "client_snapshot": {
+          "staging": "temporary_hardlinks",
+          "memory_limit": "2GB",
+          "sample_relations": 5,
+          "sample_product_records": 100
+        },
+        "serving_projections": {
+          "entities": {
+            "available": true,
+            "paths": [
+              "/root/projects/omnipath-releases/20261004-molecular-forms/data/.serving/v2/entities/d41edec4aee963503a2010bc2a14dfcab341ebf4d1b4e452741f1cbd22f8c344.parquet"
+            ]
+          },
+          "relations": {
+            "available": true,
+            "paths": [
+              "/root/projects/omnipath-releases/20261004-molecular-forms/data/.serving/v2/relations/bbb9de7d210dfff5aebdd69585076091f209b2d46298931ffc1635b6463a0cf0.parquet"
+            ]
+          }
+        },
+        "check_counts": {
+          "passed": 110,
+          "unavailable": 3
+        },
+        "unavailable": [
+          {
+            "name": "observed.variants",
+            "status": "unavailable",
+            "reason": "No such molecular case is present in the selected dataset"
+          },
+          {
+            "name": "api.opposite_endpoint_constraints_1",
+            "status": "unavailable",
+            "reason": "Paired occurrence has no subject product or no object isoform"
+          },
+          {
+            "name": "api.opposite_endpoint_constraints_2",
+            "status": "unavailable",
+            "reason": "Paired occurrence has no subject product or no object isoform"
+          }
+        ],
+        "slowest_operations": [
+          {
+            "operation": "client.product_both.product_count",
+            "kind": "python_client",
+            "elapsed_ms": 4172.255,
+            "parameters": {}
+          },
+          {
+            "operation": "client.product_both.product_records",
+            "kind": "python_client",
+            "elapsed_ms": 3936.263,
+            "parameters": {}
+          },
+          {
+            "operation": "client.product_any.product_count",
+            "kind": "python_client",
+            "elapsed_ms": 3736.822,
+            "parameters": {}
+          },
+          {
+            "operation": "client.product_any.product_records",
+            "kind": "python_client",
+            "elapsed_ms": 3416.035,
+            "parameters": {}
+          },
+          {
+            "operation": "client.isoform_2.product_records",
+            "kind": "python_client",
+            "elapsed_ms": 2252.134,
+            "parameters": {}
+          },
+          {
+            "operation": "client.isoform_1.product_count",
+            "kind": "python_client",
+            "elapsed_ms": 2243.699,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "resource": "intact/2026.10.4.1",
+        "status": "passed",
+        "tables": {
+          "entities": {
+            "rows": 91765,
+            "bytes": 11403034,
+            "schema": "entity_key: string\nentity_type: string\nnamespace: string\nidentifier: string\ntaxon: string\nlabel: string\nhas_hierarchy: bool\nparent_count: int64\nchild_count: int64\nidentifiers: list<element: struct<ns: string, id: string, is_canonical: bool, source: string>>\n  child 0, element: struct<ns: string, id: string, is_canonical: bool, source: string>\n      child 0, ns: string\n      child 1, id: string\n      child 2, is_canonical: bool\n      child 3, source: string\nannotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 142 chars omitted)\n  child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 127 chars omitted)\n      child 0, term: string\n      child 1, value: string\n      child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n          child 0, has_numeric_value: double\n          child 1, has_unit: string\n          child 2, has_unit_prefix: string\n          child 3, has_binary_relation: string\n          child 4, source_field: string\n          child 5, comparator: string\n      child 3, source: string\n      child 4, dataset: string\nreference_entity_key: string\ngene_reference_keys: list<element: string>\n  child 0, element: string\nevidence: list<element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotatio (... 1000 chars omitted)\n  child 0, element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotations: list<eleme (... 985 chars omitted)\n      child 0, source: string\n      child 1, dataset: string\n      child 2, row_id: string\n      child 3, upstream_id: string\n      child 4, annotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 142 chars omitted)\n          child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 127 chars omitted)\n              child 0, term: string\n              child 1, value: string\n              child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n                  child 0, has_numeric_value: double\n                  child 1, has_unit: string\n                  child 2, has_unit_prefix: string\n                  child 3, has_binary_relation: string\n                  child 4, source_field: string\n                  child 5, comparator: string\n              child 3, source: string\n              child 4, dataset: string\n      child 5, molecular_form: struct<protein_entity_key: string, transcript_entity_key: string, isoform_identifier: struct<ns: str (... 634 chars omitted)\n          child 0, protein_entity_key: string\n          child 1, transcript_entity_key: string\n          child 2, isoform_identifier: struct<ns: string, id: string>\n              child 0, ns: string\n              child 1, id: string\n          child 3, sequence_identifiers: list<element: struct<ns: string, id: string>>\n              child 0, element: struct<ns: string, id: string>\n                  child 0, ns: string\n                  child 1, id: string\n          child 4, modifications: list<element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate (... 134 chars omitted)\n              child 0, element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate_reference: st (... 119 chars omitted)\n                  child 0, term: string\n                  child 1, residue: string\n                  child 2, position: int64\n                  child 3, end_position: int64\n                  child 4, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 5, description: string\n          child 5, variants: list<element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: strin (... 185 chars omitted)\n              child 0, element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: string, position: i (... 170 chars omitted)\n                  child 0, identifier: struct<ns: string, id: string>\n                      child 0, ns: string\n                      child 1, id: string\n                  child 1, reference: string\n                  child 2, alternate: string\n                  child 3, position: int64\n                  child 4, end_position: int64\n                  child 5, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 6, description: string\n-- schema metadata --\nomnipath_label_policy: 'preferred-name-v1'"
+          },
+          "relations": {
+            "rows": 730839,
+            "bytes": 132353551,
+            "schema": "relation_key: string\nsubject_entity_key: string\nsubject_label: string\nsubject_type: string\npredicate: string\nobject_entity_key: string\nobject_label: string\nobject_type: string\ntaxon: string\nis_directed: bool\nsign: int32\ncategory: string\ninteraction_class: string\nsources: list<element: string>\n  child 0, element: string\nevidence_count: int64\nevidence: list<element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotatio (... 1782 chars omitted)\n  child 0, element: struct<source: string, dataset: string, row_id: string, upstream_id: string, annotations: list<eleme (... 1767 chars omitted)\n      child 0, source: string\n      child 1, dataset: string\n      child 2, row_id: string\n      child 3, upstream_id: string\n      child 4, annotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 157 chars omitted)\n          child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 142 chars omitted)\n              child 0, term: string\n              child 1, value: string\n              child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n                  child 0, has_numeric_value: double\n                  child 1, has_unit: string\n                  child 2, has_unit_prefix: string\n                  child 3, has_binary_relation: string\n                  child 4, source_field: string\n                  child 5, comparator: string\n              child 3, source: string\n              child 4, dataset: string\n              child 5, scope: string\n      child 5, subject_molecular_form: struct<protein_entity_key: string, transcript_entity_key: string, isoform_identifier: struct<ns: str (... 634 chars omitted)\n          child 0, protein_entity_key: string\n          child 1, transcript_entity_key: string\n          child 2, isoform_identifier: struct<ns: string, id: string>\n              child 0, ns: string\n              child 1, id: string\n          child 3, sequence_identifiers: list<element: struct<ns: string, id: string>>\n              child 0, element: struct<ns: string, id: string>\n                  child 0, ns: string\n                  child 1, id: string\n          child 4, modifications: list<element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate (... 134 chars omitted)\n              child 0, element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate_reference: st (... 119 chars omitted)\n                  child 0, term: string\n                  child 1, residue: string\n                  child 2, position: int64\n                  child 3, end_position: int64\n                  child 4, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 5, description: string\n          child 5, variants: list<element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: strin (... 185 chars omitted)\n              child 0, element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: string, position: i (... 170 chars omitted)\n                  child 0, identifier: struct<ns: string, id: string>\n                      child 0, ns: string\n                      child 1, id: string\n                  child 1, reference: string\n                  child 2, alternate: string\n                  child 3, position: int64\n                  child 4, end_position: int64\n                  child 5, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 6, description: string\n      child 6, object_molecular_form: struct<protein_entity_key: string, transcript_entity_key: string, isoform_identifier: struct<ns: str (... 634 chars omitted)\n          child 0, protein_entity_key: string\n          child 1, transcript_entity_key: string\n          child 2, isoform_identifier: struct<ns: string, id: string>\n              child 0, ns: string\n              child 1, id: string\n          child 3, sequence_identifiers: list<element: struct<ns: string, id: string>>\n              child 0, element: struct<ns: string, id: string>\n                  child 0, ns: string\n                  child 1, id: string\n          child 4, modifications: list<element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate (... 134 chars omitted)\n              child 0, element: struct<term: string, residue: string, position: int64, end_position: int64, coordinate_reference: st (... 119 chars omitted)\n                  child 0, term: string\n                  child 1, residue: string\n                  child 2, position: int64\n                  child 3, end_position: int64\n                  child 4, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 5, description: string\n          child 5, variants: list<element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: strin (... 185 chars omitted)\n              child 0, element: struct<identifier: struct<ns: string, id: string>, reference: string, alternate: string, position: i (... 170 chars omitted)\n                  child 0, identifier: struct<ns: string, id: string>\n                      child 0, ns: string\n                      child 1, id: string\n                  child 1, reference: string\n                  child 2, alternate: string\n                  child 3, position: int64\n                  child 4, end_position: int64\n                  child 5, coordinate_reference: struct<identifier: struct<ns: string, id: string>, coordinate_system: string, position_base: int32>\n                      child 0, identifier: struct<ns: string, id: string>\n                          child 0, ns: string\n                          child 1, id: string\n                      child 1, coordinate_system: string\n                      child 2, position_base: int32\n                  child 6, description: string\nannotations: list<element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_un (... 157 chars omitted)\n  child 0, element: struct<term: string, value: string, quantity: struct<has_numeric_value: double, has_unit: string, ha (... 142 chars omitted)\n      child 0, term: string\n      child 1, value: string\n      child 2, quantity: struct<has_numeric_value: double, has_unit: string, has_unit_prefix: string, has_binary_relation: st (... 47 chars omitted)\n          child 0, has_numeric_value: double\n          child 1, has_unit: string\n          child 2, has_unit_prefix: string\n          child 3, has_binary_relation: string\n          child 4, source_field: string\n          child 5, comparator: string\n      child 3, source: string\n      child 4, dataset: string\n      child 5, scope: string\nstatement_kind: string\nsubject_reference_entity_key: string\nobject_reference_entity_key: string"
+          },
+          "evidence_payloads": {
+            "rows": 1240522,
+            "bytes": 1023465634,
+            "schema": "relation_key: string\nentity_key: string\nsource: string\nrow_id: string\npayload_json: string"
+          }
+        },
+        "elapsed_seconds": 1729.807,
+        "coverage": {
+          "relation_side_forms": 2386336,
+          "standalone_forms": 0,
+          "isoforms": 152185,
+          "modifications": 1553,
+          "variants": 31917,
+          "sequence_identifiers": 160945,
+          "paired_occurrences": 1165480,
+          "distinct_referenced_products": 45092
+        },
+        "client_snapshot": {
+          "staging": "temporary_hardlinks",
+          "memory_limit": "2GB",
+          "sample_relations": 5,
+          "sample_product_records": 100
+        },
+        "serving_projections": {
+          "entities": {
+            "available": true,
+            "paths": [
+              "/root/projects/omnipath-releases/20261004-molecular-forms/data/.serving/v2/entities/cdf225a602f5113850b1a527b65ab057551a0474cf396bcdd710f2af26d010f9.parquet"
+            ]
+          },
+          "relations": {
+            "available": true,
+            "paths": [
+              "/root/projects/omnipath-releases/20261004-molecular-forms/data/.serving/v2/relations/de6cad11224bcaa1a244cc37efe3551d28007fe85db7d73d0c132e63494a7aef.parquet"
+            ]
+          }
+        },
+        "check_counts": {
+          "passed": 94,
+          "unavailable": 3
+        },
+        "unavailable": [
+          {
+            "name": "observed.standalone_forms",
+            "status": "unavailable",
+            "reason": "No such molecular case is present in the selected dataset"
+          },
+          {
+            "name": "api.opposite_endpoint_constraints_1",
+            "status": "unavailable",
+            "reason": "Paired occurrence has no subject product or no object isoform"
+          },
+          {
+            "name": "api.opposite_endpoint_constraints_2",
+            "status": "unavailable",
+            "reason": "Paired occurrence has no subject product or no object isoform"
+          }
+        ],
+        "slowest_operations": [
+          {
+            "operation": "client.product_both.product_records",
+            "kind": "python_client",
+            "elapsed_ms": 178088.766,
+            "parameters": {}
+          },
+          {
+            "operation": "client.product_any.product_records",
+            "kind": "python_client",
+            "elapsed_ms": 174465.133,
+            "parameters": {}
+          },
+          {
+            "operation": "client.product_both.product_count",
+            "kind": "python_client",
+            "elapsed_ms": 174257.685,
+            "parameters": {}
+          },
+          {
+            "operation": "client.product_any.product_count",
+            "kind": "python_client",
+            "elapsed_ms": 173032.403,
+            "parameters": {}
+          },
+          {
+            "operation": "client.isoform_1.product_records",
+            "kind": "python_client",
+            "elapsed_ms": 95615.012,
+            "parameters": {}
+          },
+          {
+            "operation": "client.isoform_2.product_count",
+            "kind": "python_client",
+            "elapsed_ms": 94022.553,
+            "parameters": {}
+          }
+        ]
+      }
+    ]
+  },
+  "benchmark": {
+    "complete": true,
+    "method": "Same candidate API and 2GB memory ceiling for each schema; query result caches cleared before every request; OS and DuckDB page caches are not flushed. Existing and rebuilt resources may use different source snapshots and identity semantics; this is not a controlled measure of schema-only overhead.",
+    "source_report_sha256": "49c73578cc03fb682d15c8e9d08da2f955f39c137afba6bb8dffe4157018c287",
+    "cases": [
+      {
+        "resource": "signor",
+        "version": "2026.9.5.17",
+        "case": "existing_raw",
+        "mode": "raw",
+        "tables": {
+          "entities": {
+            "bytes": 2987940,
+            "rows": 11067
+          },
+          "relations": {
+            "bytes": 9189021,
+            "rows": 35553
+          },
+          "evidence_payloads": {
+            "bytes": 12704627,
+            "rows": 45674
+          }
+        },
+        "projection_bytes": {
+          "entities": 0,
+          "relations": 0
+        },
+        "queries": [
+          {
+            "name": "entity_search",
+            "median_ms": 14.775,
+            "first_ms": 49.599,
+            "uncached_ms": [
+              49.599,
+              14.775,
+              12.457
+            ]
+          },
+          {
+            "name": "entity_type_filter",
+            "median_ms": 10.279,
+            "first_ms": 11.092,
+            "uncached_ms": [
+              11.092,
+              10.279,
+              10.099
+            ]
+          },
+          {
+            "name": "relation_browse",
+            "median_ms": 80.446,
+            "first_ms": 106.112,
+            "uncached_ms": [
+              106.112,
+              80.446,
+              68.909
+            ]
+          },
+          {
+            "name": "relation_filter",
+            "median_ms": 72.871,
+            "first_ms": 72.871,
+            "uncached_ms": [
+              72.871,
+              72.671,
+              73.44
+            ]
+          },
+          {
+            "name": "relation_evidence",
+            "median_ms": 66.636,
+            "first_ms": 76.73,
+            "uncached_ms": [
+              76.73,
+              66.636,
+              62.889
+            ]
+          }
+        ]
+      },
+      {
+        "resource": "signor",
+        "version": "2026.10.4.1",
+        "case": "molecular_raw",
+        "mode": "raw",
+        "tables": {
+          "entities": {
+            "bytes": 3210472,
+            "rows": 19245
+          },
+          "relations": {
+            "bytes": 10827598,
+            "rows": 35630
+          },
+          "evidence_payloads": {
+            "bytes": 17364511,
+            "rows": 45765
+          }
+        },
+        "projection_bytes": {
+          "entities": 0,
+          "relations": 0
+        },
+        "queries": [
+          {
+            "name": "entity_search",
+            "median_ms": 22.447,
+            "first_ms": 45.863,
+            "uncached_ms": [
+              45.863,
+              20.423,
+              22.447
+            ]
+          },
+          {
+            "name": "entity_type_filter",
+            "median_ms": 15.507,
+            "first_ms": 16.303,
+            "uncached_ms": [
+              16.303,
+              14.455,
+              15.507
+            ]
+          },
+          {
+            "name": "relation_browse",
+            "median_ms": 101.7,
+            "first_ms": 101.7,
+            "uncached_ms": [
+              101.7,
+              125.118,
+              93.65
+            ]
+          },
+          {
+            "name": "relation_filter",
+            "median_ms": 94.899,
+            "first_ms": 97.233,
+            "uncached_ms": [
+              97.233,
+              78.271,
+              94.899
+            ]
+          },
+          {
+            "name": "relation_evidence",
+            "median_ms": 123.268,
+            "first_ms": 125.703,
+            "uncached_ms": [
+              125.703,
+              116.602,
+              123.268
+            ]
+          },
+          {
+            "name": "gene_group_search",
+            "median_ms": 34.677,
+            "first_ms": 34.263,
+            "uncached_ms": [
+              34.263,
+              34.677,
+              35.007
+            ]
+          }
+        ]
+      },
+      {
+        "resource": "signor",
+        "version": "2026.10.4.1",
+        "case": "molecular_projected",
+        "mode": "projected",
+        "tables": {
+          "entities": {
+            "bytes": 3210472,
+            "rows": 19245
+          },
+          "relations": {
+            "bytes": 10827598,
+            "rows": 35630
+          },
+          "evidence_payloads": {
+            "bytes": 17364511,
+            "rows": 45765
+          }
+        },
+        "projection_bytes": {
+          "entities": 1017280,
+          "relations": 3729449
+        },
+        "queries": [
+          {
+            "name": "entity_search",
+            "median_ms": 15.507,
+            "first_ms": 45.238,
+            "uncached_ms": [
+              45.238,
+              15.507,
+              15.154
+            ]
+          },
+          {
+            "name": "entity_type_filter",
+            "median_ms": 13.549,
+            "first_ms": 15.945,
+            "uncached_ms": [
+              15.945,
+              13.504,
+              13.549
+            ]
+          },
+          {
+            "name": "relation_browse",
+            "median_ms": 42.365,
+            "first_ms": 53.956,
+            "uncached_ms": [
+              53.956,
+              40.341,
+              42.365
+            ]
+          },
+          {
+            "name": "relation_filter",
+            "median_ms": 50.271,
+            "first_ms": 48.222,
+            "uncached_ms": [
+              48.222,
+              51.861,
+              50.271
+            ]
+          },
+          {
+            "name": "relation_evidence",
+            "median_ms": 126.389,
+            "first_ms": 118.471,
+            "uncached_ms": [
+              118.471,
+              132.496,
+              126.389
+            ]
+          },
+          {
+            "name": "gene_group_search",
+            "median_ms": 31.846,
+            "first_ms": 31.846,
+            "uncached_ms": [
+              31.846,
+              40.027,
+              30.544
+            ]
+          }
+        ]
+      },
+      {
+        "resource": "intact",
+        "version": "2026.9.5.17",
+        "case": "existing_raw",
+        "mode": "raw",
+        "tables": {
+          "entities": {
+            "bytes": 10444417,
+            "rows": 53186
+          },
+          "relations": {
+            "bytes": 75371247,
+            "rows": 728668
+          },
+          "evidence_payloads": {
+            "bytes": 1021499709,
+            "rows": 1240522
+          }
+        },
+        "projection_bytes": {
+          "entities": 0,
+          "relations": 0
+        },
+        "queries": [
+          {
+            "name": "entity_search",
+            "median_ms": 26.098,
+            "first_ms": 56.979,
+            "uncached_ms": [
+              56.979,
+              26.098,
+              25.154
+            ]
+          },
+          {
+            "name": "entity_type_filter",
+            "median_ms": 25.838,
+            "first_ms": 25.838,
+            "uncached_ms": [
+              25.838,
+              29.629,
+              25.278
+            ]
+          },
+          {
+            "name": "relation_browse",
+            "median_ms": 412.065,
+            "first_ms": 472.194,
+            "uncached_ms": [
+              472.194,
+              412.065,
+              397.114
+            ]
+          },
+          {
+            "name": "relation_filter",
+            "median_ms": 420.671,
+            "first_ms": 419.108,
+            "uncached_ms": [
+              419.108,
+              420.671,
+              443.317
+            ]
+          },
+          {
+            "name": "relation_evidence",
+            "median_ms": 243.31,
+            "first_ms": 243.31,
+            "uncached_ms": [
+              243.31,
+              246.484,
+              210.246
+            ]
+          }
+        ]
+      },
+      {
+        "resource": "intact",
+        "version": "2026.10.4.1",
+        "case": "molecular_raw",
+        "mode": "raw",
+        "tables": {
+          "entities": {
+            "bytes": 11403034,
+            "rows": 91765
+          },
+          "relations": {
+            "bytes": 132353551,
+            "rows": 730839
+          },
+          "evidence_payloads": {
+            "bytes": 1023465634,
+            "rows": 1240522
+          }
+        },
+        "projection_bytes": {
+          "entities": 0,
+          "relations": 0
+        },
+        "queries": [
+          {
+            "name": "entity_search",
+            "median_ms": 41.371,
+            "first_ms": 69.169,
+            "uncached_ms": [
+              69.169,
+              40.761,
+              41.371
+            ]
+          },
+          {
+            "name": "entity_type_filter",
+            "median_ms": 46.375,
+            "first_ms": 46.457,
+            "uncached_ms": [
+              46.457,
+              46.375,
+              42.863
+            ]
+          },
+          {
+            "name": "relation_browse",
+            "median_ms": 670.243,
+            "first_ms": 724.868,
+            "uncached_ms": [
+              724.868,
+              670.243,
+              655.505
+            ]
+          },
+          {
+            "name": "relation_filter",
+            "median_ms": 650.663,
+            "first_ms": 618.197,
+            "uncached_ms": [
+              618.197,
+              750.389,
+              650.663
+            ]
+          },
+          {
+            "name": "relation_evidence",
+            "median_ms": 426.449,
+            "first_ms": 510.604,
+            "uncached_ms": [
+              510.604,
+              426.449,
+              405.285
+            ]
+          },
+          {
+            "name": "gene_group_search",
+            "median_ms": 86.461,
+            "first_ms": 87.055,
+            "uncached_ms": [
+              87.055,
+              84.869,
+              86.461
+            ]
+          }
+        ]
+      },
+      {
+        "resource": "intact",
+        "version": "2026.10.4.1",
+        "case": "molecular_projected",
+        "mode": "projected",
+        "tables": {
+          "entities": {
+            "bytes": 11403034,
+            "rows": 91765
+          },
+          "relations": {
+            "bytes": 132353551,
+            "rows": 730839
+          },
+          "evidence_payloads": {
+            "bytes": 1023465634,
+            "rows": 1240522
+          }
+        },
+        "projection_bytes": {
+          "entities": 4428765,
+          "relations": 96376793
+        },
+        "queries": [
+          {
+            "name": "entity_search",
+            "median_ms": 30.873,
+            "first_ms": 58.924,
+            "uncached_ms": [
+              58.924,
+              30.873,
+              29.574
+            ]
+          },
+          {
+            "name": "entity_type_filter",
+            "median_ms": 27.699,
+            "first_ms": 26.834,
+            "uncached_ms": [
+              26.834,
+              28.483,
+              27.699
+            ]
+          },
+          {
+            "name": "relation_browse",
+            "median_ms": 179.81,
+            "first_ms": 183.147,
+            "uncached_ms": [
+              183.147,
+              179.81,
+              169.038
+            ]
+          },
+          {
+            "name": "relation_filter",
+            "median_ms": 174.42,
+            "first_ms": 174.42,
+            "uncached_ms": [
+              174.42,
+              174.605,
+              164.738
+            ]
+          },
+          {
+            "name": "relation_evidence",
+            "median_ms": 475.116,
+            "first_ms": 510.3,
+            "uncached_ms": [
+              510.3,
+              433.884,
+              475.116
+            ]
+          },
+          {
+            "name": "gene_group_search",
+            "median_ms": 56.365,
+            "first_ms": 62.448,
+            "uncached_ms": [
+              62.448,
+              56.365,
+              52.571
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "cross_resource": {
+    "status": "passed",
+    "complete": true,
+    "version": "2026.10.4.1",
+    "resources": [
+      "signor",
+      "intact"
+    ],
+    "data_root": "/root/projects/omnipath-releases/20261004-molecular-forms/data",
+    "examples": {
+      "gene": {
+        "reference": "entrez:11052",
+        "rows": 456,
+        "logical_keys": 456,
+        "members": [
+          [
+            "0c743725b2b69868742681b2fc0962f0b203cde6947796c2f9d6eb68ff40c5fa",
+            "rna_product"
+          ],
+          [
+            "560d88fbdf047589a111dd27bc04f9b895a7467ca001c73784eecccd527e0822",
+            "gene"
+          ],
+          [
+            "67991c381a34861c5449c55ac66ff5cfe90b151e43eca5ed5bad641fc6197ecd",
+            "protein"
+          ],
+          [
+            "78edb2c107f50f80882a71c17fec9974ea40c74a2c4340b7066d0152c46698a8",
+            "protein"
+          ],
+          [
+            "90a804b859806a8bae3621639ad6c5726bfcbcafbe13c24150283c15bfd1ae69",
+            "transcript"
+          ]
+        ],
+        "catalogue_products": 2
+      },
+      "reported_endpoint_pair": {
+        "key": "00001f89506404cb813754c0e258ab810c1696d03663561563958720fc5dc9e6",
+        "resource_count": 1
+      },
+      "shared_product": {
+        "name": "shared_product",
+        "filters": {
+          "protein_entity_keys": [
+            "6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4"
+          ],
+          "molecular_endpoint_mode": "any"
+        },
+        "rows": 51,
+        "logical_keys": 51,
+        "occurrences_by_resource": {
+          "intact": 55,
+          "signor": 1
+        }
+      },
+      "exact_isoform": {
+        "name": "exact_isoform",
+        "filters": {
+          "protein_entity_keys": [
+            "6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4"
+          ],
+          "molecular_endpoint_mode": "any",
+          "isoform_identifiers": [
+            "uniprot:P33316-2"
+          ]
+        },
+        "rows": 2,
+        "logical_keys": 2,
+        "occurrences_by_resource": {
+          "intact": 1,
+          "signor": 1
+        }
+      }
+    },
+    "checks": [
+      {
+        "name": "shared_relation",
+        "status": "unavailable",
+        "reason": "No common relation key with evidence in every resource within the occurrence budget"
+      },
+      {
+        "name": "raw.gene_context_total",
+        "status": "passed",
+        "expected_rows": 456,
+        "actual_rows": 456,
+        "logical_keys": 456
+      },
+      {
+        "name": "raw.typed_gene_members",
+        "status": "passed",
+        "expected_members": 5,
+        "actual_members": 5
+      },
+      {
+        "name": "raw.shared_product_count",
+        "status": "passed",
+        "expected": 51,
+        "actual": 51
+      },
+      {
+        "name": "raw.exact_isoform_count",
+        "status": "passed",
+        "expected": 2,
+        "actual": 2
+      },
+      {
+        "name": "raw.paired_evidence.e512dcba973ee52e8e9763c598536239748fe2d99ff178c0b641425089f415b6:{}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "signor"
+        ],
+        "expected_source_counts": {
+          "signor": 1
+        },
+        "actual_source_counts": {
+          "signor": 1
+        }
+      },
+      {
+        "name": "raw.paired_evidence.0088b34b858c449263365a04041af892caeddbac3000f7e40762d983a48fd7d0:{}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "intact"
+        ],
+        "expected_source_counts": {
+          "intact": 1
+        },
+        "actual_source_counts": {
+          "intact": 1
+        }
+      },
+      {
+        "name": "raw.paired_evidence.00001f89506404cb813754c0e258ab810c1696d03663561563958720fc5dc9e6:{}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "intact"
+        ],
+        "expected_source_counts": {
+          "intact": 1
+        },
+        "actual_source_counts": {
+          "intact": 1
+        }
+      },
+      {
+        "name": "raw.paired_evidence.02d07bb82979e9cf731f31eb5752c16c86e68a57f92e4e2e6fc329a63a13f56d:{\"molecular_endpoint_mode\": \"any\", \"protein_entity_keys\": [\"6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4\"]}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "intact"
+        ],
+        "expected_source_counts": {
+          "intact": 1
+        },
+        "actual_source_counts": {
+          "intact": 1
+        }
+      },
+      {
+        "name": "raw.paired_evidence.1363088dd97e0eecb36ecc3fffe45b52d0b75964f7eec19ff228548d225eb7cf:{\"molecular_endpoint_mode\": \"any\", \"protein_entity_keys\": [\"6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4\"]}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "intact"
+        ],
+        "expected_source_counts": {
+          "intact": 1
+        },
+        "actual_source_counts": {
+          "intact": 1
+        }
+      },
+      {
+        "name": "raw.paired_evidence.610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380:{\"isoform_identifiers\": [\"uniprot:P33316-2\"], \"molecular_endpoint_mode\": \"any\", \"protein_entity_keys\": [\"6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4\"]}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "signor"
+        ],
+        "expected_source_counts": {
+          "signor": 1
+        },
+        "actual_source_counts": {
+          "signor": 1
+        }
+      },
+      {
+        "name": "raw.paired_evidence.8032cee4dae5ab4c57fe728a835684f7f44a0cafef0fd5b1afb76fcd56dfeba6:{\"isoform_identifiers\": [\"uniprot:P33316-2\"], \"molecular_endpoint_mode\": \"any\", \"protein_entity_keys\": [\"6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4\"]}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "intact"
+        ],
+        "expected_source_counts": {
+          "intact": 1
+        },
+        "actual_source_counts": {
+          "intact": 1
+        }
+      },
+      {
+        "name": "projected.gene_context_total",
+        "status": "passed",
+        "expected_rows": 456,
+        "actual_rows": 456,
+        "logical_keys": 456
+      },
+      {
+        "name": "projected.typed_gene_members",
+        "status": "passed",
+        "expected_members": 5,
+        "actual_members": 5
+      },
+      {
+        "name": "projected.shared_product_count",
+        "status": "passed",
+        "expected": 51,
+        "actual": 51
+      },
+      {
+        "name": "projected.exact_isoform_count",
+        "status": "passed",
+        "expected": 2,
+        "actual": 2
+      },
+      {
+        "name": "projected.paired_evidence.e512dcba973ee52e8e9763c598536239748fe2d99ff178c0b641425089f415b6:{}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "signor"
+        ],
+        "expected_source_counts": {
+          "signor": 1
+        },
+        "actual_source_counts": {
+          "signor": 1
+        }
+      },
+      {
+        "name": "projected.paired_evidence.0088b34b858c449263365a04041af892caeddbac3000f7e40762d983a48fd7d0:{}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "intact"
+        ],
+        "expected_source_counts": {
+          "intact": 1
+        },
+        "actual_source_counts": {
+          "intact": 1
+        }
+      },
+      {
+        "name": "projected.paired_evidence.00001f89506404cb813754c0e258ab810c1696d03663561563958720fc5dc9e6:{}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "intact"
+        ],
+        "expected_source_counts": {
+          "intact": 1
+        },
+        "actual_source_counts": {
+          "intact": 1
+        }
+      },
+      {
+        "name": "projected.paired_evidence.02d07bb82979e9cf731f31eb5752c16c86e68a57f92e4e2e6fc329a63a13f56d:{\"molecular_endpoint_mode\": \"any\", \"protein_entity_keys\": [\"6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4\"]}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "intact"
+        ],
+        "expected_source_counts": {
+          "intact": 1
+        },
+        "actual_source_counts": {
+          "intact": 1
+        }
+      },
+      {
+        "name": "projected.paired_evidence.1363088dd97e0eecb36ecc3fffe45b52d0b75964f7eec19ff228548d225eb7cf:{\"molecular_endpoint_mode\": \"any\", \"protein_entity_keys\": [\"6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4\"]}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "intact"
+        ],
+        "expected_source_counts": {
+          "intact": 1
+        },
+        "actual_source_counts": {
+          "intact": 1
+        }
+      },
+      {
+        "name": "projected.paired_evidence.610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380:{\"isoform_identifiers\": [\"uniprot:P33316-2\"], \"molecular_endpoint_mode\": \"any\", \"protein_entity_keys\": [\"6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4\"]}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "signor"
+        ],
+        "expected_source_counts": {
+          "signor": 1
+        },
+        "actual_source_counts": {
+          "signor": 1
+        }
+      },
+      {
+        "name": "projected.paired_evidence.8032cee4dae5ab4c57fe728a835684f7f44a0cafef0fd5b1afb76fcd56dfeba6:{\"isoform_identifiers\": [\"uniprot:P33316-2\"], \"molecular_endpoint_mode\": \"any\", \"protein_entity_keys\": [\"6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4\"]}",
+        "status": "passed",
+        "expected_occurrences": 1,
+        "actual_occurrences": 1,
+        "owner_resources": [
+          "intact"
+        ],
+        "expected_source_counts": {
+          "intact": 1
+        },
+        "actual_source_counts": {
+          "intact": 1
+        }
+      },
+      {
+        "name": "raw_projected_equivalence",
+        "status": "passed"
+      }
+    ],
+    "source_report_sha256": "3924eeb8fab3f95d9d88d8689d73fb227207684056384ece7ce53488e0c9e209"
+  },
+  "note": "First actual-data serving pass after streaming repair. Publication held for stronger export/API page assertions. Python client queries passed but were slow; subsequent source amendment/validation recorded separately."
+}

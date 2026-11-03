@@ -1,0 +1,49 @@
+{
+  "resource": "celltalkdb",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.6,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 3398,
+  "legacy_pairs_found_in_v2": 3398,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 3398,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 3398
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://raw.githubusercontent.com/ZJUFanLab/CellTalkDB/master/database/human_lr_pair.rds",
+      "path": "/root/data/pypath-cache/celltalkdb/celltalkdb_human_lr_pair.rds",
+      "size": 82794,
+      "sha256": "045be4a0028b9adc886d5bb94da9c4c247758ec773c7e1df0c3ae2b70508d7af",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://raw.githubusercontent.com/ZJUFanLab/CellTalkDB/master/database/human_lr_pair.rds",
+      "path": "/root/data/pypath-cache/celltalkdb/celltalkdb_human_lr_pair.rds",
+      "size": 82794,
+      "sha256": "045be4a0028b9adc886d5bb94da9c4c247758ec773c7e1df0c3ae2b70508d7af",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

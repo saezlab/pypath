@@ -1,0 +1,59 @@
+{
+  "resource": "compleat",
+  "kind": "complex",
+  "note": "",
+  "v2_seconds": 0.4,
+  "legacy_seconds": 0.3,
+  "legacy_keys": 9702,
+  "v2_keys": 9703,
+  "both": 9702,
+  "legacy_only": 0,
+  "v2_only": 1,
+  "samples": {
+    "legacy_only": [],
+    "v2_only": [
+      [
+        "10312",
+        "127124",
+        "23545",
+        "245972",
+        "245973",
+        "50617",
+        "51382",
+        "51606",
+        "523",
+        "525",
+        "526",
+        "527",
+        "528",
+        "529",
+        "533",
+        "534",
+        "535",
+        "90423",
+        "9114",
+        "9296",
+        "9550"
+      ]
+    ]
+  },
+  "legacy_only_with_all_members_in_v2": 0,
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/compleat.tsv",
+      "path": "/root/data/pypath-cache/compleat/compleat.tsv",
+      "size": 2936678,
+      "sha256": "86aed0fe6fee4fff3536c6e28fe1b5dbd959fc68738a17a2d9dacd1b570352e1",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/compleat.tsv",
+      "path": "/root/data/pypath-cache/compleat/compleat.tsv",
+      "size": 2936678,
+      "sha256": "86aed0fe6fee4fff3536c6e28fe1b5dbd959fc68738a17a2d9dacd1b570352e1",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+"""Resource controlled vocabularies.
+
+This module contains CV terms for biological data sources and resources.
+Each resource is represented as a controlled vocabulary term that can be used
+to identify and describe data sources in the OmniPath ecosystem.
+"""
+from .core import CvEnum
+
+
+class ResourceCv(CvEnum):
+    """Resource/data source controlled vocabulary terms.
+
+    Defines standard identifiers for biological databases and data sources.
+    Each resource has a unique OmniPath accession in the OM:1100-1999 range.
+    """
+
+    parent_cv_term = ("OM:1100", "Resource term", "Identifies a biological database or data source.")
+
+    # Ontology resources (OM:1101-1119 range)
+    OMNIPATH_ONTOLOGY = ("OM:1101", "OmniPath Ontology", "https://omnipathdb.org/")
+    UNIPROT_KEYWORDS = ("OM:1102", "UniProt Keywords", "https://www.uniprot.org/keywords/")
+    GENE_ONTOLOGY = ("OM:1103", "Gene Ontology", "https://geneontology.org")
+    PSI_MI = ("OM:1104", "PSI-MI Controlled Vocabulary", "https://github.com/HUPO-PSI/psi-mi-CV")
+    MONDO = ("OM:1105", "Mondo Disease Ontology", "https://mondo.monarchinitiative.org/")
+    CHEMONT = ("OM:1106", "ChemOnt", "http://classyfire.wishartlab.com/")
+
+    # Protein databases (OM:1120-1149 range)
+    UNIPROT = ("OM:1120", "UniProt", "https://www.uniprot.org")
+    SLC_TABLES = ("OM:1121", "SLC Tables", "https://slc.bioparadigms.org/")
+
+    # Interaction databases (OM:1150-1179 range)
+    INTACT = ("OM:1150", "IntAct", "https://www.ebi.ac.uk/intact")
+    REACTOME = ("OM:1151", "Reactome", "https://reactome.org/")
+    SIGNOR = ("OM:1152", "SIGNOR", "https://signor.uniroma2.it/")
+    BINDINGDB = ("OM:1153", "BindingDB", "https://www.bindingdb.org/")
+    CORUM = ("OM:1154", "CORUM", "https://mips.helmholtz-muenchen.de/corum/")
+    CHEMBL = ("OM:1155", "ChEMBL", "https://www.ebi.ac.uk/chembl/")
+    CELLPHONEDB = ("OM:1156", "CellPhoneDB", "https://www.cellphonedb.org/")
+    WIKIPATHWAYS = ("OM:1157", "WikiPathways", "https://www.wikipathways.org/")
+    PFOCR = ("OM:1167", "PFOCR", "https://pfocr.wikipathways.org/")
+    NEURONCHAT = ("OM:1158", "NeuronChat", "https://github.com/Wei-BioMath/NeuronChat")
+    STITCH = ("OM:1159", "STITCH", "https://stitch.embl.de/")
+    MRCLINKSDB = ("OM:1160", "MRClinksDB", "https://www.cellknowledge.com.cn/mrclinkdb/")
+    CONNECTOMEDB = ("OM:1161", "ConnectomeDB2025", "https://connectomedb.org/")
+    ICELLNET = ("OM:1162", "ICELLNET", "https://github.com/soumelis-lab/ICELLNET")
+    CELLCHAT = ("OM:1163", "CellChatDB", "https://github.com/jinworks/CellChat")
+    NICHENET = ("OM:1164", "NicheNet", "https://zenodo.org/records/7074291")
+    CELLINKER = ("OM:1165", "Cellinker", "https://www.cellknowledge.com.cn/cellinker/")
+    BRENDA = ("OM:1166", "BRENDA", "https://www.brenda-enzymes.org/index.php")
+    HORMONE2CELL = ("OM:1168", "Hormone2Cell", "https://hormonecellatlas.org.uk/")
+    PMIDB = ("OM:1169", "PMI-DB", "http://easybioai.com/PMIDB/")
+
+    # Metabolite and lipid databases (OM:1170-1179 range)
+    HMDB = ("OM:1170", "Human Metabolome Database", "https://hmdb.ca/")
+    LIPIDMAPS = ("OM:1171", "LIPID MAPS Structure Database", "https://lipidmaps.org/")
+    SWISSLIPIDS = ("OM:1172", "SwissLipids", "https://www.swisslipids.org/")
+    PHENOL_EXPLORER = ("OM:1173", "Phenol-Explorer", "http://phenol-explorer.eu/")
+    FOODB = ("OM:1174", "FooDB", "https://foodb.ca/")
+    PTFI = ("OM:1175", "PTFI Discover", "https://ptfidiscover.markerlab.com/")
+    MEBOCOST = ("OM:1176", "MEBOCOST DB", "https://github.com/kaifuchenlab/MEBOCOST")
+    RAMPDB = ("OM:1177", "RaMP-DB", "https://rampdb.nih.gov/")
+    CHEBI = ("OM:1178", "ChEBI", "https://www.ebi.ac.uk/chebi/")
+    RECON3D = ("OM:1179", "Recon3D", "https://www.vmh.life/")
+    HUMAN_GEM = ("OM:1194", "Human-GEM", "https://github.com/SysBioChalmers/Human-GEM")
+    KEGG_METABOLIC = ("OM:1195", "KEGG Metabolic Reactions", "https://www.genome.jp/kegg/reaction/")
+    REFMET = ("OM:1196", "RefMet metabolite entries", "https://www.metabolomicsworkbench.org/databases/refmet/")
+    IMM1415 = ("OM:1197", "BiGG Model iMM1415", "http://bigg.ucsd.edu/models/iMM1415")
+    HSM = ("OM:1199", "Human Serum Metabolome", "https://www.serummetabolome.ca/")
+
+    # Pharmacological databases (OM:1180-1199 range)
+    GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")
+    DRUGCENTRAL = ("OM:1181", "DrugCentral", "https://drugcentral.org/")
+
+    # Phenotype and ontology databases (OM:1190-1199 range)
+    HPO = ("OM:1190", "Human Phenotype Ontology", "https://hpo.jax.org/")
+    MACDB = ("OM:1191", "MACdb", "https://ngdc.cncb.ac.cn/macdb/")
+    TCDB = ("OM:1192", "TCDB", "https://www.tcdb.org/")
+    RHEA = ("OM:1193", "Rhea", "https://www.rhea-db.org/")
+
+    # Nucleic-acid / miRNA databases
+    MIRBASE = ("OM:1198", "miRBase", "https://www.mirbase.org/")

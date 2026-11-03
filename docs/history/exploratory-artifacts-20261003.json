@@ -1,0 +1,25 @@
+{
+  "baseline_commit": "5eb26de5aae1998335c2f7e2a35afb9f4d687639",
+  "original_commit": "f8e9445",
+  "policy": "Original bytes preserved locally outside tracked source; Git history retained; notebook code preserved without outputs.",
+  "artifacts": [
+    {
+      "original_path": " ",
+      "size_bytes": 49700475,
+      "sha256": "28ed2383c094feb25e401e52091d18fa69ba57d432edf0ef1328bbcae3436e52",
+      "backup": "local-artifacts/refactoring-20261003/root-exploratory.parquet"
+    },
+    {
+      "original_path": "test.ipynb",
+      "size_bytes": 37658590,
+      "sha256": "885989bc04dfbc6b028793700d10e042425a2dc649d8be1a6a90c81923aa9c79",
+      "backup": "local-artifacts/refactoring-20261003/test-with-outputs.ipynb"
+    },
+    {
+      "original_path": "package-lock.json",
+      "size_bytes": 93,
+      "sha256": "f72250eb804ba3b67879e30eeba0eafb95714827652cd1d97c93e0d6fd479555",
+      "backup": "local-artifacts/refactoring-20261003/obsolete-root-package-lock.json"
+    }
+  ]
+}

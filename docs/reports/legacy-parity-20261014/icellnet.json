@@ -1,0 +1,111 @@
+{
+  "resource": "icellnet",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.4,
+  "legacy_seconds": 0.0,
+  "legacy_pairs": 1669,
+  "legacy_pairs_found_in_v2": 1657,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 12,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 12,
+    "neither": 0
+  },
+  "v2_relations": 1669,
+  "v2_relations_without_legacy_pair": 12,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 1669
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "00\u00a0DKK,1",
+        "KREMEN1,LRP6"
+      ],
+      [
+        "00\u00a0DKK,2",
+        "KREMEN1,LRP6"
+      ],
+      [
+        "00\u00a0DKK,4",
+        "KREMEN1,LRP6"
+      ],
+      [
+        "00\u00a0DKK,1",
+        "KREMEN2,LRP6"
+      ],
+      [
+        "00\u00a0DKK,2",
+        "KREMEN2,LRP6"
+      ],
+      [
+        "00\u00a0DKK,4",
+        "KREMEN2,LRP6"
+      ],
+      [
+        "00\u00a0DKK,1",
+        "LRP4"
+      ],
+      [
+        "00\u00a0DKK,1",
+        "LRP5"
+      ],
+      [
+        "00\u00a0DKK,2",
+        "LRP5"
+      ],
+      [
+        "00\u00a0DKK,4",
+        "LRP6"
+      ],
+      [
+        "00\u00a0DKK,1",
+        "LRP6"
+      ],
+      [
+        "00\u00a0DKK,2",
+        "LRP6"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['DKK1'] -[interacts_with]-> ['KREMEN1+LRP6']",
+      "['DKK2'] -[interacts_with]-> ['KREMEN1+LRP6']",
+      "['DKK4'] -[interacts_with]-> ['KREMEN1+LRP6']",
+      "['DKK1'] -[interacts_with]-> ['KREMEN2+LRP6']",
+      "['DKK2'] -[interacts_with]-> ['KREMEN2+LRP6']",
+      "['DKK4'] -[interacts_with]-> ['KREMEN2+LRP6']",
+      "['DKK1'] -[interacts_with]-> ['LRP4']",
+      "['DKK1'] -[interacts_with]-> ['LRP5']",
+      "['DKK2'] -[interacts_with]-> ['LRP5']",
+      "['DKK4'] -[interacts_with]-> ['LRP6']",
+      "['DKK1'] -[interacts_with]-> ['LRP6']",
+      "['DKK2'] -[interacts_with]-> ['LRP6']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://raw.githubusercontent.com/soumelis-lab/ICELLNET/master/data/ICELLNETdb.csv",
+      "path": "/root/data/pypath-cache/icellnet/icellnetdb.csv",
+      "size": 92954,
+      "sha256": "37c7aae0787db9bd203aba8cd4df02cfa503648064b4f04d6a0bd138ca77c50c",
+      "mtime": "2026-09-06"
+    },
+    {
+      "side": "legacy",
+      "url": "https://raw.githubusercontent.com/soumelis-lab/ICELLNET/master/data/ICELLNETdb.csv",
+      "path": "/root/data/pypath-cache/icellnet/icellnetdb.csv",
+      "size": 92954,
+      "sha256": "37c7aae0787db9bd203aba8cd4df02cfa503648064b4f04d6a0bd138ca77c50c",
+      "mtime": "2026-09-06"
+    }
+  ]
+}

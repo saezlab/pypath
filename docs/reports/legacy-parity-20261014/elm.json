@@ -1,0 +1,65 @@
+{
+  "resource": "elm",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 1.3,
+  "legacy_seconds": 0.0,
+  "legacy_pairs": 2128,
+  "legacy_pairs_found_in_v2": 2128,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 2797,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 2797
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "http://elm.eu.org/interactions/as_tsv",
+      "path": "/root/data/pypath-cache/elm/elm_interactions.tsv",
+      "size": 357128,
+      "sha256": "b25338c0cdf5bf4e30697d0cdb86287173279f09aa2617b3c0f30ad454585551",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "v2",
+      "url": "http://elm.eu.org/interactions/as_mitab",
+      "path": "/root/data/pypath-cache/elm/elm_interactions.mitab",
+      "size": 1209312,
+      "sha256": "c03918e43b29cc0c72c17b426969b1270a923d27c509a9903d79247fde781265",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "v2",
+      "url": "http://elm.eu.org/interactions/as_psimi",
+      "path": "/root/data/pypath-cache/elm/elm_interactions.psimi.xml",
+      "size": 22015455,
+      "sha256": "1177a492f599c711b32807aff9059199ba05c945490cc58744fc279a32be1628",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://elm.eu.org/interactions/as_tsv",
+      "path": "/root/data/pypath-cache/elm/elm_interactions.tsv",
+      "size": 357128,
+      "sha256": "b25338c0cdf5bf4e30697d0cdb86287173279f09aa2617b3c0f30ad454585551",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

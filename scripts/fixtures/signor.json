@@ -1,0 +1,68 @@
+{
+  "description": "Synthetic SIGNOR-shaped records for an offline migration smoke test. These are not biological assertions or a downloaded SIGNOR subset.",
+  "rows": [
+    {
+      "﻿#ID(s) interactor A": "uniprotkb:Q15086",
+      "ID(s) interactor B": "uniprotkb:P0DP23",
+      "Alt. ID(s) interactor A": "-",
+      "Alt. ID(s) interactor B": "-",
+      "Type(s) interactor A": "psi-mi:MI:0326(protein)",
+      "Type(s) interactor B": "psi-mi:MI:0326(protein)",
+      "Taxid interactor A": "taxid:9606(human)",
+      "Taxid interactor B": "taxid:9606(human)",
+      "Feature(s) interactor A": "-",
+      "Feature(s) interactor B": "-",
+      "Causal statement": "psi-mi:MI:2236(up-regulates activity)",
+      "Interaction detection method(s)": "psi-mi:MI:0006(anti bait coimmunoprecipitation)",
+      "Publication Identifier(s)": "pubmed:123456",
+      "Interaction annotation(s)": "Synthetic activation evidence one",
+      "Interaction identifier(s)": "signor:SIGNOR-SMOKE-1"
+    },
+    {
+      "﻿#ID(s) interactor A": "uniprotkb:P04637",
+      "ID(s) interactor B": "uniprotkb:P0DP23",
+      "Alt. ID(s) interactor A": "-",
+      "Alt. ID(s) interactor B": "-",
+      "Type(s) interactor A": "psi-mi:MI:0326(protein)",
+      "Type(s) interactor B": "psi-mi:MI:0326(protein)",
+      "Taxid interactor A": "taxid:9606(human)",
+      "Taxid interactor B": "taxid:9606(human)",
+      "Feature(s) interactor A": "-",
+      "Feature(s) interactor B": "-",
+      "Causal statement": "psi-mi:MI:2236(up-regulates activity)",
+      "Interaction detection method(s)": "psi-mi:MI:0006(anti bait coimmunoprecipitation)",
+      "Publication Identifier(s)": "pubmed:123457",
+      "Interaction annotation(s)": "Synthetic activation evidence two",
+      "Interaction identifier(s)": "signor:SIGNOR-SMOKE-2"
+    },
+    {
+      "﻿#ID(s) interactor A": "uniprotkb:P0DP23",
+      "ID(s) interactor B": "uniprotkb:P04637",
+      "Alt. ID(s) interactor A": "-",
+      "Alt. ID(s) interactor B": "-",
+      "Type(s) interactor A": "psi-mi:MI:0326(protein)",
+      "Type(s) interactor B": "psi-mi:MI:0326(protein)",
+      "Taxid interactor A": "taxid:9606(human)",
+      "Taxid interactor B": "taxid:9606(human)",
+      "Feature(s) interactor A": "-",
+      "Feature(s) interactor B": "-",
+      "Causal statement": "psi-mi:MI:2241(down-regulates activity)",
+      "Interaction detection method(s)": "psi-mi:MI:0006(anti bait coimmunoprecipitation)",
+      "Publication Identifier(s)": "pubmed:123458",
+      "Interaction annotation(s)": "Synthetic inhibition evidence",
+      "Interaction identifier(s)": "signor:SIGNOR-SMOKE-3"
+    }
+  ],
+  "reference": [
+    {
+      "identifier": "P04637",
+      "label": "TP53",
+      "identifiers": [["uniprot", "P04637"], ["uniprot", "Q15086"], ["genesymbol", "TP53"]]
+    },
+    {
+      "identifier": "P0DP23",
+      "label": "CALM1",
+      "identifiers": [["uniprot", "P0DP23"], ["genesymbol", "CALM1"]]
+    }
+  ]
+}

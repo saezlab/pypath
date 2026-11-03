@@ -1,0 +1,118 @@
+"""License and update frequency controlled vocabularies.
+
+This module contains CV terms for describing data source licenses and
+update frequency categories.
+"""
+from .core import CvEnum
+
+
+class LicenseCV(CvEnum):
+    """Common license terms backed by OmniPath CV accessions.
+
+    Describes the licensing terms under which data sources are available.
+    """
+
+    parent_cv_term = ("OM:0500", "License term", "Describes the licensing terms under which data sources are available.")  # OmniPath-specific term - no PSI-MI parent
+
+    # OmniPath license terms (OM:0301-0399 range - note: different from membership roles)
+    CC_BY_4_0 = (
+        "OM:0501",
+        "Creative Commons Attribution 4.0 International license",
+        "https://creativecommons.org/licenses/by/4.0/"
+    )
+    CC_BY_3_0 = (
+        "OM:0514",
+        "Creative Commons Attribution 3.0 International license",
+        "https://creativecommons.org/licenses/by/3.0/"
+    )
+    CC0_1_0 = (
+        "OM:0502",
+        "Creative Commons Zero 1.0 Universal - public domain dedication",
+        "https://creativecommons.org/publicdomain/zero/1.0/"
+    )
+    BSD_3 = (
+        "OM:0513",
+        "BSD 3-Clause License ",
+        "https://opensource.org/license/bsd-3-clause"
+    )
+    GPL_3_0 = (
+        "OM:0503",
+        "GNU General Public License v3.0",
+        "https://www.gnu.org/licenses/gpl-3.0.html"
+    )
+    GPL_2_0 = (
+        "OM:0507",
+        "GNU General Public License v2.0",
+        "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
+    )
+    CC_BY_SA_4_0 = (
+        "OM:0510",
+        "Creative Commons Attribution-ShareAlike 4.0 International license",
+        "https://creativecommons.org/licenses/by-sa/4.0/"
+    )
+    CC_BY_SA_3_0 = (
+        "OM:0509",
+        "Creative Commons Attribution-ShareAlike 3.0 Unported license",
+        "https://creativecommons.org/licenses/by-sa/3.0/"
+    )
+    CC_BY_NC_4_0 = (
+        "OM:0511",
+        "Creative Commons Attribution-NonCommercial 4.0 International license",
+        "https://creativecommons.org/licenses/by-nc/4.0/"
+    )
+    MIT = (
+        "OM:0504",
+        "MIT License - permissive free software license",
+        "https://opensource.org/licenses/MIT"
+    )
+    ACADEMIC_FREE = (
+        "OM:0505",
+        "Free for academic use, restrictions may apply for commercial use"
+    )
+    BIGG = (
+        "OM:0512",
+        "BiGG Models license - free for academic and non-profit use",
+        "http://bigg.ucsd.edu/license#license"
+    )
+    HPO = (
+        "OM:0506",
+        "HPO License - free for academic and non-profit use",
+        "https://hpo.jax.org/app/license"
+    )
+    KEGG_ACADEMIC = (
+        "OM:0508",
+        "KEGG license - free for academic use, commercial use requires a license",
+        "https://www.kegg.jp/kegg/legal.html"
+    )
+    PUBLIC = (
+        "OM:0515",
+        "Public domain - copyright waived in favor of the general public",
+        ""
+    )
+    UNSPECIFIED = (
+        "OM:0599",
+        "License not specified or unclear"
+    )
+
+
+class UpdateCategoryCV(CvEnum):
+    """Update frequency categories backed by OmniPath CV accessions.
+
+    Describes how frequently a data source is expected to be updated.
+    """
+
+    parent_cv_term = ("OM:0420", "Update frequency term", "Describes how frequently a data source is expected to be updated.")
+
+    # OmniPath update category terms (OM:0421-0429 range)
+    REGULAR = (
+        "OM:0421",
+        "Regular scheduled updates (e.g., monthly, quarterly, annually)"
+    )
+    IRREGULAR = (
+        "OM:0422",
+        "Irregular or occasional updates with no fixed schedule"
+    )
+    STATIC = (
+        "OM:0423",
+        "Static resource with no planned future updates"
+    )

@@ -1,0 +1,267 @@
+{
+  "resource": "adhesome",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.2,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 3002,
+  "legacy_pairs_found_in_v2": 1505,
+  "legacy_pairs_reversed_in_v2": 1289,
+  "legacy_pairs_missing_in_v2": 208,
+  "missing_by_ids_known_to_v2": {
+    "both": 158,
+    "one": 50,
+    "neither": 0
+  },
+  "v2_relations": 3273,
+  "v2_relations_without_legacy_pair": 177,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 2962,
+    "+": 213,
+    "-": 98
+  },
+  "signs_compared": 155,
+  "signs_agree": 149,
+  "signs_disagree": 6,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "LPXN",
+        "GIT1"
+      ],
+      [
+        "GIT1",
+        "ARF1"
+      ],
+      [
+        "CAPN1",
+        "PTK2"
+      ],
+      [
+        "PPM1M",
+        "PAK1"
+      ],
+      [
+        "DNM2",
+        "VAV1"
+      ],
+      [
+        "NUDT16L1",
+        "SDC4"
+      ],
+      [
+        "CBL",
+        "CAPN1"
+      ],
+      [
+        "FYN",
+        "SDC4"
+      ],
+      [
+        "VASP",
+        "PRKCA"
+      ],
+      [
+        "ITGB1",
+        "ITGB3BP"
+      ],
+      [
+        "PTK2B",
+        "ABI1"
+      ],
+      [
+        "CAPN1",
+        "VIL2"
+      ],
+      [
+        "CAPN1",
+        "CBL"
+      ],
+      [
+        "VIL2",
+        "PALLD"
+      ],
+      [
+        "PDPK1",
+        "ITGB1"
+      ],
+      [
+        "VIL2",
+        "LAYN"
+      ],
+      [
+        "PIK3CA",
+        "KALPHA1"
+      ],
+      [
+        "PLAUR",
+        "ITGA5"
+      ],
+      [
+        "LAYN",
+        "VIL2"
+      ],
+      [
+        "ITGA5",
+        "PLAUR"
+      ],
+      [
+        "ITGA5",
+        "THY1"
+      ],
+      [
+        "PLEC1",
+        "ITGB1"
+      ],
+      [
+        "PAK1",
+        "ABI1"
+      ],
+      [
+        "PRKCA",
+        "TLN1"
+      ],
+      [
+        "SRC",
+        "GIT1"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['Abi'] -[interacts_with]-> ['Q96B97', 'SH3KBP1', 'CIN85']",
+      "['Abi'] -[interacts_with]-> ['Q8N8S7', 'ENAH', 'Mena']",
+      "['Abi'] -[interacts_with]-> ['O43639', 'NCK2', 'Nck2']",
+      "['Abi'] -[interacts_with]-> ['Q13153', 'PAK1', 'PAK1']",
+      "['Abi'] -[interacts_with]-> ['Q07889', 'SOS1', 'SOS1']",
+      "['Abi'] -[interacts_with]-> ['PIX']",
+      "['Abi'] -[interacts_with]-> ['Q14289', 'PTK2B', 'pyk2']",
+      "['Abi'] -[interacts_with]-> ['Q05397', 'PTK2', 'FAK']",
+      "['P00519', 'ABL1', 'Abl'] -[affects]-> ['Abi']",
+      "['P60709', 'ACTB', 'actin'] -[interacts_with]-> ['ERM']",
+      "['P60709', 'ACTB', 'actin'] -[interacts_with]-> ['PKC']",
+      "['P12814', 'ACTN1', 'Actinin'] -[interacts_with]-> ['Integrin-B']",
+      "['P12814', 'ACTN1', 'Actinin'] -[interacts_with]-> ['syndecan']",
+      "['O43184', 'ADAM12', 'ADAM12'] -[interacts_with]-> ['Integrin-A']",
+      "['O43184', 'ADAM12', 'ADAM12'] -[interacts_with]-> ['Integrin-B']",
+      "['O43184', 'ADAM12', 'ADAM12'] -[interacts_with]-> ['syndecan']",
+      "['P31749', 'AKT1', 'AKT'] -[affects]-> ['Integrin-B']",
+      "['P31749', 'AKT1', 'AKT'] -[interacts_with]-> ['PKC']",
+      "['Calpain'] -[affects]-> ['PKC']",
+      "['Calpain'] -[affects]-> ['P12814', 'ACTN1', 'Actinin']",
+      "['Calpain'] -[affects]-> ['Q14247', 'CTTN', 'Cortactin']",
+      "['Calpain'] -[affects]-> ['ERM']",
+      "['Calpain'] -[affects]-> ['Q05397', 'PTK2', 'FAK']",
+      "['Calpain'] -[affects]-> ['P21333', 'FLNA', 'Filamin']",
+      "['Calpain'] -[affects]-> ['Integrin-B']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": [
+      {
+        "pair": [
+          "CBL",
+          "ABL1"
+        ],
+        "legacy": [
+          "+"
+        ],
+        "v2": [
+          "-"
+        ]
+      },
+      {
+        "pair": [
+          "PTPRA",
+          "SRC"
+        ],
+        "legacy": [
+          "+"
+        ],
+        "v2": [
+          "-"
+        ]
+      },
+      {
+        "pair": [
+          "PTPN1",
+          "INSR"
+        ],
+        "legacy": [
+          "+"
+        ],
+        "v2": [
+          "-"
+        ]
+      },
+      {
+        "pair": [
+          "PTPN11",
+          "GAB1"
+        ],
+        "legacy": [
+          "+"
+        ],
+        "v2": [
+          "-"
+        ]
+      },
+      {
+        "pair": [
+          "PTPRA",
+          "FYN"
+        ],
+        "legacy": [
+          "+"
+        ],
+        "v2": [
+          "-"
+        ]
+      },
+      {
+        "pair": [
+          "CBL",
+          "SYK"
+        ],
+        "legacy": [
+          "+"
+        ],
+        "v2": [
+          "-"
+        ]
+      }
+    ]
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://static-content.springer.com/esm/art%3A10.1038%2Fncb0807-858/MediaObjects/41556_2007_BFncb0807858_MOESM3_ESM.xls",
+      "path": "/root/data/pypath-cache/adhesome/zaidelbar2007_table_s2_interactions.xls",
+      "size": 79360,
+      "sha256": "907ab7a2b9ad670871d015ed9f96ac7e21809067120c9d011a93ab5697300a5d",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "v2",
+      "url": "https://static-content.springer.com/esm/art%3A10.1038%2Fncb0807-858/MediaObjects/41556_2007_BFncb0807858_MOESM2_ESM.xls",
+      "path": "/root/data/pypath-cache/adhesome/zaidelbar2007_table_s1_components.xls",
+      "size": 113152,
+      "sha256": "61cd99c7dfa43c48c4a097fc535036838bd2d48558132c5e7c6e41c6411e61a0",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "v2",
+      "url": "https://www.adhesome.org/interactions.csv",
+      "path": "/root/data/pypath-cache/adhesome/adhesome_org_interactions.csv",
+      "size": 342603,
+      "sha256": "9b11cdedccb40353d76877f49c328927adaf76669b4fed0e9446de5d3443eee6",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://www.adhesome.org/interactions.csv",
+      "path": "/root/data/pypath-cache/adhesome/adhesome_org_interactions.csv",
+      "size": 342603,
+      "sha256": "9b11cdedccb40353d76877f49c328927adaf76669b4fed0e9446de5d3443eee6",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

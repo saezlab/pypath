@@ -1,0 +1,150 @@
+{
+  "resource": "panglaodb",
+  "kind": "relation",
+  "note": "Gene and cell type.",
+  "v2_seconds": 1.9,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 8286,
+  "legacy_pairs_found_in_v2": 8253,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 33,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 33,
+    "neither": 0
+  },
+  "v2_relations": 15760,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 15760
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "TUSC5",
+        "ADIPOCYTES"
+      ],
+      [
+        "DEPP1",
+        "ALPHA CELLS"
+      ],
+      [
+        "DDX26B",
+        "ANTERIOR PITUITARY GLAND CELLS"
+      ],
+      [
+        "FAM46C",
+        "B CELLS"
+      ],
+      [
+        "GM9895",
+        "BASOPHILS"
+      ],
+      [
+        "GPR97",
+        "BASOPHILS"
+      ],
+      [
+        "FAM65B",
+        "CAJAL-RETZIUS CELLS"
+      ],
+      [
+        "AC159092.1",
+        "CHONDROCYTES"
+      ],
+      [
+        "AMICA1",
+        "DENDRITIC CELLS"
+      ],
+      [
+        "GBAS",
+        "DISTAL TUBULE CELLS"
+      ],
+      [
+        "SDPR",
+        "ENDOTHELIAL CELLS"
+      ],
+      [
+        "SQRDL",
+        "ENDOTHELIAL CELLS (AORTA)"
+      ],
+      [
+        "SSFA2",
+        "ENDOTHELIAL CELLS (AORTA)"
+      ],
+      [
+        "KRT6",
+        "EPITHELIAL CELLS"
+      ],
+      [
+        "APN",
+        "EPITHELIAL CELLS"
+      ],
+      [
+        "DESMIN",
+        "EPITHELIAL CELLS"
+      ],
+      [
+        "MEP1",
+        "EPITHELIAL CELLS"
+      ],
+      [
+        "MEP7",
+        "EPITHELIAL CELLS"
+      ],
+      [
+        "NES1",
+        "EPITHELIAL CELLS"
+      ],
+      [
+        "PPN1",
+        "EPITHELIAL CELLS"
+      ],
+      [
+        "CASC5",
+        "EPITHELIAL CELLS"
+      ],
+      [
+        "GSG2",
+        "GERM CELLS"
+      ],
+      [
+        "FIGF",
+        "INTERNEURONS"
+      ],
+      [
+        "SEPP1",
+        "MACROPHAGES"
+      ],
+      [
+        "CCN5",
+        "MELANOCYTES"
+      ]
+    ],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://panglaodb.se/markers/PanglaoDB_markers_27_Mar_2020.tsv.gz",
+      "path": "/root/data/pypath-cache/panglaodb/PanglaoDB_markers_27_Mar_2020.tsv.gz",
+      "size": 311558,
+      "sha256": "6779952ad40aa5a124de7bd0e18975c6630bd6006d6b3ef210a916caaa6b53c9",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://panglaodb.se/markers/PanglaoDB_markers_27_Mar_2020.tsv.gz",
+      "path": "/root/data/pypath-cache/panglaodb/PanglaoDB_markers_27_Mar_2020.tsv.gz",
+      "size": 311558,
+      "sha256": "6779952ad40aa5a124de7bd0e18975c6630bd6006d6b3ef210a916caaa6b53c9",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

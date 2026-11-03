@@ -1,0 +1,143 @@
+{
+  "status": "complete",
+  "completed_at": "2026-10-05T05:36:32.885340+00:00",
+  "scope": "Gene-reference/molecular-form implementation, full SIGNOR and IntAct isolated rebuilds and serving validation, actual browser QA and audit of all 45 inputs_v2 modules. Other resources were audited, not all rebuilt.",
+  "source": {
+    "root_branch": "codex/gene-reference-molecular-forms",
+    "serving_candidate_commit": "f07cc3ec93cc474dc40f8338a7a716a0c35013d8",
+    "full_validation_producer_commit": "808989e0b1dce44a5a70c42ca2f39a89567995d1",
+    "pypath_branch": "parquet-migration",
+    "pypath_commit": "9d61c6e6cf1c9c0355d1287758ade6df2d477455"
+  },
+  "release": {
+    "version": "2026.10.4.1",
+    "resources": {
+      "signor": "2026.10.4.1",
+      "intact": "2026.10.4.1"
+    },
+    "root": "/root/projects/omnipath-releases/20261004-molecular-forms",
+    "production_changed": false
+  },
+  "gates": {
+    "reference_partition_proofs": "passed",
+    "gene_component_partition_proofs": "passed",
+    "indexed_runtime_audit": {
+      "passed": 25,
+      "coverage_missing": 1,
+      "defects": 0
+    },
+    "full_raw_and_projected_output_validation": "passed",
+    "actual_python_client": "passed",
+    "combined_resource_evidence": "passed",
+    "ordinary_and_populated_navigation_benchmarks": "complete",
+    "automatic_grouping_fixtures_passed": 54,
+    "automatic_grouping_actual_raw_projected": "passed",
+    "reference_facet_focused_tests_passed": 56,
+    "reference_facets_actual_raw_projected": "passed",
+    "web_tests_passed": 32,
+    "svelte_errors": 0,
+    "svelte_warnings": 0,
+    "web_build": "passed",
+    "actual_browser": "passed",
+    "all_input_modules_audited": 45
+  },
+  "serving_amendments": [
+    {
+      "commit": "e6cb1977ec58b56c62dd63921141fed1b09ef90e",
+      "archive_sha256": "91a63ba25fca075486c74f21b52079f849002639b0f8680cacd70b220a4574f1",
+      "installed_at": "2026-10-05T05:23:59.017446+00:00",
+      "immutable_outputs_reference_manifest_and_validation_producers_unchanged": true
+    },
+    {
+      "commit": "f07cc3ec93cc474dc40f8338a7a716a0c35013d8",
+      "archive_sha256": "5d80c11993ce44ddcf03bb365abb7d1f88005fdf93adf4bca6a2f54b2983abfe",
+      "installed_at": "2026-10-05T05:32:08.903409+00:00",
+      "immutable_outputs_reference_manifest_and_validation_producers_unchanged": true
+    }
+  ],
+  "browser": {
+    "url": "http://127.0.0.1:4185/explore?q=entrez%3A11052&tab=entity",
+    "tab": 6,
+    "observations": [
+      {
+        "case": "TP53 Gene7157/P04637",
+        "gene_relations": 1155,
+        "exact_product_relations": 1153,
+        "back_restores_gene": true
+      },
+      {
+        "case": "DUT Gene1854/P33316-2",
+        "gene_relations": 51,
+        "exact_isoform_relations": 2,
+        "sources": [
+          "signor",
+          "intact"
+        ],
+        "signor_pair": [
+          "CDK1 P06493",
+          "DUT P33316-2 phosphorylated residue11"
+        ],
+        "intact_pair": [
+          "DUT P33316-2",
+          "NEK10 Q6ZWH5"
+        ],
+        "back_restores_gene": true
+      },
+      {
+        "case": "CPSF6 Gene11052",
+        "typed_members": 5,
+        "source_types": [
+          "gene",
+          "protein",
+          "rna_product",
+          "transcript"
+        ],
+        "relations": 456,
+        "standalone_sections": 1,
+        "rna_filter_members": 1,
+        "ungrouped_rows": 5
+      },
+      {
+        "case": "AT-7519",
+        "grouping": "chemical_connectivity",
+        "connectivity": "OVPNQJVDAFNBDN",
+        "relation_tab": "populated"
+      },
+      {
+        "case": "Group control",
+        "dropdown_count": 0,
+        "toggle": "working",
+        "both_rules": "automatic"
+      }
+    ],
+    "artifacts": [
+      {
+        "path": "/Users/jschaul/.codex/visualizations/2026/10/04/01a1057c-0b55-76b0-b164-b86456a752a0/molecular-automatic-grouping.jpg",
+        "sha256": "7db8f212f5e98d4a2ad72640234effeeeb3fc2a3e652d15af94cbee1d6883d74"
+      },
+      {
+        "path": "/Users/jschaul/.codex/visualizations/2026/10/04/01a1057c-0b55-76b0-b164-b86456a752a0/molecular-isoform-evidence.jpg",
+        "sha256": "cc8d4aead4431de4e9193a6bc27a7565fd862bbf32aec2aaf192d6bf1b346152"
+      },
+      {
+        "path": "/Users/jschaul/.codex/visualizations/2026/10/04/01a1057c-0b55-76b0-b164-b86456a752a0/molecular-paired-evidence.jpg",
+        "sha256": "37013c695a55a799db5654e64552d47ae2a686b8b881204084887df5beffc283"
+      }
+    ]
+  },
+  "remaining_broader_scope": [
+    "Full rebuilds for other resources; source-specific coverage listed in audit",
+    "Regenerate hubs for missing noncoding transcript mappings",
+    "Global PTM/variant search and further isoform latency tuning",
+    "Production deployment or merging changes"
+  ],
+  "reports": [
+    "molecular-pilot-serving-final-20261005.json",
+    "molecular-auto-grouping-20261005.json",
+    "molecular-reference-facets-20261005.json",
+    "molecular-pilot-builds-20261004.json",
+    "molecular-populated-navigation-20261005.json",
+    "molecular-reference-runtime-20261005.json",
+    "molecular-form-input-coverage-20261004.md"
+  ]
+}

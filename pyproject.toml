@@ -1,0 +1,48 @@
+[tool.uv.workspace]
+members = [
+    "packages/core",
+    "packages/resolver",
+    "packages/build",
+    "packages/postgres",
+    "packages/subsets",
+    "packages/api",
+    "packages/query/python",
+]
+
+[tool.uv.sources]
+omnipath-core = { workspace = true }
+omnipath-resolver = { workspace = true }
+omnipath-build = { workspace = true }
+omnipath-postgres = { workspace = true }
+omnipath-subsets = { workspace = true }
+omnipath-api = { workspace = true }
+omnipath-client = { workspace = true }
+pypath-omnipath = { path = "packages/omnipath-resources", editable = true }
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "httpx>=0.27.0",
+    "pytest-xdist>=3.6.0",
+    "ruff==0.11.13",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["legacy", "data", "logs", "pypath_log", "pypath-data", "packages/*/build/**", "**/target/**", "**/oracle_cv_terms/**"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+[tool.pytest.ini_options]
+markers = ["integration: requires an explicitly configured local dataset or external service"]
+testpaths = [
+    "packages/core/tests",
+    "packages/resolver/tests",
+    "packages/build/tests",
+    "packages/postgres/tests",
+    "packages/subsets/tests",
+    "packages/api/tests",
+    "packages/query/python/tests",
+]

@@ -1,0 +1,2096 @@
+{
+  "status": "complete",
+  "completed_runtime_revision": "7bb2ce7dc9c85bd0ebf6ab26a841470181887ca4",
+  "frozen_main_revision": "9f9bb709c764e2721a0bcd881cf7ef0eb22bed9a",
+  "build_result": {
+    "release": "2026.9.30.4",
+    "schema": "aligned_full_20261001",
+    "manifest_sha256": "06f55112b371055b9b539c27eb7886d403b0131098393d1bafe4723ce006c03e",
+    "resources": {
+      "bindingdb": "2026.9.8.1",
+      "brenda": "2026.9.8.1",
+      "cellchat": "2026.9.5.17",
+      "cellinker": "2026.9.5.17",
+      "cellphonedb": "2026.9.8.1",
+      "chebi": "2026.9.5.17",
+      "chembl": "2026.9.5.17",
+      "chemont": "2026.9.5.17",
+      "connectomedb2025": "2026.9.30.4",
+      "corum": "2026.9.5.17",
+      "drugcentral": "2026.9.5.17",
+      "foodb": "2026.9.8.1",
+      "go": "2026.9.5.17",
+      "guidetopharma": "2026.9.5.17",
+      "hmdb": "2026.9.5.17",
+      "hpo": "2026.9.6.2",
+      "icellnet": "2026.9.5.17",
+      "imm1415": "2026.9.8.1",
+      "intact": "2026.9.5.17",
+      "kegg": "2026.9.30.4",
+      "lipidmaps": "2026.9.5.17",
+      "macdb": "2026.9.30.4",
+      "mebocost": "2026.9.5.17",
+      "metatlas": "2026.9.30.4",
+      "mirbase": "2026.9.5.17",
+      "mondo": "2026.9.8.2",
+      "mrclinksdb": "2026.9.5.17",
+      "neuronchat": "2026.9.5.17",
+      "nichenet": "2026.9.5.17",
+      "omnipath_ontology": "2026.9.5.17",
+      "pfocr": "2026.9.8.1",
+      "phenol_explorer": "2026.9.5.17",
+      "psi_mi": "2026.9.5.17",
+      "ptfi": "2026.9.8.1",
+      "rampdb": "2026.9.8.1",
+      "reactome": "2026.9.30.4",
+      "recon3d": "2026.9.30.4",
+      "refmet": "2026.9.5.17",
+      "rhea": "2026.9.30.4",
+      "signor": "2026.9.5.17",
+      "slctables": "2026.9.5.17",
+      "stitch": "2026.9.5.17",
+      "swisslipids": "2026.9.5.17",
+      "tcdb": "2026.9.8.1",
+      "uniprot": "2026.9.6.4",
+      "wikipathways": "2026.9.5.17"
+    },
+    "counts": {
+      "entity": 4794341,
+      "relation": 16377634,
+      "annotation": 3945232,
+      "ontology_terms": 0,
+      "entity_evidence": 6383473,
+      "entity_identifier": 39625833,
+      "relation_evidence": 22887251,
+      "annotation_quantity": 1577215,
+      "identifier_evidence": 26213189,
+      "entity_ontology_relation": 987393,
+      "entity_evidence_annotation": 8562132,
+      "entity_evidence_identifier": 39075256,
+      "entity_evidence_resolution": 6383473,
+      "relation_evidence_relation": 21899274,
+      "relation_evidence_annotation": 78521399
+    },
+    "phase_seconds": {
+      "base": 3022.195104382001,
+      "copy": 309.9287815601565,
+      "cosmos": 1662.4857409726828,
+      "derived": 7222.042703244835,
+      "metsigdb": 350.71454876009375,
+      "projection": 3220.882355574053,
+      "constraints": 2263.2966879289597,
+      "csv_staging": 83.14118041843176,
+      "network_views": 0.02304178522899747,
+      "artifact_validation": 6.5639781770296395
+    },
+    "committed_products": [
+      "metsigdb",
+      "network_views",
+      "cosmos"
+    ],
+    "compatibility": {
+      "resolution": "published identities; no original matched flag inferred",
+      "entity_evidence": "one explicit aggregate per published resource/entity",
+      "relation_identity": "main triple; published statement identity retained in pinned Parquets",
+      "record_json_loaded": false,
+      "raw_payloads_loaded": false,
+      "published_input_counts": {
+        "entity_rows": 6383473,
+        "statement_rows": 18339902,
+        "evidence_occurrences": 22887251,
+        "annotation_occurrences": 150690040,
+        "identifier_occurrences": 80136865
+      },
+      "generic_identifier_policy": "main_standard_inchi_excluded",
+      "retain_published_provenance": false,
+      "published_provenance_location": "pinned_parquet",
+      "ontology_cv_lookup_alias_pairs": 166196,
+      "published_resolution_status_id": 5,
+      "safe_bare_identifier_alias_pairs": 257546,
+      "unknown_ontology_scope_statements": 0,
+      "shared_identity_taxonomy_conflicts": 7,
+      "source_scoped_name_fallback_entities": 78,
+      "original_entity_occurrences_available": false,
+      "shared_identity_taxonomy_null_and_known": 2181,
+      "excluded_standard_inchi_dictionary_values": 2640193,
+      "original_resolution_diagnostics_available": false,
+      "ontology_published_name_lookup_alias_pairs": 443,
+      "excluded_standard_inchi_identifier_occurrences": 7064634
+    },
+    "layout": "main"
+  },
+  "final_monitor": {
+    "checked_at": "2026-10-02T08:08:32.864335+00:00",
+    "progress": {
+      "at": "2026-10-02T07:48:10.900235+00:00",
+      "event": "build_complete",
+      "wall_seconds": 15493.664461724926,
+      "committed_products": [
+        "metsigdb",
+        "network_views",
+        "cosmos"
+      ],
+      "phase_seconds": {
+        "base": 3022.195104382001,
+        "copy": 309.9287815601565,
+        "cosmos": 1662.4857409726828,
+        "derived": 7222.042703244835,
+        "metsigdb": 350.71454876009375,
+        "projection": 3220.882355574053,
+        "constraints": 2263.2966879289597,
+        "csv_staging": 83.14118041843176,
+        "network_views": 0.02304178522899747,
+        "artifact_validation": 6.5639781770296395
+      }
+    },
+    "run": {
+      "started_at": "2026-10-02T03:29:57.210086+00:00",
+      "mode": "load",
+      "schema": "aligned_full_20261001",
+      "source_revision": "7bb2ce7dc9c85bd0ebf6ab26a841470181887ca4",
+      "runtime_source_manifest_sha256": "723d92acad97e372e1d01bdb51eb74f792e703b016dcfd612fdda13fdd34c5ce",
+      "release": "2026.9.30.4",
+      "duckdb_threads": 1,
+      "memory_limit": "4GB",
+      "checkpoint_base": true,
+      "checkpoint_products": true,
+      "mandatory_verification": false,
+      "published_provenance_policy": "pinned_parquet",
+      "helper_sha256": "55628f1ed6dfec94fc3c46022dd8a52aae6c0722ce39a5d82e2a61da88757ab0",
+      "status": "complete",
+      "finished_at": "2026-10-02T07:48:10.874505+00:00",
+      "wall_seconds": 15493.664461724926,
+      "checkpoint": {
+        "schema_exists": true,
+        "release": [
+          "2026.9.30.4",
+          "06f55112b371055b9b539c27eb7886d403b0131098393d1bafe4723ce006c03e",
+          "complete"
+        ],
+        "committed_phases": [
+          [
+            "base",
+            3022.195104382001
+          ],
+          [
+            "derived",
+            7222.042703244835
+          ],
+          [
+            "network_views",
+            0.02304178522899747
+          ],
+          [
+            "metsigdb",
+            350.71454876009375
+          ],
+          [
+            "cosmos",
+            1662.4857409726828
+          ]
+        ]
+      }
+    },
+    "unit": [
+      "MainPID=0",
+      "Result=success",
+      "ExecMainStatus=0",
+      "MemoryCurrent=[not set]",
+      "CPUUsageNSec=[not set]",
+      "ActiveState=inactive",
+      "SubState=dead"
+    ],
+    "disk": {
+      "total_bytes": 1080988205056,
+      "used_bytes": 598667366400,
+      "free_bytes": 438284460032
+    },
+    "builder_backends": [],
+    "release": [
+      "2026.9.30.4",
+      "06f55112b371055b9b539c27eb7886d403b0131098393d1bafe4723ce006c03e",
+      "complete",
+      {
+        "base": 3022.195104382001,
+        "copy": 309.9287815601565,
+        "cosmos": 1662.4857409726828,
+        "derived": 7222.042703244835,
+        "metsigdb": 350.71454876009375,
+        "projection": 3220.882355574053,
+        "constraints": 2263.2966879289597,
+        "csv_staging": 83.14118041843176,
+        "network_views": 0.02304178522899747,
+        "artifact_validation": 6.5639781770296395
+      }
+    ],
+    "committed_phases": [
+      [
+        "base",
+        3022.195104382001
+      ],
+      [
+        "derived",
+        7222.042703244835
+      ],
+      [
+        "network_views",
+        0.02304178522899747
+      ],
+      [
+        "metsigdb",
+        350.71454876009375
+      ],
+      [
+        "cosmos",
+        1662.4857409726828
+      ]
+    ],
+    "storage": {
+      "physical_tables": 725,
+      "bytes": 98933350400
+    },
+    "index_progress": [],
+    "inner_phase_markers": [
+      {
+        "phase": "identifier_authority",
+        "event": "start"
+      },
+      {
+        "phase": "identifier_authority",
+        "event": "done",
+        "seconds": 0.008251
+      },
+      {
+        "phase": "derived_tables",
+        "event": "start"
+      },
+      {
+        "phase": "derived_tables",
+        "event": "done",
+        "seconds": 1277.045308
+      },
+      {
+        "phase": "chemical_resolution_levels",
+        "event": "start"
+      },
+      {
+        "phase": "chemical_resolution_levels",
+        "event": "done",
+        "seconds": 445.912745
+      },
+      {
+        "phase": "chemical_ambiguous_name_candidates",
+        "event": "start"
+      },
+      {
+        "phase": "chemical_ambiguous_name_candidates",
+        "event": "done",
+        "seconds": 118.588081
+      },
+      {
+        "phase": "chemical_class",
+        "event": "start"
+      },
+      {
+        "phase": "chemical_class",
+        "event": "done",
+        "seconds": 755.96266
+      },
+      {
+        "phase": "metabolic_domain",
+        "event": "start"
+      },
+      {
+        "phase": "metabolic_domain",
+        "event": "done",
+        "seconds": 894.426454
+      },
+      {
+        "phase": "interaction_class",
+        "event": "start"
+      },
+      {
+        "phase": "interaction_class",
+        "event": "done",
+        "seconds": 0.019227
+      },
+      {
+        "phase": "interactions",
+        "event": "start"
+      },
+      {
+        "phase": "interactions",
+        "event": "done",
+        "seconds": 1668.977273
+      },
+      {
+        "phase": "entity_labels",
+        "event": "start"
+      },
+      {
+        "phase": "entity_labels",
+        "event": "done",
+        "seconds": 413.442918
+      },
+      {
+        "phase": "entity_name",
+        "event": "start"
+      },
+      {
+        "phase": "entity_name",
+        "event": "done",
+        "seconds": 198.410665
+      },
+      {
+        "phase": "chemical_labels",
+        "event": "start"
+      },
+      {
+        "phase": "chemical_labels",
+        "event": "done",
+        "seconds": 499.640786
+      },
+      {
+        "phase": "bitmaps",
+        "event": "start"
+      },
+      {
+        "phase": "bitmaps",
+        "event": "done",
+        "seconds": 947.903007
+      },
+      {
+        "phase": "resource_overlap",
+        "event": "start"
+      },
+      {
+        "phase": "resource_overlap",
+        "event": "done",
+        "seconds": 0.30719
+      },
+      {
+        "phase": "resources",
+        "event": "start"
+      },
+      {
+        "phase": "resources",
+        "event": "done",
+        "seconds": 0.587652
+      },
+      {
+        "phase": "licenses",
+        "event": "start"
+      },
+      {
+        "phase": "licenses",
+        "event": "done",
+        "seconds": 0.046916
+      },
+      {
+        "phase": "build_manifest",
+        "event": "start"
+      },
+      {
+        "phase": "build_manifest",
+        "event": "done",
+        "seconds": 0.70475
+      }
+    ]
+  },
+  "final_observation": {
+    "checked_at": "2026-10-02T07:57:18.082162+00:00",
+    "scope": "bounded read-only completion and protected-state observations; no rebuild/rollback/safety job",
+    "protected_services": [
+      {
+        "name": "omnipath-service-7hebzw-omnipath-next-postgres-1",
+        "identity_unchanged": true,
+        "running": true
+      },
+      {
+        "name": "full_parquet-api-1",
+        "identity_unchanged": true,
+        "running": true
+      },
+      {
+        "name": "full_parquet-web-1",
+        "identity_unchanged": true,
+        "running": true
+      },
+      {
+        "name": "full_parquet-data-1",
+        "identity_unchanged": true,
+        "running": true
+      }
+    ],
+    "manifest_sha256": "06f55112b371055b9b539c27eb7886d403b0131098393d1bafe4723ce006c03e",
+    "resource_pin_check": {
+      "resources": 46,
+      "exact_versions_and_manifest_hashes": true
+    },
+    "retained_aligned_schemas": [
+      "aligned_full_20261001",
+      "aligned_full_20261001_attempt1_empty",
+      "aligned_full_20261001_attempt2_empty",
+      "aligned_full_20261001_attempt3_empty",
+      "aligned_full_20261001_attempt4_empty",
+      "aligned_full_20261001_attempt5_empty",
+      "aligned_full_20261001_attempt6_empty",
+      "aligned_pilot2_20261001",
+      "aligned_pilot_20261001"
+    ],
+    "aligned_pilots": [
+      {
+        "schema": "aligned_pilot_20261001",
+        "release": [
+          "2026.10.1.1",
+          "complete"
+        ],
+        "phases": [
+          "base",
+          "cosmos",
+          "derived",
+          "metsigdb",
+          "network_views"
+        ]
+      },
+      {
+        "schema": "aligned_pilot2_20261001",
+        "release": [
+          "2026.10.1.1",
+          "complete"
+        ],
+        "phases": [
+          "base",
+          "cosmos",
+          "derived",
+          "metsigdb",
+          "network_views"
+        ]
+      }
+    ],
+    "product_results": {
+      "network_views": {
+        "applied": [
+          "metalinksdb",
+          "liana",
+          "reactions"
+        ]
+      },
+      "cosmos": {
+        "edges": 2432572,
+        "seconds": 1662.5,
+        "build_id": "bf76d055295c",
+        "reactions": 47292,
+        "connectors": 530195,
+        "gene_nodes": 530195,
+        "reverse_edges": 406838,
+        "skipped_parties": 0,
+        "metabolite_nodes": 31683,
+        "orphan_reactions": 31158,
+        "gene_labels_mapped": 0,
+        "gene_labels_fallback": 3724,
+        "reversible_reactions": 20033,
+        "headers_without_event": 12857,
+        "chemical_labels_mapped": 16847,
+        "gene_labels_translated": 247687,
+        "identifier_translation": false,
+        "chemical_labels_fallback": 19824,
+        "chemical_labels_translated": 21048
+      }
+    },
+    "entity_type_sample_coverage": [
+      [
+        "chemical_entity",
+        100
+      ],
+      [
+        "molecular_activity",
+        100
+      ],
+      [
+        "protein",
+        100
+      ]
+    ],
+    "original_pilot_schemas": [
+      "annotation_sample_20260930",
+      "pilot_20260930"
+    ],
+    "final_run": {
+      "source_revision": "7bb2ce7dc9c85bd0ebf6ab26a841470181887ca4",
+      "status": "complete",
+      "started_at": "2026-10-02T03:29:57.210086+00:00",
+      "finished_at": "2026-10-02T07:48:10.874505+00:00",
+      "wall_seconds": 15493.664461724926,
+      "runtime_source_manifest_sha256": "723d92acad97e372e1d01bdb51eb74f792e703b016dcfd612fdda13fdd34c5ce",
+      "helper_sha256": "55628f1ed6dfec94fc3c46022dd8a52aae6c0722ce39a5d82e2a61da88757ab0"
+    },
+    "manual_sample_sha256": "2f44ddc6758cdae6cc57513b329ca2c32632c5caabb1ce8dc8bd8c30a4cf968a",
+    "build_result_sha256": "8faad46672607d9c133ed00b87e54396a7cfbe604f45994dd10ecd7f703e460e",
+    "actual_commit_events": [
+      {
+        "at": "2026-10-02T05:14:09.319985+00:00",
+        "event": "phase_committed",
+        "phase": "base",
+        "seconds": 3022.195104382001
+      },
+      {
+        "at": "2026-10-02T07:14:37.561622+00:00",
+        "event": "phase_committed",
+        "phase": "derived",
+        "seconds": 7222.042703244835
+      },
+      {
+        "at": "2026-10-02T07:20:28.333959+00:00",
+        "event": "phase_committed",
+        "phase": "metsigdb",
+        "seconds": 350.71454876009375
+      },
+      {
+        "at": "2026-10-02T07:20:28.364609+00:00",
+        "event": "phase_committed",
+        "phase": "network_views",
+        "seconds": 0.02304178522899747
+      },
+      {
+        "at": "2026-10-02T07:48:10.859545+00:00",
+        "event": "phase_committed",
+        "phase": "cosmos",
+        "seconds": 1662.4857409726828
+      },
+      {
+        "at": "2026-10-02T07:48:10.900235+00:00",
+        "event": "build_complete",
+        "wall_seconds": 15493.664461724926
+      }
+    ]
+  },
+  "manual_sample": {
+    "checked_at": "2026-10-02T07:52:08.336998+00:00",
+    "scope": "manual bounded relational sample; no rebuild or rollback",
+    "limit_per_sample": 100,
+    "samples": {
+      "resource_pins": {
+        "columns": [
+          "resource",
+          "version",
+          "manifest_sha256"
+        ],
+        "rows": [
+          [
+            "bindingdb",
+            "2026.9.8.1",
+            "61d34101c544e26fc945a4366d63c9b527414c4e9038b32b6f952905050798a8"
+          ],
+          [
+            "brenda",
+            "2026.9.8.1",
+            "af439d7bcfb635d34dec2838e5829333a5b9f64067ea447a2a003dff4448f2c0"
+          ],
+          [
+            "cellchat",
+            "2026.9.5.17",
+            "a66a929965a097b4a41906c29e640249d5f939909dfc56a664c59a3ef56272cc"
+          ],
+          [
+            "cellinker",
+            "2026.9.5.17",
+            "2da3d52531906be24b6b51414c43df02670c440eae53bce3feb1e3855d9cd3bd"
+          ],
+          [
+            "cellphonedb",
+            "2026.9.8.1",
+            "369ab5411621db4afa7b9618b0e9ae1b354f2791ee7af82afab207a71d2a294f"
+          ],
+          [
+            "chebi",
+            "2026.9.5.17",
+            "b3d9d80b30fda610b4225acb90fb40d6e25799db459f3758d319ea366e801aee"
+          ],
+          [
+            "chembl",
+            "2026.9.5.17",
+            "66317024e17fa57a6fd69ff2b1dc1358d500a38c8592fcbdce7ee77ccbb755ee"
+          ],
+          [
+            "chemont",
+            "2026.9.5.17",
+            "b6b64441f84c7ea1450d5c092ddac2a74aef5725adb6b340c168ccbccd8bd20d"
+          ],
+          [
+            "connectomedb2025",
+            "2026.9.30.4",
+            "891031a724baeca63f06e92ce5288d29da117a969254f996353ccc97eb1b76d5"
+          ],
+          [
+            "corum",
+            "2026.9.5.17",
+            "ea2b934a269491c7b358333cf8195f73db8c6a3cb2467eceecd7a1dc53dc9731"
+          ],
+          [
+            "drugcentral",
+            "2026.9.5.17",
+            "ac8c4812efec03958d4fee30bc53e23e2ae7be8c4bb701fa5483e11e4a988c0a"
+          ],
+          [
+            "foodb",
+            "2026.9.8.1",
+            "c1748fb4914e4c3a55a83ee338e3b7372a239b7f5ae72bc2fcdf4e90d7b6f20e"
+          ],
+          [
+            "go",
+            "2026.9.5.17",
+            "ee3dab37cac19c8b90f72c12298e63f266ebbd975cbd1a8eac6378ed439f130e"
+          ],
+          [
+            "guidetopharma",
+            "2026.9.5.17",
+            "fcc11a3bfae295ea78c2d7607487dc34d5f1a82d9a49067276900a4d90fd827c"
+          ],
+          [
+            "hmdb",
+            "2026.9.5.17",
+            "68155252cf9894e6e6fc43da202d51542c122b337668bceb2518b4bdeb774ef3"
+          ],
+          [
+            "hpo",
+            "2026.9.6.2",
+            "5875a1dd30c18dfdff66471d705a75c3a72b42ff6792ab07bdb1b8e52a9c2946"
+          ],
+          [
+            "icellnet",
+            "2026.9.5.17",
+            "3e186866c8c69ae3588e0cd2d44cdc2dd1fff6fb8db913136dd7d249278a43a3"
+          ],
+          [
+            "imm1415",
+            "2026.9.8.1",
+            "03876d41272cc34e12bd68e0f355f0f608067ba578d94b7399d4003f80ed116f"
+          ],
+          [
+            "intact",
+            "2026.9.5.17",
+            "8effc7a4736e504a144e972617e40ee6d4fa847db7eea09f63ab0886915f40af"
+          ],
+          [
+            "kegg",
+            "2026.9.30.4",
+            "85e861f9be5e19408b511077dcbe1dbc1d0e95804879b268ca85299855f7bf35"
+          ],
+          [
+            "lipidmaps",
+            "2026.9.5.17",
+            "2f5d468dbd21c2b4dfa561a6c0dc58d12e2d3404b557326ec7e7790d14bccd9f"
+          ],
+          [
+            "macdb",
+            "2026.9.30.4",
+            "7cdf1916da22a6944a075d679077a0645249e72085fc0ca7aa0f0aeb2cdf324e"
+          ],
+          [
+            "mebocost",
+            "2026.9.5.17",
+            "07e33feaaba554d983d4c31eda1bb1bad37d809a8ebb025fca8cbf58dabd7c15"
+          ],
+          [
+            "metatlas",
+            "2026.9.30.4",
+            "3f819b688d452533a78aa726dc9d988e7c283ad97a56ca19564ef18329735d36"
+          ],
+          [
+            "mirbase",
+            "2026.9.5.17",
+            "df5b87ccb6b3e76fd391dd5d50f7dcf8ac9be430b114fa89f814e7bbb56d2c1b"
+          ],
+          [
+            "mondo",
+            "2026.9.8.2",
+            "330a763480056692feb82342679fc424f96225e56a15b8b40ec08e6576ab3edb"
+          ],
+          [
+            "mrclinksdb",
+            "2026.9.5.17",
+            "af102604dfce0ec83b89a62448b22fde3779f899051647e2103db57d81c3ad35"
+          ],
+          [
+            "neuronchat",
+            "2026.9.5.17",
+            "ad271384d232b99c7bf8fc8e685867c39cea6f30d022d93712a4ec42e95addbe"
+          ],
+          [
+            "nichenet",
+            "2026.9.5.17",
+            "34536699988b8e71b74a5050956ca43bf97ca9dc083bc2134942b124c3f570a5"
+          ],
+          [
+            "omnipath_ontology",
+            "2026.9.5.17",
+            "1946e6eee41949581f81b9de990e9c8b10498bf382b24537f5207a037e742079"
+          ],
+          [
+            "pfocr",
+            "2026.9.8.1",
+            "ceb3ccc281b52108bb074203d7696fe593897538187207725474c0b8b0e73bc3"
+          ],
+          [
+            "phenol_explorer",
+            "2026.9.5.17",
+            "05de4e80389871400f32b28d3bf5fc8bf1d64a7ab602b8f4810980cf771ad1c2"
+          ],
+          [
+            "psi_mi",
+            "2026.9.5.17",
+            "1416af785d34abc28120f9beaba730bc2e413e558b92b7652a45d7dea00151b0"
+          ],
+          [
+            "ptfi",
+            "2026.9.8.1",
+            "ce8c55b5868a77d14604bcd6593ef3c2c59547f4fc7710b974904a9e68daa9ef"
+          ],
+          [
+            "rampdb",
+            "2026.9.8.1",
+            "12ecbb89e24cc03b98ea6623ccdf2624909c8cac6c369d5f4f200192bb5fda4f"
+          ],
+          [
+            "reactome",
+            "2026.9.30.4",
+            "a5edc09480c4d0ab6358fe895d008973415d0e7769d9c20ad3496f43b9069bbb"
+          ],
+          [
+            "recon3d",
+            "2026.9.30.4",
+            "3255a7af4463314b62a7f54810e47aa1957e8ffdfeeaaf41862f4cd30e832511"
+          ],
+          [
+            "refmet",
+            "2026.9.5.17",
+            "b4d5d04375ed27336d397b34d4d5b75b8df019bb327954bacba94491be9fe6c2"
+          ],
+          [
+            "rhea",
+            "2026.9.30.4",
+            "55e972cd1e2a807c5a36e78489ca10c1b0bfe7717becd5c62fe9dfb3e4989b04"
+          ],
+          [
+            "signor",
+            "2026.9.5.17",
+            "cfd6112c76fec4ad1807b75ac6e0dba4aa3066e9b6720561189eb0ca93c2943c"
+          ],
+          [
+            "slctables",
+            "2026.9.5.17",
+            "6fc7daf08e2050643a0543694565a850d2736e4a469d92c44c6a32ecad674fe6"
+          ],
+          [
+            "stitch",
+            "2026.9.5.17",
+            "0684d6d3d580d3d76627b439dba1bd1ca2b9746bfa8da21e7603fadd026114c7"
+          ],
+          [
+            "swisslipids",
+            "2026.9.5.17",
+            "92b519d457e1900b66d187b502e4f7e2d0138094445a0084756d4d00c98ab32f"
+          ],
+          [
+            "tcdb",
+            "2026.9.8.1",
+            "19d21f20e82c6f27a6b93aaad31a87367246547e7ec7a3e283a3d70e8d78b2e2"
+          ],
+          [
+            "uniprot",
+            "2026.9.6.4",
+            "3c825f1f797eaefa0889a8044092b4f2985538b6bb57ad77e56f252d68390adb"
+          ],
+          [
+            "wikipathways",
+            "2026.9.5.17",
+            "47eaa670b5ea8469d69ccc90f06fc292fe1c15a1ea0e1511ddba1df5f206a9b7"
+          ]
+        ],
+        "seconds": 0.0017399638891220093
+      },
+      "durable_phases": {
+        "columns": [
+          "phase",
+          "seconds"
+        ],
+        "rows": [
+          [
+            "base",
+            3022.195104382001
+          ],
+          [
+            "derived",
+            7222.042703244835
+          ],
+          [
+            "network_views",
+            0.02304178522899747
+          ],
+          [
+            "metsigdb",
+            350.71454876009375
+          ],
+          [
+            "cosmos",
+            1662.4857409726828
+          ]
+        ],
+        "seconds": 0.0006596590392291546
+      },
+      "product_identity": {
+        "columns": [
+          "product",
+          "release_id",
+          "manifest_sha256"
+        ],
+        "rows": [
+          [
+            "cosmos",
+            "2026.9.30.4",
+            "06f55112b371055b9b539c27eb7886d403b0131098393d1bafe4723ce006c03e"
+          ],
+          [
+            "metsigdb",
+            "2026.9.30.4",
+            "06f55112b371055b9b539c27eb7886d403b0131098393d1bafe4723ce006c03e"
+          ],
+          [
+            "network_views",
+            "2026.9.30.4",
+            "06f55112b371055b9b539c27eb7886d403b0131098393d1bafe4723ce006c03e"
+          ]
+        ],
+        "seconds": 0.0009114411659538746
+      },
+      "index_validity": {
+        "columns": [
+          "indexes",
+          "invalid",
+          "unready"
+        ],
+        "rows": [
+          [
+            2317,
+            0,
+            0
+          ]
+        ],
+        "seconds": 0.010440899059176445
+      },
+      "constraint_validity": {
+        "columns": [
+          "contype",
+          "constraints",
+          "unvalidated"
+        ],
+        "rows": [
+          [
+            "c",
+            353,
+            0
+          ],
+          [
+            "f",
+            3059,
+            0
+          ],
+          [
+            "n",
+            3387,
+            0
+          ],
+          [
+            "p",
+            732,
+            0
+          ],
+          [
+            "u",
+            17,
+            0
+          ]
+        ],
+        "seconds": 0.010992840863764286
+      },
+      "storage": {
+        "columns": [
+          "physical_tables",
+          "bytes"
+        ],
+        "rows": [
+          [
+            725,
+            98933350400
+          ]
+        ],
+        "seconds": 0.09722095681354403
+      },
+      "entities_protein": {
+        "columns": [
+          "sampled",
+          "published",
+          "with_identifier",
+          "with_label"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            100
+          ]
+        ],
+        "seconds": 0.05961542809382081
+      },
+      "entities_chemical_entity": {
+        "columns": [
+          "sampled",
+          "published",
+          "with_identifier",
+          "with_label"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            100
+          ]
+        ],
+        "seconds": 0.014444415923207998
+      },
+      "entities_small_molecule": {
+        "columns": [
+          "sampled",
+          "published",
+          "with_identifier",
+          "with_label"
+        ],
+        "rows": [
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "seconds": 0.002558661624789238
+      },
+      "entities_molecular_activity": {
+        "columns": [
+          "sampled",
+          "published",
+          "with_identifier",
+          "with_label"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            100
+          ]
+        ],
+        "seconds": 0.6235687271691859
+      },
+      "graph_endpoints": {
+        "columns": [
+          "sampled",
+          "subjects",
+          "objects"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100
+          ]
+        ],
+        "seconds": 0.04515034891664982
+      },
+      "source_claim_endpoints": {
+        "columns": [
+          "sampled",
+          "subjects",
+          "objects"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100
+          ]
+        ],
+        "seconds": 0.031735070049762726
+      },
+      "ontology_terms": {
+        "columns": [
+          "sampled",
+          "canonical_terms",
+          "with_label",
+          "with_definition"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            17
+          ]
+        ],
+        "seconds": 0.007399493828415871
+      },
+      "interaction_facts": {
+        "columns": [
+          "sampled",
+          "subjects",
+          "objects",
+          "with_header",
+          "unasserted_direction",
+          "unasserted_sign"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            100,
+            0,
+            49
+          ]
+        ],
+        "seconds": 0.044011584017425776
+      },
+      "reaction_participants": {
+        "columns": [
+          "role_name",
+          "sampled",
+          "canonical_entities",
+          "interaction_headers",
+          "distinct_reactions",
+          "with_stoichiometry",
+          "with_compartment",
+          "with_side",
+          "with_ordinal"
+        ],
+        "rows": [
+          [
+            "product",
+            50,
+            50,
+            50,
+            23,
+            14,
+            19,
+            50,
+            50
+          ],
+          [
+            "reactant",
+            50,
+            50,
+            50,
+            25,
+            19,
+            24,
+            50,
+            50
+          ]
+        ],
+        "seconds": 4.8905658749863505
+      },
+      "quantities": {
+        "columns": [
+          "sampled",
+          "relational_annotations",
+          "numeric_values",
+          "stated_units",
+          "stated_prefixes"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            48,
+            0
+          ]
+        ],
+        "seconds": 0.022243051789700985
+      },
+      "reaction_annotations_kegg": {
+        "columns": [
+          "source_name",
+          "predicate_name",
+          "term",
+          "annotation_scope",
+          "sampled_claims",
+          "linked_annotations",
+          "dictionary_entries",
+          "with_scalar_value",
+          "with_numeric_value",
+          "with_quantity_unit",
+          "with_quantity_prefix",
+          "missing_subjects",
+          "missing_objects"
+        ],
+        "rows": [
+          [
+            "kegg",
+            "has_input",
+            "biopax:conversionDirection",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "kegg",
+            "has_input",
+            "dcterms:type",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "kegg",
+            "has_input",
+            "prov:wasDerivedFrom",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "kegg",
+            "has_input",
+            "stoichiometry",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "kegg",
+            "has_output",
+            "biopax:conversionDirection",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "kegg",
+            "has_output",
+            "dcterms:type",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "kegg",
+            "has_output",
+            "prov:wasDerivedFrom",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "kegg",
+            "has_output",
+            "stoichiometry",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "seconds": 0.02213701792061329
+      },
+      "reaction_annotations_metatlas": {
+        "columns": [
+          "source_name",
+          "predicate_name",
+          "term",
+          "annotation_scope",
+          "sampled_claims",
+          "linked_annotations",
+          "dictionary_entries",
+          "with_scalar_value",
+          "with_numeric_value",
+          "with_quantity_unit",
+          "with_quantity_prefix",
+          "missing_subjects",
+          "missing_objects"
+        ],
+        "rows": [
+          [
+            "metatlas",
+            "has_input",
+            "biopax:cellularLocation",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "metatlas",
+            "has_input",
+            "biopax:conversionDirection",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "metatlas",
+            "has_input",
+            "dcterms:type",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "metatlas",
+            "has_input",
+            "prov:wasDerivedFrom",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "metatlas",
+            "has_input",
+            "stoichiometry",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "metatlas",
+            "has_output",
+            "biopax:cellularLocation",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "metatlas",
+            "has_output",
+            "biopax:conversionDirection",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "metatlas",
+            "has_output",
+            "dcterms:type",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "metatlas",
+            "has_output",
+            "prov:wasDerivedFrom",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "metatlas",
+            "has_output",
+            "stoichiometry",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "seconds": 0.0168312881141901
+      },
+      "reaction_annotations_reactome": {
+        "columns": [
+          "source_name",
+          "predicate_name",
+          "term",
+          "annotation_scope",
+          "sampled_claims",
+          "linked_annotations",
+          "dictionary_entries",
+          "with_scalar_value",
+          "with_numeric_value",
+          "with_quantity_unit",
+          "with_quantity_prefix",
+          "missing_subjects",
+          "missing_objects"
+        ],
+        "rows": [
+          [
+            "reactome",
+            "has_input",
+            "biopax:cellularLocation",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_input",
+            "biopax:conversionDirection",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_input",
+            "biopax:displayName",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_input",
+            "biopax:feature",
+            "relation",
+            3,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_input",
+            "dcterms:type",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_input",
+            "prov:wasDerivedFrom",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_input",
+            "source_record_urls",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_output",
+            "biopax:cellularLocation",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_output",
+            "biopax:conversionDirection",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_output",
+            "biopax:displayName",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_output",
+            "biopax:feature",
+            "relation",
+            2,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_output",
+            "dcterms:type",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_output",
+            "prov:wasDerivedFrom",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "reactome",
+            "has_output",
+            "source_record_urls",
+            "relation",
+            5,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "seconds": 0.026520886924117804
+      },
+      "metsigdb_Reactome": {
+        "columns": [
+          "sampled",
+          "metabolites",
+          "valid_set_references",
+          "positive_set_sizes",
+          "build_ids"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            100,
+            1
+          ]
+        ],
+        "seconds": 0.01331077516078949
+      },
+      "metsigdb_WikiPathways": {
+        "columns": [
+          "sampled",
+          "metabolites",
+          "valid_set_references",
+          "positive_set_sizes",
+          "build_ids"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            100,
+            1
+          ]
+        ],
+        "seconds": 0.01548449881374836
+      },
+      "metsigdb_KEGG": {
+        "columns": [
+          "sampled",
+          "metabolites",
+          "valid_set_references",
+          "positive_set_sizes",
+          "build_ids"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            100,
+            1
+          ]
+        ],
+        "seconds": 0.01024560397490859
+      },
+      "metsigdb_MACdb": {
+        "columns": [
+          "sampled",
+          "metabolites",
+          "valid_set_references",
+          "positive_set_sizes",
+          "build_ids"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            100,
+            1
+          ]
+        ],
+        "seconds": 0.017445507925003767
+      },
+      "metsigdb_ClassyFire": {
+        "columns": [
+          "sampled",
+          "metabolites",
+          "valid_set_references",
+          "positive_set_sizes",
+          "build_ids"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            100,
+            1
+          ]
+        ],
+        "seconds": 0.0744911259971559
+      },
+      "cosmos_edges": {
+        "columns": [
+          "sampled",
+          "valid_source_references",
+          "valid_target_references",
+          "valid_reverse",
+          "orphan_edges"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            100,
+            0
+          ]
+        ],
+        "seconds": 0.006453447975218296
+      },
+      "network_presets": {
+        "columns": [
+          "name",
+          "kind",
+          "grain",
+          "collapse_mode",
+          "included_source_count"
+        ],
+        "rows": [
+          [
+            "liana",
+            "ligand_receptor",
+            "interaction",
+            "endpoints",
+            1
+          ],
+          [
+            "metalinksdb",
+            "compound_protein",
+            "interaction",
+            "endpoints",
+            12
+          ],
+          [
+            "reactions",
+            "reaction",
+            "participant",
+            "none",
+            4
+          ]
+        ],
+        "seconds": 0.0016133678145706654
+      }
+    },
+    "query_notes": {},
+    "release": {
+      "version": "2026.9.30.4",
+      "manifest_sha256": "06f55112b371055b9b539c27eb7886d403b0131098393d1bafe4723ce006c03e",
+      "status": "complete",
+      "phase_seconds": {
+        "base": 3022.195104382001,
+        "copy": 309.9287815601565,
+        "cosmos": 1662.4857409726828,
+        "derived": 7222.042703244835,
+        "metsigdb": 350.71454876009375,
+        "projection": 3220.882355574053,
+        "constraints": 2263.2966879289597,
+        "csv_staging": 83.14118041843176,
+        "network_views": 0.02304178522899747,
+        "artifact_validation": 6.5639781770296395
+      },
+      "counts": {
+        "entity": 4794341,
+        "relation": 16377634,
+        "annotation": 3945232,
+        "ontology_terms": 0,
+        "entity_evidence": 6383473,
+        "entity_identifier": 39625833,
+        "relation_evidence": 22887251,
+        "annotation_quantity": 1577215,
+        "identifier_evidence": 26213189,
+        "entity_ontology_relation": 987393,
+        "entity_evidence_annotation": 8562132,
+        "entity_evidence_identifier": 39075256,
+        "entity_evidence_resolution": 6383473,
+        "relation_evidence_relation": 21899274,
+        "relation_evidence_annotation": 78521399
+      }
+    }
+  },
+  "additional_cosmos_samples": {
+    "checked_at": "2026-10-02T08:03:44.107258+00:00",
+    "scope": "bounded extra COSMOS scientific samples,100rows per case; no rebuild",
+    "samples": {
+      "reverse_reactions": {
+        "columns": [
+          "sampled",
+          "explicit_reversible",
+          "with_forward_half",
+          "canonical_events"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            100
+          ]
+        ],
+        "seconds": 0.007176497019827366
+      },
+      "orphan_reactions": {
+        "columns": [
+          "sampled",
+          "pseudo_enzyme",
+          "no_fabricated_gene_entity",
+          "canonical_events"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100,
+            100
+          ]
+        ],
+        "seconds": 0.49588988814502954
+      },
+      "transport_edges": {
+        "columns": [
+          "sampled",
+          "stated_compartment",
+          "canonical_events"
+        ],
+        "rows": [
+          [
+            100,
+            100,
+            100
+          ]
+        ],
+        "seconds": 0.0013477629981935024
+      }
+    },
+    "query_notes": {}
+  },
+  "entity_type_sample": {
+    "checked_at": "2026-10-02T07:59:08.702983+00:00",
+    "scope": "only the published entity_type column, 46 pinned entity artifacts, one thread; no build or resolution",
+    "source_entity_type_counts": [
+      [
+        "anatomical_entity",
+        66
+      ],
+      [
+        "biological_process",
+        20
+      ],
+      [
+        "cell",
+        11
+      ],
+      [
+        "chemical_entity",
+        5061909
+      ],
+      [
+        "exposure_event",
+        27
+      ],
+      [
+        "food",
+        1674
+      ],
+      [
+        "gene",
+        54408
+      ],
+      [
+        "gene_family",
+        9037
+      ],
+      [
+        "information_content_entity",
+        75097
+      ],
+      [
+        "macromolecular_complex",
+        19617
+      ],
+      [
+        "microrna",
+        87474
+      ],
+      [
+        "molecular_activity",
+        71391
+      ],
+      [
+        "molecular_entity",
+        17
+      ],
+      [
+        "named_thing",
+        3132
+      ],
+      [
+        "nucleic_acid_entity",
+        927
+      ],
+      [
+        "ontology_class",
+        191228
+      ],
+      [
+        "organism_taxon",
+        484
+      ],
+      [
+        "pathway",
+        131114
+      ],
+      [
+        "phenotypic_feature",
+        226
+      ],
+      [
+        "physical_entity",
+        10909
+      ],
+      [
+        "polypeptide",
+        1758
+      ],
+      [
+        "protein",
+        660375
+      ],
+      [
+        "protein_family",
+        1923
+      ],
+      [
+        "rna_product",
+        649
+      ]
+    ],
+    "seconds": 0.47119427006691694,
+    "chemical_entity_present": true,
+    "small_molecule_absent": true
+  },
+  "sampling_assessment": {
+    "query_notes": [],
+    "expected_empty_sample": "small_molecule is absent from the published entity types; chemicals are chemical_entity. Narrow type-column scan totals all 6383473 source entity rows.",
+    "all_three_product_identities_match": true,
+    "all_46_resource_pins_and_manifest_hashes_match": true,
+    "all_indexes_valid_ready": true,
+    "all_constraints_validated": true,
+    "protected_service_identities_and_start_times_unchanged": true,
+    "original_and_aligned_pilots_retained": true,
+    "scope": "Reasonable manual samples and catalogue/metadata observations, not exhaustive full-release verification or rebuild/rollback.",
+    "retained_input_boundaries": "Published identities are authoritative; original resolver matched flags and occurrence trees remain unavailable. Biolink adapters and declared capability boundaries are documented."
+  },
+  "future_cosmos_optimization": {
+    "deployed_to_completed_run": false,
+    "change": "One materialized source-owned direction claim producer; disjoint subject/object equality branches with NULL-safe self-loop guard.",
+    "focused_local_postgres_tests": {
+      "passed": 3,
+      "seconds": 1.31
+    },
+    "main_science_regressions": {
+      "passed": 2,
+      "seconds": 4.7
+    },
+    "independent_review": "No actionable finding. Full claims/publication rows/statistics parity verified; fixture order parity is not a universal SQL ordering guarantee.",
+    "planner_only": {
+      "checked_at": "2026-10-02T08:05:35.775108+00:00",
+      "scope": "final local future candidate planner-only direction-branch SELECT; not full-publication speed estimate",
+      "total_estimated_cost": 4522288.38,
+      "estimated_rows": 41,
+      "membership_producers": 1,
+      "membership_output_columns": [
+        3
+      ],
+      "membership_scans": 2,
+      "endpoint_joins": [
+        {
+          "Node Type": "Hash Join",
+          "Join Type": "Inner",
+          "Hash Cond": "(stated.annotation_key = direction.annotation_key)",
+          "Plan Rows": 808,
+          "Total Cost": 224156.64
+        },
+        {
+          "Node Type": "Hash Join",
+          "Join Type": "Inner",
+          "Hash Cond": "(direction_1.subject_entity_id = reaction_1.reaction_entity_id)",
+          "Plan Rows": 18,
+          "Total Cost": 251.89
+        }
+      ]
+    },
+    "full_release_speed_measured": false
+  },
+  "prior_main_alignment_attempts": [
+    {
+      "attempt": 1,
+      "seconds": 576.513767,
+      "outcome": "pre-COPY validation failed; setup schema retained"
+    },
+    {
+      "attempt": 2,
+      "seconds": 1160.390526,
+      "outcome": "pre-COPY dimension preparation stopped; setup schema retained"
+    },
+    {
+      "attempt": 3,
+      "seconds": 609.127313,
+      "outcome": "pre-COPY DuckDB memory failure; setup schema retained"
+    },
+    {
+      "attempt": 4,
+      "seconds": 3361.156325,
+      "outcome": "pre-COPY annotation memory failure; setup schema retained"
+    },
+    {
+      "attempt": 5,
+      "seconds": 3406.576844,
+      "outcome": "pre-COPY ontology staging memory failure; setup schema retained"
+    },
+    {
+      "attempt": 6,
+      "seconds": 7772.222780651879,
+      "outcome": "main identifier index restoration failed; COPY rolled back; allocated setup schema retained"
+    }
+  ],
+  "mandatory_verification": false,
+  "no_resource_rebuild_or_resolution": true,
+  "no_restart_after_success": true
+}

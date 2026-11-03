@@ -1,0 +1,1445 @@
+{
+  "audit": "coordinated-molecular-compact-runtime-v2",
+  "status": "passed",
+  "summary": {
+    "cases": 26,
+    "passed": 25,
+    "coverage_missing": 1,
+    "defects": 0
+  },
+  "runtime_provenance": {
+    "omnipath_resolver.canonical.match": {
+      "path": "/root/projects/omnipath-releases/20261004-molecular-forms/candidate/packages/omnipath_build/src/omnipath_build/canonical/match.py",
+      "sha256": "81d6b90eb20e3daab86e4b2e67a7dc90e3005059d4b1eb32b9726b6032b79f60"
+    },
+    "omnipath_resolver.canonical.policy": {
+      "path": "/root/projects/omnipath-releases/20261004-molecular-forms/candidate/packages/omnipath_build/src/omnipath_build/canonical/policy.py",
+      "sha256": "5853bced417a39df7459847b41abd59c14f00134f3c80a010a321fcaf3740459"
+    },
+    "omnipath_resolver.index": {
+      "path": "/root/projects/omnipath-releases/20261004-molecular-forms/candidate/packages/omnipath_build/src/omnipath_build/reference/full_index_runtime.py",
+      "sha256": "dc616244f6cb0eb1c3c3dfec82cad9869184e56f68c1ca4ff9a29f6a411b925c"
+    },
+    "omnipath_build.reference.replay_resources": {
+      "path": "/root/projects/omnipath-releases/20261004-molecular-forms/candidate/packages/omnipath_build/src/omnipath_build/reference/replay_resources.py",
+      "sha256": "494022e0b20d6d4421f58903b3c94390ed59d37967e202a644737185fe5646f5"
+    },
+    "omnipath_resolver._omnipath_resolver": {
+      "path": "/root/projects/omnipath-releases/20261004-molecular-forms/candidate/packages/omnipath_resolver/src/omnipath_resolver/_omnipath_resolver.abi3.so",
+      "sha256": "10689dd7f3dfeb0df4124b32e03604d2da6c9140509396aded20c2ae7e31ddaf"
+    }
+  },
+  "gene_role_component_manifest_sha256": "19d8cfefc5dd6ceb3ad365d10a3701375e8e93bb47c56e6695a7eeecacef4489",
+  "assignment_manifest": {
+    "status": "complete",
+    "version": "gene-product-reference-v6",
+    "full_scope": true,
+    "fingerprint": "08588fd14d4b5501aadc8b7b0ce7a730d3543cf6f9fbf7ebeeaf197d5f5379ac",
+    "parent_reference": "/root/projects/omnipath-releases/20261004-molecular-forms/reference/graph",
+    "derivation": {
+      "parent_fingerprint": "8f9c47a8a2258e1a18c4ff14fdd9cf15d3b8c730eea5020ae6816e131b505501",
+      "code_sha256": "b59c5b01a27895592a4e756742733d61ffee1ad59a5f3efad22657f6b26e31af",
+      "policy": "source-id-complete-anchor-multimap-v1"
+    }
+  },
+  "coverage_limitations": [
+    {
+      "case": "tp53_transcript_version_refseq",
+      "mismatches": {
+        "canonical_namespace": {
+          "expected": "entrez",
+          "actual": "refseq"
+        },
+        "canonical_identifier": {
+          "expected": "7157",
+          "actual": "NM_000546.999"
+        },
+        "gene_mapping_status": {
+          "expected": "resolved",
+          "actual": "missing"
+        },
+        "matched": {
+          "expected": true,
+          "actual": false
+        }
+      },
+      "reason": "No indexed posting for the asserted stable transcript accession."
+    },
+    "Primary TP53 product record has no explicit transcript aliases; fixed transcript assertions are reported individually above."
+  ],
+  "oracle_refinements": [
+    {
+      "case": "tp53_refseq_protein_version",
+      "previous_expectation": "Selected primary UniProt P04637",
+      "reason": "Exact RefSeq version has three distinct primary UniProt candidates; all support Gene7157. Preserve product ambiguity rather than rank by review status.",
+      "catalogue_candidates": [
+        "uniprot:Q53GA5",
+        "uniprot:K7PPA8",
+        "uniprot:P04637"
+      ]
+    }
+  ],
+  "cases": {
+    "tp53_primary_protein": {
+      "input": {
+        "entity_key": "tp53_primary_protein",
+        "entity_type": "protein",
+        "namespace": "uniprot",
+        "identifier": "P04637",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "TP53",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "uniprot",
+        "protein_identifier": "P04637",
+        "protein_node_id": "uniprot:P04637",
+        "protein_label": "P04637",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [
+          "entrez:7157"
+        ],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": "P04637",
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.004491
+    },
+    "tp53_source_gene": {
+      "input": {
+        "entity_key": "tp53_source_gene",
+        "entity_type": "gene",
+        "namespace": "entrez",
+        "identifier": "7157",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "TP53",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "gene",
+        "reference_library": "gene_protein",
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": null,
+        "entity_type": "gene",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.001273
+    },
+    "tp53_symbol_gene_evidence": {
+      "input": {
+        "entity_key": "tp53_symbol_gene_evidence",
+        "entity_type": "protein",
+        "namespace": "genesymbol",
+        "identifier": "TP53",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "TP53",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": null,
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.000327
+    },
+    "brca1_primary_protein": {
+      "input": {
+        "entity_key": "brca1_primary_protein",
+        "entity_type": "protein",
+        "namespace": "uniprot",
+        "identifier": "P38398",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "672",
+        "label": "BRCA1",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:672",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "uniprot",
+        "protein_identifier": "P38398",
+        "protein_node_id": "uniprot:P38398",
+        "protein_label": "P38398",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [
+          "entrez:672"
+        ],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:672"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "672",
+        "protein_identifier": "P38398",
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.003214
+    },
+    "brca1_symbol_more_than_ten_products": {
+      "input": {
+        "entity_key": "brca1_symbol_more_than_ten_products",
+        "entity_type": "gene",
+        "namespace": "genesymbol",
+        "identifier": "BRCA1",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "672",
+        "label": "BRCA1",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:672",
+        "entity_type": "gene",
+        "reference_library": "gene_protein",
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:672"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "672",
+        "protein_identifier": null,
+        "entity_type": "gene",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.000328
+    },
+    "brca1_ensembl_gene": {
+      "input": {
+        "entity_key": "brca1_ensembl_gene",
+        "entity_type": "gene",
+        "namespace": "ensg",
+        "identifier": "ENSG00000012048.25",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "672",
+        "label": "BRCA1",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:672",
+        "entity_type": "gene",
+        "reference_library": "gene_protein",
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:672"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "672",
+        "protein_identifier": null,
+        "entity_type": "gene",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.00073
+    },
+    "calmodulin_ambiguous_gene": {
+      "input": {
+        "entity_key": "calmodulin_ambiguous_gene",
+        "entity_type": "protein",
+        "namespace": "uniprot",
+        "identifier": "P0DP23",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "uniprot",
+        "canonical_identifier": "P0DP23",
+        "label": "CALM1",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "uniprot:P0DP23",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "uniprot",
+        "protein_identifier": "P0DP23",
+        "protein_node_id": "uniprot:P0DP23",
+        "protein_label": "CALM1",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [
+          "entrez:801",
+          "entrez:805",
+          "entrez:808"
+        ],
+        "gene_mapping_status": "ambiguous",
+        "gene_candidates": [
+          "entrez:801",
+          "entrez:805",
+          "entrez:808"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "uniprot",
+        "canonical_identifier": "P0DP23",
+        "protein_identifier": "P0DP23",
+        "gene_mapping_status": "ambiguous",
+        "gene_candidates": [
+          "entrez:801",
+          "entrez:805",
+          "entrez:808"
+        ],
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.001772
+    },
+    "calmodulin_explicit_gene_disambiguation": {
+      "input": {
+        "entity_key": "calmodulin_explicit_gene_disambiguation",
+        "entity_type": "protein",
+        "namespace": "uniprot",
+        "identifier": "P0DP23",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [
+          {
+            "ns": "entrez",
+            "id": "805"
+          }
+        ],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "805",
+        "label": "805",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:805",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "uniprot",
+        "protein_identifier": "P0DP23",
+        "protein_node_id": "uniprot:P0DP23",
+        "protein_label": "CALM1",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [
+          "entrez:801",
+          "entrez:805",
+          "entrez:808"
+        ],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:805"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "805",
+        "protein_identifier": "P0DP23",
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.002006
+    },
+    "calmodulin_source_gene_801": {
+      "input": {
+        "entity_key": "calmodulin_source_gene_801",
+        "entity_type": "gene",
+        "namespace": "entrez",
+        "identifier": "801",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "801",
+        "label": "801",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:801",
+        "entity_type": "gene",
+        "reference_library": "gene_protein",
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:801"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "801",
+        "protein_identifier": null,
+        "entity_type": "gene",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.002306
+    },
+    "calmodulin_source_gene_805": {
+      "input": {
+        "entity_key": "calmodulin_source_gene_805",
+        "entity_type": "gene",
+        "namespace": "entrez",
+        "identifier": "805",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "805",
+        "label": "805",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:805",
+        "entity_type": "gene",
+        "reference_library": "gene_protein",
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:805"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "805",
+        "protein_identifier": null,
+        "entity_type": "gene",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.000165
+    },
+    "calmodulin_source_gene_808": {
+      "input": {
+        "entity_key": "calmodulin_source_gene_808",
+        "entity_type": "gene",
+        "namespace": "entrez",
+        "identifier": "808",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "808",
+        "label": "808",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:808",
+        "entity_type": "gene",
+        "reference_library": "gene_protein",
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:808"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "808",
+        "protein_identifier": null,
+        "entity_type": "gene",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.001971
+    },
+    "tp53_conflicting_brca1_gene": {
+      "input": {
+        "entity_key": "tp53_conflicting_brca1_gene",
+        "entity_type": "protein",
+        "namespace": "uniprot",
+        "identifier": "P04637",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [
+          {
+            "ns": "entrez",
+            "id": "672"
+          }
+        ],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "uniprot",
+        "canonical_identifier": "P04637",
+        "label": "P04637",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "uniprot:P04637",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "uniprot",
+        "protein_identifier": "P04637",
+        "protein_node_id": "uniprot:P04637",
+        "protein_label": "P04637",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [
+          "entrez:7157"
+        ],
+        "gene_mapping_status": "conflict",
+        "gene_candidates": [
+          "entrez:672",
+          "entrez:7157"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "uniprot",
+        "canonical_identifier": "P04637",
+        "protein_identifier": "P04637",
+        "gene_mapping_status": "conflict",
+        "protein_gene_candidates": [
+          "entrez:7157"
+        ],
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.001374
+    },
+    "tp53_conflicting_missing_gene": {
+      "input": {
+        "entity_key": "tp53_conflicting_missing_gene",
+        "entity_type": "protein",
+        "namespace": "uniprot",
+        "identifier": "P04637",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [
+          {
+            "ns": "entrez",
+            "id": "999999999999"
+          }
+        ],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "uniprot",
+        "canonical_identifier": "P04637",
+        "label": "P04637",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "uniprot:P04637",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "uniprot",
+        "protein_identifier": "P04637",
+        "protein_node_id": "uniprot:P04637",
+        "protein_label": "P04637",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [
+          "entrez:7157"
+        ],
+        "gene_mapping_status": "conflict",
+        "gene_candidates": [
+          "entrez:7157",
+          "entrez:999999999999"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "uniprot",
+        "canonical_identifier": "P04637",
+        "protein_identifier": "P04637",
+        "gene_mapping_status": "conflict",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.001213
+    },
+    "rna_subtype_gene_preservation": {
+      "input": {
+        "entity_key": "rna_subtype_gene_preservation",
+        "entity_type": "microrna",
+        "namespace": "entrez",
+        "identifier": "7157",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "TP53",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "microrna",
+        "reference_library": "gene_protein",
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": null,
+        "entity_type": "microrna",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.000218
+    },
+    "mouse_tp53_product_taxon": {
+      "input": {
+        "entity_key": "mouse_tp53_product_taxon",
+        "entity_type": "protein",
+        "namespace": "uniprot",
+        "identifier": "P02340",
+        "taxon": "10090",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "22059",
+        "label": "Tp53",
+        "resolved_by": "parquet",
+        "taxon": "10090",
+        "node_id": "entrez:22059",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "uniprot",
+        "protein_identifier": "P02340",
+        "protein_node_id": "uniprot:P02340",
+        "protein_label": "Tp53",
+        "protein_taxon": "10090",
+        "protein_gene_candidates": [
+          "entrez:22059"
+        ],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:22059"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "22059",
+        "protein_identifier": "P02340",
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true,
+        "taxon": "10090",
+        "protein_taxon": "10090"
+      },
+      "classification": "pass",
+      "seconds": 0.002557
+    },
+    "uniprot_isoform_primary_product": {
+      "input": {
+        "entity_key": "uniprot_isoform_primary_product",
+        "entity_type": "protein",
+        "namespace": "uniprot",
+        "identifier": "P04637-2",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": {
+          "isoform_identifier": {
+            "ns": "uniprot",
+            "id": "P04637-2"
+          }
+        },
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "TP53",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "uniprot",
+        "protein_identifier": "P04637",
+        "protein_node_id": "uniprot:P04637",
+        "protein_label": "P04637",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [
+          "entrez:7157"
+        ],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": "P04637",
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.001068
+    },
+    "tp53_refseq_protein_version": {
+      "input": {
+        "entity_key": "tp53_refseq_protein_version",
+        "entity_type": "protein",
+        "namespace": "refseq",
+        "identifier": "NP_000537.3",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "TP53",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "refseq",
+        "protein_identifier": "NP_000537.3",
+        "protein_node_id": null,
+        "protein_label": "NP_000537.3",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": "NP_000537.3",
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true,
+        "protein_namespace": "refseq",
+        "protein_node_id": null
+      },
+      "classification": "pass",
+      "seconds": 0.001507
+    },
+    "tp53_refseq_explicit_product_P04637": {
+      "input": {
+        "entity_key": "tp53_refseq_explicit_product_P04637",
+        "entity_type": "protein",
+        "namespace": "refseq",
+        "identifier": "NP_000537.3",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [
+          {
+            "ns": "uniprot",
+            "id": "P04637"
+          }
+        ],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "TP53",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "uniprot",
+        "protein_identifier": "P04637",
+        "protein_node_id": "uniprot:P04637",
+        "protein_label": "P04637",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [
+          "entrez:7157"
+        ],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": "P04637",
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.000397
+    },
+    "tp53_refseq_explicit_product_K7PPA8": {
+      "input": {
+        "entity_key": "tp53_refseq_explicit_product_K7PPA8",
+        "entity_type": "protein",
+        "namespace": "refseq",
+        "identifier": "NP_000537.3",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [
+          {
+            "ns": "uniprot",
+            "id": "K7PPA8"
+          }
+        ],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "TP53",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "uniprot",
+        "protein_identifier": "K7PPA8",
+        "protein_node_id": "uniprot:K7PPA8",
+        "protein_label": "K7PPA8",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [
+          "entrez:7157"
+        ],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": "K7PPA8",
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.001714
+    },
+    "tp53_refseq_gene_does_not_select_product": {
+      "input": {
+        "entity_key": "tp53_refseq_gene_does_not_select_product",
+        "entity_type": "protein",
+        "namespace": "refseq",
+        "identifier": "NP_000537.3",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [
+          {
+            "ns": "entrez",
+            "id": "7157"
+          }
+        ],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "TP53",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "refseq",
+        "protein_identifier": "NP_000537.3",
+        "protein_node_id": null,
+        "protein_label": "NP_000537.3",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": "NP_000537.3",
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true,
+        "protein_namespace": "refseq",
+        "protein_node_id": null
+      },
+      "classification": "pass",
+      "seconds": 0.000267
+    },
+    "serialized_nullable_molecular_form": {
+      "input": {
+        "entity_key": "serialized_nullable_molecular_form",
+        "entity_type": "protein",
+        "namespace": "uniprot",
+        "identifier": "P04637",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": {
+          "sequence_identifiers": null,
+          "variants": null,
+          "modifications": [
+            {
+              "residue": "S",
+              "position": 15
+            }
+          ]
+        },
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "TP53",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "uniprot",
+        "protein_identifier": "P04637",
+        "protein_node_id": "uniprot:P04637",
+        "protein_label": "P04637",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [
+          "entrez:7157"
+        ],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": "P04637",
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "pass",
+      "seconds": 0.00024
+    },
+    "tp53_transcript_version_enst": {
+      "input": {
+        "entity_key": "tp53_transcript_version_enst",
+        "entity_type": "rna_product",
+        "namespace": "enst",
+        "identifier": "ENST00000269305.9",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "TP53",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "rna_product",
+        "reference_library": "gene_protein",
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": "enst",
+        "transcript_identifier": "ENST00000269305.9",
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": null,
+        "entity_type": "rna_product",
+        "gene_mapping_status": "resolved",
+        "matched": true,
+        "transcript_namespace": "enst",
+        "transcript_identifier": "ENST00000269305.9"
+      },
+      "classification": "pass",
+      "seconds": 0.001218
+    },
+    "tp53_transcript_version_ensembl": {
+      "input": {
+        "entity_key": "tp53_transcript_version_ensembl",
+        "entity_type": "rna_product",
+        "namespace": "ensembl",
+        "identifier": "ENST00000269305.987",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "TP53",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "rna_product",
+        "reference_library": "gene_protein",
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": "enst",
+        "transcript_identifier": "ENST00000269305.987",
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": null,
+        "entity_type": "rna_product",
+        "gene_mapping_status": "resolved",
+        "matched": true,
+        "transcript_namespace": "enst",
+        "transcript_identifier": "ENST00000269305.987"
+      },
+      "classification": "pass",
+      "seconds": 0.000372
+    },
+    "tp53_transcript_version_refseq": {
+      "input": {
+        "entity_key": "tp53_transcript_version_refseq",
+        "entity_type": "rna_product",
+        "namespace": "refseq",
+        "identifier": "NM_000546.999",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "refseq",
+        "canonical_identifier": "NM_000546.999",
+        "label": "NM_000546.999",
+        "resolved_by": "unmatched",
+        "taxon": "9606",
+        "node_id": null,
+        "entity_type": "rna_product",
+        "reference_library": null,
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "missing",
+        "gene_candidates": [],
+        "transcript_namespace": "refseq",
+        "transcript_identifier": "NM_000546.999",
+        "matched": false
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": null,
+        "entity_type": "rna_product",
+        "gene_mapping_status": "resolved",
+        "matched": true,
+        "transcript_namespace": "refseq",
+        "transcript_identifier": "NM_000546.999"
+      },
+      "classification": "coverage_missing",
+      "seconds": 0.001431
+    },
+    "missing_transcript_enst": {
+      "input": {
+        "entity_key": "missing_transcript_enst",
+        "entity_type": "transcript",
+        "namespace": "enst",
+        "identifier": "ENST999999999999.73",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "enst",
+        "canonical_identifier": "ENST999999999999",
+        "label": "ENST999999999999",
+        "resolved_by": "unmatched",
+        "taxon": "9606",
+        "node_id": null,
+        "entity_type": "transcript",
+        "reference_library": null,
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "missing",
+        "gene_candidates": [],
+        "transcript_namespace": "enst",
+        "transcript_identifier": "ENST999999999999.73",
+        "matched": false
+      },
+      "expected": {
+        "matched": false,
+        "protein_identifier": null,
+        "gene_mapping_status": "missing",
+        "transcript_namespace": "enst",
+        "transcript_identifier": "ENST999999999999.73",
+        "entity_type": "transcript"
+      },
+      "classification": "pass",
+      "seconds": 0.001259
+    },
+    "missing_transcript_refseq": {
+      "input": {
+        "entity_key": "missing_transcript_refseq",
+        "entity_type": "transcript",
+        "namespace": "refseq",
+        "identifier": "NR_999999999999.73",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "refseq",
+        "canonical_identifier": "NR_999999999999.73",
+        "label": "NR_999999999999.73",
+        "resolved_by": "unmatched",
+        "taxon": "9606",
+        "node_id": null,
+        "entity_type": "transcript",
+        "reference_library": null,
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "missing",
+        "gene_candidates": [],
+        "transcript_namespace": "refseq",
+        "transcript_identifier": "NR_999999999999.73",
+        "matched": false
+      },
+      "expected": {
+        "matched": false,
+        "protein_identifier": null,
+        "gene_mapping_status": "missing",
+        "transcript_namespace": "refseq",
+        "transcript_identifier": "NR_999999999999.73",
+        "entity_type": "transcript"
+      },
+      "classification": "pass",
+      "seconds": 0.001351
+    }
+  },
+  "reference_base_manifest_sha256": "3dd0780ae3b5c04ec4bbdd201e0eee7037de7a8de592bd2c535cd57bb7342cea",
+  "report_note": "Condensed copy of the passing isolated indexed audit. Full lookup postings remain in reports/compact-runtime-qc.json on nicesrv; original failedattempt is preserved separately."
+}

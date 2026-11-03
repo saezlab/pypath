@@ -1,0 +1,922 @@
+{
+ "date": "2026-10-09",
+ "target": "https://omnipath-metabo-dev.schaul.click/explore?release=latest",
+ "release": "2026.10.9",
+ "api_image": "omnipath-api:serving-e12b0fb",
+ "host": {
+  "cpus": 8,
+  "memory_mb": 15996
+ },
+ "script": "scripts/explorer_load_test.py",
+ "decision": "A_3x2",
+ "single_user_fast_clicks": {
+  "args": {
+   "users": "1",
+   "seconds": 75,
+   "think": "0.5,1",
+   "reuse": 0.0,
+   "seed": 7,
+   "abort_error_rate": 0.1,
+   "abort_step_p95": 30.0
+  },
+  "stage": {
+   "elapsed_s": 82.6,
+   "requests": 144,
+   "req_per_s": 1.74,
+   "journeys": 8,
+   "steps": 56,
+   "steps_per_min": 40.7,
+   "codes": {
+    "200": 144
+   },
+   "error_rate": 0.0,
+   "req_p50": 0.47,
+   "req_p95": 1.7,
+   "step_p50": 0.7,
+   "step_p95": 1.97,
+   "step_p99": 2.39,
+   "step_max": 2.52,
+   "server_running_mean": 0.69,
+   "server_waiting_mean": 0.06,
+   "server_waiting_max": 1,
+   "server_cpu_max": 0.16,
+   "server_mem_max": 0.362,
+   "endpoint_p50": {
+    "/app-api/entities/by-public-ids": 0.39,
+    "/app-api/entities/examples": 0.09,
+    "/app-api/entities/groups": 0.84,
+    "/app-api/entities/scoped-facets": 0.42,
+    "/app-api/relations/scoped-facets": 0.47,
+    "/app-api/relations/search": 0.64,
+    "/app-api/status": 0.04,
+    "/explore": 0.06
+   },
+   "endpoint_p95": {
+    "/app-api/entities/by-public-ids": 0.88,
+    "/app-api/entities/examples": 0.18,
+    "/app-api/entities/groups": 1.4,
+    "/app-api/entities/scoped-facets": 0.78,
+    "/app-api/relations/scoped-facets": 2.15,
+    "/app-api/relations/search": 1.81,
+    "/app-api/status": 0.11,
+    "/explore": 0.13
+   },
+   "users": 1,
+   "think": [
+    0.5,
+    1.0
+   ]
+  }
+ },
+ "runs": [
+  {
+   "name": "baseline",
+   "settings": {
+    "API_CPUS": 4,
+    "API_MEMORY_LIMIT": "6g",
+    "API_QUERY_CONCURRENCY": 2,
+    "API_QUERY_THREADS": 2,
+    "API_QUERY_MEMORY": "2500MB",
+    "API_QUERY_WAIT_SECONDS": 30
+   },
+   "note": "Stopped by hand during the 24-user stage; that stage's numbers include the cut-off.",
+   "args": {
+    "users": "2,4,8,12,16,24,32",
+    "seconds": 120,
+    "think": "3,10",
+    "reuse": 0.0,
+    "seed": 11,
+    "abort_error_rate": 0.1,
+    "abort_step_p95": 30.0
+   },
+   "stages": [
+    {
+     "elapsed_s": 156.1,
+     "requests": 104,
+     "req_per_s": 0.67,
+     "journeys": 6,
+     "steps": 42,
+     "steps_per_min": 16.1,
+     "codes": {
+      "200": 104
+     },
+     "error_rate": 0.0,
+     "req_p50": 0.52,
+     "req_p95": 5.77,
+     "step_p50": 0.93,
+     "step_p95": 5.77,
+     "step_p99": 6.25,
+     "step_max": 6.36,
+     "server_running_mean": 0.53,
+     "server_waiting_mean": 0.16,
+     "server_waiting_max": 5,
+     "server_cpu_max": 0.14,
+     "server_mem_max": 0.384,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 0.77,
+      "/app-api/entities/examples": 0.16,
+      "/app-api/entities/groups": 0.85,
+      "/app-api/entities/scoped-facets": 0.42,
+      "/app-api/relations/scoped-facets": 1.03,
+      "/app-api/relations/search": 1.38,
+      "/app-api/status": 0.07,
+      "/explore": 0.06
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 4.8,
+      "/app-api/entities/examples": 0.19,
+      "/app-api/entities/groups": 3.62,
+      "/app-api/entities/scoped-facets": 1.31,
+      "/app-api/relations/scoped-facets": 5.23,
+      "/app-api/relations/search": 5.86,
+      "/app-api/status": 0.1,
+      "/explore": 0.12
+     },
+     "users": 2,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "elapsed_s": 154.9,
+     "requests": 211,
+     "req_per_s": 1.36,
+     "journeys": 12,
+     "steps": 84,
+     "steps_per_min": 32.5,
+     "codes": {
+      "200": 211
+     },
+     "error_rate": 0.0,
+     "req_p50": 0.55,
+     "req_p95": 3.29,
+     "step_p50": 0.84,
+     "step_p95": 3.49,
+     "step_p99": 4.4,
+     "step_max": 4.98,
+     "server_running_mean": 0.69,
+     "server_waiting_mean": 0.4,
+     "server_waiting_max": 4,
+     "server_cpu_max": 0.17,
+     "server_mem_max": 0.416,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 0.33,
+      "/app-api/entities/examples": 0.13,
+      "/app-api/entities/groups": 0.9,
+      "/app-api/entities/scoped-facets": 0.41,
+      "/app-api/relations/scoped-facets": 0.77,
+      "/app-api/relations/search": 0.63,
+      "/app-api/status": 0.05,
+      "/explore": 0.07
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 2.01,
+      "/app-api/entities/examples": 0.23,
+      "/app-api/entities/groups": 3.26,
+      "/app-api/entities/scoped-facets": 1.06,
+      "/app-api/relations/scoped-facets": 3.49,
+      "/app-api/relations/search": 3.42,
+      "/app-api/status": 0.16,
+      "/explore": 0.17
+     },
+     "users": 4,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "elapsed_s": 152.7,
+     "requests": 428,
+     "req_per_s": 2.8,
+     "journeys": 24,
+     "steps": 168,
+     "steps_per_min": 66.0,
+     "codes": {
+      "200": 428
+     },
+     "error_rate": 0.0,
+     "req_p50": 0.5,
+     "req_p95": 2.13,
+     "step_p50": 0.73,
+     "step_p95": 2.23,
+     "step_p99": 3.19,
+     "step_max": 3.46,
+     "server_running_mean": 1.1,
+     "server_waiting_mean": 1.03,
+     "server_waiting_max": 9,
+     "server_cpu_max": 0.19,
+     "server_mem_max": 0.446,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 0.36,
+      "/app-api/entities/examples": 0.12,
+      "/app-api/entities/groups": 0.93,
+      "/app-api/entities/scoped-facets": 0.64,
+      "/app-api/relations/scoped-facets": 0.53,
+      "/app-api/relations/search": 0.6,
+      "/app-api/status": 0.04,
+      "/explore": 0.06
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 1.34,
+      "/app-api/entities/examples": 0.61,
+      "/app-api/entities/groups": 2.58,
+      "/app-api/entities/scoped-facets": 1.49,
+      "/app-api/relations/scoped-facets": 2.62,
+      "/app-api/relations/search": 2.23,
+      "/app-api/status": 0.1,
+      "/explore": 0.13
+     },
+     "users": 8,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "elapsed_s": 170.2,
+     "requests": 594,
+     "req_per_s": 3.49,
+     "journeys": 33,
+     "steps": 231,
+     "steps_per_min": 81.4,
+     "codes": {
+      "200": 594
+     },
+     "error_rate": 0.0,
+     "req_p50": 1.21,
+     "req_p95": 6.27,
+     "step_p50": 1.54,
+     "step_p95": 6.5,
+     "step_p99": 7.91,
+     "step_max": 8.68,
+     "server_running_mean": 1.71,
+     "server_waiting_mean": 6.21,
+     "server_waiting_max": 26,
+     "server_cpu_max": 0.41,
+     "server_mem_max": 0.48,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 1.48,
+      "/app-api/entities/examples": 0.21,
+      "/app-api/entities/groups": 1.87,
+      "/app-api/entities/scoped-facets": 0.75,
+      "/app-api/relations/scoped-facets": 2.11,
+      "/app-api/relations/search": 1.68,
+      "/app-api/status": 0.04,
+      "/explore": 0.06
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 5.78,
+      "/app-api/entities/examples": 2.36,
+      "/app-api/entities/groups": 6.24,
+      "/app-api/entities/scoped-facets": 2.69,
+      "/app-api/relations/scoped-facets": 6.59,
+      "/app-api/relations/search": 6.75,
+      "/app-api/status": 0.11,
+      "/explore": 0.13
+     },
+     "users": 12,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "elapsed_s": 179.3,
+     "requests": 683,
+     "req_per_s": 3.81,
+     "journeys": 38,
+     "steps": 266,
+     "steps_per_min": 89.0,
+     "codes": {
+      "200": 683
+     },
+     "error_rate": 0.0,
+     "req_p50": 2.22,
+     "req_p95": 5.38,
+     "step_p50": 2.61,
+     "step_p95": 5.82,
+     "step_p99": 6.76,
+     "step_max": 6.85,
+     "server_running_mean": 1.74,
+     "server_waiting_mean": 9.76,
+     "server_waiting_max": 29,
+     "server_cpu_max": 0.42,
+     "server_mem_max": 0.507,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 2.25,
+      "/app-api/entities/examples": 0.96,
+      "/app-api/entities/groups": 2.83,
+      "/app-api/entities/scoped-facets": 1.28,
+      "/app-api/relations/scoped-facets": 3.51,
+      "/app-api/relations/search": 2.76,
+      "/app-api/status": 0.04,
+      "/explore": 0.06
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 5.03,
+      "/app-api/entities/examples": 3.44,
+      "/app-api/entities/groups": 5.84,
+      "/app-api/entities/scoped-facets": 3.7,
+      "/app-api/relations/scoped-facets": 5.68,
+      "/app-api/relations/search": 5.63,
+      "/app-api/status": 0.12,
+      "/explore": 0.14
+     },
+     "users": 16,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "elapsed_s": 180.0,
+     "requests": 553,
+     "req_per_s": 3.07,
+     "journeys": 31,
+     "steps": 217,
+     "steps_per_min": 72.3,
+     "codes": {
+      "200": 553
+     },
+     "error_rate": 0.0,
+     "req_p50": 7.27,
+     "req_p95": 22.04,
+     "step_p50": 7.81,
+     "step_p95": 23.09,
+     "step_p99": 27.53,
+     "step_max": 36.72,
+     "server_running_mean": 1.75,
+     "server_waiting_mean": 25.43,
+     "server_waiting_max": 38,
+     "server_cpu_max": 0.35,
+     "server_mem_max": 0.533,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 10.66,
+      "/app-api/entities/examples": 0.37,
+      "/app-api/entities/groups": 7.82,
+      "/app-api/entities/scoped-facets": 4.53,
+      "/app-api/relations/scoped-facets": 14.86,
+      "/app-api/relations/search": 12.24,
+      "/app-api/status": 0.04,
+      "/explore": 0.05
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 23.56,
+      "/app-api/entities/examples": 13.39,
+      "/app-api/entities/groups": 21.07,
+      "/app-api/entities/scoped-facets": 12.72,
+      "/app-api/relations/scoped-facets": 24.35,
+      "/app-api/relations/search": 24.84,
+      "/app-api/status": 0.88,
+      "/explore": 0.91
+     },
+     "users": 24,
+     "think": [
+      3.0,
+      10.0
+     ]
+    }
+   ]
+  },
+  {
+   "name": "A_3x2",
+   "settings": {
+    "API_CPUS": 7,
+    "API_MEMORY_LIMIT": "13g",
+    "API_QUERY_CONCURRENCY": 3,
+    "API_QUERY_THREADS": 2,
+    "API_QUERY_MEMORY": "3500MB",
+    "API_QUERY_WAIT_SECONDS": 30
+   },
+   "note": "A single-threaded job of another session ran on the host 10:45-10:47 CEST, overlapping the start of the 24-user stage.",
+   "args": {
+    "users": "8,12,16,24,32,40,48",
+    "seconds": 120,
+    "think": "3,10",
+    "reuse": 0.0,
+    "seed": 11,
+    "abort_error_rate": 0.1,
+    "abort_step_p95": 15.0
+   },
+   "stages": [
+    {
+     "elapsed_s": 170.0,
+     "requests": 392,
+     "req_per_s": 2.31,
+     "journeys": 22,
+     "steps": 154,
+     "steps_per_min": 54.3,
+     "codes": {
+      "200": 392
+     },
+     "error_rate": 0.0,
+     "req_p50": 0.65,
+     "req_p95": 7.26,
+     "step_p50": 1.04,
+     "step_p95": 8.01,
+     "step_p99": 12.16,
+     "step_max": 13.12,
+     "server_running_mean": 1.76,
+     "server_waiting_mean": 2.55,
+     "server_waiting_max": 14,
+     "server_cpu_max": 0.27,
+     "server_mem_max": 0.276,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 0.49,
+      "/app-api/entities/examples": 0.15,
+      "/app-api/entities/groups": 1.12,
+      "/app-api/entities/scoped-facets": 0.69,
+      "/app-api/relations/scoped-facets": 0.88,
+      "/app-api/relations/search": 0.85,
+      "/app-api/status": 0.04,
+      "/explore": 0.07
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 4.9,
+      "/app-api/entities/examples": 1.06,
+      "/app-api/entities/groups": 9.02,
+      "/app-api/entities/scoped-facets": 1.5,
+      "/app-api/relations/scoped-facets": 11.13,
+      "/app-api/relations/search": 9.64,
+      "/app-api/status": 0.12,
+      "/explore": 0.14
+     },
+     "users": 8,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "elapsed_s": 164.9,
+     "requests": 638,
+     "req_per_s": 3.87,
+     "journeys": 36,
+     "steps": 252,
+     "steps_per_min": 91.7,
+     "codes": {
+      "200": 638
+     },
+     "error_rate": 0.0,
+     "req_p50": 0.73,
+     "req_p95": 3.2,
+     "step_p50": 1.08,
+     "step_p95": 3.59,
+     "step_p99": 5.47,
+     "step_max": 6.13,
+     "server_running_mean": 1.71,
+     "server_waiting_mean": 1.83,
+     "server_waiting_max": 12,
+     "server_cpu_max": 0.33,
+     "server_mem_max": 0.329,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 0.63,
+      "/app-api/entities/examples": 0.12,
+      "/app-api/entities/groups": 1.19,
+      "/app-api/entities/scoped-facets": 0.72,
+      "/app-api/relations/scoped-facets": 0.79,
+      "/app-api/relations/search": 0.89,
+      "/app-api/status": 0.04,
+      "/explore": 0.06
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 1.59,
+      "/app-api/entities/examples": 1.38,
+      "/app-api/entities/groups": 3.73,
+      "/app-api/entities/scoped-facets": 1.7,
+      "/app-api/relations/scoped-facets": 3.74,
+      "/app-api/relations/search": 3.51,
+      "/app-api/status": 0.11,
+      "/explore": 0.13
+     },
+     "users": 12,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "elapsed_s": 166.8,
+     "requests": 776,
+     "req_per_s": 4.65,
+     "journeys": 44,
+     "steps": 308,
+     "steps_per_min": 110.8,
+     "codes": {
+      "200": 776
+     },
+     "error_rate": 0.0,
+     "req_p50": 1.01,
+     "req_p95": 4.38,
+     "step_p50": 1.36,
+     "step_p95": 4.45,
+     "step_p99": 5.68,
+     "step_max": 5.88,
+     "server_running_mean": 2.24,
+     "server_waiting_mean": 5.67,
+     "server_waiting_max": 23,
+     "server_cpu_max": 0.34,
+     "server_mem_max": 0.356,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 0.86,
+      "/app-api/entities/examples": 0.26,
+      "/app-api/entities/groups": 1.6,
+      "/app-api/entities/scoped-facets": 0.77,
+      "/app-api/relations/scoped-facets": 1.56,
+      "/app-api/relations/search": 1.2,
+      "/app-api/status": 0.04,
+      "/explore": 0.06
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 4.33,
+      "/app-api/entities/examples": 1.94,
+      "/app-api/entities/groups": 4.68,
+      "/app-api/entities/scoped-facets": 2.46,
+      "/app-api/relations/scoped-facets": 5.0,
+      "/app-api/relations/search": 4.42,
+      "/app-api/status": 0.2,
+      "/explore": 0.21
+     },
+     "users": 16,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "elapsed_s": 180.0,
+     "requests": 580,
+     "req_per_s": 3.22,
+     "journeys": 27,
+     "steps": 226,
+     "steps_per_min": 75.3,
+     "codes": {
+      "200": 527,
+      "ReadTimeout": 53
+     },
+     "error_rate": 0.0914,
+     "req_p50": 5.54,
+     "req_p95": 13.66,
+     "step_p50": 7.05,
+     "step_p95": 14.78,
+     "step_p99": 19.84,
+     "step_max": 23.19,
+     "server_running_mean": 2.68,
+     "server_waiting_mean": 18.2,
+     "server_waiting_max": 36,
+     "server_cpu_max": 0.47,
+     "server_mem_max": 0.369,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 6.23,
+      "/app-api/entities/examples": 0.25,
+      "/app-api/entities/groups": 7.18,
+      "/app-api/entities/scoped-facets": 2.47,
+      "/app-api/relations/scoped-facets": 8.29,
+      "/app-api/relations/search": 8.05,
+      "/app-api/status": 0.06,
+      "/explore": 0.09
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 10.61,
+      "/app-api/entities/examples": 8.87,
+      "/app-api/entities/groups": 14.63,
+      "/app-api/entities/scoped-facets": 14.71,
+      "/app-api/relations/scoped-facets": 13.62,
+      "/app-api/relations/search": 13.97,
+      "/app-api/status": 0.16,
+      "/explore": 0.2
+     },
+     "users": 24,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "elapsed_s": 180.0,
+     "requests": 1000,
+     "req_per_s": 5.56,
+     "journeys": 35,
+     "steps": 378,
+     "steps_per_min": 126.0,
+     "codes": {
+      "200": 1000
+     },
+     "error_rate": 0.0,
+     "req_p50": 6.57,
+     "req_p95": 16.72,
+     "step_p50": 7.95,
+     "step_p95": 18.67,
+     "step_p99": 24.01,
+     "step_max": 31.9,
+     "server_running_mean": 2.71,
+     "server_waiting_mean": 23.29,
+     "server_waiting_max": 37,
+     "server_cpu_max": 0.48,
+     "server_mem_max": 0.388,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 8.47,
+      "/app-api/entities/examples": 2.53,
+      "/app-api/entities/groups": 7.62,
+      "/app-api/entities/scoped-facets": 3.67,
+      "/app-api/relations/scoped-facets": 11.39,
+      "/app-api/relations/search": 10.27,
+      "/app-api/status": 0.06,
+      "/explore": 0.1
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 16.49,
+      "/app-api/entities/examples": 5.74,
+      "/app-api/entities/groups": 14.56,
+      "/app-api/entities/scoped-facets": 12.69,
+      "/app-api/relations/scoped-facets": 19.45,
+      "/app-api/relations/search": 18.32,
+      "/app-api/status": 0.16,
+      "/explore": 0.18
+     },
+     "users": 32,
+     "think": [
+      3.0,
+      10.0
+     ]
+    }
+   ]
+  },
+  {
+   "name": "B_6x1",
+   "settings": {
+    "API_CPUS": 7,
+    "API_MEMORY_LIMIT": "13g",
+    "API_QUERY_CONCURRENCY": 6,
+    "API_QUERY_THREADS": 1,
+    "API_QUERY_MEMORY": "1800MB",
+    "API_QUERY_WAIT_SECONDS": 30
+   },
+   "note": null,
+   "args": {
+    "users": "8,12,16,24,32,40,48",
+    "seconds": 120,
+    "think": "3,10",
+    "reuse": 0.0,
+    "seed": 11,
+    "abort_error_rate": 0.1,
+    "abort_step_p95": 15.0
+   },
+   "stages": [
+    {
+     "failed": {},
+     "elapsed_s": 175.7,
+     "requests": 352,
+     "req_per_s": 2.0,
+     "journeys": 20,
+     "steps": 140,
+     "steps_per_min": 47.8,
+     "codes": {
+      "200": 352
+     },
+     "error_rate": 0.0,
+     "req_p50": 0.88,
+     "req_p95": 7.31,
+     "step_p50": 1.58,
+     "step_p95": 8.78,
+     "step_p99": 12.11,
+     "step_max": 14.27,
+     "server_running_mean": 2.86,
+     "server_waiting_mean": 1.1,
+     "server_waiting_max": 9,
+     "server_cpu_max": 0.37,
+     "server_mem_max": 0.217,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 0.5,
+      "/app-api/entities/examples": 0.18,
+      "/app-api/entities/groups": 1.67,
+      "/app-api/entities/scoped-facets": 0.97,
+      "/app-api/relations/scoped-facets": 1.22,
+      "/app-api/relations/search": 1.04,
+      "/app-api/status": 0.06,
+      "/explore": 0.11
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 3.43,
+      "/app-api/entities/examples": 0.47,
+      "/app-api/entities/groups": 5.57,
+      "/app-api/entities/scoped-facets": 3.61,
+      "/app-api/relations/scoped-facets": 8.03,
+      "/app-api/relations/search": 8.5,
+      "/app-api/status": 0.13,
+      "/explore": 0.25
+     },
+     "users": 8,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "failed": {},
+     "elapsed_s": 163.9,
+     "requests": 645,
+     "req_per_s": 3.94,
+     "journeys": 36,
+     "steps": 252,
+     "steps_per_min": 92.3,
+     "codes": {
+      "200": 645
+     },
+     "error_rate": 0.0,
+     "req_p50": 0.67,
+     "req_p95": 3.03,
+     "step_p50": 1.09,
+     "step_p95": 3.44,
+     "step_p99": 4.65,
+     "step_max": 5.46,
+     "server_running_mean": 2.84,
+     "server_waiting_mean": 0.71,
+     "server_waiting_max": 12,
+     "server_cpu_max": 0.35,
+     "server_mem_max": 0.254,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 0.54,
+      "/app-api/entities/examples": 0.17,
+      "/app-api/entities/groups": 1.63,
+      "/app-api/entities/scoped-facets": 1.02,
+      "/app-api/relations/scoped-facets": 0.75,
+      "/app-api/relations/search": 0.76,
+      "/app-api/status": 0.06,
+      "/explore": 0.09
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 2.79,
+      "/app-api/entities/examples": 0.77,
+      "/app-api/entities/groups": 3.43,
+      "/app-api/entities/scoped-facets": 1.51,
+      "/app-api/relations/scoped-facets": 2.84,
+      "/app-api/relations/search": 3.27,
+      "/app-api/status": 0.2,
+      "/explore": 0.29
+     },
+     "users": 12,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "failed": {},
+     "elapsed_s": 172.3,
+     "requests": 694,
+     "req_per_s": 4.03,
+     "journeys": 39,
+     "steps": 273,
+     "steps_per_min": 95.1,
+     "codes": {
+      "200": 694
+     },
+     "error_rate": 0.0,
+     "req_p50": 1.34,
+     "req_p95": 5.78,
+     "step_p50": 2.21,
+     "step_p95": 6.17,
+     "step_p99": 8.15,
+     "step_max": 10.45,
+     "server_running_mean": 4.64,
+     "server_waiting_mean": 4.76,
+     "server_waiting_max": 23,
+     "server_cpu_max": 0.42,
+     "server_mem_max": 0.294,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 1.04,
+      "/app-api/entities/examples": 0.21,
+      "/app-api/entities/groups": 2.45,
+      "/app-api/entities/scoped-facets": 1.15,
+      "/app-api/relations/scoped-facets": 2.02,
+      "/app-api/relations/search": 2.04,
+      "/app-api/status": 0.06,
+      "/explore": 0.09
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 4.28,
+      "/app-api/entities/examples": 2.24,
+      "/app-api/entities/groups": 5.73,
+      "/app-api/entities/scoped-facets": 3.05,
+      "/app-api/relations/scoped-facets": 6.0,
+      "/app-api/relations/search": 6.18,
+      "/app-api/status": 0.17,
+      "/explore": 0.19
+     },
+     "users": 16,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "failed": {},
+     "elapsed_s": 170.5,
+     "requests": 855,
+     "req_per_s": 5.01,
+     "journeys": 48,
+     "steps": 336,
+     "steps_per_min": 118.2,
+     "codes": {
+      "200": 855
+     },
+     "error_rate": 0.0,
+     "req_p50": 3.6,
+     "req_p95": 11.57,
+     "step_p50": 4.21,
+     "step_p95": 12.34,
+     "step_p99": 17.08,
+     "step_max": 17.93,
+     "server_running_mean": 5.39,
+     "server_waiting_mean": 14.63,
+     "server_waiting_max": 33,
+     "server_cpu_max": 0.49,
+     "server_mem_max": 0.324,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 3.22,
+      "/app-api/entities/examples": 1.1,
+      "/app-api/entities/groups": 4.75,
+      "/app-api/entities/scoped-facets": 2.15,
+      "/app-api/relations/scoped-facets": 5.95,
+      "/app-api/relations/search": 3.91,
+      "/app-api/status": 0.06,
+      "/explore": 0.1
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 7.17,
+      "/app-api/entities/examples": 4.82,
+      "/app-api/entities/groups": 10.96,
+      "/app-api/entities/scoped-facets": 5.49,
+      "/app-api/relations/scoped-facets": 13.41,
+      "/app-api/relations/search": 12.33,
+      "/app-api/status": 0.2,
+      "/explore": 0.25
+     },
+     "users": 24,
+     "think": [
+      3.0,
+      10.0
+     ]
+    },
+    {
+     "failed": {
+      "/app-api/entities/groups 503": 5,
+      "/app-api/entities/scoped-facets 503": 1,
+      "/app-api/entities/examples 503": 1,
+      "/app-api/entities/by-public-ids 503": 1
+     },
+     "elapsed_s": 180.0,
+     "requests": 917,
+     "req_per_s": 5.09,
+     "journeys": 32,
+     "steps": 351,
+     "steps_per_min": 117.0,
+     "codes": {
+      "200": 909,
+      "503": 8
+     },
+     "error_rate": 0.0087,
+     "req_p50": 4.8,
+     "req_p95": 17.13,
+     "step_p50": 5.79,
+     "step_p95": 25.19,
+     "step_p99": 30.36,
+     "step_max": 32.49,
+     "server_running_mean": 5.28,
+     "server_waiting_mean": 19.8,
+     "server_waiting_max": 34,
+     "server_cpu_max": 0.54,
+     "server_mem_max": 0.34,
+     "endpoint_p50": {
+      "/app-api/entities/by-public-ids": 6.89,
+      "/app-api/entities/examples": 0.29,
+      "/app-api/entities/groups": 6.28,
+      "/app-api/entities/scoped-facets": 3.46,
+      "/app-api/relations/scoped-facets": 6.87,
+      "/app-api/relations/search": 6.64,
+      "/app-api/status": 0.06,
+      "/explore": 0.09
+     },
+     "endpoint_p95": {
+      "/app-api/entities/by-public-ids": 13.41,
+      "/app-api/entities/examples": 4.67,
+      "/app-api/entities/groups": 25.83,
+      "/app-api/entities/scoped-facets": 13.27,
+      "/app-api/relations/scoped-facets": 17.59,
+      "/app-api/relations/search": 16.56,
+      "/app-api/status": 0.25,
+      "/explore": 0.25
+     },
+     "users": 32,
+     "think": [
+      3.0,
+      10.0
+     ]
+    }
+   ]
+  }
+ ]
+}

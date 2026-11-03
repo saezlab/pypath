@@ -1,0 +1,26 @@
+{
+  "resource": "lipidmaps",
+  "kind": "relation",
+  "note": "LIPID MAPS ID and its cross-references.",
+  "v2_seconds": 10.1,
+  "error": "legacy: KeyError('FORMULA')",
+  "traceback": "Traceback (most recent call last):\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 1363, in run\n    outputs[side] = list(produce())\n                    ~~~~^^^^^^^^^^^\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 879, in run\n    for rec in itertools.islice(records, limit):\n               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/root/projects/omnipath-migration/omnipath-build/pypath/pypath/inputs/lipidmaps/_lipids.py\", line 37, in lipidmaps_lipids\n    formula = rec['name']['FORMULA'],\n              ~~~~~~~~~~~^^^^^^^^^^^\nKeyError: 'FORMULA'\n",
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://lipidmaps.org/files/?file=LMSD&ext=sdf.zip",
+      "path": "/root/data/pypath-cache/lipidmaps/structures.zip",
+      "size": 21909507,
+      "sha256": "dbb09f2845acd33f0916ecb02a10a8cf486601b3c67f55c521ab105c5f655aea",
+      "mtime": "2026-09-06"
+    },
+    {
+      "side": "legacy",
+      "url": "https://lipidmaps.org/files/?file=LMSD&ext=sdf.zip",
+      "path": "/root/data/pypath-cache/lipidmaps/structures.zip",
+      "size": 21909507,
+      "sha256": "dbb09f2845acd33f0916ecb02a10a8cf486601b3c67f55c521ab105c5f655aea",
+      "mtime": "2026-09-06"
+    }
+  ]
+}

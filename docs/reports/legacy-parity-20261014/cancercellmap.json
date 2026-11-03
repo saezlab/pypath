@@ -1,0 +1,26 @@
+{
+  "resource": "cancercellmap",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.7,
+  "error": "legacy: NotCached('legacy download with no inputs_v2 file: https://download.baderlab.org/PathwayCommons/PC1/last_release-2011/tab_delim_network/by_source/cell-map-node-attributes.txt.zip')",
+  "traceback": "Traceback (most recent call last):\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 1363, in run\n    outputs[side] = list(produce())\n                    ~~~~^^^^^^^^^^^\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 779, in run\n    records = getattr(importlib.import_module(f'pypath.inputs.{module}'), function)(**kwargs)\n  File \"/root/projects/omnipath-migration/omnipath-build/pypath/pypath/inputs/cancercellmap.py\", line 51, in ccmap_interactions\n    c = curl.Curl(\n        nodes_url,\n        silent = False,\n        files_needed = ['cell-map-node-attributes.txt'],\n    )\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 264, in cached_curl_init\n    raise NotCached(\n        f'legacy download with no inputs_v2 file: {url} {post or \"\"}'.strip()\n    )\nNotCached: legacy download with no inputs_v2 file: https://download.baderlab.org/PathwayCommons/PC1/last_release-2011/tab_delim_network/by_source/cell-map-node-attributes.txt.zip\n",
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://download.baderlab.org/PathwayCommons/PC1/last_release-2011/tab_delim_network/by_source/cell-map-edge-attributes.txt.zip",
+      "path": "/root/data/pypath-cache/cancercellmap/cell-map-edge-attributes.txt.zip",
+      "size": 47223,
+      "sha256": "f44239e91484487af470733b7635712eceb994cd86c3c0d668030c6419189f85",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "v2",
+      "url": "https://download.baderlab.org/PathwayCommons/PC1/last_release-2011/tab_delim_network/by_source/cell-map-node-attributes.txt.zip",
+      "path": "/root/data/pypath-cache/cancercellmap/cell-map-node-attributes.txt.zip",
+      "size": 22364,
+      "sha256": "80a6df08ef3818fc261264482b0170c41c76056cbee3b7dfc47127d04bc0192d",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

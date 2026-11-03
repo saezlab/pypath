@@ -1,0 +1,514 @@
+{
+  "status": "passed",
+  "time": "2026-10-05T05:25:16.075652+00:00",
+  "candidate_commit": "e6cb1977ec58b56c62dd63921141fed1b09ef90e",
+  "helper_sha256": "2e43c33ed960be33b9db1b3848e8c7b8f0d6347251c218c4b433b851e7fca809",
+  "outputs": [
+    {
+      "mode": "raw",
+      "query": "TP53",
+      "milliseconds": 169.542,
+      "groups": [
+        {
+          "key": "gene:entrez:112858",
+          "count": 3,
+          "strategy": "gene_reference",
+          "members": [
+            "a93fcc402e99c9c71f12ba490f4e8db78feecbdc2e15e3f91c6d0483294e0a2b",
+            "bec6c6c6177a8ebdb479807a76731cda11f2eac8ab76c57936ecdb631c137872",
+            "d357f26c9345e0d417e8d5c95efaa942599deacb39731ebf549287e0570cbf61"
+          ]
+        },
+        {
+          "key": "gene:entrez:22059",
+          "count": 3,
+          "strategy": "gene_reference",
+          "members": [
+            "031c373a2852a5d7bf7a7dc7c390ee26390a9f8622e9b9777f65cc25e51edffa",
+            "2fb3c94e9bea8a945d86bf36fda7a129d0f0a41f56752d0af9f225486c1c1dd1",
+            "3765779d1403300e84edcb454841581da862500fe135a16374c013bcf73e0cf9"
+          ]
+        },
+        {
+          "key": "gene:entrez:63970",
+          "count": 3,
+          "strategy": "gene_reference",
+          "members": [
+            "37173faaee48f9d98bb552d4311caaadf7ae5c384634a892e8513b3773056763",
+            "527d3672bbe561843e3fed4c51d9c0f0e40ad3bdc4832f25ebe0e27864850424",
+            "820f74978a31d8d6c39dfb215e7194ec931883b9247ac60966ca6afc0fe1353c"
+          ]
+        },
+        {
+          "key": "gene:entrez:9540",
+          "count": 3,
+          "strategy": "gene_reference",
+          "members": [
+            "a0173d2b7fc61173339446d782a6d8bc15e3cbe8e1d1cef006c22667ff39a8e4",
+            "a0ab65198555e427e63b6f3071b7e13657432a7eee69129dcb6982f63787fe41",
+            "c9f0d434919673968133fa6a8a46fc680ac92d16317e689a1480e19aba956aea"
+          ]
+        },
+        {
+          "key": "gene:entrez:209456",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "01b26fb619ccf1b5d756ba8a689559c706c5e9a3ab225eb9235403f69b841fd7",
+            "53eb8ed60d9923b3b68846305baa116a5f222032b12c23cc6dd2d1bb6326d596"
+          ]
+        },
+        {
+          "key": "gene:entrez:27223",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "235a9194fd647c63747da3c1eb7616e7885d453a6f46991d63415360c291e1d5",
+            "9e71beca9b0d2ef95cf9da283b848d7e8f593d37112f92adbd8406e935c055fb"
+          ]
+        },
+        {
+          "key": "gene:entrez:27296",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "2ca1f00af7d8d0b209e29f97b48e1693ac3d3973ab3ae68a97fbc8cefbca2817",
+            "35cd920419524d591f4d191f1508b41e1b3885f5bfe441ae247e3c8eaceb7bd3"
+          ]
+        },
+        {
+          "key": "gene:entrez:296099",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "3a89ae2859228340172b529ae2f8dce597e2dd2cbafab25648e960b8f2783dbe",
+            "918e75b574a7258d5cb770eb7612ca839e1bee3651596d8e186f5574c86074e6"
+          ]
+        },
+        {
+          "key": "gene:entrez:305025",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "7f6936774276add539b5d5553a8e7c2e8fd4173d9e8cd1a8ea20b374ed337efb",
+            "e5efc39f079d0293c881f824a538c548d07d790723efdce53a78ec0de8c7392c"
+          ]
+        },
+        {
+          "key": "gene:entrez:397926",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "a01b8107d749f92360afdaef32d37e06781706dc1478befa01bee0bb4187b3ca",
+            "a2449c2456441bb57961c1c395827dcdcb77800b1449deb8e69d79b0fd266885"
+          ]
+        },
+        {
+          "key": "gene:entrez:58476",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "a7c58a28a2ceeea0241201256f280b0b613c6014b3deaac980cf48bcc39a378c",
+            "d98dfa7814f5c1a93144fcc6c5f7587a25c0df16eaa8846082f3f73a5d74ddf2"
+          ]
+        },
+        {
+          "key": "gene:entrez:68728",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "2cde1da01ee574e13cf5e55a86a2c918e0b68ca187da8bbcb62722ea71e2b428",
+            "693550bb6d5e84a1d61f3259e18602a32f19333228045260eed6f50aad45daf9"
+          ]
+        },
+        {
+          "key": "gene:entrez:7157",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "4ee4501bc34f7f74fa91327b348decd5f2607d0c83cd7f251d948ee0400b6ed9",
+            "7796ad96a794e94b7b925cc47a9adb6bd7a69f57565e546ed2a22ebf7c6c0ff3"
+          ]
+        },
+        {
+          "key": "gene:entrez:7159",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "3f1e9cc2a898f49d23562cb881a4a00005427f91c0ba86ad4af7c6a301253dbb",
+            "d91504430ba06d7d7d47b9017abb1eaac07d39853be7ad39f1167b0496c8f845"
+          ]
+        },
+        {
+          "key": "gene:entrez:94241",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "6360a93ea4cac94787f3d6ac89bceb23186dac91a467a457faa4671a1bb6db57",
+            "66d061bc216cdd46771222a5e6f38cb33d6afc359ddb66bacea53878d0db7216"
+          ]
+        },
+        {
+          "key": "entity:193b718fbc1c441b209f94ee95007ccae163f318f8f59a13f6fab8fbed495c56",
+          "count": 1,
+          "strategy": null,
+          "members": [
+            "193b718fbc1c441b209f94ee95007ccae163f318f8f59a13f6fab8fbed495c56"
+          ]
+        },
+        {
+          "key": "entity:281eac47d4e2ecface585316e8d925160ca4961dfbd9d074de46f96e13cee1e8",
+          "count": 1,
+          "strategy": null,
+          "members": [
+            "281eac47d4e2ecface585316e8d925160ca4961dfbd9d074de46f96e13cee1e8"
+          ]
+        },
+        {
+          "key": "entity:82c81350876b1f5e8860acc3865369842d7edbc50d45a3658e5e13692ea0ce7f",
+          "count": 1,
+          "strategy": null,
+          "members": [
+            "82c81350876b1f5e8860acc3865369842d7edbc50d45a3658e5e13692ea0ce7f"
+          ]
+        },
+        {
+          "key": "gene:entrez:7158",
+          "count": 1,
+          "strategy": "gene_reference",
+          "members": [
+            "36b48fb6abe962e7d16cbca573f1f60f5284c0b2db16aa22514207cf9b86c6f2"
+          ]
+        },
+        {
+          "key": "gene:entrez:90313",
+          "count": 1,
+          "strategy": "gene_reference",
+          "members": [
+            "7a4be4f226c921900ca97750eeac9a671759ce3b83118c7bc2f25b74cb61d6e4"
+          ]
+        },
+        {
+          "key": "gene:entrez:9537",
+          "count": 1,
+          "strategy": "gene_reference",
+          "members": [
+            "48988fcb862ef55c6753b39020727e06756467ac6b16f611a836b9f36bfea5ba"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "raw",
+      "query": "AT-7519",
+      "milliseconds": 102.713,
+      "groups": [
+        {
+          "key": "connectivity:OVPNQJVDAFNBDN",
+          "count": 1,
+          "strategy": "chemical_connectivity",
+          "members": [
+            "3ad8be7a857aa054874a8a55b925d128ba9d0b1707e4ac50436d3e21a51a5943"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "raw",
+      "query": "11052",
+      "milliseconds": 106.992,
+      "groups": [
+        {
+          "key": "entity:57ea04f2f58e5cb60ad6c33070d5429062242309d26b7a17b00de09f43cddff3",
+          "count": 1,
+          "strategy": null,
+          "members": [
+            "57ea04f2f58e5cb60ad6c33070d5429062242309d26b7a17b00de09f43cddff3"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "raw",
+      "query": "P33316",
+      "milliseconds": 120.786,
+      "groups": [
+        {
+          "key": "gene:entrez:1854",
+          "count": 1,
+          "strategy": "gene_reference",
+          "members": [
+            "6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "raw",
+      "mixed_keys": [
+        "3ad8be7a857aa054874a8a55b925d128ba9d0b1707e4ac50436d3e21a51a5943",
+        "4ee4501bc34f7f74fa91327b348decd5f2607d0c83cd7f251d948ee0400b6ed9",
+        "7796ad96a794e94b7b925cc47a9adb6bd7a69f57565e546ed2a22ebf7c6c0ff3"
+      ],
+      "mixed_groups": [
+        "connectivity:OVPNQJVDAFNBDN",
+        "gene:entrez:7157"
+      ],
+      "concrete_followups": "passed"
+    },
+    {
+      "mode": "projected",
+      "query": "TP53",
+      "milliseconds": 71.604,
+      "groups": [
+        {
+          "key": "gene:entrez:112858",
+          "count": 3,
+          "strategy": "gene_reference",
+          "members": [
+            "a93fcc402e99c9c71f12ba490f4e8db78feecbdc2e15e3f91c6d0483294e0a2b",
+            "bec6c6c6177a8ebdb479807a76731cda11f2eac8ab76c57936ecdb631c137872",
+            "d357f26c9345e0d417e8d5c95efaa942599deacb39731ebf549287e0570cbf61"
+          ]
+        },
+        {
+          "key": "gene:entrez:22059",
+          "count": 3,
+          "strategy": "gene_reference",
+          "members": [
+            "031c373a2852a5d7bf7a7dc7c390ee26390a9f8622e9b9777f65cc25e51edffa",
+            "2fb3c94e9bea8a945d86bf36fda7a129d0f0a41f56752d0af9f225486c1c1dd1",
+            "3765779d1403300e84edcb454841581da862500fe135a16374c013bcf73e0cf9"
+          ]
+        },
+        {
+          "key": "gene:entrez:63970",
+          "count": 3,
+          "strategy": "gene_reference",
+          "members": [
+            "37173faaee48f9d98bb552d4311caaadf7ae5c384634a892e8513b3773056763",
+            "527d3672bbe561843e3fed4c51d9c0f0e40ad3bdc4832f25ebe0e27864850424",
+            "820f74978a31d8d6c39dfb215e7194ec931883b9247ac60966ca6afc0fe1353c"
+          ]
+        },
+        {
+          "key": "gene:entrez:9540",
+          "count": 3,
+          "strategy": "gene_reference",
+          "members": [
+            "a0173d2b7fc61173339446d782a6d8bc15e3cbe8e1d1cef006c22667ff39a8e4",
+            "a0ab65198555e427e63b6f3071b7e13657432a7eee69129dcb6982f63787fe41",
+            "c9f0d434919673968133fa6a8a46fc680ac92d16317e689a1480e19aba956aea"
+          ]
+        },
+        {
+          "key": "gene:entrez:209456",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "01b26fb619ccf1b5d756ba8a689559c706c5e9a3ab225eb9235403f69b841fd7",
+            "53eb8ed60d9923b3b68846305baa116a5f222032b12c23cc6dd2d1bb6326d596"
+          ]
+        },
+        {
+          "key": "gene:entrez:27223",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "235a9194fd647c63747da3c1eb7616e7885d453a6f46991d63415360c291e1d5",
+            "9e71beca9b0d2ef95cf9da283b848d7e8f593d37112f92adbd8406e935c055fb"
+          ]
+        },
+        {
+          "key": "gene:entrez:27296",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "2ca1f00af7d8d0b209e29f97b48e1693ac3d3973ab3ae68a97fbc8cefbca2817",
+            "35cd920419524d591f4d191f1508b41e1b3885f5bfe441ae247e3c8eaceb7bd3"
+          ]
+        },
+        {
+          "key": "gene:entrez:296099",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "3a89ae2859228340172b529ae2f8dce597e2dd2cbafab25648e960b8f2783dbe",
+            "918e75b574a7258d5cb770eb7612ca839e1bee3651596d8e186f5574c86074e6"
+          ]
+        },
+        {
+          "key": "gene:entrez:305025",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "7f6936774276add539b5d5553a8e7c2e8fd4173d9e8cd1a8ea20b374ed337efb",
+            "e5efc39f079d0293c881f824a538c548d07d790723efdce53a78ec0de8c7392c"
+          ]
+        },
+        {
+          "key": "gene:entrez:397926",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "a01b8107d749f92360afdaef32d37e06781706dc1478befa01bee0bb4187b3ca",
+            "a2449c2456441bb57961c1c395827dcdcb77800b1449deb8e69d79b0fd266885"
+          ]
+        },
+        {
+          "key": "gene:entrez:58476",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "a7c58a28a2ceeea0241201256f280b0b613c6014b3deaac980cf48bcc39a378c",
+            "d98dfa7814f5c1a93144fcc6c5f7587a25c0df16eaa8846082f3f73a5d74ddf2"
+          ]
+        },
+        {
+          "key": "gene:entrez:68728",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "2cde1da01ee574e13cf5e55a86a2c918e0b68ca187da8bbcb62722ea71e2b428",
+            "693550bb6d5e84a1d61f3259e18602a32f19333228045260eed6f50aad45daf9"
+          ]
+        },
+        {
+          "key": "gene:entrez:7157",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "4ee4501bc34f7f74fa91327b348decd5f2607d0c83cd7f251d948ee0400b6ed9",
+            "7796ad96a794e94b7b925cc47a9adb6bd7a69f57565e546ed2a22ebf7c6c0ff3"
+          ]
+        },
+        {
+          "key": "gene:entrez:7159",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "3f1e9cc2a898f49d23562cb881a4a00005427f91c0ba86ad4af7c6a301253dbb",
+            "d91504430ba06d7d7d47b9017abb1eaac07d39853be7ad39f1167b0496c8f845"
+          ]
+        },
+        {
+          "key": "gene:entrez:94241",
+          "count": 2,
+          "strategy": "gene_reference",
+          "members": [
+            "6360a93ea4cac94787f3d6ac89bceb23186dac91a467a457faa4671a1bb6db57",
+            "66d061bc216cdd46771222a5e6f38cb33d6afc359ddb66bacea53878d0db7216"
+          ]
+        },
+        {
+          "key": "entity:193b718fbc1c441b209f94ee95007ccae163f318f8f59a13f6fab8fbed495c56",
+          "count": 1,
+          "strategy": null,
+          "members": [
+            "193b718fbc1c441b209f94ee95007ccae163f318f8f59a13f6fab8fbed495c56"
+          ]
+        },
+        {
+          "key": "entity:281eac47d4e2ecface585316e8d925160ca4961dfbd9d074de46f96e13cee1e8",
+          "count": 1,
+          "strategy": null,
+          "members": [
+            "281eac47d4e2ecface585316e8d925160ca4961dfbd9d074de46f96e13cee1e8"
+          ]
+        },
+        {
+          "key": "entity:82c81350876b1f5e8860acc3865369842d7edbc50d45a3658e5e13692ea0ce7f",
+          "count": 1,
+          "strategy": null,
+          "members": [
+            "82c81350876b1f5e8860acc3865369842d7edbc50d45a3658e5e13692ea0ce7f"
+          ]
+        },
+        {
+          "key": "gene:entrez:7158",
+          "count": 1,
+          "strategy": "gene_reference",
+          "members": [
+            "36b48fb6abe962e7d16cbca573f1f60f5284c0b2db16aa22514207cf9b86c6f2"
+          ]
+        },
+        {
+          "key": "gene:entrez:90313",
+          "count": 1,
+          "strategy": "gene_reference",
+          "members": [
+            "7a4be4f226c921900ca97750eeac9a671759ce3b83118c7bc2f25b74cb61d6e4"
+          ]
+        },
+        {
+          "key": "gene:entrez:9537",
+          "count": 1,
+          "strategy": "gene_reference",
+          "members": [
+            "48988fcb862ef55c6753b39020727e06756467ac6b16f611a836b9f36bfea5ba"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "projected",
+      "query": "AT-7519",
+      "milliseconds": 61.293,
+      "groups": [
+        {
+          "key": "connectivity:OVPNQJVDAFNBDN",
+          "count": 1,
+          "strategy": "chemical_connectivity",
+          "members": [
+            "3ad8be7a857aa054874a8a55b925d128ba9d0b1707e4ac50436d3e21a51a5943"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "projected",
+      "query": "11052",
+      "milliseconds": 60.8,
+      "groups": [
+        {
+          "key": "entity:57ea04f2f58e5cb60ad6c33070d5429062242309d26b7a17b00de09f43cddff3",
+          "count": 1,
+          "strategy": null,
+          "members": [
+            "57ea04f2f58e5cb60ad6c33070d5429062242309d26b7a17b00de09f43cddff3"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "projected",
+      "query": "P33316",
+      "milliseconds": 74.94,
+      "groups": [
+        {
+          "key": "gene:entrez:1854",
+          "count": 1,
+          "strategy": "gene_reference",
+          "members": [
+            "6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "projected",
+      "mixed_keys": [
+        "3ad8be7a857aa054874a8a55b925d128ba9d0b1707e4ac50436d3e21a51a5943",
+        "4ee4501bc34f7f74fa91327b348decd5f2607d0c83cd7f251d948ee0400b6ed9",
+        "7796ad96a794e94b7b925cc47a9adb6bd7a69f57565e546ed2a22ebf7c6c0ff3"
+      ],
+      "mixed_groups": [
+        "connectivity:OVPNQJVDAFNBDN",
+        "gene:entrez:7157"
+      ],
+      "concrete_followups": "passed"
+    }
+  ],
+  "raw_projected_equivalence": true,
+  "production_changed": false
+}

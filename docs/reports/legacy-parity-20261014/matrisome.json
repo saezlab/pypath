@@ -1,0 +1,18 @@
+{
+  "resource": "matrisome",
+  "kind": "annotation",
+  "note": "Legacy reads the rescued XLS master list; inputs_v2 reads the current XLSX.",
+  "v2_seconds": 0.1,
+  "error": "legacy: NotCached('legacy download with no inputs_v2 file: https://rescued.omnipathdb.org/matrisome_hs_masterlist.xls')",
+  "traceback": "Traceback (most recent call last):\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 1363, in run\n    outputs[side] = list(produce())\n                    ~~~~^^^^^^^^^^^\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 927, in _matrisome\n    for uniprot, annotations in matrisome.matrisome_annotations(9606).items():\n                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File \"/root/projects/omnipath-migration/omnipath-build/pypath/pypath/inputs/matrisome.py\", line 47, in matrisome_annotations\n    c = curl.Curl(url, large = True, silent = False)\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 264, in cached_curl_init\n    raise NotCached(\n        f'legacy download with no inputs_v2 file: {url} {post or \"\"}'.strip()\n    )\nNotCached: legacy download with no inputs_v2 file: https://rescued.omnipathdb.org/matrisome_hs_masterlist.xls\n",
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://docs.google.com/spreadsheets/d/12OslOlOhQQtHMOUKAFFgAQXL2zYX-g9q/export?format=xlsx",
+      "path": "/root/data/pypath-cache/matrisome/Hs_Matrisome_Masterlist_Nabaetal_2012.xlsx",
+      "size": 144433,
+      "sha256": "12de6a082ecc196f766f93b6fe56cdb841196ff4d6235668f97d44eaa5c772c1",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

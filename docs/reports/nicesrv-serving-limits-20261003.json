@@ -1,0 +1,162 @@
+{
+  "status": "complete",
+  "checked_at": "2026-10-03T17:05:26.552456+00:00",
+  "source_commit": "2b04935098e256880e83eed33eb27c6e5f82dfab",
+  "deployment_root": "/root/projects/omnipath-releases/20261003-serving-2b04935",
+  "settings": {
+    "DATA_DIR": "/root/projects/full_parquet/data",
+    "COMPOSE_PROJECT_NAME": "omnipath-serving-20261003-2b04935",
+    "API_IMAGE": "omnipath-api:serving-2b04935",
+    "WEB_IMAGE": "omnipath-web:serving-2b04935",
+    "API_PORT": "8285",
+    "WEB_PORT": "8282",
+    "DATA_PORT": "8280",
+    "PUBLIC_DOMAIN": "omnipath-metabo-dev.schaul.click",
+    "DATA_DOMAIN": "data.omnipath-metabo-dev.schaul.click",
+    "PUBLIC_DATA_URL": "https://data.omnipath-metabo-dev.schaul.click",
+    "PROXY_NETWORK": "dokploy-network",
+    "TLS_RESOLVER": "letsencrypt",
+    "ROUTE_PRIORITY": "110",
+    "API_QUERY_CONCURRENCY": "2",
+    "API_QUERY_THREADS": "2",
+    "API_QUERY_MEMORY": "1GB",
+    "API_QUERY_WAIT_SECONDS": "30",
+    "API_MEMORY_LIMIT": "4g",
+    "API_CPUS": "4"
+  },
+  "candidate_checks": {
+    "comparisons": [
+      {
+        "source": "signor",
+        "kind": "entities",
+        "rows": 3,
+        "equal": true,
+        "seconds": 0.097
+      },
+      {
+        "source": "signor",
+        "kind": "relations",
+        "rows": 3,
+        "equal": true,
+        "seconds": 0.068
+      },
+      {
+        "source": "rhea",
+        "kind": "entities",
+        "rows": 3,
+        "equal": true,
+        "seconds": 0.194
+      },
+      {
+        "source": "rhea",
+        "kind": "relations",
+        "rows": 3,
+        "equal": true,
+        "seconds": 0.099
+      },
+      {
+        "source": "chebi",
+        "kind": "entities",
+        "rows": 3,
+        "equal": true,
+        "seconds": 0.2
+      },
+      {
+        "source": "chebi",
+        "kind": "relations",
+        "rows": 3,
+        "equal": true,
+        "seconds": 0.103
+      }
+    ],
+    "inventory": {
+      "resources": 46,
+      "exact_pins_equal": true
+    },
+    "release_selection_equal": true,
+    "relation_evidence_equal": true,
+    "scoped_csv_export": {
+      "rows": 1,
+      "bytes": 3647,
+      "sha256": "7cfed86fdfac5c41da0efeb33168f2ba28569933dbf6e2d8c1c8e89741d3028a",
+      "equal": true
+    },
+    "concurrent_queries": {
+      "requests": 8,
+      "clients": 4,
+      "equal": true
+    },
+    "web_pages_and_proxy": true,
+    "file_range_download": true,
+    "runtime_query_limits": {
+      "concurrency": 2,
+      "wait_seconds": 30,
+      "memory_per_database": "953.6 MiB",
+      "threads_per_database": 2
+    },
+    "container_limits": {
+      "memory_bytes": 4294967296,
+      "cpus": 4.0,
+      "data_read_only": true,
+      "oom_killed": false
+    }
+  },
+  "public_cutover_checks": {
+    "checked_at": "2026-10-03T17:04:48.704139+00:00",
+    "public_routes_proven_in_new_container_logs": true,
+    "resource_count": 46,
+    "pins_unchanged": true,
+    "web_pages_and_search": true,
+    "parquet_range_download": true
+  },
+  "final_checks": {
+    "protected_containers_unchanged": 30,
+    "old_containers_stopped_and_retained": [
+      "omnipath-consolidated-20261003-web-1",
+      "omnipath-consolidated-20261003-api-1",
+      "omnipath-consolidated-20261003-data-1"
+    ],
+    "serving": {
+      "api": {
+        "container": "omnipath-serving-20261003-2b04935-api-1",
+        "image": "omnipath-api:serving-2b04935",
+        "image_id": "sha256:09530a09ab722f7ea17a24b7b35d4bf6b5a98cf14fa3bfb95c4e5d2c49850625",
+        "healthy": true,
+        "restart_count": 0,
+        "memory_bytes": 4294967296,
+        "nano_cpus": 4000000000
+      },
+      "web": {
+        "container": "omnipath-serving-20261003-2b04935-web-1",
+        "image": "omnipath-web:serving-2b04935",
+        "image_id": "sha256:88207514d60567b6d49c9c51ac395ec209c7e2bfcc2ad831962c1b996985fb61",
+        "healthy": true,
+        "restart_count": 0,
+        "memory_bytes": 0,
+        "nano_cpus": 0
+      },
+      "data": {
+        "container": "omnipath-serving-20261003-2b04935-data-1",
+        "image": "nginx:1.28-alpine",
+        "image_id": "sha256:dc73b49f5124cf2ee538dfbdfbd121f0b4ccdcb20fea30f3a81bd477c02e2bb5",
+        "healthy": true,
+        "restart_count": 0,
+        "memory_bytes": 0,
+        "nano_cpus": 0
+      }
+    },
+    "api_memory_snapshot": "232.5MiB / 4GiB",
+    "api_cpu_snapshot": "0.22%",
+    "resources": 46,
+    "resource_pins_unchanged": true,
+    "public_checks_after_old_stop": true
+  },
+  "scope": {
+    "artifacts_mounted_read_only": true,
+    "resource_builds": 0,
+    "reference_builds": 0,
+    "postgresql_builds": 0,
+    "worker_started": false,
+    "full_load_benchmark": false
+  }
+}

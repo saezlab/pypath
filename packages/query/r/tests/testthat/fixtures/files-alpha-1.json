@@ -1,0 +1,65 @@
+{
+ "resource_id": "alpha",
+ "version": "1.0",
+ "files": [
+  {
+   "name": "entity.parquet",
+   "url": "https://data.example/resources/alpha/1.0/entity.parquet",
+   "size_bytes": 5621,
+   "rows": 3
+  },
+  {
+   "name": "entity_identifier.parquet",
+   "url": "https://data.example/resources/alpha/1.0/entity_identifier.parquet",
+   "size_bytes": 1617,
+   "rows": 1
+  },
+  {
+   "name": "entity_annotation.parquet",
+   "url": "https://data.example/resources/alpha/1.0/entity_annotation.parquet",
+   "size_bytes": 2235,
+   "rows": 0
+  },
+  {
+   "name": "entity_evidence.parquet",
+   "url": "https://data.example/resources/alpha/1.0/entity_evidence.parquet",
+   "size_bytes": 11749,
+   "rows": 0
+  },
+  {
+   "name": "relation.parquet",
+   "url": "https://data.example/resources/alpha/1.0/relation.parquet",
+   "size_bytes": 7745,
+   "rows": 2
+  },
+  {
+   "name": "relation_annotation.parquet",
+   "url": "https://data.example/resources/alpha/1.0/relation_annotation.parquet",
+   "size_bytes": 2368,
+   "rows": 0
+  },
+  {
+   "name": "relation_evidence.parquet",
+   "url": "https://data.example/resources/alpha/1.0/relation_evidence.parquet",
+   "size_bytes": 21066,
+   "rows": 0
+  },
+  {
+   "name": "evidence_payloads.parquet",
+   "url": "https://data.example/resources/alpha/1.0/evidence_payloads.parquet",
+   "size_bytes": 1667,
+   "rows": 1
+  }
+ ],
+ "tags": [
+  {
+   "id": "signaling",
+   "dimension": "topic"
+  },
+  {
+   "id": "proteins",
+   "dimension": "molecule"
+  }
+ ],
+ "license": "CC0"
+}

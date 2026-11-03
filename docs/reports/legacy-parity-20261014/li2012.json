@@ -1,0 +1,49 @@
+{
+  "resource": "li2012",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.4,
+  "legacy_seconds": 0.0,
+  "legacy_pairs": 185,
+  "legacy_pairs_found_in_v2": 185,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 349,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 349
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/li2012-supplementary-S1-S5.xls",
+      "path": "/root/data/pypath-cache/li2012/li2012-supplementary-S1-S5.xls",
+      "size": 7857664,
+      "sha256": "5c373e6481d26545525479de157ab204168e83e146318c876ab04671b0d5b535",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/li2012-supplementary-S1-S5.xls",
+      "path": "/root/data/pypath-cache/li2012/li2012-supplementary-S1-S5.xls",
+      "size": 7857664,
+      "sha256": "5c373e6481d26545525479de157ab204168e83e146318c876ab04671b0d5b535",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

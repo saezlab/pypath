@@ -1,0 +1,182 @@
+{
+  "resource": "humap",
+  "kind": "complex",
+  "note": "",
+  "v2_seconds": 0.5,
+  "legacy_seconds": 0.4,
+  "legacy_keys": 15326,
+  "v2_keys": 21570,
+  "both": 15326,
+  "legacy_only": 0,
+  "v2_only": 6244,
+  "samples": {
+    "legacy_only": [],
+    "v2_only": [
+      [
+        "A0A075B759",
+        "A0A0B4J2A2",
+        "P0DN37"
+      ],
+      [
+        "A0AV02",
+        "Q05655",
+        "Q8N5V2"
+      ],
+      [
+        "A0AV96",
+        "Q8TBY0",
+        "Q9NQ94"
+      ],
+      [
+        "A0AV96",
+        "Q9NQ94",
+        "Q9NY65"
+      ],
+      [
+        "A0FGR8",
+        "Q7KZN9"
+      ],
+      [
+        "A1A4S6",
+        "O60890",
+        "Q9UNA1"
+      ],
+      [
+        "A1KXE4",
+        "O43251",
+        "Q14671"
+      ],
+      [
+        "A1L157",
+        "P23229"
+      ],
+      [
+        "A1L157",
+        "P23229",
+        "Q13683"
+      ],
+      [
+        "A1L157",
+        "P23229",
+        "Q13683",
+        "Q9BSJ8"
+      ],
+      [
+        "A1L190",
+        "Q02224"
+      ],
+      [
+        "A1L190",
+        "Q02224",
+        "Q8N4C6"
+      ],
+      [
+        "A1L4H1",
+        "O14709",
+        "Q8IWJ2",
+        "Q96JN2"
+      ],
+      [
+        "A1Z1Q3",
+        "P09382",
+        "P34810",
+        "P48594",
+        "P48595",
+        "Q13740",
+        "Q5VU65",
+        "Q8N4T0"
+      ],
+      [
+        "A2A2Y4",
+        "Q6UWP7"
+      ],
+      [
+        "A2A368",
+        "P43358"
+      ],
+      [
+        "A2RU67",
+        "O14678",
+        "Q15012",
+        "Q5TB30",
+        "Q6NUQ4",
+        "Q7Z6J6",
+        "Q96GQ5"
+      ],
+      [
+        "A2RU67",
+        "O14678",
+        "Q15012",
+        "Q5TB30",
+        "Q7Z6J6",
+        "Q96GQ5"
+      ],
+      [
+        "A2RUB1",
+        "Q7Z398",
+        "Q9H0B3"
+      ],
+      [
+        "A2VDF0",
+        "Q7Z5A8"
+      ],
+      [
+        "A4D0S4",
+        "O15230",
+        "P20933",
+        "P55268"
+      ],
+      [
+        "A4D1P6",
+        "Q14508",
+        "Q14554",
+        "Q562E7",
+        "Q8IVF4"
+      ],
+      [
+        "A4D1P6",
+        "Q14508",
+        "Q14554",
+        "Q562E7",
+        "Q8IVF4",
+        "Q9Y2B0"
+      ],
+      [
+        "A5D8V7",
+        "Q6NS38"
+      ],
+      [
+        "A6H8Z2",
+        "Q8TDY2",
+        "Q9BSB4"
+      ]
+    ]
+  },
+  "legacy_only_with_all_members_in_v2": 0,
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://humap2.proteincomplexes.org/static/downloads/humap2/humap2_complexes_20200809.txt",
+      "path": "/root/data/pypath-cache/humap/humap2_complexes_20200809.csv",
+      "size": 512145,
+      "sha256": "a84c112cee8300b1b1c778d3a09d9cd7ccedbddd32d45e828c2a713f69f585af",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "v2",
+      "url": "https://humap3.proteincomplexes.org/static/downloads/humap3/hu.MAP3.0_complexes_wConfidenceScores_total15326_wGenenames_20240922.csv",
+      "path": "/root/data/pypath-cache/humap/humap3_complexes_20240922.csv",
+      "size": 1271417,
+      "sha256": "22a545ce45ced9a57a15f3bff75beaf53cf7e254d8d68635668e2c968bf46739",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://humap3.proteincomplexes.org/static/downloads/humap3/hu.MAP3.0_complexes_wConfidenceScores_total15326_wGenenames_20240922.csv",
+      "path": "/root/data/pypath-cache/humap/humap3_complexes_20240922.csv",
+      "size": 1271417,
+      "sha256": "22a545ce45ced9a57a15f3bff75beaf53cf7e254d8d68635668e2c968bf46739",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+# Curated metabolic-domain rules for Chemical:OM:0037 entities.
+#
+# Coarse, flat, single-valued functional grouping that primarily subdivides
+# metabolites. A chemical's domain is decided from its taxonomy/pathway
+# annotations, consulted in source priority order (HMDB ClassyFire -> KEGG ->
+# Recon3D); the first source that yields a matching bucket wins, ties broken by
+# bucket precedence. Fine taxonomies stay as annotations (not duplicated here).
+# See omnipath_build/classify/metabolic_domain.py.
+
+# The controlled vocabulary (seeded into vocab_metabolic_domain). `precedence`
+# breaks ties when several buckets match within the same source (most specific
+# structural class first: a phosphatidylserine is a lipid, not an amino acid).
+domains:
+  - {name: lipid,            precedence: 1}
+  - {name: nucleotide,       precedence: 2}
+  - {name: amino_acid,       precedence: 3}
+  - {name: carbohydrate,     precedence: 4}
+  - {name: cofactor_vitamin, precedence: 5}
+  - {name: other,            precedence: 6}
+
+# Any chemical with no matching annotation falls back to this bucket.
+default: other
+
+# annotation.term values consulted, in priority order (lower = consulted first).
+# HMDB ClassyFire (super/class) -> KEGG Pathway -> Recon3D Subsystem.
+source_terms:
+  - {term: 'Compound Superclass:OM:0668', priority: 1}
+  - {term: 'Compound Class:OM:0662',      priority: 2}
+  - {term: 'Pathway:OM:0874',             priority: 3}
+  - {term: 'Subsystem:OM:0873',           priority: 4}
+
+# domain -> case-insensitive substrings matched against annotation.value.
+# Keywords are deliberately broad so they generalise across the three sources
+# (e.g. `lipid` matches HMDB "Lipids and lipid-like molecules" and Recon3D
+# "Glycerophospholipid metabolism" alike).
+keywords:
+  lipid:
+    [lipid, 'fatty acid', 'fatty acyl', cholesterol, sphingo, glycerophospho,
+     glycerolipid, steroid, sterol, 'bile acid', eicosanoid, triacylglycerol,
+     phosphatidyl, prenol, ceramide]
+  nucleotide:
+    [nucleotide, nucleoside, purine, pyrimidine, 'nad metabolism', inosine]
+  amino_acid:
+    ['amino acid', alanine, glycine, serine, threonine, cysteine, methionine,
+     valine, leucine, isoleucine, proline, arginine, histidine, lysine,
+     tryptophan, tyrosine, phenylalanine, glutamate, glutamine, aspartate,
+     asparagine, 'urea cycle', taurine]
+  carbohydrate:
+    [carbohydrate, glycolysis, gluconeogenesis, pentose, fructose, mannose,
+     galactose, starch, sucrose, glucuronate, aminosugar, glycan, hyaluronan,
+     chondroitin, heparan, keratan, 'citric acid cycle',
+     'oxidative phosphorylation', pyruvate]
+  cofactor_vitamin:
+    [vitamin, folate, biotin, thiamine, riboflavin, cobalamin, pantothenate,
+     heme, porphyrin, ubiquinone, coenzyme, cofactor, glutathione, retinol,
+     tetrahydrobiopterin, nicotinate]

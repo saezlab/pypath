@@ -1,0 +1,525 @@
+{
+  "created_at": "2026-10-05T04:38:31.769701+00:00",
+  "data_root": "/root/projects/omnipath-releases/20261004-molecular-forms/data",
+  "resources": [
+    "signor",
+    "intact"
+  ],
+  "version": "2026.10.4.1",
+  "repetitions": 3,
+  "limits": {
+    "sql_memory": "512MB",
+    "api_memory": "1GB",
+    "max_evidence": 200,
+    "relation_page_size": 1,
+    "max_catalogue_rows": 100
+  },
+  "method": "Bounded populated molecular navigation timings after isolated validation.\n\nRead-only inputs; independent SQL selects/budgets real pages before any API call.\nApplication result caches are cleared; OS/DuckDB page caches remain warm. Source\nsnapshots and query scopes differ, so these are not schema-only overhead figures.\n",
+  "examples": [
+    {
+      "name": "populated_gene_context",
+      "reference": "entrez:11052",
+      "method": "GET",
+      "path": "/entities/gene:entrez:11052/molecular-context",
+      "params": {
+        "limit": 1,
+        "offset": 0,
+        "view": "reference"
+      },
+      "expected_total": 456,
+      "budget": {
+        "max_first_tie_full_evidence": 1,
+        "catalogue_rows": 3,
+        "catalogue_evidence": 0
+      }
+    },
+    {
+      "name": "exact_protein_filter",
+      "protein_entity_key": "6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4",
+      "isoform_identifier": null,
+      "method": "POST",
+      "path": "/relations/search",
+      "body": {
+        "filters": {
+          "protein_entity_keys": [
+            "6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4"
+          ],
+          "molecular_endpoint_mode": "any"
+        },
+        "resources": [
+          "signor",
+          "intact"
+        ],
+        "limit": 1,
+        "offset": 0
+      },
+      "expected_total": 51,
+      "budget": {
+        "max_first_tie_full_evidence": 1
+      }
+    },
+    {
+      "name": "observed_isoform_filter",
+      "protein_entity_key": "6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4",
+      "isoform_identifier": "uniprot:P33316-2",
+      "method": "POST",
+      "path": "/relations/search",
+      "body": {
+        "filters": {
+          "protein_entity_keys": [
+            "6e2f11ee2d3c68a1e2b8801985e0dc0a4a804f37b2b9d361b14fdf2c217df4b4"
+          ],
+          "molecular_endpoint_mode": "any",
+          "isoform_identifiers": [
+            "uniprot:P33316-2"
+          ]
+        },
+        "resources": [
+          "signor",
+          "intact"
+        ],
+        "limit": 1,
+        "offset": 0
+      },
+      "expected_total": 2,
+      "budget": {
+        "max_first_tie_full_evidence": 1
+      }
+    }
+  ],
+  "unavailable": [],
+  "modes": [
+    {
+      "mode": "raw",
+      "reader_files": {
+        "entities": [
+          {
+            "path": "/root/projects/omnipath-releases/20261004-molecular-forms/data/resources/signor/2026.10.4.1/entities.parquet",
+            "bytes": 3210472
+          },
+          {
+            "path": "/root/projects/omnipath-releases/20261004-molecular-forms/data/resources/intact/2026.10.4.1/entities.parquet",
+            "bytes": 11403034
+          }
+        ],
+        "relations": [
+          {
+            "path": "/root/projects/omnipath-releases/20261004-molecular-forms/data/resources/signor/2026.10.4.1/relations.parquet",
+            "bytes": 10827598
+          },
+          {
+            "path": "/root/projects/omnipath-releases/20261004-molecular-forms/data/resources/intact/2026.10.4.1/relations.parquet",
+            "bytes": 132353551
+          }
+        ]
+      },
+      "projection_version": null,
+      "results": [
+        {
+          "name": "populated_gene_context",
+          "uncached_ms": [
+            574.487,
+            422.604,
+            426.859
+          ],
+          "first_ms": 574.487,
+          "median_ms": 426.859,
+          "counts": [
+            {
+              "total": 456,
+              "relations_returned": 1,
+              "relation_evidence_returned": 1,
+              "standalone_returned": 1,
+              "observed_forms_returned": 1,
+              "catalogue_products_returned": 2,
+              "referenced_products_returned": 0
+            },
+            {
+              "total": 456,
+              "relations_returned": 1,
+              "relation_evidence_returned": 1,
+              "standalone_returned": 1,
+              "observed_forms_returned": 1,
+              "catalogue_products_returned": 2,
+              "referenced_products_returned": 0
+            },
+            {
+              "total": 456,
+              "relations_returned": 1,
+              "relation_evidence_returned": 1,
+              "standalone_returned": 1,
+              "observed_forms_returned": 1,
+              "catalogue_products_returned": 2,
+              "referenced_products_returned": 0
+            }
+          ],
+          "counts_stable": true,
+          "selected_pages": [
+            [
+              {
+                "relation_key": "8736e49f55e286d683fc3a02e45245e4ec374eae5f7dbe9b4691ad0653248114",
+                "sources": [
+                  "intact"
+                ]
+              }
+            ],
+            [
+              {
+                "relation_key": "8736e49f55e286d683fc3a02e45245e4ec374eae5f7dbe9b4691ad0653248114",
+                "sources": [
+                  "intact"
+                ]
+              }
+            ],
+            [
+              {
+                "relation_key": "8736e49f55e286d683fc3a02e45245e4ec374eae5f7dbe9b4691ad0653248114",
+                "sources": [
+                  "intact"
+                ]
+              }
+            ]
+          ],
+          "pages_stable": true
+        },
+        {
+          "name": "exact_protein_filter",
+          "uncached_ms": [
+            37877.921,
+            37038.402,
+            37942.227
+          ],
+          "first_ms": 37877.921,
+          "median_ms": 37877.921,
+          "counts": [
+            {
+              "total": 51,
+              "relations_returned": 1,
+              "matching_evidence_returned": 1
+            },
+            {
+              "total": 51,
+              "relations_returned": 1,
+              "matching_evidence_returned": 1
+            },
+            {
+              "total": 51,
+              "relations_returned": 1,
+              "matching_evidence_returned": 1
+            }
+          ],
+          "counts_stable": true,
+          "selected_pages": [
+            [
+              {
+                "relation_key": "610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380",
+                "sources": [
+                  "signor"
+                ]
+              }
+            ],
+            [
+              {
+                "relation_key": "610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380",
+                "sources": [
+                  "signor"
+                ]
+              }
+            ],
+            [
+              {
+                "relation_key": "610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380",
+                "sources": [
+                  "signor"
+                ]
+              }
+            ]
+          ],
+          "pages_stable": true
+        },
+        {
+          "name": "observed_isoform_filter",
+          "uncached_ms": [
+            53657.519,
+            53698.398,
+            54974.819
+          ],
+          "first_ms": 53657.519,
+          "median_ms": 53698.398,
+          "counts": [
+            {
+              "total": 2,
+              "relations_returned": 1,
+              "matching_evidence_returned": 1
+            },
+            {
+              "total": 2,
+              "relations_returned": 1,
+              "matching_evidence_returned": 1
+            },
+            {
+              "total": 2,
+              "relations_returned": 1,
+              "matching_evidence_returned": 1
+            }
+          ],
+          "counts_stable": true,
+          "selected_pages": [
+            [
+              {
+                "relation_key": "610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380",
+                "sources": [
+                  "signor"
+                ]
+              }
+            ],
+            [
+              {
+                "relation_key": "610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380",
+                "sources": [
+                  "signor"
+                ]
+              }
+            ],
+            [
+              {
+                "relation_key": "610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380",
+                "sources": [
+                  "signor"
+                ]
+              }
+            ]
+          ],
+          "pages_stable": true
+        }
+      ]
+    },
+    {
+      "mode": "projected",
+      "reader_files": {
+        "entities": [
+          {
+            "path": "/root/projects/omnipath-releases/20261004-molecular-forms/data/.serving/v2/entities/d41edec4aee963503a2010bc2a14dfcab341ebf4d1b4e452741f1cbd22f8c344.parquet",
+            "bytes": 1017280
+          },
+          {
+            "path": "/root/projects/omnipath-releases/20261004-molecular-forms/data/.serving/v2/entities/cdf225a602f5113850b1a527b65ab057551a0474cf396bcdd710f2af26d010f9.parquet",
+            "bytes": 4428765
+          }
+        ],
+        "relations": [
+          {
+            "path": "/root/projects/omnipath-releases/20261004-molecular-forms/data/.serving/v2/relations/bbb9de7d210dfff5aebdd69585076091f209b2d46298931ffc1635b6463a0cf0.parquet",
+            "bytes": 3729449
+          },
+          {
+            "path": "/root/projects/omnipath-releases/20261004-molecular-forms/data/.serving/v2/relations/de6cad11224bcaa1a244cc37efe3551d28007fe85db7d73d0c132e63494a7aef.parquet",
+            "bytes": 96376793
+          }
+        ]
+      },
+      "projection_version": "v2",
+      "results": [
+        {
+          "name": "populated_gene_context",
+          "uncached_ms": [
+            609.982,
+            572.158,
+            548.817
+          ],
+          "first_ms": 609.982,
+          "median_ms": 572.158,
+          "counts": [
+            {
+              "total": 456,
+              "relations_returned": 1,
+              "relation_evidence_returned": 1,
+              "standalone_returned": 1,
+              "observed_forms_returned": 1,
+              "catalogue_products_returned": 2,
+              "referenced_products_returned": 0
+            },
+            {
+              "total": 456,
+              "relations_returned": 1,
+              "relation_evidence_returned": 1,
+              "standalone_returned": 1,
+              "observed_forms_returned": 1,
+              "catalogue_products_returned": 2,
+              "referenced_products_returned": 0
+            },
+            {
+              "total": 456,
+              "relations_returned": 1,
+              "relation_evidence_returned": 1,
+              "standalone_returned": 1,
+              "observed_forms_returned": 1,
+              "catalogue_products_returned": 2,
+              "referenced_products_returned": 0
+            }
+          ],
+          "counts_stable": true,
+          "selected_pages": [
+            [
+              {
+                "relation_key": "8736e49f55e286d683fc3a02e45245e4ec374eae5f7dbe9b4691ad0653248114",
+                "sources": [
+                  "intact"
+                ]
+              }
+            ],
+            [
+              {
+                "relation_key": "8736e49f55e286d683fc3a02e45245e4ec374eae5f7dbe9b4691ad0653248114",
+                "sources": [
+                  "intact"
+                ]
+              }
+            ],
+            [
+              {
+                "relation_key": "8736e49f55e286d683fc3a02e45245e4ec374eae5f7dbe9b4691ad0653248114",
+                "sources": [
+                  "intact"
+                ]
+              }
+            ]
+          ],
+          "pages_stable": true
+        },
+        {
+          "name": "exact_protein_filter",
+          "uncached_ms": [
+            1772.607,
+            1771.9,
+            1818.349
+          ],
+          "first_ms": 1772.607,
+          "median_ms": 1772.607,
+          "counts": [
+            {
+              "total": 51,
+              "relations_returned": 1,
+              "matching_evidence_returned": 1
+            },
+            {
+              "total": 51,
+              "relations_returned": 1,
+              "matching_evidence_returned": 1
+            },
+            {
+              "total": 51,
+              "relations_returned": 1,
+              "matching_evidence_returned": 1
+            }
+          ],
+          "counts_stable": true,
+          "selected_pages": [
+            [
+              {
+                "relation_key": "610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380",
+                "sources": [
+                  "signor"
+                ]
+              }
+            ],
+            [
+              {
+                "relation_key": "610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380",
+                "sources": [
+                  "signor"
+                ]
+              }
+            ],
+            [
+              {
+                "relation_key": "610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380",
+                "sources": [
+                  "signor"
+                ]
+              }
+            ]
+          ],
+          "pages_stable": true
+        },
+        {
+          "name": "observed_isoform_filter",
+          "uncached_ms": [
+            4661.091,
+            4637.753,
+            4985.035
+          ],
+          "first_ms": 4661.091,
+          "median_ms": 4661.091,
+          "counts": [
+            {
+              "total": 2,
+              "relations_returned": 1,
+              "matching_evidence_returned": 1
+            },
+            {
+              "total": 2,
+              "relations_returned": 1,
+              "matching_evidence_returned": 1
+            },
+            {
+              "total": 2,
+              "relations_returned": 1,
+              "matching_evidence_returned": 1
+            }
+          ],
+          "counts_stable": true,
+          "selected_pages": [
+            [
+              {
+                "relation_key": "610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380",
+                "sources": [
+                  "signor"
+                ]
+              }
+            ],
+            [
+              {
+                "relation_key": "610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380",
+                "sources": [
+                  "signor"
+                ]
+              }
+            ],
+            [
+              {
+                "relation_key": "610e7f63915a8064a8a507b0aafa7c963b5e473a17796178dd4c563ad27b5380",
+                "sources": [
+                  "signor"
+                ]
+              }
+            ]
+          ],
+          "pages_stable": true
+        }
+      ]
+    }
+  ],
+  "raw_projected_work": [
+    {
+      "name": "populated_gene_context",
+      "returned_counts_equal": true,
+      "selected_pages_equal": true
+    },
+    {
+      "name": "exact_protein_filter",
+      "returned_counts_equal": true,
+      "selected_pages_equal": true
+    },
+    {
+      "name": "observed_isoform_filter",
+      "returned_counts_equal": true,
+      "selected_pages_equal": true
+    }
+  ],
+  "sort_tie_caveat": "Page ordering has no tie breaker after category/predicate/endpoint labels. Safe first-sort ties can return different source rows. Per-repetition counts and page identities describe the work actually timed; unequal work flags must not be presented as equivalent work or as validation failures. Independent totals, populated pages and budgets are checked here; the existing cross-resource correctness proof remains the validation gate.",
+  "status": "complete",
+  "complete": true,
+  "cross_resource_report": "/root/projects/omnipath-releases/20261004-molecular-forms/reports/pilot-cross-resource.json",
+  "elapsed_seconds": 311.025
+}

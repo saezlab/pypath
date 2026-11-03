@@ -1,0 +1,117 @@
+<title>Capped Build Resolution</title>
+<style>
+/* Layout: title and notes, then one chart grid: name | stacked bar | counts | 9 Sep share | reactions | main unresolved. */
+:root {
+  --bg: #ffffff; --fg: #111418; --muted: #555d66; --faint: #8a929b; --line: #e6e9ec; --stripe: #f6f7f8;
+  --res: #17877c; --st: #7cc8bd; --unr: #d8704b; --empty: #eceff1; --up: #15803d; --down: #c2410c;
+  --sans: "Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d0f11; --fg: #eceef1; --muted: #a2aab3; --faint: #6f7883; --line: #24282d; --stripe: #14171a;
+  --res: #24a596; --st: #2f6f68; --unr: #e9845c; --empty: #1e2226; --up: #4ade80; --down: #fb8b5b; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0d0f11; --fg: #eceef1; --muted: #a2aab3; --faint: #6f7883; --line: #24282d; --stripe: #14171a;
+  --res: #24a596; --st: #2f6f68; --unr: #e9845c; --empty: #1e2226; --up: #4ade80; --down: #fb8b5b; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 13px; }
+.page { max-width: 1320px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 40px; }
+h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -.015em; text-wrap: balance; }
+.lede { color: var(--muted); margin: 10px 0 0; max-width: 96ch; line-height: 1.55; font-size: 14px; }
+.legend { display: flex; gap: 18px; margin: 18px 0 8px; color: var(--muted); flex-wrap: wrap; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 26px; height: 11px; border-radius: 2px; display: inline-block; }
+.scroll { overflow-x: auto; }
+.grid { display: grid; grid-template-columns: 160px minmax(340px, 1fr) 76px 76px 80px 80px 72px 92px 170px; column-gap: 12px; min-width: 1240px; align-items: center; }
+.hd { font-weight: 650; font-size: 12px; padding: 10px 0 6px; border-bottom: 1px solid var(--line); }
+.hd.r, .c.r { text-align: right; }
+.row { display: contents; }
+.row > div { padding: 5px 0; }
+.row.odd > div { background: var(--stripe); }
+.row.overall > div { padding: 9px 0; border-bottom: 2px solid var(--line); font-weight: 650; }
+.nm { text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar { position: relative; height: 22px; display: flex; border-radius: 3px; overflow: hidden; background: var(--empty); }
+.bar b { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 600; min-width: 0; white-space: nowrap; }
+.bar .res { background: var(--res); }
+.bar .st { background: var(--st); }
+.bar .unr { background: var(--unr); }
+.bar.none { background: transparent; color: var(--faint); font-size: 12px; align-items: center; padding-left: 8px; }
+.c { font-variant-numeric: tabular-nums; }
+.sep, .rx { color: var(--muted); }
+.d { font-size: 11px; margin-left: 4px; }
+.d.up { color: var(--up); } .d.down { color: var(--down); }
+.main { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.axis { display: contents; }
+.axis > div { padding-top: 8px; color: var(--muted); font-size: 12px; }
+.ticks { display: flex; justify-content: space-between; }
+.notes { margin-top: 26px; display: grid; gap: 8px; max-width: 100ch; color: var(--muted); line-height: 1.5; font-size: 13px; }
+.notes b { color: var(--fg); }
+.foot { margin-top: 18px; color: var(--faint); font-size: 12px; }
+</style>
+<div class="page">
+  <h1>Entity resolution in the capped build</h1>
+  <p class="lede">Release 2026.10.6, sample build with up to 1,000 input records per dataset. <b>Resolved</b> matched the reference (identity layer v2); <b>by structure</b> is a chemical identified by a valid InChIKey the reference does not hold yet. The bar label and the 9 Sep comparison use both together, which is the 9 September definition. Reactions are reported in their own column. Out-of-scope types, and microRNAs until their resolution exists, are excluded. Overall sums resource counts, not globally unique entities.</p>
+  <div class="legend"><span><i style="background:var(--res)"></i>Resolved</span><span><i style="background:var(--st)"></i>By structure</span><span><i style="background:var(--unr)"></i>Unresolved</span></div>
+  <div class="scroll"><div class="grid" id="grid"></div></div>
+  <div class="notes" id="notes"></div>
+  <p class="foot" id="foot"></p>
+</div>
+<script>
+const ROWS=[{"id":"bindingdb","name":"BindingDB","res":260,"st":624,"unr":0,"rxr":0,"rxu":0,"main":[],"sep":[1246526,1144]},{"id":"brenda","name":"BRENDA","res":1240,"st":0,"unr":718,"rxr":0,"rxu":0,"main":["proteins 718"],"sep":[36903,5166]},{"id":"cellchat","name":"CellChat","res":2412,"st":0,"unr":64,"rxr":0,"rxu":0,"main":["proteins 64"],"sep":[3858,224]},{"id":"cellinker","name":"Cellinker","res":3472,"st":0,"unr":109,"rxr":0,"rxu":0,"main":["proteins 95","chemicals 14"],"sep":[7581,555]},{"id":"cellphonedb","name":"CellPhoneDB","res":613,"st":0,"unr":51,"rxr":0,"rxu":0,"main":["chemicals 51"],"sep":[1248,52]},{"id":"chebi","name":"ChEBI","res":1164,"st":0,"unr":0,"rxr":0,"rxu":0,"main":[],"sep":[232933,19]},{"id":"chembl","name":"ChEMBL","res":4914,"st":0,"unr":5,"rxr":0,"rxu":0,"main":["proteins 5"],"sep":[2514682,1032]},{"id":"chemont","name":"ChemOnt","res":0,"st":0,"unr":0,"rxr":0,"rxu":0,"main":[],"sep":[0,0]},{"id":"connectomedb2025","name":"connectomeDB2025","res":667,"st":0,"unr":1,"rxr":0,"rxu":0,"main":["proteins 1"],"sep":[19638,901]},{"id":"corum","name":"CORUM","res":1930,"st":0,"unr":2,"rxr":0,"rxu":0,"main":["proteins 2"],"sep":[3668,5]},{"id":"drugcentral","name":"DrugCentral","res":822,"st":0,"unr":18,"rxr":0,"rxu":0,"main":["proteins 18"],"sep":[5799,322]},{"id":"foodb","name":"FooDB","res":59555,"st":2680,"unr":51,"rxr":0,"rxu":0,"main":["chemicals 51"],"sep":[106771,116]},{"id":"go","name":"Gene Ontology","res":0,"st":0,"unr":0,"rxr":0,"rxu":0,"main":[],"sep":[0,0]},{"id":"guidetopharma","name":"Guide to Pharmacology","res":376,"st":0,"unr":17,"rxr":0,"rxu":0,"main":["proteins 16","chemicals 1"],"sep":[11192,884]},{"id":"hmdb","name":"HMDB","res":1000,"st":0,"unr":0,"rxr":0,"rxu":0,"main":[],"sep":[217920,0]},{"id":"hpo","name":"Human Phenotype Ontology","res":19,"st":0,"unr":0,"rxr":0,"rxu":0,"main":[],"sep":[5229,27]},{"id":"icellnet","name":"ICELLNET","res":629,"st":0,"unr":13,"rxr":0,"rxu":0,"main":["proteins 13"],"sep":[1040,15]},{"id":"imm1415","name":"iMM1415","res":959,"st":0,"unr":29,"rxr":0,"rxu":0,"main":["chemicals 29"],"sep":[1500,3]},{"id":"intact","name":"IntAct","res":594,"st":0,"unr":14,"rxr":0,"rxu":0,"main":["proteins 14"],"sep":[53682,3466]},{"id":"kegg","name":"KEGG","res":43011,"st":0,"unr":505,"rxr":8865,"rxu":352,"main":["chemicals 504","proteins 1"],"sep":[105069,22174]},{"id":"lipidmaps","name":"LIPID MAPS","res":999,"st":0,"unr":1,"rxr":0,"rxu":0,"main":["chemicals 1"],"sep":[50565,8]},{"id":"macdb","name":"MACdb","res":588,"st":0,"unr":0,"rxr":0,"rxu":0,"main":[],"sep":[8990,4]},{"id":"mebocost","name":"MEBOCOST","res":1087,"st":0,"unr":5,"rxr":0,"rxu":0,"main":["proteins 5"],"sep":[1085,7]},{"id":"metatlas","name":"Metabolic Atlas","res":2517,"st":0,"unr":589,"rxr":1782,"rxu":218,"main":["chemicals 581","genes 8"],"sep":[9106,2072]},{"id":"mirbase","name":"miRBase","res":0,"st":0,"unr":0,"rxr":0,"rxu":0,"main":[],"sep":[0,0]},{"id":"mondo","name":"Mondo","res":832,"st":0,"unr":6,"rxr":0,"rxu":0,"main":["genes 6"],"sep":[4637,26]},{"id":"mrclinksdb","name":"MRClinksDB","res":1397,"st":0,"unr":18,"rxr":0,"rxu":0,"main":["chemicals 14","proteins 4"],"sep":[1370,45]},{"id":"neuronchat","name":"NeuronChat","res":348,"st":0,"unr":17,"rxr":0,"rxu":0,"main":["chemicals 10","proteins 7"],"sep":[343,22]},{"id":"nichenet","name":"NicheNet","res":1240,"st":0,"unr":27,"rxr":0,"rxu":0,"main":["proteins 27"],"sep":[3960,163]},{"id":"omnipath_ontology","name":"OmniPath Ontology","res":0,"st":0,"unr":0,"rxr":0,"rxu":0,"main":[],"sep":[0,0]},{"id":"pfocr","name":"PFOCR","res":1078,"st":0,"unr":4,"rxr":0,"rxu":0,"main":["genes 2","chemicals 2"],"sep":[22505,488]},{"id":"phenol_explorer","name":"Phenol-Explorer","res":444,"st":0,"unr":64,"rxr":0,"rxu":0,"main":["chemicals 64"],"sep":[492,16]},{"id":"psi_mi","name":"PSI-MI","res":0,"st":0,"unr":0,"rxr":0,"rxu":0,"main":[],"sep":[0,0]},{"id":"ptfi","name":"PTFI","res":1270,"st":0,"unr":21775,"rxr":0,"rxu":0,"main":["chemicals 21,775"],"sep":[0,23045]},{"id":"rampdb","name":"RaMP-DB","res":2802,"st":0,"unr":177,"rxr":0,"rxu":0,"main":["chemicals 177"],"sep":[1522353,72900]},{"id":"reactome","name":"Reactome","res":5268,"st":0,"unr":249,"rxr":186,"rxu":1814,"main":["chemicals 129","proteins 119"],"sep":[10730,936]},{"id":"recon3d","name":"Recon3D","res":2704,"st":0,"unr":400,"rxr":2000,"rxu":0,"main":["chemicals 400"],"sep":[6408,137]},{"id":"refmet","name":"RefMet","res":999,"st":0,"unr":1,"rxr":0,"rxu":0,"main":["chemicals 1"],"sep":[208067,103]},{"id":"rhea","name":"Rhea","res":61474,"st":0,"unr":4,"rxr":2154,"rxu":138,"main":["chemicals 3","proteins 1"],"sep":[250283,5]},{"id":"signor","name":"SIGNOR","res":4394,"st":0,"unr":13,"rxr":0,"rxu":0,"main":["RNAs 9","proteins 4"],"sep":[11452,240]},{"id":"slctables","name":"SLC tables","res":438,"st":0,"unr":26,"rxr":0,"rxu":0,"main":["proteins 26"],"sep":[441,23]},{"id":"stitch","name":"STITCH","res":2229,"st":0,"unr":107,"rxr":0,"rxu":0,"main":["proteins 65","chemicals 42"],"sep":null},{"id":"swisslipids","name":"SwissLipids","res":1168,"st":0,"unr":73,"rxr":0,"rxu":0,"main":["chemicals 73"],"sep":[958719,5158]},{"id":"tcdb","name":"TCDB","res":875,"st":0,"unr":124,"rxr":0,"rxu":0,"main":["proteins 124"],"sep":[19859,6309]},{"id":"uniprot","name":"UniProt","res":1882,"st":0,"unr":0,"rxr":0,"rxu":0,"main":[],"sep":[45955,0]},{"id":"wikipathways","name":"WikiPathways","res":500,"st":0,"unr":213,"rxr":0,"rxu":0,"main":["proteins 160","chemicals 46"],"sep":[19141,3171]}];
+
+const NOTES = `
+  <div><b>Fixed since the first capped build</b> (same 45 resources: 84.1% → 86.4% identified; reactions 13,205 → 14,987 of 17,509)</div>
+  <div><b>1. ChEMBL single-protein targets</b> now carry their UniProt accession: unresolved 1,004 → 5 (99.9%).</div>
+  <div><b>2. KEGG genes</b>: human, mouse and rat KEGG gene numbers are also offered as NCBI Gene IDs, and the Entrez reference now includes genes without an Ensembl link (NCBI gene_info: tRNAs, non-coding and predicted genes). KEGG unresolved 3,479 → 505 (98.8%); the remainder are chemicals.</div>
+  <div><b>3. Metabolic Atlas (Human-GEM)</b> carries Human-GEM's own cross-references. Reactions 0 → 1,782 of 2,000; chemicals unresolved 864 → 581.</div>
+  <div><b>4. Coarse chemical cross-references no longer veto.</b> KEGG, BiGG and MetaNetX compounds are often generic (no stereo, merged protonation states), so adding them first made 689 Human-GEM metabolites that ChEBI or PubChem resolved conflict. The resolver now decides an unaccepted chemical again without its secondary KEGG/BiGG/MetaNetX IDs; accepted results never change. All of Human-GEM: 928 → 3,209 of 4,165 metabolites.</div>
+  <div><b>Expected</b></div>
+  <div>PTFI chemicals carry names only (0% on 9 September too). BRENDA has protein records without any accession; BRENDA and TCDB cite obsolete UniProt accessions. Most Reactome events are not Rhea reactions. CellChat's remaining zebrafish failures are clone-based names (si:ch211-…). WikiPathways types some EC numbers as proteins and uses cattle Ensembl IDs.</div>
+  <div><b>Definitions.</b> Structure-only chemicals are BindingDB (624) and FooDB (2,680). MicroRNAs are excluded until miRNA resolution exists. FooDB is now included: 99.9% identified.</div>`;
+const FOOT = '6 October 2026 · all 46 resources from /root/data/artifacts-capped1000-v3 (Metabolic Atlas, Recon3D and KEGG rebuilt with the coarse cross-reference fix) · unique entity keys per resource (resolution_stats.json)';
+const fmt = (n) => n.toLocaleString('en');
+const elig = (x) => x.res + x.st + x.unr;
+const share = (ok, total) => (total ? (100 * ok) / total : null);
+function pctText(p) {
+  if (p === null) return '';
+  if (p > 99.9 && p < 100) return '>99.9%';
+  if (p < 0.1 && p > 0) return '<0.1%';
+  return `${p.toFixed(1)}%`;
+}
+const rows = [...ROWS].sort((a, b) => {
+  const ea = elig(a), eb = elig(b);
+  if (!ea || !eb) return (eb ? 1 : 0) - (ea ? 1 : 0) || a.name.localeCompare(b.name);
+  return share(b.res + b.st, eb) - share(a.res + a.st, ea) || eb - ea;
+});
+const sum = (key) => rows.reduce((s, x) => s + x[key], 0);
+const total = { res: sum('res'), st: sum('st'), unr: sum('unr'), rxr: sum('rxr'), rxu: sum('rxu') };
+const sepTotal = rows.reduce((s, x) => (x.sep ? [s[0] + x.sep[0], s[1] + x.sep[1]] : s), [0, 0]);
+
+function bar(x) {
+  const t = elig(x);
+  if (!t) return '<div class="bar none">No eligible entities</div>';
+  const r = (100 * x.res) / t, s = (100 * x.st) / t, u = 100 - r - s;
+  const ok = r + s;
+  return `<div class="bar" role="img" aria-label="${pctText(ok)} resolved or identified by structure"><b class="res" style="width:${r}%">${r >= 12 ? pctText(ok) : ''}</b><b class="st" style="width:${s}%">${r < 12 && s >= 12 ? pctText(ok) : ''}</b><b class="unr" style="width:${u}%">${u >= 6 ? pctText(u) : ''}</b></div>`;
+}
+function sepCell(x) {
+  if (!x.sep) return '<div class="c r sep">excluded</div>';
+  const now = share(x.res + x.st, elig(x));
+  const then = share(x.sep[0], x.sep[0] + x.sep[1]);
+  if (then === null) return `<div class="c r sep">${now === null ? '—' : 'none'}</div>`;
+  const delta = now === null ? null : now - then;
+  const d = delta === null || Math.abs(delta) < 1 ? '' : `<span class="d ${delta > 0 ? 'up' : 'down'}">${delta > 0 ? '+' : ''}${delta.toFixed(0)}</span>`;
+  return `<div class="c r sep">${pctText(then)}${d}</div>`;
+}
+const rxCell = (r, u) => `<div class="c r rx">${r + u ? `${fmt(r)} / ${fmt(r + u)}` : ''}</div>`;
+let html = ['', '', 'Resolved', 'By structure', 'Unresolved', 'Eligible', '9 Sep', 'Reactions', 'Main unresolved']
+  .map((h, i) => `<div class="hd ${i > 1 && i < 8 ? 'r' : ''}">${h}</div>`).join('');
+html += `<div class="row overall"><div class="nm">Overall</div><div>${bar(total)}</div><div class="c r">${fmt(total.res)}</div><div class="c r">${fmt(total.st)}</div><div class="c r">${fmt(total.unr)}</div><div class="c r">${fmt(elig(total))}</div><div class="c r sep">${pctText(share(sepTotal[0], sepTotal[0] + sepTotal[1]))}</div>${rxCell(total.rxr, total.rxu)}<div class="main"></div></div>`;
+rows.forEach((x, i) => {
+  html += `<div class="row ${i % 2 ? 'odd' : ''}"><div class="nm" title="${x.id}">${x.name}</div><div>${bar(x)}</div><div class="c r">${fmt(x.res)}</div><div class="c r">${x.st ? fmt(x.st) : ''}</div><div class="c r">${fmt(x.unr)}</div><div class="c r">${fmt(elig(x))}</div>${sepCell(x)}${rxCell(x.rxr, x.rxu)}<div class="main" title="${x.main.join(', ')}">${x.main.join(' · ')}</div></div>`;
+});
+html += `<div class="axis"><div></div><div class="ticks"><span>0%</span><span>20%</span><span>40%</span><span>60%</span><span>80%</span><span>100%</span></div>${'<div></div>'.repeat(7)}</div>`;
+document.getElementById('grid').innerHTML = html;
+document.getElementById('notes').innerHTML = NOTES;
+document.getElementById('foot').textContent = FOOT;
+
+</script>

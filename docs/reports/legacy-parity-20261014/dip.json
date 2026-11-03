@@ -1,0 +1,84 @@
+{
+  "resource": "dip",
+  "kind": "relation",
+  "note": "Legacy reads the core subset of the release by default; here it reads the full file as v2.",
+  "v2_seconds": 2.6,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 2281,
+  "legacy_pairs_found_in_v2": 2280,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 1,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 1,
+    "neither": 0
+  },
+  "v2_relations": 7794,
+  "v2_relations_without_legacy_pair": 5509,
+  "v2_relations_reversed_in_legacy": 3,
+  "v2_signs": {
+    "None": 7794
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "159,Q13936",
+        "P62158"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['Q62311', 'DIP-493N'] -[interacts_with]-> ['P21675', 'DIP-147N']",
+      "['DIP-400N'] -[interacts_with]-> ['P48061', 'DIP-391N']",
+      "['P17095', 'NP_057869', 'DIP-53N'] -[interacts_with]-> ['P17947', 'NP_003111', 'DIP-953N']",
+      "['Q9DH70', 'DIP-1074N'] -[interacts_with]-> ['P04637', 'DIP-368N']",
+      "['P15923', 'DIP-74N'] -[interacts_with]-> ['Q04650', 'DIP-327N']",
+      "['P32561', 'NP_014069', 'DIP-681N'] -[interacts_with]-> ['P25490', 'NP_003394', 'DIP-150N']",
+      "['P39958', 'NP_011062', 'DIP-785N'] -[interacts_with]-> ['P20338', 'DIP-372N']",
+      "['P35609', 'NP_001094', 'DIP-383N'] -[interacts_with]-> ['P35439', 'NP_058706', 'DIP-674N']",
+      "['Q15172', 'NP_006234', 'DIP-459N'] -[interacts_with]-> ['Q94818', 'DIP-908N']",
+      "['P04273', 'DIP-1081N'] -[interacts_with]-> ['P10809', 'DIP-58N']",
+      "['P10415', 'NP_000624', 'DIP-1043N'] -[interacts_with]-> ['Q07812', 'DIP-232N']",
+      "['P13501', 'NP_002976', 'DIP-31N'] -[interacts_with]-> ['DIP-400N']",
+      "['P39429', 'DIP-468N'] -[interacts_with]-> ['P19438', 'DIP-407N']",
+      "['Q91407', 'DIP-451N'] -[interacts_with]-> ['P08138', 'NP_002498', 'DIP-406N']",
+      "['Q91407', 'DIP-451N'] -[interacts_with]-> ['P20783', 'NP_002518', 'DIP-346N']",
+      "['P52583', 'DIP-450N'] -[interacts_with]-> ['P62993', 'DIP-29229N']",
+      "['P70380', 'NP_032386', 'DIP-950N'] -[interacts_with]-> ['P01579', 'DIP-483N']",
+      "['P70380', 'NP_032386', 'DIP-950N'] -[interacts_with]-> ['P29466', 'DIP-175N']",
+      "['P42574', 'NP_004337', 'DIP-268N'] -[interacts_with]-> ['P70380', 'NP_032386', 'DIP-950N']",
+      "['P01350', 'NP_000796', 'DIP-403N'] -[interacts_with]-> ['P35570', 'NP_037101', 'DIP-664N']",
+      "['DIP-879N'] -[interacts_with]-> ['P07996', 'DIP-1037N']",
+      "['Q62622', 'NP_446309', 'DIP-267N'] -[interacts_with]-> ['P06730', 'NP_001959', 'DIP-22N']",
+      "['Q60431', 'DIP-987N'] -[interacts_with]-> ['P36956', 'DIP-331N']",
+      "['Q12772', 'DIP-263N'] -[interacts_with]-> ['Q60431', 'DIP-987N']",
+      "['P42574', 'NP_004337', 'DIP-268N'] -[directly_physically_interacts_with]-> ['P09874', 'NP_001609', 'DIP-38N']"
+    ],
+    "v2_reversed_in_legacy": [
+      "['P24941', 'NP_001789', 'DIP-161N'] -[interacts_with]-> ['Q16667', 'NP_005183', 'DIP-245N']",
+      "['P42574', 'NP_004337', 'DIP-268N'] -[directly_physically_interacts_with]-> ['P55211', 'DIP-27625N']",
+      "['Q9UPQ9', 'DIP-44174N'] -[interacts_with]-> ['Q9UKV8', 'NP_036286', 'DIP-29194N']"
+    ],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/dip/Hsapi20170205.txt.gz",
+      "path": "/root/data/pypath-cache/dip/Hsapi20170205.txt.gz",
+      "size": 290394,
+      "sha256": "6cc4790d1f952bf1bcc64313c32fafde0ff5a17b83113aa9389095485690070e",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/dip/Hsapi20170205CR.txt.gz",
+      "path": "/root/data/pypath-cache/dip/Hsapi20170205.txt.gz",
+      "size": 290394,
+      "sha256": "6cc4790d1f952bf1bcc64313c32fafde0ff5a17b83113aa9389095485690070e",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

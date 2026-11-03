@@ -1,0 +1,49 @@
+{
+  "resource": "instruct",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 3.7,
+  "legacy_seconds": 0.4,
+  "legacy_pairs": 6585,
+  "legacy_pairs_found_in_v2": 6585,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 11470,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 11470
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/instruct-sapiens.sin",
+      "path": "/root/data/pypath-cache/instruct/instruct-sapiens.sin",
+      "size": 3492377,
+      "sha256": "66632aaf205e7bc9831b9077e75ad5829e1087362e27da177eeaa4a9538e69b3",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/instruct-sapiens.sin",
+      "path": "/root/data/pypath-cache/instruct/instruct-sapiens.sin",
+      "size": 3492377,
+      "sha256": "66632aaf205e7bc9831b9077e75ad5829e1087362e27da177eeaa4a9538e69b3",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

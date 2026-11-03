@@ -1,0 +1,80 @@
+{
+  "resource": "dbptm",
+  "kind": "relation",
+  "note": "Legacy records with an enzyme; legacy also lists the PTM sites without one.",
+  "v2_seconds": 0.7,
+  "legacy_seconds": 1.8,
+  "legacy_pairs": 1107,
+  "legacy_pairs_found_in_v2": 1100,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 7,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 5,
+    "neither": 2
+  },
+  "v2_relations": 2065,
+  "v2_relations_without_legacy_pair": 1,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 2065
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "MAPKAPK2 OR MAPKAPK3",
+        "Q6JBY9"
+      ],
+      [
+        "MAPK1 OR MAPK3",
+        "Q92974"
+      ],
+      [
+        "MAPK1 OR MAPK3",
+        "Q15648"
+      ],
+      [
+        "MAPK1 AND MAPK3",
+        "P08047"
+      ],
+      [
+        "ATM OR ATR",
+        "Q9Y4P3"
+      ],
+      [
+        "TYR",
+        "P25963"
+      ],
+      [
+        "TYR",
+        "P03372"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['MAPK3'] -[affects]-> ['P08047']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/old_dbptm.tab",
+      "path": "/root/data/pypath-cache/dbptm/old_dbptm.tab",
+      "size": 18613054,
+      "sha256": "1f59a498b45dcb6f4b3fd811370444bad1f741498dd8060fd13170a983c5451e",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://rescued.omnipathdb.org/old_dbptm.tab",
+      "path": "/root/data/pypath-cache/dbptm/old_dbptm.tab",
+      "size": 18613054,
+      "sha256": "1f59a498b45dcb6f4b3fd811370444bad1f741498dd8060fd13170a983c5451e",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

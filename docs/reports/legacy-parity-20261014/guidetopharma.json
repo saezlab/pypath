@@ -1,0 +1,194 @@
+{
+  "resource": "guidetopharma",
+  "kind": "relation",
+  "note": "Legacy with all ligands, not only endogenous ones; human.",
+  "v2_seconds": 9.9,
+  "legacy_seconds": 0.2,
+  "legacy_pairs": 742,
+  "legacy_pairs_found_in_v2": 380,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 362,
+  "missing_by_ids_known_to_v2": {
+    "both": 171,
+    "one": 177,
+    "neither": 14
+  },
+  "v2_relations": 24343,
+  "v2_relations_without_legacy_pair": 23757,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "-": 13343,
+    "+": 7447,
+    "None": 3553
+  },
+  "signs_compared": 289,
+  "signs_agree": 289,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "INHBA",
+        "P27037"
+      ],
+      [
+        "INHBA",
+        "P36896"
+      ],
+      [
+        "INHBA",
+        "Q13705"
+      ],
+      [
+        "INHBA",
+        "Q8NER5"
+      ],
+      [
+        "INHBB",
+        "P27037"
+      ],
+      [
+        "INHBB",
+        "P36896"
+      ],
+      [
+        "INHBB",
+        "Q13705"
+      ],
+      [
+        "INHBB",
+        "Q8NER5"
+      ],
+      [
+        "INHA",
+        "P27037"
+      ],
+      [
+        "INHA",
+        "P36896"
+      ],
+      [
+        "INHA",
+        "Q13705"
+      ],
+      [
+        "INHA",
+        "Q8NER5"
+      ],
+      [
+        "ADM",
+        "Q16602"
+      ],
+      [
+        "ADM",
+        "O60895"
+      ],
+      [
+        "ADM2",
+        "Q16602"
+      ],
+      [
+        "ADM2",
+        "O60895"
+      ],
+      [
+        "CALCA",
+        "Q16602"
+      ],
+      [
+        "CALCA",
+        "O60895"
+      ],
+      [
+        "CALCB",
+        "Q16602"
+      ],
+      [
+        "CALCB",
+        "O60895"
+      ],
+      [
+        "ADM",
+        "O60896"
+      ],
+      [
+        "ADM2",
+        "O60896"
+      ],
+      [
+        "CALCA",
+        "O60896"
+      ],
+      [
+        "CALCB",
+        "O60896"
+      ],
+      [
+        "ADM",
+        "O60894"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['8752', '252827410', '70701426', 'CHEMBL3113165', 'OWHBVKBNNRYMIN-UHFFFAOYSA-N', 'COc1cccc(c1O)CNc1ccc(cc1)S(=O)(=O)Nc1nc2c(s1)cccc2', 'InChI=1S/C21H19N3O4S2/c1-28-18-7-4-5-14(20(18)25)13-22-15-9-11-16(12-10-15)30(26,27)24-21-23-17-6-2-3-8-19(17)29-21/h2-12,22,25H,13H2,1H3,(H,23,24)', 'ML-355', 'ML355', 'N-(1,3-benzothiazol-2-yl)-4-[(2-hydroxy-3-methoxyphenyl)methylamino]benzenesulfonamide'] -[affects]-> ['1387', 'P18054', 'ENSG00000108839', '239', '429', 'ALOX12', '12S-LOX', 'arachidonate 12-lipoxygenase, 12S-type', 'platelet-type lipoxygenase 12', 'arachidonate 12-lipoxygenase, 12S type']",
+      "['9141', '315661226', '11841193', 'GEMFAWUXUVGGTE-FCDQGJHFSA-N', 'CN1CCN(CC1)CC(=O)N1N=C2C(C1c1ccccc1)CCC/C/2=C\\\\c1ccccc1', 'InChI=1S/C27H32N4O/c1-29-15-17-30(18-16-29)20-25(32)31-27(22-11-6-3-7-12-22)24-14-8-13-23(26(24)28-31)19-21-9-4-2-5-10-21/h2-7,9-12,19,24,27H,8,13-18,20H2,1H3/b23-19+', 'PKUMDL_MH_1001', '2-(4-methylpiperazin-1-yl)-1-[(7E)-3-phenyl-7-(phenylmethylidene)-3,3a,4,5,6,7-hexahydro-2H-indazol-2-yl]ethan-1-one'] -[affects]-> ['1388', 'P16050', 'ENSG00000161905', '246', '433', 'ALOX15', '15-LOX-1', 'arachidonate &omega;-6 lipoxygenase', '12/15-LOX', '12-LOX', 'Alox12', 'Alox12l', 'arachidonate 12-lipoxygenase, leukocyte-type', 'arachidonate 15-lipoxygenase', '12-LO']",
+      "['8751', '252827409', '1999882', 'CHEMBL1269896', 'PYNKKMZSVFDYAC-UHFFFAOYSA-N', 'COc1ccc(cc1)C(=O)OCC#CCSc1nnc(o1)c1cccc2c1cccc2', 'InChI=1S/C24H18N2O4S/c1-28-19-13-11-18(12-14-19)23(27)29-15-4-5-16-31-24-26-25-22(30-24)21-10-6-8-17-7-2-3-9-20(17)21/h2-3,6-14H,15-16H2,1H3', 'compound 34 [PMID: 20866075]', '4-[(5-naphthalen-1-yl-1,3,4-oxadiazol-2-yl)sulfanyl]but-2-ynyl 4-methoxybenzoate'] -[affects]-> ['1388', 'P16050', 'ENSG00000161905', '246', '433', 'ALOX15', '15-LOX-1', 'arachidonate &omega;-6 lipoxygenase', '12/15-LOX', '12-LOX', 'Alox12', 'Alox12l', 'arachidonate 12-lipoxygenase, leukocyte-type', 'arachidonate 15-lipoxygenase', '12-LO']",
+      "['10263', '381744944', '664510', 'CHEMBL1548353', 'DYXYXTDIFMDJIR-UHFFFAOYSA-N', 'CNc1oc(nc1C#N)c1cccc2c1cccc2', 'InChI=1S/C15H11N3O/c1-17-15-13(9-16)18-14(19-15)12-8-4-6-10-5-2-3-7-11(10)12/h2-8,17H,1H3', 'ML-351', 'ML351', '5-(methylamino)-2-naphthalen-1-yl-1,3-oxazole-4-carbonitrile'] -[affects]-> ['1388', 'P16050', 'ENSG00000161905', '246', '433', 'ALOX15', '15-LOX-1', 'arachidonate &omega;-6 lipoxygenase', '12/15-LOX', '12-LOX', 'Alox12', 'Alox12l', 'arachidonate 12-lipoxygenase, leukocyte-type', 'arachidonate 15-lipoxygenase', '12-LO']",
+      "['11390', '440816759', '297589', 'CHEMBL180917', 'ZGOOPZVQMLHPFM-UHFFFAOYSA-N', 'c1ccc2c(c1)SCc1c2[nH]c2c1cccc2', 'InChI=1S/C15H11NS/c1-3-7-13-10(5-1)12-9-17-14-8-4-2-6-11(14)15(12)16-13/h1-8,16H,9H2', 'PD 146176|PD146176', 'PD-146176'] -[affects]-> ['1388', 'P16050', 'ENSG00000161905', '246', '433', 'ALOX15', '15-LOX-1', 'arachidonate &omega;-6 lipoxygenase', '12/15-LOX', '12-LOX', 'Alox12', 'Alox12l', 'arachidonate 12-lipoxygenase, leukocyte-type', 'arachidonate 15-lipoxygenase', '12-LO']",
+      "['14277', '521588917', '46184405', 'CHEMBL1812161', 'LNOVHERIIMJMDG-XZXLULOTSA-N', 'CC1=C(C(=O)C(=C(C1=O)C)CC[C@@](C)(CC/C=C(\\\\C)/CC/C=C(\\\\C)/CCC=C(C)C)O)C', 'InChI=1S/C29H44O3/c1-20(2)12-9-13-21(3)14-10-15-22(4)16-11-18-29(8,32)19-17-26-25(7)27(30)23(5)24(6)28(26)31/h12,14,16,32H,9-11,13,15,17-19H2,1-8H3/b21-14+,22-16+/t29-/m1/s1', 'alpha-Tocotrienol quinone|ATQ3|EPI-743|EPI743|PTC-743|PTC743', 'vatiquinone', '2-[(3R,6E,10E)-3-hydroxy-3,7,11,15-tetramethylhexadeca-6,10,14-trienyl]-3,5,6-trimethylcyclohexa-2,5-diene-1,4-dione', 'vatiquinone'] -[affects]-> ['1388', 'P16050', 'ENSG00000161905', '246', '433', 'ALOX15', '15-LOX-1', 'arachidonate &omega;-6 lipoxygenase', '12/15-LOX', '12-LOX', 'Alox12', 'Alox12l', 'arachidonate 12-lipoxygenase, leukocyte-type', 'arachidonate 15-lipoxygenase', '12-LO']",
+      "['8750', '252827408', '24825377', 'CHEMBL235920', 'YCOQGGMZWKBBGI-UIDYPRJRSA-N', 'COc1ccc(cc1)c1nc([nH]c1CCNS(=O)(=O)N([C@@H]1CCN(C1)C(c1ccc(cc1)F)C)CC)c1cccs1', 'InChI=1S/C30H36FN5O3S2/c1-4-36(25-16-18-35(20-25)21(2)22-7-11-24(31)12-8-22)41(37,38)32-17-15-27-29(23-9-13-26(39-3)14-10-23)34-30(33-27)28-6-5-19-40-28/h5-14,19,21,25,32H,4,15-18,20H2,1-3H3,(H,33,34)/t21?,25-/m1/s1', 'compound 21n [PMID: 17656086]', '5-[2-[[ethyl-[(3R)-1-[1-(4-fluorophenyl)ethyl]pyrrolidin-3-yl]sulfamoyl]amino]ethyl]-4-(4-methoxyphenyl)-2-thiophen-2-yl-1H-imidazole'] -[affects]-> ['1389', 'O15296', 'ENSG00000179593', '247', '434', 'ALOX15B', '15-LOX-2', '15-lipoxygenase 2', '15-LOX-B', 'arachidonate 15-lipoxygenase type II', '8S-lipoxygenase', '8S-LOX', 'arachidonate 15-lipoxygenase, type B', 'arachidonate 15-lipoxygenase']",
+      "['10264', '381744945', '1778842', 'CHEMBL1452107', 'JAVBFNWBMPZICK-UHFFFAOYSA-N', 'Cc1ccc(cc1)CSc1ncn(n1)c1ccccc1', 'InChI=1S/C16H15N3S/c1-13-7-9-14(10-8-13)11-20-16-17-12-19(18-16)15-5-3-2-4-6-15/h2-10,12H,11H2,1H3', 'MLS000536924', '3-[(4-methylphenyl)methylsulfanyl]-1-phenyl-1,2,4-triazole'] -[affects]-> ['1389', 'O15296', 'ENSG00000179593', '247', '434', 'ALOX15B', '15-LOX-2', '15-lipoxygenase 2', '15-LOX-B', 'arachidonate 15-lipoxygenase type II', '8S-lipoxygenase', '8S-LOX', 'arachidonate 15-lipoxygenase, type B', 'arachidonate 15-lipoxygenase']",
+      "['10210', '381744892', '135412420', 'KKPLVAUVHOSUPR-UHFFFAOYSA-N', 'Cc1cc(=O)[nH]c(n1)SCC(=O)c1cccc2c1cccc2', 'InChI=1S/C17H14N2O2S/c1-11-9-16(21)19-17(18-11)22-10-15(20)14-8-4-6-12-5-2-3-7-13(12)14/h2-9H,10H2,1H3,(H,18,19,21)', 'compound 3 [PMID: 28079151]', 'I3MT-3', '4-methyl-2-(2-naphthalen-1-yl-2-oxoethyl)sulfanyl-1~{H}-pyrimidin-6-one'] -[affects]-> ['1446', 'P25325', 'ENSG00000128309', '4357', '7223', 'MPST', '3-Mercaptopyruvate sulfurtransferase', 'human liver rhodanese', 'MST', 'TST2', 'MPST']",
+      "['7907', '249565590', '72271', 'CHEMBL1236539', 'PBCZSGKMGDDXIJ-HQCWYSJUSA-N', 'CN[C@@H]1C[C@H]2O[C@]([C@@H]1OC)(C)n1c3ccccc3c3c1c1n2c2ccccc2c1c1c3[C@H](NC1=O)O', 'InChI=1S/C28H26N4O4/c1-28-25(35-3)15(29-2)12-18(36-28)31-16-10-6-4-8-13(16)19-21-22(27(34)30-26(21)33)20-14-9-5-7-11-17(14)32(28)24(20)23(19)31/h4-11,15,18,25,27,29,34H,12H2,1-3H3,(H,30,33)/t15-,18-,25-,27-,28+/m1/s1', 'KRX-0601|KRX0601|UCN 01|UCN-01', '7-hydroxystaurosporine'] -[affects]-> ['1519', 'O15530', 'ENSG00000140992', '5170', 'NM_001261816', 'NP_002604', '8816', 'PDPK1', '3-phosphoinositide dependent protein kinase 1', 'PkB kinase', 'protein kinase B kinase', '3-phosphoinositide dependent protein kinase-1', 'PDK1']",
+      "['8006', '249565686', '10077147', 'CHEMBL577784', 'VAVXGGRQQJZYBL-UHFFFAOYSA-N', 'O=C(N1CCCC1)Nc1cccc(c1)Nc1ncc(c(n1)NCCCNC(=O)c1cccs1)I', 'InChI=1S/C23H26IN7O2S/c24-18-15-27-22(30-20(18)25-9-5-10-26-21(32)19-8-4-13-34-19)28-16-6-3-7-17(14-16)29-23(33)31-11-1-2-12-31/h3-4,6-8,13-15H,1-2,5,9-12H2,(H,26,32)(H,29,33)(H2,25,27,28,30)', 'BX 795|BX795', 'BX-795', 'N-[3-[[5-iodo-4-[3-(thiophene-2-carbonylamino)propylamino]pyrimidin-2-yl]amino]phenyl]pyrrolidine-1-carboxamide'] -[affects]-> ['1519', 'O15530', 'ENSG00000140992', '5170', 'NM_001261816', 'NP_002604', '8816', 'PDPK1', '3-phosphoinositide dependent protein kinase 1', 'PkB kinase', 'protein kinase B kinase', '3-phosphoinositide dependent protein kinase-1', 'PDK1']",
+      "['8007', '249565687', '11754511', 'DMMILYKXNCVKOJ-UHFFFAOYSA-N', 'O=C(N1CCCC1)Nc1cccc(c1)Nc1ncc(c(n1)NCCc1cnc[nH]1)Br', 'InChI=1S/C20H23BrN8O/c21-17-12-24-19(28-18(17)23-7-6-16-11-22-13-25-16)26-14-4-3-5-15(10-14)27-20(30)29-8-1-2-9-29/h3-5,10-13H,1-2,6-9H2,(H,22,25)(H,27,30)(H2,23,24,26,28)', 'BX 912|BX912', 'BX-912', 'N-[3-[[5-bromo-4-[2-(3H-imidazol-4-yl)ethylamino]pyrimidin-2-yl]amino]phenyl]pyrrolidine-1-carboxamide'] -[affects]-> ['1519', 'O15530', 'ENSG00000140992', '5170', 'NM_001261816', 'NP_002604', '8816', 'PDPK1', '3-phosphoinositide dependent protein kinase 1', 'PkB kinase', 'protein kinase B kinase', '3-phosphoinositide dependent protein kinase-1', 'PDK1']",
+      "['8181', '249565861', '46225540', 'CHEMBL593490', 'XONRTPBYDAFIRW-NRFANRHFSA-N', 'N[C@@H](Cc1c[nH]c2c1cccc2)COc1cnc(c(c1)c1ccc2c(c1)c(C)[nH]n2)c1cocc1', 'InChI=1S/C28H25N5O2/c1-17-24-11-18(6-7-27(24)33-32-17)25-12-22(14-31-28(25)19-8-9-34-15-19)35-16-21(29)10-20-13-30-26-5-3-2-4-23(20)26/h2-9,11-15,21,30H,10,16,29H2,1H3,(H,32,33)/t21-/m0/s1', 'compound 1 [PMID: 20005102]', '5-{5-[(2S)-2-amino-3-(1H-indol-3-yl)propoxy]-2-(furan-3-yl)pyridin-3-yl}-3-methyl-2H-indazole'] -[affects]-> ['1519', 'O15530', 'ENSG00000140992', '5170', 'NM_001261816', 'NP_002604', '8816', 'PDPK1', '3-phosphoinositide dependent protein kinase 1', 'PkB kinase', 'protein kinase B kinase', '3-phosphoinositide dependent protein kinase-1', 'PDK1']",
+      "['8008', '249565688', '46215815', 'CHEMBL1765740', 'QLPHOXTXAKOFMU-WBVHZDCISA-N', 'CNc1nc(cc(n1)c1ccc2c(c1)[nH]nc2N)N1C[C@H](CC[C@H]1C)C(=O)NC1CCCCC1', 'InChI=1S/C25H34N8O/c1-15-8-9-17(24(34)28-18-6-4-3-5-7-18)14-33(15)22-13-20(29-25(27-2)30-22)16-10-11-19-21(12-16)31-32-23(19)26/h10-13,15,17-18H,3-9,14H2,1-2H3,(H,28,34)(H3,26,31,32)(H,27,29,30)/t15-,17+/m1/s1', 'GSK 2334470|GSK-2334470', 'GSK2334470', '(3S,6R)-1-[6-(3-amino-1H-indazol-6-yl)-2-(methylamino)pyrimidin-4-yl]-N-cyclohexyl-6-methylpiperidine-3-carboxamide'] -[affects]-> ['1519', 'O15530', 'ENSG00000140992', '5170', 'NM_001261816', 'NP_002604', '8816', 'PDPK1', '3-phosphoinositide dependent protein kinase 1', 'PkB kinase', 'protein kinase B kinase', '3-phosphoinositide dependent protein kinase-1', 'PDK1']",
+      "['8005', '249565685', '10027278', 'CHEMBL1650595', 'YULUCECVQOCQFQ-UHFFFAOYSA-N', 'NCC(=O)Nc1ccc(cc1)n1nc(cc1c1ccc2c(c1)ccc1c2cccc1)C(F)(F)F', 'InChI=1S/C26H19F3N4O/c27-26(28,29)24-14-23(33(32-24)20-10-8-19(9-11-20)31-25(34)15-30)18-7-12-22-17(13-18)6-5-16-3-1-2-4-21(16)22/h1-14H,15,30H2,(H,31,34)', 'AR-12|OSU03012', 'OSU-03012', '2-amino-N-[4-[5-phenanthren-2-yl-3-(trifluoromethyl)pyrazol-1-yl]phenyl]acetamide'] -[affects]-> ['1519', 'O15530', 'ENSG00000140992', '5170', 'NM_001261816', 'NP_002604', '8816', 'PDPK1', '3-phosphoinositide dependent protein kinase 1', 'PkB kinase', 'protein kinase B kinase', '3-phosphoinositide dependent protein kinase-1', 'PDK1']",
+      "['8009', '249565689', '44240850', 'CHEMBL595583', 'BYWWNRBKPCPJMG-UHFFFAOYSA-N', 'CCCCCCCCCCCCc1ccc(cc1)S(=O)(=O)Nc1nncs1', 'InChI=1S/C20H31N3O2S2/c1-2-3-4-5-6-7-8-9-10-11-12-18-13-15-19(16-14-18)27(24,25)23-20-22-21-17-26-20/h13-17H,2-12H2,1H3,(H,22,23)', 'PHT 427|PHT427', 'PHT-427', '4-dodecyl-N-(1,3,4-thiadiazol-2-yl)benzenesulfonamide'] -[affects]-> ['1519', 'O15530', 'ENSG00000140992', '5170', 'NM_001261816', 'NP_002604', '8816', 'PDPK1', '3-phosphoinositide dependent protein kinase 1', 'PkB kinase', 'protein kinase B kinase', '3-phosphoinositide dependent protein kinase-1', 'PDK1']",
+      "['12060', '472319182', 'DQYZLSMANMRIEI-BOFVMFDGSA-N', 'O=C(N[C@H]1CSCCC(=O)N2CN3CN(C2)C(=O)CCSC[C@H](NC(=O)[C@H](NC(=O)[C@@H](NC(=O)[C@H]2N(C1=O)CCC2)Cc1c2c(cccc2)ccc1)CC(=O)O)C(=O)N[C@@H](CCSC)C(=O)N[C@@H](CCCCNC(=N)N)C(=O)N[C@@H](CC(=O)O)C(=O)N[C@@H](Cc1c[nH]c2ccccc12)C(=O)N[C@@H](CO)C(=O)N[C@@H]([C@H](O)C)C(=O)N1[C@@H](CCC1)C(=O)N1[C@@H](CC(C1)O)C(=O)N[C@@H](Cc1c[nH]c2ccccc12)C(=O)N[C@@H](CSCCC3=O)C(=O)N)CCOCCOCCOCCN(CCOCCOCCOCCn1cc(nn1)CCC(=O)NCCCC[C@@H]1C(=O)N2[C@H](C(=O)N[C@@H](Cc3ccc(O)cc3)C(=O)N[C@@H]3C(=O)N[C@@H](Cc4ccccc4)C(=O)N[C@@H](C)C(=O)N[C@@H](CC(=O)O)C(=O)N4[C@@H](CCC4)C(=O)N[C@@H](Cc4ccc(O)cc4)C(=O)N[C@@H](CCCC)C(=O)N[C@H](C(=O)N[C@@H](C)C(=O)N)CSCCC(=O)N4CN(CN(C(=O)CCSC[C@@H](C(=O)N[C@H](C(=O)N5[C@H](C(=O)N[C@H](C(=O)N1)CCC(=O)O)CCC5)CC(C)(C)C)NC(=O)C)C4)C(=O)CCSC3)CCC2)CCOCCOCCOCCn1cc(nn1)CCC(=O)NCCCC[C@@H]1C(=O)N2[C@H](C(=O)N[C@@H](Cc3ccc(O)cc3)C(=O)N[C@@H]3C(=O)N[C@@H](Cc4ccccc4)C(=O)N[C@@H](C)C(=O)N[C@@H](CC(=O)O)C(=O)N4[C@@H](CCC4)C(=O)N[C@@H](Cc4ccc(O)cc4)C(=O)N[C@@H](CCCC)C(=O)N[C@H](C(=O)N[C@@H](C)C(=O)N)CSCCC(=O)N4CN(CN(C(=O)CCSC[C@@H](C(=O)N[C@H](C(=O)N5[C@H](C(=O)N[C@H](C(=O)N1)CCC(=O)O)CCC5)CC(C)(C)C)NC(=O)C)C4)C(=O)CCSC3)CCC2', 'BCY11863|BT-7480', 'BT7480'] -[affects]-> ['1878', 'Q07011', 'ENSG00000049249', '3604', 'NM_003811', 'NP_003802', '11924', 'TNFRSF9', '4-1BB', 'ILA', 'CD137', 'Ly63', 'tumor necrosis factor receptor superfamily, member 9', 'tumor necrosis factor receptor superfamily', 'TNFRSF9']",
+      "['9311', '318164830', 'BMS 663513|BMS-663513', 'urelumab', 'urelumab'] -[affects]-> ['1878', 'Q07011', 'ENSG00000049249', '3604', 'NM_003811', 'NP_003802', '11924', 'TNFRSF9', '4-1BB', 'ILA', 'CD137', 'Ly63', 'tumor necrosis factor receptor superfamily, member 9', 'tumor necrosis factor receptor superfamily', 'TNFRSF9']",
+      "['9244', '315661319', 'PF-05082566', 'utomilumab', 'utomilumab'] -[affects]-> ['1878', 'Q07011', 'ENSG00000049249', '3604', 'NM_003811', 'NP_003802', '11924', 'TNFRSF9', '4-1BB', 'ILA', 'CD137', 'Ly63', 'tumor necrosis factor receptor superfamily, member 9', 'tumor necrosis factor receptor superfamily', 'TNFRSF9']",
+      "['8841', '252827498', '16036927', 'CHEMBL378577', 'NKPPNPJUBLEKAD-UHFFFAOYSA-N', 'C=CC(=O)c1ccc(cc1)O', 'InChI=1S/C9H8O2/c1-2-9(11)7-3-5-8(10)6-4-7/h2-6,10H,1H2', 'compound 6', '4-acryloylphenol', '1-(4-hydroxyphenyl)prop-2-en-1-one'] -[affects]-> ['2464', 'P80404', 'ENSG00000183044', '18', 'NM_000663', 'NM_001127448', 'NM_020686', 'NP_000654', 'NP_001120920', 'NP_065737', '23', 'ABAT', '4-aminobutyrate aminotransferase', 'GABA aminotransferase', 'GABA transaminase', 'GABA-AT', 'GABA-T', 'Gamma-amino-N-butyrate transaminase', 'L-AIBAT']",
+      "['8284', '252166496', '9794014', 'CHEMBL146927', 'CBSRETZPFOBWNG-UCORVYFPSA-N', 'OC(=O)[C@H]1CC(=C(F)F)[C@H](C1)N', 'InChI=1S/C7H9F2NO2/c8-6(9)4-1-3(7(11)12)2-5(4)10/h3,5H,1-2,10H2,(H,11,12)/t3-,5-/m0/s1', 'compound 12 [PMID 25616005]', 'CPP-115', '(1S,3S)-3-amino-4-(difluoromethylidene)cyclopentane-1-carboxylic acid'] -[affects]-> ['2464', 'P80404', 'ENSG00000183044', '18', 'NM_000663', 'NM_001127448', 'NM_020686', 'NP_000654', 'NP_001120920', 'NP_065737', '23', 'ABAT', '4-aminobutyrate aminotransferase', 'GABA aminotransferase', 'GABA transaminase', 'GABA-AT', 'GABA-T', 'Gamma-amino-N-butyrate transaminase', 'L-AIBAT']",
+      "['4821', '178101523', '5665', 'CHEMBL89598', 'PJDFLNIOAUIZSL-UHFFFAOYSA-N', 'NC(C=C)CCC(=O)O', 'InChI=1S/C6H11NO2/c1-2-5(7)3-4-6(8)9/h2,5H,1,3-4,7H2,(H,8,9)', 'CPP-109|Kigabeq&reg;|MDL-71754|Sabril&reg;|Vigafyde&reg; (oral solution)', 'vigabatrin', '4-aminohex-5-enoic acid', 'vigabatrin'] -[affects]-> ['2464', 'P80404', 'ENSG00000183044', '18', 'NM_000663', 'NM_001127448', 'NM_020686', 'NP_000654', 'NP_001120920', 'NP_065737', '23', 'ABAT', '4-aminobutyrate aminotransferase', 'GABA aminotransferase', 'GABA transaminase', 'GABA-AT', 'GABA-T', 'Gamma-amino-N-butyrate transaminase', 'L-AIBAT']",
+      "['8737', '252827395', 'IGN523'] -[interacts_with]-> ['890', 'P08195', 'ENSG00000168003', '6520', '11026', 'SLC3A2', '4F2hc', '4F2 cell-surface antigen heavy chain', 'CD98 antigen Lymphocyte activation antigen 4F2 large subunit', '4F2', '4T2HC', 'CD98', 'MDU1', 'NACAE', 'CD98 heavy chain', 'lymphocyte activation antigen 4F2 large subunit', 'solute carrier family 3 (activators of dibasic and neutral amino acid transport) member 2', 'solute carrier family 3, member 2', 'Ly-10', 'Ly-m10', 'solute carrier family 3 (amino acid transporter heavy chain), member 2', 'solute carrier family 3 (activators of dibasic and neutral amino acid transport)', 'SLC3A2']",
+      "['6834', '178103440', '115355', 'CHEMBL1337', 'OUBCNLGXQFSTLU-UHFFFAOYSA-N', 'O=C1CCCC(=O)C1C(=O)c1ccc(cc1[N+](=O)[O-])C(F)(F)F', 'InChI=1S/C14H10F3NO5/c15-14(16,17)7-4-5-8(9(6-7)18(22)23)13(21)12-10(19)2-1-3-11(12)20/h4-6,12H,1-3H2', 'Orfadin&reg;|SC-0735', 'nitisinone', '2-[2-nitro-4-(trifluoromethyl)benzoyl]cyclohexane-1,3-dione', 'nitisinone'] -[affects]-> ['2621', '4-hydroxyphenylpyruvate dioxygenase', '4HPPD', 'GLOD3']",
+      "['10446', '385612206', '133081', 'CHEMBL2110755', 'WRZVGHXUPBWIOO-UHFFFAOYSA-N', 'COc1cncnc1N1CCN(CC1)CCCc1c[nH]c2c1cc(cc2)CS(=O)(=O)NC', 'InChI=1S/C22H30N6O3S/c1-23-32(29,30)15-17-5-6-20-19(12-17)18(13-25-20)4-3-7-27-8-10-28(11-9-27)22-21(31-2)14-24-16-26-22/h5-6,12-14,16,23,25H,3-4,7-11,15H2,1-2H3', 'BMS-180,048|BMS-180048|BMS180048', 'avitriptan', 'avitriptan'] -[affects]-> ['1', '5-HT<sub>1A</sub> receptor', 'ADRBRL1', '5-HT1A', 'ADRB2RL1', 'serotonin receptor 1A', 'Gpcr18', '5-hydroxytryptamine (serotonin) receptor 1A, G protein-coupled']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "http://www.guidetopharmacology.org/DATA/interactions.csv",
+      "path": "/root/data/pypath-cache/guidetopharma/interactions.csv",
+      "size": 7435365,
+      "sha256": "07bb605283dfc5356f309181737a4b15e7ecfe9e1dc53f9f4667163705d6a082",
+      "mtime": "2026-09-06"
+    },
+    {
+      "side": "v2",
+      "url": "http://www.guidetopharmacology.org/DATA/ligands.csv",
+      "path": "/root/data/pypath-cache/guidetopharma/ligands.csv",
+      "size": 6786509,
+      "sha256": "daaeb79ae670f2774e8e2b31cf047a32fdbf5cd434464113db6b3382af2faf42",
+      "mtime": "2026-09-06"
+    },
+    {
+      "side": "v2",
+      "url": "http://www.guidetopharmacology.org/DATA/targets_and_families.csv",
+      "path": "/root/data/pypath-cache/guidetopharma/targets_and_families.csv",
+      "size": 1893389,
+      "sha256": "1be2b880391bd0b523c027ca7b3767e176507374526184793ab91302b7272dfd",
+      "mtime": "2026-09-06"
+    },
+    {
+      "side": "legacy",
+      "url": "http://www.guidetopharmacology.org/DATA/interactions.csv",
+      "path": "/root/data/pypath-cache/guidetopharma/interactions.csv",
+      "size": 7435365,
+      "sha256": "07bb605283dfc5356f309181737a4b15e7ecfe9e1dc53f9f4667163705d6a082",
+      "mtime": "2026-09-06"
+    }
+  ]
+}

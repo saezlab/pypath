@@ -1,0 +1,147 @@
+{
+  "signaling": {
+    "label": "Signaling",
+    "dimension": "topic",
+    "description": "Molecular signaling and regulation of cellular activity."
+  },
+  "cell_cell_communication": {
+    "label": "Cell–cell communication",
+    "dimension": "topic",
+    "description": "Signals exchanged between cells and their receptors or sensors."
+  },
+  "gene_regulation": {
+    "label": "Gene regulation",
+    "dimension": "topic",
+    "description": "Regulation of gene expression and regulatory RNA biology."
+  },
+  "metabolism": {
+    "label": "Metabolism",
+    "dimension": "topic",
+    "description": "Metabolites, enzymes and metabolic processes."
+  },
+  "pharmacology": {
+    "label": "Pharmacology",
+    "dimension": "topic",
+    "description": "Drugs, bioactive compounds and their molecular targets."
+  },
+  "disease_phenotype": {
+    "label": "Disease & phenotype",
+    "dimension": "topic",
+    "description": "Diseases, phenotypes and their molecular associations."
+  },
+  "nutrition": {
+    "label": "Nutrition",
+    "dimension": "topic",
+    "description": "Food composition and dietary compounds."
+  },
+  "subcellular_localization": {
+    "label": "Subcellular localization",
+    "dimension": "topic",
+    "description": "Where molecules are in the cell: compartments, membranes, the cell surface and vesicles."
+  },
+  "cell_types": {
+    "label": "Cell types",
+    "dimension": "topic",
+    "description": "Cell types and the genes or proteins that mark them."
+  },
+  "molecular_classification": {
+    "label": "Molecular classification",
+    "dimension": "topic",
+    "description": "Families, domains and sets that group genes or proteins."
+  },
+  "physical_interactions": {
+    "label": "Physical interactions",
+    "dimension": "content",
+    "description": "Physical binding or association between molecules."
+  },
+  "causal_regulation": {
+    "label": "Causal regulation",
+    "dimension": "content",
+    "description": "Directed regulation with a source-supported effect or mechanism."
+  },
+  "ligand_receptor_interactions": {
+    "label": "Ligand–receptor interactions",
+    "dimension": "content",
+    "description": "Interactions between signaling ligands and receptors."
+  },
+  "compound_target_interactions": {
+    "label": "Compound–target interactions",
+    "dimension": "content",
+    "description": "Associations or interactions between compounds and molecular targets."
+  },
+  "enzyme_ptm_relationships": {
+    "label": "Enzyme–PTM relationships",
+    "dimension": "content",
+    "description": "Enzyme-mediated post-translational modifications of proteins."
+  },
+  "biochemical_reactions": {
+    "label": "Biochemical reactions",
+    "dimension": "content",
+    "description": "Biochemical activities and their participating molecules."
+  },
+  "molecular_transport": {
+    "label": "Molecular transport",
+    "dimension": "content",
+    "description": "Transporters, their classification or substrate transport relationships."
+  },
+  "protein_complexes": {
+    "label": "Protein complexes",
+    "dimension": "content",
+    "description": "Explicit physical protein assemblies and their members."
+  },
+  "pathways": {
+    "label": "Pathways",
+    "dimension": "content",
+    "description": "Biological pathways and their constituent entities or activities."
+  },
+  "molecular_annotations": {
+    "label": "Molecular annotations",
+    "dimension": "content",
+    "description": "Molecular names, properties, classifications and functional annotations."
+  },
+  "ontologies": {
+    "label": "Ontologies",
+    "dimension": "content",
+    "description": "Controlled biological concepts and their hierarchy."
+  },
+  "identifier_mappings": {
+    "label": "Identifier mappings",
+    "dimension": "content",
+    "description": "Cross-references or translations between identifier systems."
+  },
+  "trait_associations": {
+    "label": "Trait associations",
+    "dimension": "content",
+    "description": "Associations of genes or chemicals with diseases or phenotypes."
+  },
+  "food_composition": {
+    "label": "Food composition",
+    "dimension": "content",
+    "description": "Chemical constituents of foods and their measurements."
+  },
+  "literature_mentions": {
+    "label": "Literature mentions",
+    "dimension": "content",
+    "description": "Entities mentioned in literature figures; mentions do not establish interactions."
+  },
+  "literature_curated": {
+    "label": "Literature curated",
+    "dimension": "knowledge_origin",
+    "description": "Contains knowledge manually curated from publications."
+  },
+  "experimental": {
+    "label": "Experimental",
+    "dimension": "knowledge_origin",
+    "description": "Contains measurements or observations from experiments."
+  },
+  "computationally_predicted": {
+    "label": "Computationally predicted",
+    "dimension": "knowledge_origin",
+    "description": "Contains computational predictions or inferred associations."
+  },
+  "text_mined": {
+    "label": "Text mined",
+    "dimension": "knowledge_origin",
+    "description": "Contains knowledge extracted automatically from literature text or figures."
+  }
+}

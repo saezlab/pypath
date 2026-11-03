@@ -1,0 +1,176 @@
+{
+  "resource": "ncrdeathdb",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.9,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 5427,
+  "legacy_pairs_found_in_v2": 5399,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 28,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 28,
+    "neither": 0
+  },
+  "v2_relations": 6473,
+  "v2_relations_without_legacy_pair": 107,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 6473
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "MIMAT000024",
+        "BECN1"
+      ],
+      [
+        "MIMAT000458",
+        "BCL2"
+      ],
+      [
+        "MIMAT00045",
+        "BCL2"
+      ],
+      [
+        "MIMAT000027",
+        "BCL2"
+      ],
+      [
+        "MIMAT000027",
+        "CDON"
+      ],
+      [
+        "MIMAT00226921",
+        "BCL2"
+      ],
+      [
+        "MIMAT00226921",
+        "CXCL1"
+      ],
+      [
+        "MIMAT00226921",
+        "CYLD"
+      ],
+      [
+        "MIMAT00226921",
+        "MCL1"
+      ],
+      [
+        "MIMAT000027",
+        "PDCD4"
+      ],
+      [
+        "MIMAT000027",
+        "PTEN"
+      ],
+      [
+        "MIMAT00045",
+        "CDC42"
+      ],
+      [
+        "MIMAT00045",
+        "CDK6"
+      ],
+      [
+        "MIMAT00045",
+        "DNMT3A"
+      ],
+      [
+        "MIMAT00045",
+        "MCL1"
+      ],
+      [
+        "MIMAT00045",
+        "PIK3R1"
+      ],
+      [
+        "MIMAT00045",
+        "TP53"
+      ],
+      [
+        "MIMAT00045",
+        "YY1"
+      ],
+      [
+        "MIMAT000024",
+        "ITGB3"
+      ],
+      [
+        "MIMAT000024",
+        "TP53"
+      ],
+      [
+        "HSA-MIR-99A-3P",
+        "CDKN2B-AS1"
+      ],
+      [
+        "MIMAT000458",
+        "SQSTM1"
+      ],
+      [
+        "MIMAT002990",
+        "ULK1"
+      ],
+      [
+        "MIMAT000319",
+        "ATG7"
+      ],
+      [
+        "MIMAT000319",
+        "ULK1"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['miR-125b'] -[interacts_with]-> ['170770', 'itchb', 'BCL2 binding component 3', 'PUMA', 'PUMA/JFY1']",
+      "['miR-125b'] -[interacts_with]-> ['568021', 'tp53inp1', 'tumor protein p53 inducible nuclear protein 1', 'cb1036', 'wu:fb70a09', 'wu:fi13h08', 'zgc:158431']",
+      "['miR-143'] -[interacts_with]-> ['418818', 'KLF5', 'Kruppel-like factor 5 (intestinal)']",
+      "['miR-143'] -[interacts_with]-> ['421808', 'MAP3K7', 'mitogen-activated protein kinase kinase kinase 7']",
+      "['miR-143'] -[interacts_with]-> ['422684', 'METTL14', 'methyltransferase like 14']",
+      "['miR-143'] -[interacts_with]-> ['396457', 'PCK2', 'phosphoenolpyruvate carboxykinase 2 (mitochondrial)', 'PEPCK-M']",
+      "['miR-143'] -[interacts_with]-> ['415765', 'PDCD5', 'programmed cell death 5']",
+      "['miR-143'] -[interacts_with]-> ['415349', 'PSTPIP1', 'proline-serine-threonine phosphatase interacting protein 1']",
+      "['miR-143'] -[interacts_with]-> ['769203', 'PYCR2', 'pyrroline-5-carboxylate reductase family, member 2']",
+      "['miR-143'] -[interacts_with]-> ['396272', 'SLC2A2', 'solute carrier family 2 (facilitated glucose transporter), member 2', 'GLUT2']",
+      "['miR-143'] -[interacts_with]-> ['419453', 'TARDBP', 'TAR DNA binding protein']",
+      "['miR-143'] -[interacts_with]-> ['378894', 'TNFSF10', 'tumor necrosis factor (ligand) superfamily, member 10', 'TRAIL']",
+      "['miR-143'] -[interacts_with]-> ['424122', 'UBE2E3', 'ubiquitin-conjugating enzyme E2E 3']",
+      "['MIMAT0004513', 'hsa-miR-101-5p', 'miR-101'] -[interacts_with]-> ['84971', '20789', 'ENSG00000130734', 'autophagy related 4D, cysteine peptidase', 'APG4D', 'AUTL4', 'APG4-D']",
+      "['MIMAT0000099', 'hsa-miR-101-3p', 'miR-101'] -[interacts_with]-> ['84971', '20789', 'ENSG00000130734', 'autophagy related 4D, cysteine peptidase', 'APG4D', 'AUTL4', 'APG4-D']",
+      "['GAS5'] -[interacts_with]-> ['7157', '11998', 'ENSG00000141510', 'tumor protein p53', 'TP53', 'BCC7', 'LFS1', 'TRP53']",
+      "['HOXA-AS2'] -[interacts_with]-> ['8743', '11925', 'ENSG00000121858', 'tumor necrosis factor (ligand) superfamily, member 10', 'TL2', 'APO2L', 'CD253', 'TNFSF10', 'Apo-2L']",
+      "['pca3'] -[interacts_with]-> ['983', '1722', 'ENSG00000170312', 'cyclin-dependent kinase 1', 'CDC2', 'CDC28A', 'P34CDC2']",
+      "['sra'] -[interacts_with]-> ['7113', '11876', 'ENSG00000184012', 'transmembrane protease, serine 2', 'PP9284', 'PRSS10']",
+      "['uc002mbe.2'] -[interacts_with]-> ['8743', '9353', 'ENSG00000167815', 'peroxiredoxin 2', 'PRP', 'TSA', 'PRX2', 'PTX1', 'TPX1', 'NKEFB', 'PRXII', 'TDPX1', 'NKEF-B', 'HEL-S-2a']",
+      "['let-7c'] -[interacts_with]-> ['836', '1504', 'ENSG00000164305', 'CASP3', 'caspase 3, apoptosis-related cysteine peptidase', 'CPP32', 'CPP32B', 'SCA-1']",
+      "['miR-1'] -[interacts_with]-> ['652995', '37126', 'ENSG00000214049', 'UCA1', 'urothelial cancer associated 1 (non-protein coding)', 'CUDR', 'LINC00178', 'NCRNA00178', 'UCAT1']",
+      "['miR-10a'] -[interacts_with]-> ['836', '1504', 'ENSG00000164305', 'CASP3', 'caspase 3, apoptosis-related cysteine peptidase', 'CPP32', 'CPP32B', 'SCA-1']",
+      "['MIMAT0000253', 'hsa-miR-10a-5p', 'miR-10a'] -[interacts_with]-> ['7291', '12428', 'ENSG00000122691', 'twist family bHLH transcription factor 1', 'CRS', 'SCS', 'ACS3', 'CRS1', 'BPES2', 'BPES3', 'TWIST', 'bHLHa38']",
+      "['MIMAT0004555', 'hsa-miR-10a-3p', 'miR-10a'] -[interacts_with]-> ['7291', '12428', 'ENSG00000122691', 'twist family bHLH transcription factor 1', 'CRS', 'SCS', 'ACS3', 'CRS1', 'BPES2', 'BPES3', 'TWIST', 'bHLHa38']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/ncRDeathDB_allNcRNACelldeathData.txt",
+      "path": "/root/data/pypath-cache/ncrdeathdb/ncRDeathDB_allNcRNACelldeathData.txt",
+      "size": 2486291,
+      "sha256": "5614ee98756488f34f8e03495f68369f873499d132a026a10843d5863e14feb5",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/ncRDeathDB_allNcRNACelldeathData.txt",
+      "path": "/root/data/pypath-cache/ncrdeathdb/ncRDeathDB_allNcRNACelldeathData.txt",
+      "size": 2486291,
+      "sha256": "5614ee98756488f34f8e03495f68369f873499d132a026a10843d5863e14feb5",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

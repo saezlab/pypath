@@ -1,0 +1,50 @@
+{
+  "resource": "nrf2ome",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.0,
+  "legacy_seconds": 0.0,
+  "legacy_pairs": 109,
+  "legacy_pairs_found_in_v2": 109,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 109,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 68,
+    "-": 41
+  },
+  "signs_compared": 41,
+  "signs_agree": 41,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/nrf2ome.csv",
+      "path": "/root/data/pypath-cache/nrf2ome/nrf2ome.csv",
+      "size": 3329,
+      "sha256": "3392f4c14003e38555113b9314fba7f73e777cc62d5cad74589fc68ef8eaed8c",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://rescued.omnipathdb.org/nrf2ome.csv",
+      "path": "/root/data/pypath-cache/nrf2ome/nrf2ome.csv",
+      "size": 3329,
+      "sha256": "3392f4c14003e38555113b9314fba7f73e777cc62d5cad74589fc68ef8eaed8c",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

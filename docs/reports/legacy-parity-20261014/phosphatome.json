@@ -1,0 +1,75 @@
+{
+  "resource": "phosphatome",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 1.0,
+  "legacy_seconds": 0.3,
+  "legacy_pairs": 863,
+  "legacy_pairs_found_in_v2": 863,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 1549,
+  "v2_relations_without_legacy_pair": 511,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 1549
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/phosphatome-supplementary-S1-S23.zip",
+      "path": "/root/data/pypath-cache/phosphatome/phosphatome-supplementary-S1-S23.zip",
+      "size": 1813993,
+      "sha256": "c731ec854d1a5c459384cc0320f5a6f8afed46ea76a3d75976a03a55a3cced15",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/phosphatome-supplementary-S1-S23.zip",
+      "path": "/root/data/pypath-cache/phosphatome/phosphatome-supplementary-S1-S23.zip",
+      "size": 1813993,
+      "sha256": "c731ec854d1a5c459384cc0320f5a6f8afed46ea76a3d75976a03a55a3cced15",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

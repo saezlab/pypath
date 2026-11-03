@@ -1,0 +1,334 @@
+<title>Entity Card Options</title>
+<style>
+/* Layout: toolbar, a short note on the variant, then the explorer results panel at its real width with sample cards. */
+:root {
+  --bg: #f3f4f6; --panel: #ffffff; --card: #ffffff; --raised: #f6f7f9; --sunk: #eceef1;
+  --fg: #15181c; --muted: #5e6670; --faint: #8b939c; --line: #e2e5e9; --line-strong: #cbd1d7;
+  --accent: #0f766e; --accent-fg: #fff; --sel: #15803d; --sel-soft: #e4f4e9;
+  --gene: #be185d; --gene-soft: #fce7f1; --gene-bg: #fdf2f7;
+  --protein: #2563eb; --protein-soft: #e5edff; --protein-bg: #f3f6ff;
+  --chem: #15803d; --chem-soft: #e1f3e6; --chem-bg: #f2faf4;
+  --react: #4338ca; --react-soft: #e8e7fc; --react-bg: #f5f5fe;
+  --path: #0e7490; --path-soft: #ddf2f6; --path-bg: #f1f9fb;
+  --cplx: #b45309; --cplx-soft: #fbeedb; --cplx-bg: #fdf8ef;
+  --ont: #6d28d9; --ont-soft: #efe8fd; --ont-bg: #f8f5fe;
+  --sans: "Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b0c0e; --panel: #121417; --card: #181b1f; --raised: #1e2227; --sunk: #0f1113;
+  --fg: #eceef1; --muted: #9ba3ad; --faint: #6c757f; --line: #262a30; --line-strong: #363c44;
+  --accent: #14b8a6; --accent-fg: #04201d; --sel: #4ade80; --sel-soft: #12301e;
+  --gene: #f472b6; --gene-soft: #3b1328; --gene-bg: #2a1019;
+  --protein: #7ea6ff; --protein-soft: #172647; --protein-bg: #121b30;
+  --chem: #5fd38a; --chem-soft: #113420; --chem-bg: #0f2216;
+  --react: #a5a0ff; --react-soft: #221f4f; --react-bg: #171633;
+  --path: #4fc3dc; --path-soft: #0d2f37; --path-bg: #0d2026;
+  --cplx: #f2b45c; --cplx-soft: #3a280d; --cplx-bg: #261b0b;
+  --ont: #c4a3ff; --ont-soft: #2b1c4b; --ont-bg: #1d1532;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0b0c0e; --panel: #121417; --card: #181b1f; --raised: #1e2227; --sunk: #0f1113;
+  --fg: #eceef1; --muted: #9ba3ad; --faint: #6c757f; --line: #262a30; --line-strong: #363c44;
+  --accent: #14b8a6; --accent-fg: #04201d; --sel: #4ade80; --sel-soft: #12301e;
+  --gene: #f472b6; --gene-soft: #3b1328; --gene-bg: #2a1019;
+  --protein: #7ea6ff; --protein-soft: #172647; --protein-bg: #121b30;
+  --chem: #5fd38a; --chem-soft: #113420; --chem-bg: #0f2216;
+  --react: #a5a0ff; --react-soft: #221f4f; --react-bg: #171633;
+  --path: #4fc3dc; --path-soft: #0d2f37; --path-bg: #0d2026;
+  --cplx: #f2b45c; --cplx-soft: #3a280d; --cplx-bg: #261b0b;
+  --ont: #c4a3ff; --ont-soft: #2b1c4b; --ont-bg: #1d1532;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 14px; line-height: 1.4; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible, .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.page { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 48px; display: grid; gap: 14px; }
+.bar { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; justify-content: space-between; }
+.bar h1 { margin: 0; font-size: 18px; font-weight: 650; }
+.bar p { margin: 2px 0 0; color: var(--muted); max-width: 64ch; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px; }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 9px; background: var(--sunk); border: 1px solid var(--line); }
+.seg button { padding: 5px 10px; border-radius: 6px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--fg); font-weight: 560; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+.note { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; color: var(--muted); }
+.note b { color: var(--fg); }
+.note ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 3px; }
+.stage { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; min-width: 0; max-width: 100%; }
+.panel > header { padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 13px; display: flex; justify-content: space-between; color: var(--fg); }
+.panel > header span { color: var(--faint); font-weight: 500; }
+.grid { display: grid; gap: 10px; padding: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
+.list { display: grid; padding: 4px 0; }
+.mono { font-family: var(--mono); }
+.tabnum { font-variant-numeric: tabular-nums; }
+.needs { font-size: 11.5px; color: var(--faint); }
+
+/* type tokens */
+.ty-gene { --t: var(--gene); --ts: var(--gene-soft); --tb: var(--gene-bg); }
+.ty-protein { --t: var(--protein); --ts: var(--protein-soft); --tb: var(--protein-bg); }
+.ty-chemical { --t: var(--chem); --ts: var(--chem-soft); --tb: var(--chem-bg); }
+.ty-reaction { --t: var(--react); --ts: var(--react-soft); --tb: var(--react-bg); }
+.ty-pathway { --t: var(--path); --ts: var(--path-soft); --tb: var(--path-bg); }
+.ty-complex { --t: var(--cplx); --ts: var(--cplx-soft); --tb: var(--cplx-bg); }
+.ty-ontology { --t: var(--ont); --ts: var(--ont-soft); --tb: var(--ont-bg); }
+
+.card { position: relative; min-width: 0; border-radius: 12px; text-align: left; width: 100%; display: block; cursor: pointer; }
+.name { font-weight: 600; color: var(--fg); overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.addbtn { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 9px; border-radius: 6px; font-size: 12px; font-weight: 560; color: var(--muted); border: 1px solid var(--line); background: var(--card); flex: none; }
+.addbtn:hover { color: var(--fg); border-color: var(--line-strong); }
+.addbtn.on { background: var(--sel); color: #06210f; border-color: transparent; }
+.iconbtn { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; color: var(--muted); border: 1px solid var(--line); background: var(--card); flex: none; font-size: 16px; line-height: 1; }
+.iconbtn:hover { color: var(--fg); border-color: var(--line-strong); }
+.iconbtn.on { background: var(--sel); color: #06210f; border-color: transparent; }
+
+/* ---------- current ---------- */
+.v-cur .card { background: linear-gradient(135deg, var(--tb), var(--ts)); border: 1px solid transparent; overflow: hidden; }
+.v-cur .top { display: flex; gap: 10px; padding: 12px 14px 8px; align-items: flex-start; }
+.v-cur .top > div { flex: 1; min-width: 0; }
+.v-cur .row1 { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+.v-cur .name { font-size: 15px; font-weight: 550; -webkit-line-clamp: 1; }
+.v-cur .idb { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 6px; overflow: hidden; font-size: 11px; height: 20px; align-items: stretch; max-width: 100%; }
+.v-cur .idb span:first-child { background: var(--sunk); color: var(--muted); padding: 2px 6px; white-space: nowrap; }
+.v-cur .idb span:last-child { padding: 2px 6px; font-family: var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v-cur .sub { color: var(--muted); font-size: 12.5px; margin-top: 4px; }
+.v-cur .addold { display: inline-flex; gap: 4px; align-items: center; height: 30px; padding: 0 12px; border-radius: 6px; background: rgba(127,127,127,.12); color: var(--muted); font-size: 12px; font-weight: 560; flex: none; }
+.v-cur .addold.on { background: #16a34a; color: #fff; }
+.v-cur .chips { display: flex; gap: 5px; flex-wrap: wrap; padding: 0 14px 12px; }
+.v-cur .chip { font-size: 10px; font-weight: 560; border-radius: 6px; padding: 2px 6px; border: 1px solid var(--line-strong); color: var(--fg); }
+.v-cur .chip.t { color: var(--t); border-color: var(--t); background: var(--ts); }
+
+/* ---------- A: quiet card ---------- */
+.v-a .card { background: var(--card); border: 1px solid var(--line); padding: 12px; display: grid; grid-template-columns: 34px minmax(0,1fr) auto; gap: 2px 10px; align-items: start; }
+.v-a .card:hover { border-color: var(--line-strong); background: var(--raised); }
+.v-a .card.sel { border-color: var(--sel); box-shadow: 0 0 0 1px var(--sel) inset; }
+.v-a .tile { grid-row: 1 / span 3; width: 34px; height: 34px; border-radius: 9px; background: var(--ts); color: var(--t); display: grid; place-items: center; font-size: 17px; }
+.v-a .name { font-size: 15px; line-height: 1.3; }
+.v-a .meta { color: var(--muted); font-size: 12.5px; grid-column: 2 / -1; }
+.v-a .meta b { color: var(--t); font-weight: 600; }
+.v-a .ids { grid-column: 2 / -1; font-family: var(--mono); font-size: 11.5px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v-a .foot { grid-column: 1 / -1; display: flex; gap: 12px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.v-a .foot .n { color: var(--fg); font-weight: 600; }
+
+/* ---------- B: eyebrow ---------- */
+.v-b .card { background: var(--card); border: 1px solid var(--line); padding: 11px 12px 10px; display: grid; gap: 5px; border-top: 3px solid var(--t); }
+.v-b .card:hover { background: var(--raised); }
+.v-b .card.sel { box-shadow: 0 0 0 2px var(--sel); }
+.v-b .eyebrow { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; font-weight: 650; letter-spacing: .04em; text-transform: uppercase; color: var(--t); }
+.v-b .eyebrow .org { color: var(--muted); font-weight: 560; letter-spacing: .02em; text-transform: none; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v-b .name { font-size: 16px; line-height: 1.25; letter-spacing: -.005em; }
+.v-b .id { font-family: var(--mono); font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v-b .id span { color: var(--faint); font-family: var(--sans); }
+.v-b .foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 3px; }
+.v-b .stats { display: flex; gap: 10px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+.v-b .stats .n { color: var(--fg); font-weight: 600; }
+
+/* ---------- C: list rows ---------- */
+.v-c .card { border-radius: 0; display: grid; grid-template-columns: 4px minmax(0,1fr) auto; gap: 0 12px; padding: 9px 14px 9px 0; border-bottom: 1px solid var(--line); align-items: center; }
+.v-c .card:hover { background: var(--raised); }
+.v-c .card.sel { background: var(--sel-soft); }
+.v-c .stripe { align-self: stretch; background: var(--t); border-radius: 0 3px 3px 0; }
+.v-c .main { min-width: 0; display: grid; gap: 1px; }
+.v-c .l1 { display: flex; gap: 8px; align-items: baseline; min-width: 0; }
+.v-c .name { font-size: 14px; -webkit-line-clamp: 1; }
+.v-c .id { font-family: var(--mono); font-size: 11.5px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 1; min-width: 0; }
+.v-c .l2 { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v-c .l2 b { color: var(--t); font-weight: 600; }
+.v-c .right { display: flex; align-items: center; gap: 10px; }
+.v-c .rel { font-size: 12px; color: var(--muted); text-align: right; min-width: 4.5em; }
+.v-c .rel .n { color: var(--fg); font-weight: 600; display: block; font-size: 13px; }
+
+/* ---------- D: tinted list rows ---------- */
+.v-d .list { padding: 6px; gap: 0; }
+.v-d.sep .list { gap: 4px; }
+.v-d .card { --tint: color-mix(in srgb, var(--t) 7%, var(--card)); --tint-hover: color-mix(in srgb, var(--t) 13%, var(--card));
+  display: grid; grid-template-columns: 30px minmax(0,1fr) auto; gap: 0 11px; align-items: center;
+  padding: 8px 10px; background: var(--tint); border-radius: 0; border: 1px solid transparent; }
+.v-d.joined .card { border-bottom-color: var(--line); }
+.v-d.joined .card:first-child { border-radius: 8px 8px 0 0; }
+.v-d.joined .card:last-child { border-radius: 0 0 8px 8px; border-bottom-color: transparent; }
+.v-d.sep .card { border-radius: 8px; border-color: color-mix(in srgb, var(--t) 14%, transparent); }
+.v-d.compact .card { padding-block: 5px; }
+.v-d.compact .ico { width: 26px; height: 26px; }
+.v-d .card:hover { background: var(--tint-hover); }
+.v-d .card.sel { box-shadow: 0 0 0 1.5px var(--sel) inset; }
+.v-d .card.unres { --t: #b45309; background: color-mix(in srgb, #f59e0b 6%, var(--card)); border: 1px dashed color-mix(in srgb, #f59e0b 55%, transparent); }
+.v-d .ico { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: var(--t); background: color-mix(in srgb, var(--t) 16%, transparent); }
+.v-d .ico svg { width: 16px; height: 16px; }
+.v-d .main { min-width: 0; display: grid; gap: 1px; }
+.v-d .l1 { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.v-d .name { font-size: 14px; font-weight: 600; -webkit-line-clamp: 1; flex: 0 1 auto; }
+.v-d .id { font-family: var(--mono); font-size: 11.5px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1 1 0; min-width: 3ch; }
+.v-d .l2 { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v-d .l2 .sep { color: var(--faint); padding: 0 5px; }
+.v-d .flag { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 560; color: #b45309; }
+:root[data-theme="dark"] .v-d .flag { color: #fbbf24; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .v-d .flag { color: #fbbf24; } }
+.v-d.compact .l2 { display: none; }
+.v-d.compact .l1::after { content: attr(data-meta); font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; min-width: 0; }
+.v-d .right { display: flex; align-items: center; gap: 8px; }
+.v-d .rel { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+.v-d .rel svg { width: 13px; height: 13px; color: var(--faint); }
+.v-d .rel b { color: var(--fg); font-weight: 600; }
+.v-d .add { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; color: var(--muted); }
+.v-d .add svg { width: 15px; height: 15px; }
+.v-d .add:hover { background: color-mix(in srgb, var(--t) 18%, transparent); color: var(--fg); }
+.v-d .add.on { background: var(--sel); color: #06210f; }
+.v-d.hoveradd .card:not(:hover):not(:focus-within) .add:not(.on) { opacity: 0; }
+@media (hover: none) { .v-d.hoveradd .card .add { opacity: 1 !important; } }
+</style>
+
+<div class="page">
+  <div class="bar">
+    <div><h1>Entity card</h1><p>The explorer result as a list row, refined, next to the current card and the first list draft. Every sample is a real search hit from the capped build.</p></div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Variant">
+        <button data-v="cur">Current</button><button data-v="c">List · first draft</button><button data-v="d">List · tinted</button>
+      </div>
+      <div class="seg opt" role="group" aria-label="Row style"><button data-o="rows" data-val="joined">Joined</button><button data-o="rows" data-val="sep">Separate</button></div>
+      <div class="seg opt" role="group" aria-label="Density"><button data-o="density" data-val="comfortable">Two lines</button><button data-o="density" data-val="compact">One line</button></div>
+      <div class="seg opt" role="group" aria-label="Add button"><button data-o="add" data-val="always">Add always</button><button data-o="add" data-val="hover">Add on hover</button></div>
+      <div class="seg" role="group" aria-label="Panel width">
+        <button data-w="480">Panel 480px</button><button data-w="760">Panel 760px</button>
+      </div>
+    </div>
+  </div>
+  <div class="note" id="note"></div>
+  <div class="stage"><section class="panel" id="panel"><header>Results <span id="count"></span></header><div id="cards"></div></section></div>
+</div>
+
+<script>
+// Real hits from the capped build (2026.10.6). rel = relations via the relation search.
+const E = [
+  { name: 'TP53', type: 'gene', label: 'Gene', emoji: '🧬', org: 'Human', taxid: '9606', ns: 'Entrez', id: '7157', group: { n: 4, noun: 'products', parts: 3 }, rel: 76 },
+  { name: 'EGFR', type: 'gene', label: 'Gene', emoji: '🧬', org: 'Human', taxid: '9606', ns: 'Entrez', id: '1956', group: { n: 5, noun: 'products', parts: 4 }, rel: 122, sel: true },
+  { name: 'Egfr', type: 'gene', label: 'Gene', emoji: '🧬', org: 'House mouse', taxid: '10090', ns: 'Entrez', id: '13649', group: { n: 6, noun: 'products', parts: 6 }, rel: 86 },
+  { name: 'Glucose', type: 'chemical', label: 'Chemical', emoji: '🧪', group: { n: 2, noun: 'forms', parts: 2 }, rel: 279 },
+  { name: 'Glucose-6-Phosphate', type: 'chemical', label: 'Chemical', emoji: '🧪', ns: 'ChEBI', id: 'CHEBI:15954', rel: 3 },
+  { name: 'cholesterol + NADPH + O2 + H(+) = 7-dehydrocholesterol + NADP(+) + 2 H2O', type: 'reaction', label: 'Reaction', emoji: '⚗️', ns: 'Rhea', id: '45024', rel: 4 },
+  { name: 'Cholesterol 25-hydroxylase', type: 'reaction', label: 'Reaction', emoji: '⚗️', ns: 'Rhea', id: '46132', rel: 8 },
+  { name: 'TP53 Tetramer', type: 'complex', label: 'Complex', emoji: '🧩', ns: 'Reactome', id: 'R-HSA-3209194', rel: 30 },
+  { name: 'EGFR_ERBB2', type: 'complex', label: 'Complex', emoji: '🧩', org: 'Human', taxid: '9606', rel: 8 },
+  { name: 'TP53 network', type: 'pathway', label: 'Pathway', emoji: '🛣️', org: 'Human', taxid: '9606', ns: 'WikiPathways', id: 'WP1742', rel: 0 },
+  { name: 'Cholesterol side-chain cleavage enzyme, mitochondrial', type: 'protein', label: 'Protein', emoji: '🧬', org: 'Human', taxid: '9606', ns: 'ChEMBL', id: 'CHEMBL2033', rel: 1 },
+  { name: 'glucose 1-dehydrogenase (NADP+)', type: 'ontology', label: 'Enzyme class', emoji: '🏷️', ns: 'EC', id: '1.1.1.119', rel: 3 },
+];
+
+const NOTES = {
+  cur: `<b>Current.</b> The name, an identifier badge, the subtitle "Gene reference · gene, protein records", a group chip, a type chip and a taxon chip all have about the same weight. The type is encoded twice (the tinted card and the chip). Chemical groups show no identifier at all, and "Grouped · 1 matched entity" appears for groups of one.`,
+  a: `<b>A · Quiet card.</b> A neutral card with a type icon tile. Reading order: name, then one muted line with the type and organism, then the identifier in small mono. A footer separated by a rule holds the counts. Add shrinks to an icon button; selection shows as a green outline.`,
+  b: `<b>B · Eyebrow.</b> A coloured eyebrow says what the entity is (GENE) and the organism sits on the right of the same line, so the five EGFR genes from different species are easy to tell apart. The name is the largest text, and the identifier sits below it. Counts and a small Add sit on one footer line. A thin top border carries the type colour instead of a tinted background.`,
+  d: `<b>List · tinted.</b> Each row has a faint wash of its type colour and a type icon, the same language as the entity badges in the relations table, so the explorer and the relations table look alike. Name first and the identifier faint after it. The second line holds the type, organism and what a group contains, in muted text. On the right are the relation count and a small Add (+) that turns into a green check when selected. The toggles cover the open choices: joined rows or separate ones, two lines or one, and Add always visible or only on hover. Row 2 is shown selected, and the last row shows the unresolved state on a sample for illustration.`,
+  c: `<b>List · first draft.</b> One dense row per hit, for scanning long result lists. A type stripe, the name and identifier on the first line, the type, organism and group on the second, and the relation count right-aligned. Fits about twice as many hits per screen. It could be a grid/list toggle next to A or B rather than a replacement.`,
+};
+const SHARED = `<ul>
+  <li>The "Gene reference · gene, protein records" subtitle is gone, and the type appears once.</li>
+  <li>Groups show what they contain ("3 products", "2 forms") instead of "Grouped · 4 matched entities". Groups of one say nothing.</li>
+  <li>Identifiers are shown as plain text below the name. Hash identifiers stay hidden.</li>
+  <li>Relation counts are shown when known. <span class="needs">Needs the search API to fill relationCount, which is 0 on search hits today.</span></li>
+</ul>`;
+
+const state = { v: 'd', w: '480', rows: 'joined', density: 'comfortable', add: 'always' };
+try { const s = JSON.parse(localStorage.getItem('cards-proto-2') || '{}'); Object.assign(state, s); } catch (e) {}
+state.showUnres = true;
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmt = (n) => n.toLocaleString('en');
+const relText = (e) => (e.rel ? `<span class="n tabnum">${fmt(e.rel)}</span> relation${e.rel === 1 ? '' : 's'}` : 'No relations');
+const groupText = (e) => (e.group && e.group.parts > 1 ? `${e.group.parts} ${e.group.noun}` : '');
+const orgText = (e) => (e.org ? e.org : '');
+const idText = (e) => (e.id ? `${e.ns} ${e.id}` : '');
+
+function current(e) {
+  const sub = e.group && e.type === 'gene' ? `<div class="sub">Gene reference · ${e.group.n > 3 ? 'gene, protein' : 'protein'} records</div>` : '';
+  const badge = e.id && !e.group?.noun?.startsWith('forms') && e.type !== 'reaction' && e.type !== 'complex' ? `<span class="idb"><span>${esc(e.ns === 'Entrez' ? 'Entrez Gene' : e.ns)}</span><span>${esc(e.id)}</span></span>` : '';
+  return `<div class="card ty-${e.type}" role="button" tabindex="0"><div class="top"><div><div class="row1"><span class="name">${esc(e.name)}</span>${badge}</div>${sub}</div>
+    <button class="addold ${e.sel ? 'on' : ''}">${e.sel ? '✓ Selected' : '＋ Add'}</button></div>
+    <div class="chips">${e.group ? `<span class="chip">Grouped · ${e.group.n} matched entities</span>` : ''}<span class="chip t">${e.emoji} ${esc(e.label === 'Complex' ? 'Macromolecular complex' : e.label === 'Chemical' ? 'Chemical entity' : e.label)}</span>${e.org ? `<span class="chip t">🌿 Taxon: ${esc(e.org)} (${e.taxid})</span>` : ''}</div></div>`;
+}
+function variantA(e) {
+  const meta = [`<b>${esc(e.label)}</b>`, orgText(e) && esc(orgText(e)), groupText(e)].filter(Boolean).join(' · ');
+  return `<div class="card ty-${e.type} ${e.sel ? 'sel' : ''}" role="button" tabindex="0">
+    <span class="tile" aria-hidden="true">${e.emoji}</span>
+    <span class="name">${esc(e.name)}</span>
+    <button class="iconbtn ${e.sel ? 'on' : ''}" aria-label="${e.sel ? 'Remove from selection' : 'Add to selection'}">${e.sel ? '✓' : '＋'}</button>
+    <span class="meta">${meta}</span>
+    ${e.id ? `<span class="ids">${esc(idText(e))}</span>` : ''}
+    <span class="foot">${e.rel ? `<span>${relText(e)}</span>` : '<span>No relations</span>'}</span>
+  </div>`;
+}
+function variantB(e) {
+  return `<div class="card ty-${e.type} ${e.sel ? 'sel' : ''}" role="button" tabindex="0">
+    <div class="eyebrow"><span>${esc(e.label)}${groupText(e) ? ' group' : ''}</span>${e.org ? `<span class="org">${esc(e.org)}</span>` : ''}</div>
+    <div class="name">${esc(e.name)}</div>
+    ${e.id ? `<div class="id"><span>${esc(e.ns)}</span> ${esc(e.id)}</div>` : ''}
+    <div class="foot"><div class="stats">${groupText(e) ? `<span>${groupText(e).replace(/^(\d+)/, '<span class="n">$1</span>')}</span>` : ''}<span>${relText(e)}</span></div>
+      <button class="addbtn ${e.sel ? 'on' : ''}">${e.sel ? '✓ Selected' : '＋ Add'}</button></div>
+  </div>`;
+}
+function variantC(e) {
+  const l2 = [`<b>${esc(e.label)}</b>`, orgText(e) && esc(orgText(e)), groupText(e)].filter(Boolean).join(' · ');
+  return `<div class="card ty-${e.type} ${e.sel ? 'sel' : ''}" role="button" tabindex="0">
+    <span class="stripe" aria-hidden="true"></span>
+    <div class="main"><div class="l1"><span class="name">${esc(e.name)}</span>${e.id ? `<span class="id">${esc(idText(e))}</span>` : ''}</div><div class="l2">${l2}</div></div>
+    <div class="right"><span class="rel">${e.rel ? `<span class="n tabnum">${fmt(e.rel)}</span>relations` : '<span class="n">–</span>relations'}</span>
+      <button class="iconbtn ${e.sel ? 'on' : ''}" aria-label="${e.sel ? 'Remove from selection' : 'Add to selection'}">${e.sel ? '✓' : '＋'}</button></div>
+  </div>`;
+}
+
+
+// Lucide icons (ISC), the set the app already uses.
+const I = {
+  gene: '<path d="m10 16 1.5 1.5"/><path d="m14 8-1.5-1.5"/><path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993"/><path d="m16.5 10.5 1 1"/><path d="m17 6-2.891-2.891"/><path d="M2 15c6.667-6 13.333 0 20-6"/><path d="m20 9 .891.891"/><path d="M3.109 14.109 4 15"/><path d="m6.5 12.5 1 1"/><path d="m7 18 2.891 2.891"/><path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993"/>',
+  protein: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="1"/>',
+  chemical: '<path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/>',
+  reaction: '<path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>',
+  pathway: '<circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/>',
+  complex: '<path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/>',
+  ontology: '<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>',
+  plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  link: '<path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+};
+const svg = (k) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
+
+function variantD(e, i) {
+  const unres = i === E.length - 1 && state.showUnres;
+  const meta = [esc(e.label), orgText(e) && esc(orgText(e)), groupText(e)].filter(Boolean);
+  return `<div class="card ty-${e.type} ${e.sel ? 'sel' : ''} ${unres ? 'unres' : ''}" role="button" tabindex="0" title="${esc(e.name)}">
+    <span class="ico">${svg(unres ? 'alert' : e.type)}</span>
+    <div class="main">
+      <div class="l1" data-meta="${meta.join(' · ')}"><span class="name">${esc(e.name)}</span>${e.id ? `<span class="id">${esc(idText(e))}</span>` : ''}</div>
+      <div class="l2">${meta.join('<span class="sep">·</span>')}${unres ? '<span class="sep">·</span><span class="flag">Unresolved</span>' : ''}</div>
+    </div>
+    <div class="right"><span class="rel" title="Relations">${e.rel ? `${svg('link')}<b>${fmt(e.rel)}</b>` : ''}</span>
+      <button class="add ${e.sel ? 'on' : ''}" aria-label="${e.sel ? 'Remove from selection' : 'Add to selection'}">${svg(e.sel ? 'check' : 'plus')}</button></div>
+  </div>`;
+}
+
+function render() {
+  document.querySelectorAll('[data-v]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.v === state.v));
+  document.querySelectorAll('[data-w]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.w === state.w));
+  document.getElementById('note').innerHTML = NOTES[state.v] + (state.v === 'cur' ? '' : SHARED);
+  const panel = document.getElementById('panel');
+  panel.style.width = state.w + 'px';
+  panel.className = `panel v-${state.v}` + (state.v === 'd' ? ` ${state.rows} ${state.density} ${state.add === 'hover' ? 'hoveradd' : ''}` : '');
+  document.querySelectorAll('.opt').forEach((g) => (g.hidden = state.v !== 'd'));
+  document.querySelectorAll('[data-o]').forEach((b) => b.setAttribute('aria-pressed', state[b.dataset.o] === b.dataset.val));
+  document.getElementById('count').textContent = `${E.length} of ${E.length}`;
+  const fn = { cur: current, a: variantA, b: variantB, c: variantC, d: variantD }[state.v];
+  const box = document.getElementById('cards');
+  box.className = state.v === 'c' || state.v === 'd' ? 'list' : 'grid';
+  box.innerHTML = E.map(fn).join('');
+  try { localStorage.setItem('cards-proto-2', JSON.stringify(state)); } catch (e) {}
+}
+document.addEventListener('click', (ev) => {
+  const v = ev.target.closest('[data-v]'); if (v) { state.v = v.dataset.v; render(); return; }
+  const w = ev.target.closest('[data-w]'); if (w) { state.w = w.dataset.w; render(); return; }
+  const o = ev.target.closest('[data-o]'); if (o) { state[o.dataset.o] = o.dataset.val; render(); return; }
+  const b = ev.target.closest('.iconbtn, .addbtn, .addold, .add');
+  if (b) { const card = b.closest('.card'); const i = [...card.parentNode.children].indexOf(card); E[i].sel = !E[i].sel; render(); }
+});
+render();
+</script>

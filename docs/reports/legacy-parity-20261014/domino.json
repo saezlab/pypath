@@ -1,0 +1,143 @@
+{
+  "resource": "domino",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 3.5,
+  "legacy_seconds": 0.3,
+  "legacy_pairs": 4549,
+  "legacy_pairs_found_in_v2": 4527,
+  "legacy_pairs_reversed_in_v2": 11,
+  "legacy_pairs_missing_in_v2": 11,
+  "missing_by_ids_known_to_v2": {
+    "both": 5,
+    "one": 6,
+    "neither": 0
+  },
+  "v2_relations": 7457,
+  "v2_relations_without_legacy_pair": 745,
+  "v2_relations_reversed_in_legacy": 22,
+  "v2_signs": {
+    "None": 7457
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "P11362",
+        "P19174"
+      ],
+      [
+        "P18206",
+        "P19174"
+      ],
+      [
+        "P19174",
+        "P11362"
+      ],
+      [
+        "P39940",
+        "YPL257W"
+      ],
+      [
+        "P42566",
+        "Q7TNJ9"
+      ],
+      [
+        "P43582",
+        "YPL257W"
+      ],
+      [
+        "Q14790",
+        "P19338"
+      ],
+      [
+        "Q61627",
+        "Q8BH60"
+      ],
+      [
+        "Q9QZM5",
+        "Q9JLU4"
+      ],
+      [
+        "Q9Y6N9",
+        "Q495M9"
+      ],
+      [
+        "Q9Z0R4",
+        "P42567"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['FBgn0005640'] -[interacts_with]-> ['P92177', 'Suppressor of Ras1 3-9', 'CG31196', '14-3-3epsilon', 'SR3-9', '14-3-3e']",
+      "['A1X283', 'SH3PXD2B', 'KIAA1295'] -[interacts_with]-> ['A1X283', 'SH3PXD2B', 'KIAA1295']",
+      "['O00459', 'PtdIns-3-kinase p85-beta', 'PI3-kinase p85 subunit beta', 'PIK3R2'] -[interacts_with]-> ['Q9H204', 'Merlin and Grb2-interacting cytoskeletal protein', 'Endothelial-derived protein 1', 'Tumor angiogenesis marker EG-1', 'Mediator complex subunit 28', 'FKSG20', 'EG1', 'MED28']",
+      "['O15198', 'Madh6', 'SMAD 9', 'MADH9', 'MADH6', 'SMAD9'] -[interacts_with]-> ['P27348', 'Protein HS1', '14-3-3 protein T-cell', '14-3-3 protein tau', 'YWHAQ']",
+      "['O15259', 'NPH1', 'NPHP1'] -[interacts_with]-> ['Q9H204', 'Merlin and Grb2-interacting cytoskeletal protein', 'Endothelial-derived protein 1', 'Tumor angiogenesis marker EG-1', 'Mediator complex subunit 28', 'FKSG20', 'EG1', 'MED28']",
+      "['O35158', 'Cdo', 'Cdon'] -[interacts_with]-> ['P00519', 'p150', 'c-ABL', 'JTK7', 'ABL', 'ABL1', 'Abelson murine leukemia viral']",
+      "['O35158', 'Cdo', 'Cdon'] -[interacts_with]-> ['P00519', 'p150', 'c-ABL', 'JTK7', 'ABL', 'ABL1', 'Abelson murine leukemia viral']",
+      "['O43586', 'H-PIP', 'CD2-binding protein 1', 'CD2BP1', 'PSTPIP1'] -[interacts_with]-> ['Q9H204', 'Merlin and Grb2-interacting cytoskeletal protein', 'Endothelial-derived protein 1', 'Tumor angiogenesis marker EG-1', 'Mediator complex subunit 28', 'FKSG20', 'EG1', 'MED28']",
+      "['O75077', 'Metalloproteinase-like, disintegrin-like, and cysteine-rich protein 3', 'MDC3', 'ADAM23'] -[interacts_with]-> ['P63104', 'Protein kinase C inhibitor pro', 'YWHAZ']",
+      "['O76041', 'NEBL'] -[interacts_with]-> ['Q9H204', 'Merlin and Grb2-interacting cytoskeletal protein', 'Endothelial-derived protein 1', 'Tumor angiogenesis marker EG-1', 'Mediator complex subunit 28', 'FKSG20', 'EG1', 'MED28']",
+      "['O94885', 'Proline-glutamate repeat-containing protein', 'PEPE1', 'KIAA0790', 'SASH1'] -[interacts_with]-> ['Q9H204', 'Merlin and Grb2-interacting cytoskeletal protein', 'Endothelial-derived protein 1', 'Tumor angiogenesis marker EG-1', 'Mediator complex subunit 28', 'FKSG20', 'EG1', 'MED28']",
+      "['P00519', 'p150', 'c-ABL', 'JTK7', 'ABL', 'ABL1', 'Abelson murine leukemia viral'] -[interacts_with]-> ['O35158', 'Cdo', 'Cdon']",
+      "['P00519', 'p150', 'c-ABL', 'JTK7', 'ABL', 'ABL1', 'Abelson murine leukemia viral'] -[interacts_with]-> ['O35158', 'Cdo', 'Cdon']",
+      "['P00519', 'p150', 'c-ABL', 'JTK7', 'ABL', 'ABL1', 'Abelson murine leukemia viral'] -[interacts_with]-> ['P05107', 'Complement receptor C3 subunit beta', 'Cell surface adhesion glycoproteins LFA-1/CR3/p150,95 subunit beta', 'MFI7', 'CD18', 'ITGB2']",
+      "['P00519', 'p150', 'c-ABL', 'JTK7', 'ABL', 'ABL1', 'Abelson murine leukemia viral'] -[directly_physically_interacts_with]-> ['P15498', 'VAV', 'VAV1']",
+      "['P00519', 'p150', 'c-ABL', 'JTK7', 'ABL', 'ABL1', 'Abelson murine leukemia viral'] -[interacts_with]-> ['P15498', 'VAV', 'VAV1']",
+      "['P00519', 'p150', 'c-ABL', 'JTK7', 'ABL', 'ABL1', 'Abelson murine leukemia viral'] -[interacts_with]-> ['P70218', 'Hematopoietic progenitor kinase', 'MAPK/ERK kinase kinase kinase 1', 'Hpk1', 'Map4k1']",
+      "['P00519', 'p150', 'c-ABL', 'JTK7', 'ABL', 'ABL1', 'Abelson murine leukemia viral'] -[directly_physically_interacts_with]-> ['Q9Y4G6', 'KIAA0320', 'TLN2']",
+      "['P04049', 'Raf-1', 'C-RAF', 'RAF', 'RAF1'] -[interacts_with]-> ['P63104', 'Protein kinase C inhibitor pro', 'YWHAZ']",
+      "['P04150', 'GRL', 'NR3C1', 'Nuclear receptor subfamily 3 g'] -[interacts_with]-> ['P31947', 'Epithelial cell marker protein 1', 'Stratifin', 'HME1', 'SFN']",
+      "['P05783', 'CYK18', 'KRT18', 'PIG46'] -[interacts_with]-> ['P63104', 'Protein kinase C inhibitor pro', 'YWHAZ']",
+      "['P06241', 'SLK', 'Protooncogene Syn', 'p59-Fyn', 'FYN'] -[interacts_with]-> ['Q8K4S7', 'Cblb']",
+      "['P06241', 'SLK', 'Protooncogene Syn', 'p59-Fyn', 'FYN'] -[interacts_with]-> ['Q9H204', 'Merlin and Grb2-interacting cytoskeletal protein', 'Endothelial-derived protein 1', 'Tumor angiogenesis marker EG-1', 'Mediator complex subunit 28', 'FKSG20', 'EG1', 'MED28']",
+      "['P07766'] -[interacts_with]-> ['O43639', 'SH2/SH3 adaptor protein NCK-beta', 'NCK adaptor protein 2', 'NCK2']",
+      "['P07766'] -[interacts_with]-> ['P16333', 'SH2/SH3 adaptor protein NCK-al', 'NCK adaptor protein 1', 'NCK', 'NCK1']"
+    ],
+    "v2_reversed_in_legacy": [
+      "['O15151', 'Double minute 4 protein', 'Protein Mdmx', 'Mdm2-like p53-binding protein', 'p53-binding protein Mdm4', 'MDMX', 'MDM4'] -[interacts_with]-> ['P61981', 'Protein kinase C inhibitor protein 1', 'YWHAG']",
+      "['O15151', 'Double minute 4 protein', 'Protein Mdmx', 'Mdm2-like p53-binding protein', 'p53-binding protein Mdm4', 'MDMX', 'MDM4'] -[interacts_with]-> ['P61981', 'Protein kinase C inhibitor protein 1', 'YWHAG']",
+      "['O15151', 'Double minute 4 protein', 'Protein Mdmx', 'Mdm2-like p53-binding protein', 'p53-binding protein Mdm4', 'MDMX', 'MDM4'] -[interacts_with]-> ['P61981', 'Protein kinase C inhibitor protein 1', 'YWHAG']",
+      "['P07766'] -[interacts_with]-> ['Q8TE68', 'PP10566', 'EPS8R1', 'DRC3', 'EPS8L1']",
+      "['P07766'] -[directly_physically_interacts_with]-> ['Q8TE68', 'PP10566', 'EPS8R1', 'DRC3', 'EPS8L1']",
+      "['P22681', 'Casitas B-lineage lymphoma proto-oncogene', 'Signal transduction protein CBL', 'RING finger protein 55', 'Proto-oncogene c-CBL', 'RNF55', 'CBL2', 'CBL'] -[interacts_with]-> ['P27986', 'PtdIns-3-kinase p85-alpha', 'PI3-kinase p85 subunit alpha', 'GRB1', 'PIK3R1']",
+      "['P32356', 'YD8119.07C', 'YDR001C', 'NTH', 'NTH1'] -[interacts_with]-> ['P29311', 'YER177W', 'BMH1']",
+      "['P32356', 'YD8119.07C', 'YDR001C', 'NTH', 'NTH1'] -[interacts_with]-> ['P29311', 'YER177W', 'BMH1']",
+      "['P32356', 'YD8119.07C', 'YDR001C', 'NTH', 'NTH1'] -[interacts_with]-> ['P34730', 'YD8557.08', 'YDR099W', 'BMH2']",
+      "['P32356', 'YD8119.07C', 'YDR001C', 'NTH', 'NTH1'] -[interacts_with]-> ['P34730', 'YD8557.08', 'YDR099W', 'BMH2']",
+      "['P32356', 'YD8119.07C', 'YDR001C', 'NTH', 'NTH1'] -[interacts_with]-> ['P34730', 'YD8557.08', 'YDR099W', 'BMH2']",
+      "['P49815', 'Tuberous sclerosis 2 protein', 'TSC4', 'TSC2'] -[directly_physically_interacts_with]-> ['P63104', 'Protein kinase C inhibitor pro', 'YWHAZ']",
+      "['P62258', 'YWHAE'] -[interacts_with]-> ['Q99469', 'SRC homology 3 and cysteine-rich domain protein', 'STAC']",
+      "['P63104', 'Protein kinase C inhibitor pro', 'YWHAZ'] -[interacts_with]-> ['P23528', 'CFL', 'CFL1']",
+      "['P63104', 'Protein kinase C inhibitor pro', 'YWHAZ'] -[interacts_with]-> ['P30305', 'Dual specificity phosphatase Cdc25B', 'CDC25HU2', 'CDC25B']",
+      "['P68510', 'Ywhah'] -[directly_physically_interacts_with]-> ['O55042', 'Syn', 'Snca']",
+      "['P68510', 'Ywhah'] -[interacts_with]-> ['Q9WVS6', 'Prkn', 'Park2']",
+      "['P68510', 'Ywhah'] -[interacts_with]-> ['Q9WVS6', 'Prkn', 'Park2']",
+      "['P68510', 'Ywhah'] -[directly_physically_interacts_with]-> ['Q9WVS6', 'Prkn', 'Park2']",
+      "['P68510', 'Ywhah'] -[directly_physically_interacts_with]-> ['Q9WVS6', 'Prkn', 'Park2']",
+      "['Q06124', 'SH-PTP2', 'SH-PTP3', 'PTP-1D', 'Protein-tyrosine phosphatase 2C', 'SHPTP2', 'PTP2C', 'PTPN11'] -[interacts_with]-> ['Q13480', 'GRB2-associated binder 1', 'Growth factor receptor bound protein 2-associated protein 1', 'GAB1']",
+      "['Q804T2', 'mark3'] -[interacts_with]-> ['O57468', 'ywhae']"
+    ],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/domino_2009-10-22-full-binary.mitab26.gz",
+      "path": "/root/data/pypath-cache/domino/domino_2009-10-22-full-binary.mitab26.gz",
+      "size": 565391,
+      "sha256": "68b8ea4859c5f45daa0fd10012dd6f7c73526955bbcce02298635d223470d91b",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/domino_2009-10-22-full-binary.mitab26.gz",
+      "path": "/root/data/pypath-cache/domino/domino_2009-10-22-full-binary.mitab26.gz",
+      "size": 565391,
+      "sha256": "68b8ea4859c5f45daa0fd10012dd6f7c73526955bbcce02298635d223470d91b",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

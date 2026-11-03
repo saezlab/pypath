@@ -1,0 +1,51 @@
+{
+  "resource": "laudanna_effects",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 4.8,
+  "legacy_seconds": 0.7,
+  "legacy_pairs": 62050,
+  "legacy_pairs_found_in_v2": 62050,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 63438,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "+": 33398,
+    "None": 22062,
+    "-": 7978
+  },
+  "signs_compared": 40752,
+  "signs_agree": 40752,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/Laudanna_SignalingDirection.EA",
+      "path": "/root/data/pypath-cache/laudanna/Laudanna_SignalingDirection.EA",
+      "size": 1816320,
+      "sha256": "6184d98605788cd97db5e8aff2fee607d95aaf9f2217c98e64e57b4e985bc02b",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/Laudanna_SignalingDirection.EA",
+      "path": "/root/data/pypath-cache/laudanna/Laudanna_SignalingDirection.EA",
+      "size": 1816320,
+      "sha256": "6184d98605788cd97db5e8aff2fee607d95aaf9f2217c98e64e57b4e985bc02b",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

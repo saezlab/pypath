@@ -1,0 +1,222 @@
+# ===================================
+# =======        BUILD       ========
+# ===================================
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[dependency-groups]
+dev = []
+
+# ===================================
+# =======       PROJECT      ========
+# ===================================
+[project]
+authors = [
+    {name = "Jonathan Schaul", email = "jonathan.schaul@uni-heidelberg.de"}
+]
+classifiers = [
+    # How mature is this project? Common values are
+    # 2 - Pre-Alpha
+    # 3 - Alpha
+    # 4 - Beta
+    # 5 - Production/Stable
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Topic :: Scientific/Engineering :: Bio-Informatics"
+]
+dependencies = [
+    "duckdb>=1.0.0",
+    "pandas>=2.0.0",
+    "paramiko<3.0",
+    "polars>=1.34.0",
+    "psycopg2-binary>=2.9.0",
+    "python-dotenv>=1.0.0",
+    "pyarrow>=21.0.0",
+    "pyyaml>=6.0.2",
+    # Session + logging setup (research R17). It already arrived transitively
+    # through cachedir/dlmachine/pypath-omnipath; a transitive path is not a
+    # declaration, and `omnipath_build._session` imports it directly.
+    "pkg-infra>=0.1.1",
+    "rich>=13.0.0",
+    "textual>=0.85.0",
+    "toml",
+    "cachedir",
+    "dlmachine",
+    "pypath-omnipath",
+    "rdflib>=6.0.0",
+    "ontograph",
+]
+description = "A general database builder on top of pypath."
+license = "GPL-3.0-or-later"
+maintainers = [
+    {name = "Jonathan Schaul", email = "jonathan.schaul@uni-heidelberg.de"}
+]
+name = "omnipath_build"
+# packages = [
+# { include = "omnipath_build" }
+# ]
+readme = "README.md"
+requires-python = ">=3.12"
+version = "0.0.1"
+
+[project.optional-dependencies]
+dev = [
+    "distlib",
+    "twine"
+]
+docs = [
+    "mkdocs-material>=9.6.14",
+    "pymdown-extensions>=10.15",
+    "mkdocstrings[python]>=0.29.1,<0.30"
+]
+security = [
+    "bandit"
+]
+tests = [
+    "ruff",
+    "pytest>=8"
+]
+
+[project.urls]
+Documentation = "https://saezlab.github.io/omnipath_build"
+Homepage = "https://github.com/saezlab/omnipath_build"
+Issues = "https://github.com/saezlab/omnipath_build/issues"
+Repository = "https://github.com/saezlab/omnipath_build"
+
+# ===================================
+# =======        TOOL        ========
+# ===================================
+# ---- Bandit: tool for security analysis
+[tool.bandit]
+exclude_dirs = [".venv", "venv", ".tox", "build", "dist"]
+skips = [
+    "B101"  # Name: assert_used
+]
+
+# ---- Cruft: a tool to manage and update projects based on templates
+[tool.cruft]
+skip = [
+    "tests",
+    "omnipath_build/__init__.py",
+    "omnipath_build/_metadata.py",
+    "docs/api.md",
+    "docs/changelog.md",
+    "docs/references.bib",
+    "docs/references.md",
+    "docs/notebooks/example.ipynb"
+]
+
+# ===================================
+# =======       HATCH        ========
+# ===================================
+[tool.hatch]
+
+[tool.hatch.build.targets.wheel]
+packages = ["omnipath_build"]
+
+
+# ---- RSTcheck: a tool to lint reStructuredText (.rst) files.
+[tool.rstcheck]
+ignore_directives = [
+    "automodule",
+    "toctree"
+]
+ignore_messages = '(Unknown target name:.*|No (directive|role) entry for "(auto)?(class|method|property|function|func|mod|attr)" in module "docutils\.parsers\.rst\.languages\.en"\.)'
+ignore_roles = ["ref"]
+report_level = "INFO"
+
+# ---- Ruff: a fast Python linter and formatter.
+[tool.ruff]
+extend-include = ["*.ipynb"]
+line-length = 80
+target-version = "py312"
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+exclude = [
+    "docs/_build"
+]
+ignore = [
+    # flake8-bugbear (B)
+    "B008",  # Name: function-call-in-default-argument
+    "B024",  # Name: abstract-base-class-without-abstract-method
+    # pydocstyle (D)
+    "D100",  # Name: undocumented-public-module
+    "D104",  # Name: undocumented-public-package
+    "D105",  # Name: undocumented-magic-method
+    "D107",  # Name: undocumented-public-init
+    "D200",  # Name: unnecessary-multiline-docstring
+    "D202",  # Name: blank-line-after-function
+    "D203",  # Name: incorrect-blank-line-before-class
+    "D213",  # Name: multi-line-summary-second-line
+    "D400",  # Name: missing-trailing-period
+    "D401",  # Name: non-imperative-mood
+    # Error (E)
+    "E251",  # Name: unexpected-spaces-around-keyword-parameter-equals
+    "E303",  # Name: too-many-blank-lines
+    "E501",  # Name: line too long
+    "E731",  # Name: lambda-assignment
+    "E741"  # allow I, O, l as variable names -> I is the identity matrix
+]
+select = [
+    "B",  # flake8-bugbear
+    "BLE",  # flake8-blind-except
+    "C4",  # flake8-comprehensions
+    "D",  # pydocstyle
+    "E",  # Error detected by Pycodestyle
+    "F",  # Errors detected by Pyflakes
+    "I",  # isort
+    "RUF100",  # Report unused noqa directives
+    "TID",  # flake8-tidy-imports
+    "UP",  # pyupgrade
+    "W",  # Warning detected by Pycodestyle
+    "Q",  # Consistent quotes
+    "S307",  # eval() detection
+    "ANN"  # flake8-annotations
+]
+unfixable = ["UP"]
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+
+[tool.ruff.lint.isort]
+case-sensitive = false
+combine-as-imports = true
+force-sort-within-sections = true
+force-wrap-aliases = true
+known-first-party = ["omnipath_build"]
+known-third-party = ["numpy", "pandas"]
+length-sort = true
+lines-after-imports = 1
+no-lines-before = ["local-folder"]
+order-by-type = true
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder"
+]
+
+[tool.ruff.lint.per-file-ignores]
+"*/__init__.py" = ["D104", "F401"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+
+[tool.uv.sources]
+jupyter-contrib-nbextensions = {git = "https://github.com/deeenes/jupyter_contrib_nbextensions.git", branch = "master"}
+nbsphinx = {git = "https://github.com/deeenes/nbsphinx", branch = "timings"}
+pypath-omnipath = {path = "../../pypath", editable = true}
+cachedir = {path = "../../cache-manager", editable = true}
+dlmachine = {path = "../../download-manager", editable = true}
+ontograph = {git = "https://github.com/saezlab/ontograph.git", rev = "18b922a216e8f4654425c2e01a2c7232fa6595b5"}

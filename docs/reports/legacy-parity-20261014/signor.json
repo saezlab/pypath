@@ -1,0 +1,34 @@
+{
+  "resource": "signor",
+  "kind": "relation",
+  "note": "Legacy reads the CSV export of human interactions; inputs_v2 reads the causalTab export.",
+  "v2_seconds": 13.6,
+  "error": "legacy: NotCached(\"legacy download with no inputs_v2 file: https://signor.uniroma2.it/download_entity.php [(b'organism', b'human'), (b'format', b'csv'), (b'submit', b'Download')]\")",
+  "traceback": "Traceback (most recent call last):\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 1363, in run\n    outputs[side] = list(produce())\n                    ~~~~^^^^^^^^^^^\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 664, in _signor_interactions\n    for row in signor.signor_interactions(raw_records=True):\n               ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\n  File \"/root/projects/omnipath-migration/omnipath-build/pypath/pypath/inputs/signor.py\", line 146, in signor_interactions\n    c = curl.Curl(\n        url,\n    ...<5 lines>...\n        return_headers = True,\n    )\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 264, in cached_curl_init\n    raise NotCached(\n        f'legacy download with no inputs_v2 file: {url} {post or \"\"}'.strip()\n    )\nNotCached: legacy download with no inputs_v2 file: https://signor.uniroma2.it/download_entity.php [(b'organism', b'human'), (b'format', b'csv'), (b'submit', b'Download')]\n",
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://signor.uniroma2.it/download_entity.php",
+      "path": "/root/data/pypath-cache/signor/signor_all_causalTab.txt",
+      "size": 48542968,
+      "sha256": "e9894ed6066b31ee5c01ee78365894001b4b55dcccb416b3236d2eed85423de3",
+      "mtime": "2026-09-03"
+    },
+    {
+      "side": "legacy",
+      "url": "https://signor.uniroma2.it/download_complexes.php",
+      "path": "/root/data/pypath-cache/signor/signor_protein_families.txt",
+      "size": 11694,
+      "sha256": "c3a91f7bd4371db4b795c5f50878724f31511d6f541684808921391d3cb25841",
+      "mtime": "2026-09-03"
+    },
+    {
+      "side": "legacy",
+      "url": "https://signor.uniroma2.it/download_complexes.php",
+      "path": "/root/data/pypath-cache/signor/signor_complexes.txt",
+      "size": 50327,
+      "sha256": "e7ed4a0f39bbdcf2b69791b1b7335385292cbdd800f05c514ea947cc0f80abb6",
+      "mtime": "2026-09-03"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+[package]
+name = "anchor-resolution-serving"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "OmniPath batch entity resolution policy"

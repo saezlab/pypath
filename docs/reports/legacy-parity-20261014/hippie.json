@@ -1,0 +1,150 @@
+{
+  "resource": "hippie",
+  "kind": "relation",
+  "note": "Legacy keeps the interactions of score 0.75 or more (it fails without the threshold); v2 keeps all with their scores and is compared on the same threshold.",
+  "v2_seconds": 118.3,
+  "legacy_seconds": 12.0,
+  "legacy_pairs": 546755,
+  "legacy_pairs_found_in_v2": 538622,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 8133,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 8040,
+    "neither": 93
+  },
+  "v2_relations": 141763,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 141763
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "IMA1_HUMAN,IMA5_HUMAN",
+        "NOSIP_HUMAN"
+      ],
+      [
+        "SNF5_HUMAN",
+        "K0564_HUMAN,VWA8_HUMAN"
+      ],
+      [
+        "CUL3_HUMAN",
+        "K0913_HUMAN,ZSWM8_HUMAN"
+      ],
+      [
+        "10213",
+        "HS71B_HUMAN,HSP71_HUMAN"
+      ],
+      [
+        "CD1E_HUMAN",
+        "IRK8_HUMAN,KCNJ8_HUMAN"
+      ],
+      [
+        "25843",
+        "FA40B_HUMAN,STRP2_HUMAN"
+      ],
+      [
+        "EIF3A_HUMAN",
+        "EIF3C_HUMAN,EIFCL_HUMAN"
+      ],
+      [
+        "RYK_HUMAN",
+        "AGRA3_HUMAN,GP125_HUMAN"
+      ],
+      [
+        "TAU_HUMAN",
+        "SGT1_HUMAN,SUGT1_HUMAN"
+      ],
+      [
+        "AMFR1_HUMAN,AMFR_HUMAN",
+        "9709"
+      ],
+      [
+        "10573",
+        "MRM3_HUMAN,RMTL1_HUMAN"
+      ],
+      [
+        "118",
+        "SPTA2_HUMAN,SPTN1_HUMAN"
+      ],
+      [
+        "APRIO_HUMAN,PRIO_HUMAN,PRIO_HUMAN",
+        "NCAM1_HUMAN"
+      ],
+      [
+        "7411",
+        "COPR5_HUMAN,COPRS_HUMAN"
+      ],
+      [
+        "PIDD1_HUMAN,PIDD_HUMAN",
+        "FADD_HUMAN"
+      ],
+      [
+        "81631",
+        "SPTA2_HUMAN,SPTN1_HUMAN"
+      ],
+      [
+        "PSD7_HUMAN,PSMD7_HUMAN",
+        "5718"
+      ],
+      [
+        "152185",
+        "CE295_HUMAN,K1731_HUMAN"
+      ],
+      [
+        "K0020_HUMAN,PUM3_HUMAN",
+        "2091"
+      ],
+      [
+        "AMFR1_HUMAN,AMFR_HUMAN",
+        "UFD1_HUMAN"
+      ],
+      [
+        "84661",
+        "KMT2A_HUMAN,MLL1_HUMAN"
+      ],
+      [
+        "HS71B_HUMAN,HSP71_HUMAN",
+        "METK2_HUMAN"
+      ],
+      [
+        "IFG15_HUMAN,TOIP2_HUMAN,TOIP2_HUMAN",
+        "GCP4_HUMAN"
+      ],
+      [
+        "FA40A_HUMAN,STRP1_HUMAN",
+        "SIKE1_HUMAN"
+      ],
+      [
+        "HS71B_HUMAN,HSP71_HUMAN",
+        "MYH10_HUMAN"
+      ]
+    ],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://cbdm-01.zdv.uni-mainz.de/~mschaefer/hippie/hippie_current.txt",
+      "path": "/root/data/pypath-cache/hippie/hippie_current.txt",
+      "size": 138719165,
+      "sha256": "267087687167d18a7a13036e4a438d1a5c1f04bedc4727f7d5a3707f17d25a67",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://cbdm-01.zdv.uni-mainz.de/~mschaefer/hippie/hippie_current.txt",
+      "path": "/root/data/pypath-cache/hippie/hippie_current.txt",
+      "size": 138719165,
+      "sha256": "267087687167d18a7a13036e4a438d1a5c1f04bedc4727f7d5a3707f17d25a67",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

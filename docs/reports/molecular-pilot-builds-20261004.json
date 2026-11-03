@@ -1,0 +1,238 @@
+{
+  "status": "build_complete",
+  "version": "2026.10.4.1",
+  "scope": "Full SIGNOR and IntAct input builds; serving validation is recorded separately.",
+  "production_changed": false,
+  "resources": [
+    {
+      "resource": "signor",
+      "version": "2026.10.4.1",
+      "entities_count": 19245,
+      "relations_count": 35630,
+      "payloads_count": 45765,
+      "elapsed_seconds": 83.27779775531963,
+      "phase_metrics": {
+        "prepare_seconds": 50.34342542104423,
+        "finalize_seconds": 32.934379055164754
+      },
+      "batch_metrics": {
+        "flushes": 14,
+        "peak_records": 4595,
+        "peak_relations": 4595,
+        "peak_estimated_bytes": 67120520
+      },
+      "writer_metrics": {
+        "entity_chunk_rows": 83225,
+        "relation_chunk_rows": 43681,
+        "payload_rows": 45765,
+        "composition_complexes": 690,
+        "temporary_chunk_bytes": 133200572
+      },
+      "duckdb_memory_limit": "5153960755B",
+      "duckdb_threads": 4,
+      "build_execution": "parallel-shards-v1",
+      "batch_workers": 2,
+      "batch_limits": {
+        "records": 8192,
+        "raw_bytes": 67108864,
+        "entities": 5000,
+        "relations": 5000,
+        "estimated_bytes": 67108864
+      },
+      "resolution_stats": {
+        "scope": "unique_entity_keys",
+        "input_entities": 20706,
+        "resolved_entities": 18453,
+        "unresolved_entities": 204,
+        "not_applicable_entities": 2049,
+        "lookup_entities": 18657,
+        "by_entity_type": {
+          "chemical_entity": {
+            "input": 1596,
+            "resolved": 1560,
+            "unresolved": 36,
+            "not_applicable": 0
+          },
+          "exposure_event": {
+            "input": 54,
+            "resolved": 0,
+            "unresolved": 0,
+            "not_applicable": 54
+          },
+          "macromolecular_complex": {
+            "input": 1343,
+            "resolved": 0,
+            "unresolved": 0,
+            "not_applicable": 1343
+          },
+          "phenotypic_feature": {
+            "input": 452,
+            "resolved": 0,
+            "unresolved": 0,
+            "not_applicable": 452
+          },
+          "protein": {
+            "input": 16898,
+            "resolved": 16893,
+            "unresolved": 5,
+            "not_applicable": 0
+          },
+          "protein_family": {
+            "input": 200,
+            "resolved": 0,
+            "unresolved": 0,
+            "not_applicable": 200
+          },
+          "rna_product": {
+            "input": 163,
+            "resolved": 0,
+            "unresolved": 163,
+            "not_applicable": 0
+          }
+        },
+        "by_rule": {
+          "chemical/parquet": 1560,
+          "chemical/unmatched": 36,
+          "complex/unmatched": 1543,
+          "gene_protein/parquet": 16893,
+          "gene_protein/unmatched": 168,
+          "generic/unmatched": 506
+        },
+        "library_dir": "/root/projects/omnipath-releases/20261004-molecular-forms/reference/library",
+        "libraries": [
+          "gene_protein",
+          "chemical"
+        ],
+        "lookup_metrics": {
+          "batches": 12,
+          "observations": 41592,
+          "lookup_seconds": 6.193140081129968,
+          "kernel_seconds": 0.6512623303569853,
+          "enrichment_seconds": 6.529618547298014
+        },
+        "complex_composition": {
+          "scope": "unique_precomposition_output_keys",
+          "resolved": 690
+        }
+      },
+      "source_report": "/root/projects/omnipath-releases/20261004-molecular-forms/reports/signor-2026.10.4.1-build.json",
+      "source_report_sha256": "4c339b1ddef63921b7f27aa725c9ce90b6f7d60260b74e96c9c06cd3b6111500",
+      "output_bytes": {
+        "entities": 3210472,
+        "relations": 10827598,
+        "payloads": 17364511
+      }
+    },
+    {
+      "resource": "intact",
+      "version": "2026.10.4.1",
+      "entities_count": 91765,
+      "relations_count": 730839,
+      "payloads_count": 1240522,
+      "elapsed_seconds": 1175.2262508701533,
+      "phase_metrics": {
+        "prepare_seconds": 979.5205688271672,
+        "finalize_seconds": 195.70592449093238
+      },
+      "batch_metrics": {
+        "flushes": 968,
+        "peak_records": 4316,
+        "peak_relations": 4316,
+        "peak_estimated_bytes": 67253216
+      },
+      "writer_metrics": {
+        "entity_chunk_rows": 1673200,
+        "relation_chunk_rows": 1240522,
+        "payload_rows": 1240522,
+        "temporary_chunk_bytes": 2288990376
+      },
+      "duckdb_memory_limit": "5153960755B",
+      "duckdb_threads": 4,
+      "build_execution": "parallel-shards-v1",
+      "batch_workers": 2,
+      "batch_limits": {
+        "records": 8192,
+        "raw_bytes": 67108864,
+        "entities": 5000,
+        "relations": 5000,
+        "estimated_bytes": 67108864
+      },
+      "resolution_stats": {
+        "scope": "unique_entity_keys",
+        "input_entities": 68583,
+        "resolved_entities": 55759,
+        "unresolved_entities": 3444,
+        "not_applicable_entities": 9380,
+        "lookup_entities": 59203,
+        "by_entity_type": {
+          "chemical_entity": {
+            "input": 542,
+            "resolved": 526,
+            "unresolved": 16,
+            "not_applicable": 0
+          },
+          "gene": {
+            "input": 940,
+            "resolved": 876,
+            "unresolved": 64,
+            "not_applicable": 0
+          },
+          "nucleic_acid_entity": {
+            "input": 221,
+            "resolved": 0,
+            "unresolved": 0,
+            "not_applicable": 221
+          },
+          "physical_entity": {
+            "input": 9159,
+            "resolved": 0,
+            "unresolved": 0,
+            "not_applicable": 9159
+          },
+          "protein": {
+            "input": 57635,
+            "resolved": 54349,
+            "unresolved": 3286,
+            "not_applicable": 0
+          },
+          "rna_product": {
+            "input": 86,
+            "resolved": 8,
+            "unresolved": 78,
+            "not_applicable": 0
+          }
+        },
+        "by_rule": {
+          "chemical/parquet": 526,
+          "chemical/unmatched": 16,
+          "gene_protein/parquet": 55233,
+          "gene_protein/unmatched": 3428,
+          "generic/unmatched": 9380
+        },
+        "library_dir": "/root/projects/omnipath-releases/20261004-molecular-forms/reference/library",
+        "libraries": [
+          "gene_protein",
+          "chemical"
+        ],
+        "lookup_metrics": {
+          "batches": 965,
+          "observations": 835345,
+          "lookup_seconds": 111.72424241993576,
+          "kernel_seconds": 20.810487454757094,
+          "enrichment_seconds": 100.84070461196825
+        },
+        "complex_composition": {
+          "scope": "unique_precomposition_output_keys",
+          "resolved": 0
+        }
+      },
+      "source_report": "/root/projects/omnipath-releases/20261004-molecular-forms/reports/intact-2026.10.4.1-build.json",
+      "source_report_sha256": "7a9baa39c86df07ef14e5c823406b17922d42cdc17e929de5cddb2f0c2226aae",
+      "output_bytes": {
+        "entities": 11403034,
+        "relations": 132353551,
+        "payloads": 1023465634
+      }
+    }
+  ]
+}

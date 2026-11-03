@@ -1,0 +1,308 @@
+<title>Resources Page Options</title>
+<style>
+/* Layout: switcher, then the Resources page inside the app frame (header, toolbar, content). */
+:root {
+  --bg: #f3f4f6; --app: #ffffff; --card: #ffffff; --raised: #f6f7f9; --sunk: #eef0f2;
+  --fg: #15181c; --muted: #5f6771; --faint: #8c949d; --line: #e2e5e9; --line-strong: #cdd2d8;
+  --primary: #0f766e; --primary-fg: #fff; --primary-soft: #e0f2ef;
+  --ent: #0891b2; --rel: #16a34a; --ring-bg: #e5e7eb;
+  --old-panel: #ffffff; --old-line: #e2e5e9; --old-cyan: #087e8b; --old-green: #419538;
+  --sans: "Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #050506; --app: #0a0a0b; --card: #111214; --raised: #17181b; --sunk: #0d0e10;
+  --fg: #eceef1; --muted: #9aa2ac; --faint: #6b737d; --line: #23262b; --line-strong: #33373e;
+  --primary: #0f766e; --primary-fg: #ecfdf9; --primary-soft: #0e2a27;
+  --ent: #22d3ee; --rel: #4ade80; --ring-bg: #26292e;
+  --old-panel: #0c1a23; --old-line: #243b47; --old-cyan: #11c5d8; --old-green: #6bd05d;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #050506; --app: #0a0a0b; --card: #111214; --raised: #17181b; --sunk: #0d0e10;
+  --fg: #eceef1; --muted: #9aa2ac; --faint: #6b737d; --line: #23262b; --line-strong: #33373e;
+  --primary: #0f766e; --primary-fg: #ecfdf9; --primary-soft: #0e2a27;
+  --ent: #22d3ee; --rel: #4ade80; --ring-bg: #26292e;
+  --old-panel: #0c1a23; --old-line: #243b47; --old-cyan: #11c5d8; --old-green: #6bd05d;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 13px; line-height: 1.4; }
+button, input, select { font: inherit; color: inherit; }
+button { background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.page { max-width: 1240px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 48px; display: grid; gap: 14px; }
+.bar { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; justify-content: space-between; }
+.bar h1 { margin: 0; font-size: 18px; font-weight: 650; }
+.bar p { margin: 2px 0 0; color: var(--muted); max-width: 66ch; font-size: 14px; }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 9px; background: var(--sunk); border: 1px solid var(--line); }
+.seg button { padding: 5px 10px; border-radius: 6px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--fg); font-weight: 560; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+.note { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; color: var(--muted); font-size: 14px; }
+.note b { color: var(--fg); }
+
+/* app frame */
+.app { background: var(--app); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.hdr { display: flex; align-items: center; gap: 18px; height: 48px; padding: 0 16px; }
+.logo { display: flex; align-items: center; gap: 8px; font-weight: 650; font-size: 15px; }
+.logo i { width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #d9f99d, #65a30d 60%, #3f6212); display: block; }
+.nav { display: flex; gap: 2px; }
+.nav a { padding: 0 9px; color: var(--muted); text-decoration: none; }
+.nav a.on { color: var(--fg); font-weight: 600; }
+.hdr .right { margin-left: auto; color: var(--muted); font-size: 12px; display: flex; gap: 14px; }
+.content { padding: 4px 16px 18px; display: grid; gap: 12px; }
+
+/* shared controls */
+.toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.search { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--card); flex: 1; min-width: 220px; }
+.search input { border: 0; outline: 0; background: transparent; flex: 1; min-width: 0; font-size: 14px; }
+.kbd { font-family: var(--mono); font-size: 11px; color: var(--faint); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; line-height: 18px; }
+.sel { height: 36px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--card); padding: 0 10px; color: var(--fg); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { height: 28px; padding: 0 10px; border-radius: 7px; border: 1px solid var(--line); color: var(--muted); display: inline-flex; align-items: center; gap: 6px; background: var(--card); }
+.chip .c { color: var(--faint); font-variant-numeric: tabular-nums; }
+.chip[aria-pressed="true"] { background: var(--primary-soft); color: var(--fg); border-color: color-mix(in srgb, var(--primary) 60%, transparent); }
+.meta { display: flex; justify-content: space-between; color: var(--faint); font-size: 12px; gap: 10px; flex-wrap: wrap; }
+.banner { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font-size: 12px; color: var(--muted); }
+.tag { font-size: 11px; padding: 1px 7px; border-radius: 5px; background: var(--sunk); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+.tag.topic { color: var(--fg); }
+.ibtn { width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--line); display: grid; place-items: center; color: var(--muted); flex: none; background: var(--card); }
+.ibtn:hover { color: var(--fg); border-color: var(--line-strong); }
+.ibtn svg { width: 15px; height: 15px; }
+.num { font-variant-numeric: tabular-nums; }
+.empty { padding: 32px; text-align: center; color: var(--muted); }
+
+/* donut */
+.donut { position: relative; border-radius: 50%; flex: none; display: grid; place-items: center; }
+.donut::before { content: ""; position: absolute; inset: var(--w); border-radius: 50%; background: var(--card); }
+.donut span { position: relative; text-align: center; line-height: 1.1; }
+.donut b { display: block; font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.donut small { font-size: 10px; color: var(--faint); }
+
+/* ---------- current ---------- */
+.v-cur .title { margin: 6px 0 0; font-size: 30px; font-weight: 700; letter-spacing: -.02em; }
+.v-cur .sub { color: var(--muted); font-size: 14px; }
+.v-cur .chip { border-radius: 999px; height: 32px; border-color: var(--old-line); }
+.v-cur .chip[aria-pressed="true"] { border-color: var(--old-cyan); background: color-mix(in srgb, var(--old-panel) 80%, var(--old-cyan)); }
+.v-cur .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); }
+.v-cur .card { border-radius: 16px; border: 1px solid var(--old-line); background: var(--old-panel); padding: 16px; display: grid; gap: 12px; box-shadow: 0 12px 32px rgba(0,0,0,.08); }
+.v-cur .card h3 { margin: 0; font-size: 20px; color: var(--old-cyan); font-weight: 650; }
+.v-cur .card p { margin: 0; color: var(--muted); font-size: 12.5px; }
+.v-cur .row { display: flex; align-items: center; gap: 16px; }
+.v-cur .legend { flex: 1; display: grid; gap: 12px; }
+.v-cur .legend div { display: flex; justify-content: space-between; font-size: 15px; }
+.v-cur .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 8px; }
+.v-cur .tags .tag { border-radius: 999px; background: color-mix(in srgb, var(--old-panel) 90%, var(--old-cyan)); border-color: var(--old-line); }
+
+/* ---------- A: cards ---------- */
+.v-a .grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.v-a .card { border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: 14px; display: grid; gap: 12px; align-content: start; }
+.v-a .card:hover { border-color: var(--line-strong); }
+.v-a .head { display: flex; gap: 10px; align-items: start; }
+.v-a .head > div { flex: 1; min-width: 0; }
+.v-a h3 { margin: 0; font-size: 15px; font-weight: 650; }
+.v-a h3 a { color: var(--fg); text-decoration: none; }
+.v-a h3 a:hover { text-decoration: underline; }
+.v-a .desc { margin: 3px 0 0; color: var(--muted); font-size: 12.5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.v-a .body { display: flex; align-items: center; gap: 16px; }
+.v-a .stats { flex: 1; display: grid; gap: 6px; }
+.v-a .stat { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.v-a .stat span:first-child { color: var(--muted); display: inline-flex; align-items: center; gap: 7px; }
+.v-a .stat i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+.v-a .stat b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.v-a .stat small { color: var(--faint); font-weight: 400; margin-left: 4px; }
+.v-a .tags { display: flex; flex-wrap: wrap; gap: 4px; padding-top: 10px; border-top: 1px solid var(--line); }
+
+/* ---------- B: list rows ---------- */
+.v-b .layout { display: grid; grid-template-columns: minmax(0,1fr) 250px; gap: 10px; align-items: start; }
+.pnl { background: var(--card); border: 1px solid var(--line); border-radius: 10px; min-width: 0; overflow: hidden; }
+.pnl > header { padding: 9px 12px; border-bottom: 1px solid var(--line); font-weight: 600; display: flex; justify-content: space-between; align-items: baseline; }
+.pnl > header span { color: var(--faint); font-weight: 500; font-variant-numeric: tabular-nums; }
+.tbl { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.tbl th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12px; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tbl th.r, .tbl td.r { text-align: right; }
+.tbl th button { display: inline-flex; gap: 4px; align-items: center; color: inherit; }
+.tbl th button[aria-sort] { color: var(--fg); font-weight: 600; }
+.tbl td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.tbl tr:hover td { background: var(--raised); }
+.tbl .res { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.tbl .res > div { min-width: 0; }
+.tbl .nm { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbl .ds { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbl .n { font-variant-numeric: tabular-nums; }
+.tbl .pct { display: block; color: var(--faint); font-size: 11px; }
+.tbl .tg { display: flex; gap: 4px; flex-wrap: wrap; }
+.facet { padding: 8px 12px 10px; display: grid; gap: 3px; }
+.facet + .facet { border-top: 1px solid var(--line); }
+.facet h4 { margin: 0 0 4px; font-size: 11px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
+.facet label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.facet label span:nth-child(2) { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.facet label .c { color: var(--faint); font-variant-numeric: tabular-nums; }
+.facet input { accent-color: var(--primary); }
+.legendline { display: flex; gap: 12px; align-items: center; color: var(--faint); font-size: 12px; }
+.legendline i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 5px; }
+
+@media (max-width: 820px) {
+  .v-b .layout { grid-template-columns: minmax(0,1fr); }
+  .v-b .side { order: -1; }
+  .tbl .hide-sm { display: none; }
+  .nav a:not(.on) { display: none; }
+}
+</style>
+<div class="page">
+  <div class="bar">
+    <div><h1>Resources page</h1><p>The current page next to two redesigns that use the app's own colours and components. All 46 resources are the real catalog from the capped build; search, filters and sorting work.</p></div>
+    <div class="seg" role="group" aria-label="Variant"><button data-v="cur">Current</button><button data-v="a">A · Cards with donut</button><button data-v="b">B · List rows</button></div>
+  </div>
+  <div class="note" id="note"></div>
+  <div class="app" id="app"></div>
+</div>
+<script>
+const RES=[{"id":"bindingdb","name":"BindingDB","d":"Measured binding affinities between small molecules and protein targets.","e":803,"r":844,"s":410440,"t":[["pharmacology","Pharmacology","topic"],["compound_target_interactions","Compound\u2013target interactions","content"],["proteins","Proteins","molecule"],["drugs","Drugs","molecule"],["experimental","Experimental","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"brenda","name":"BRENDA","d":"Protein enzyme-class annotations and the enzyme classification hierarchy.","e":2436,"r":1928,"s":897140,"t":[["metabolism","Metabolism","topic"],["molecular_annotations","Molecular annotations","content"],["ontologies","Ontologies","content"],["proteins","Proteins","molecule"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"cellchat","name":"CellChat","d":"Ligand\u2013receptor interactions, protein complexes and signaling cofactors from CellChatDB.","e":3138,"r":5293,"s":1266786,"t":[["cell_cell_communication","Cell\u2013cell communication","topic"],["ligand_receptor_interactions","Ligand\u2013receptor interactions","content"],["protein_complexes","Protein complexes","content"],["proteins","Proteins","molecule"],["literature_curated","Literature curated","knowledge_origin"]],"lic":{"academic":"unknown","commercial":"unknown"},"v":"2026.10.6"},{"id":"cellinker","name":"Cellinker","d":"Ligand\u2013receptor and metabolite\u2013protein interactions for intercellular communication.","e":5904,"r":5920,"s":1839241,"t":[["cell_cell_communication","Cell\u2013cell communication","topic"],["ligand_receptor_interactions","Ligand\u2013receptor interactions","content"],["compound_target_interactions","Compound\u2013target interactions","content"],["proteins","Proteins","molecule"],["metabolites","Metabolites","molecule"]],"lic":{"academic":"unknown","commercial":"unknown"},"v":"2026.10.6"},{"id":"cellphonedb","name":"CellPhoneDB","d":"Ligand\u2013receptor interactions and multisubunit protein complexes.","e":1511,"r":1255,"s":485161,"t":[["cell_cell_communication","Cell\u2013cell communication","topic"],["ligand_receptor_interactions","Ligand\u2013receptor interactions","content"],["protein_complexes","Protein complexes","content"],["proteins","Proteins","molecule"],["literature_curated","Literature curated","knowledge_origin"]],"lic":{"academic":"unknown","commercial":"unknown"},"v":"2026.10.6"},{"id":"chebi","name":"ChEBI","d":"Chemical entities, identifiers and the ChEBI ontology hierarchy.","e":1164,"r":1356,"s":458883,"t":[["metabolism","Metabolism","topic"],["ontologies","Ontologies","content"],["molecular_annotations","Molecular annotations","content"],["identifier_mappings","Identifier mappings","content"],["metabolites","Metabolites","molecule"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"chembl","name":"ChEMBL","d":"Bioactive compounds, molecular targets and ligand\u2013target activity measurements.","e":6151,"r":2938,"s":1885129,"t":[["pharmacology","Pharmacology","topic"],["compound_target_interactions","Compound\u2013target interactions","content"],["proteins","Proteins","molecule"],["drugs","Drugs","molecule"],["experimental","Experimental","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"chemont","name":"ChemOnt","d":"Chemical classification concepts and their ontology hierarchy.","e":1089,"r":1000,"s":279485,"t":[["ontologies","Ontologies","content"],["molecular_annotations","Molecular annotations","content"],["metabolites","Metabolites","molecule"]],"lic":{"academic":"allowed","commercial":"unknown"},"v":"2026.10.6"},{"id":"connectomedb2025","name":"connectomeDB2025","d":"Cell communication interactions and their ligand and receptor complexes.","e":668,"r":1000,"s":191716,"t":[["cell_cell_communication","Cell\u2013cell communication","topic"],["ligand_receptor_interactions","Ligand\u2013receptor interactions","content"],["protein_complexes","Protein complexes","content"],["proteins","Proteins","molecule"],["literature_curated","Literature curated","knowledge_origin"]],"lic":{"academic":"unknown","commercial":"unknown"},"v":"2026.10.6"},{"id":"corum","name":"CORUM","d":"Curated mammalian protein complexes and their subunits.","e":5100,"r":8415,"s":1903406,"t":[["protein_complexes","Protein complexes","content"],["proteins","Proteins","molecule"],["literature_curated","Literature curated","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"not_allowed"},"v":"2026.10.6"},{"id":"drugcentral","name":"DrugCentral","d":"Drug identities, molecular targets and source-defined target action annotations.","e":1372,"r":1202,"s":495803,"t":[["pharmacology","Pharmacology","topic"],["compound_target_interactions","Compound\u2013target interactions","content"],["drugs","Drugs","molecule"],["proteins","Proteins","molecule"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"foodb","name":"FooDB","d":"Food constituents with chemical identifiers and concentration annotations.","e":61751,"r":4123033,"s":398877879,"t":[["nutrition","Nutrition","topic"],["food_composition","Food composition","content"],["molecular_annotations","Molecular annotations","content"],["metabolites","Metabolites","molecule"]],"lic":{"academic":"allowed","commercial":"not_allowed"},"v":"2026.10.6"},{"id":"go","name":"Gene Ontology","d":"Gene Ontology concepts describing biological processes, functions and cellular components.","e":1351,"r":1290,"s":407580,"t":[["ontologies","Ontologies","content"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"guidetopharma","name":"Guide to Pharmacology","d":"Curated pharmacological ligands and their molecular targets.","e":410,"r":959,"s":309606,"t":[["pharmacology","Pharmacology","topic"],["compound_target_interactions","Compound\u2013target interactions","content"],["drugs","Drugs","molecule"],["proteins","Proteins","molecule"],["literature_curated","Literature curated","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"hmdb","name":"HMDB","d":"Human metabolite identities, chemical properties and biological annotations.","e":1644,"r":12171,"s":2228311,"t":[["metabolism","Metabolism","topic"],["molecular_annotations","Molecular annotations","content"],["identifier_mappings","Identifier mappings","content"],["metabolites","Metabolites","molecule"]],"lic":{"academic":"allowed","commercial":"not_allowed"},"v":"2026.10.6"},{"id":"hpo","name":"Human Phenotype Ontology","d":"Human phenotype concepts and gene\u2013phenotype associations.","e":1867,"r":2042,"s":617183,"t":[["disease_phenotype","Disease & phenotype","topic"],["ontologies","Ontologies","content"],["trait_associations","Trait associations","content"]],"lic":{"academic":"allowed","commercial":"unknown"},"v":"2026.10.6"},{"id":"icellnet","name":"ICELLNET","d":"Curated ligand\u2013receptor interactions for cell communication analysis.","e":799,"r":1329,"s":344587,"t":[["cell_cell_communication","Cell\u2013cell communication","topic"],["ligand_receptor_interactions","Ligand\u2013receptor interactions","content"],["proteins","Proteins","molecule"],["literature_curated","Literature curated","knowledge_origin"]],"lic":{"academic":"unknown","commercial":"unknown"},"v":"2026.10.6"},{"id":"imm1415","name":"iMM1415","d":"Mouse metabolic model entities and metabolic network information.","e":976,"r":0,"s":289636,"t":[["metabolism","Metabolism","topic"],["biochemical_reactions","Biochemical reactions","content"],["metabolites","Metabolites","molecule"]],"lic":{"academic":"allowed","commercial":"unknown"},"v":"2026.10.6"},{"id":"intact","name":"IntAct","d":"Experimentally supported molecular interactions from IntAct.","e":1102,"r":557,"s":374321,"t":[["physical_interactions","Physical interactions","content"],["proteins","Proteins","molecule"],["experimental","Experimental","knowledge_origin"],["literature_curated","Literature curated","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"kegg","name":"KEGG","d":"Metabolic reactions and their chemical participants from KEGG.","e":66059,"r":175197,"s":33625682,"t":[["metabolism","Metabolism","topic"],["biochemical_reactions","Biochemical reactions","content"],["metabolites","Metabolites","molecule"]],"lic":{"academic":"allowed","commercial":"requires_permission"},"v":"2026.10.6"},{"id":"lipidmaps","name":"LIPID MAPS","d":"Lipid structures, identifiers and chemical annotations from LIPID MAPS.","e":1000,"r":0,"s":249453,"t":[["metabolism","Metabolism","topic"],["molecular_annotations","Molecular annotations","content"],["identifier_mappings","Identifier mappings","content"],["lipids","Lipids","molecule"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"macdb","name":"MACdb","d":"Chemical\u2013trait associations with study evidence and reported measurements.","e":812,"r":732,"s":343573,"t":[["metabolism","Metabolism","topic"],["disease_phenotype","Disease & phenotype","topic"],["trait_associations","Trait associations","content"],["metabolites","Metabolites","molecule"],["experimental","Experimental","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"unknown"},"v":"2026.10.6"},{"id":"mebocost","name":"MEBOCOST","d":"Metabolite\u2013sensor interactions assembled through text mining and manual curation.","e":1039,"r":1543,"s":376031,"t":[["cell_cell_communication","Cell\u2013cell communication","topic"],["metabolism","Metabolism","topic"],["compound_target_interactions","Compound\u2013target interactions","content"],["metabolites","Metabolites","molecule"],["proteins","Proteins","molecule"],["literature_curated","Literature curated","knowledge_origin"],["text_mined","Text mined","knowledge_origin"]],"lic":{"academic":"unknown","commercial":"unknown"},"v":"2026.10.6"},{"id":"metatlas","name":"Metabolic Atlas","d":"Human-GEM chemicals and metabolic reactions with stoichiometry and gene associations.","e":5294,"r":18498,"s":3319289,"t":[["metabolism","Metabolism","topic"],["biochemical_reactions","Biochemical reactions","content"],["metabolites","Metabolites","molecule"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"mirbase","name":"miRBase","d":"Precursor and mature microRNA identities with maturation relationships.","e":2005,"r":1088,"s":447384,"t":[["gene_regulation","Gene regulation","topic"],["molecular_annotations","Molecular annotations","content"],["rna","RNA","molecule"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"mondo","name":"Mondo","d":"Disease ontology concepts and explicit gene\u2013disease associations.","e":2937,"r":2563,"s":770281,"t":[["disease_phenotype","Disease & phenotype","topic"],["ontologies","Ontologies","content"],["trait_associations","Trait associations","content"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"mrclinksdb","name":"MRClinksDB","d":"Curated metabolite\u2013receptor interactions with compound classification and literature evidence.","e":2051,"r":1965,"s":693123,"t":[["cell_cell_communication","Cell\u2013cell communication","topic"],["ligand_receptor_interactions","Ligand\u2013receptor interactions","content"],["metabolites","Metabolites","molecule"],["proteins","Proteins","molecule"],["literature_curated","Literature curated","knowledge_origin"]],"lic":{"academic":"unknown","commercial":"unknown"},"v":"2026.10.6"},{"id":"neuronchat","name":"NeuronChat","d":"Neural communication molecules and their receptor interactions.","e":365,"r":373,"s":105101,"t":[["cell_cell_communication","Cell\u2013cell communication","topic"],["ligand_receptor_interactions","Ligand\u2013receptor interactions","content"],["proteins","Proteins","molecule"],["metabolites","Metabolites","molecule"]],"lic":{"academic":"unknown","commercial":"unknown"},"v":"2026.10.6"},{"id":"nichenet","name":"NicheNet","d":"Ligand\u2013receptor networks from NicheNet v2.","e":1265,"r":1932,"s":349560,"t":[["cell_cell_communication","Cell\u2013cell communication","topic"],["ligand_receptor_interactions","Ligand\u2013receptor interactions","content"],["proteins","Proteins","molecule"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"omnipath_ontology","name":"OmniPath Ontology","d":"Archived OmniPath controlled vocabulary concepts for interpreting historical data.","e":487,"r":460,"s":122988,"t":[["ontologies","Ontologies","content"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"pfocr","name":"PFOCR","d":"Gene and chemical mentions extracted from published pathway figures.","e":1507,"r":1995,"s":483130,"t":[["literature_mentions","Literature mentions","content"],["text_mined","Text mined","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"phenol_explorer","name":"Phenol-Explorer","d":"Polyphenol constituents of foods with identifiers and concentration measurements.","e":958,"r":6976,"s":1270834,"t":[["nutrition","Nutrition","topic"],["food_composition","Food composition","content"],["metabolites","Metabolites","molecule"],["experimental","Experimental","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"unknown"},"v":"2026.10.6"},{"id":"psi_mi","name":"PSI-MI","d":"PSI-MI controlled vocabulary for describing molecular interaction experiments.","e":870,"r":944,"s":332234,"t":[["ontologies","Ontologies","content"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"ptfi","name":"PTFI","d":"Food composition, compound classifications and concentration measurements from PTFI Discover.","e":23264,"r":261477,"s":45706250,"t":[["nutrition","Nutrition","topic"],["food_composition","Food composition","content"],["molecular_annotations","Molecular annotations","content"],["metabolites","Metabolites","molecule"],["experimental","Experimental","knowledge_origin"]],"lic":{"academic":"unknown","commercial":"unknown"},"v":"2026.10.6"},{"id":"rampdb","name":"RaMP-DB","d":"Lipid and metabolite annotations with reference identifiers.","e":3173,"r":1000,"s":696685,"t":[["metabolism","Metabolism","topic"],["molecular_annotations","Molecular annotations","content"],["identifier_mappings","Identifier mappings","content"],["metabolites","Metabolites","molecule"],["lipids","Lipids","molecule"]],"lic":{"academic":"unknown","commercial":"unknown"},"v":"2026.10.6"},{"id":"reactome","name":"Reactome","d":"Biological pathways, biochemical activities and explicit regulatory controls.","e":13473,"r":45274,"s":9415339,"t":[["signaling","Signaling","topic"],["metabolism","Metabolism","topic"],["pathways","Pathways","content"],["biochemical_reactions","Biochemical reactions","content"],["causal_regulation","Causal regulation","content"],["protein_complexes","Protein complexes","content"],["proteins","Proteins","molecule"],["metabolites","Metabolites","molecule"],["literature_curated","Literature curated","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"recon3d","name":"Recon3D","d":"Human metabolic activities, chemical participants and model gene associations.","e":4491,"r":12827,"s":3048954,"t":[["metabolism","Metabolism","topic"],["biochemical_reactions","Biochemical reactions","content"],["metabolites","Metabolites","molecule"]],"lic":{"academic":"allowed","commercial":"unknown"},"v":"2026.10.6"},{"id":"refmet","name":"RefMet","d":"Reference metabolite names, identifiers and chemical classifications.","e":996,"r":0,"s":202896,"t":[["metabolism","Metabolism","topic"],["molecular_annotations","Molecular annotations","content"],["identifier_mappings","Identifier mappings","content"],["metabolites","Metabolites","molecule"]],"lic":{"academic":"allowed","commercial":"unknown"},"v":"2026.10.6"},{"id":"rhea","name":"Rhea","d":"Curated biochemical reactions with chemical inputs, outputs and enzyme associations.","e":87007,"r":73417,"s":24934676,"t":[["metabolism","Metabolism","topic"],["biochemical_reactions","Biochemical reactions","content"],["metabolites","Metabolites","molecule"],["proteins","Proteins","molecule"],["literature_curated","Literature curated","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"signor","name":"SIGNOR","d":"Causal signaling interactions, mechanisms and protein modification relationships.","e":8692,"r":4890,"s":2610636,"t":[["signaling","Signaling","topic"],["causal_regulation","Causal regulation","content"],["enzyme_ptm_relationships","Enzyme\u2013PTM relationships","content"],["proteins","Proteins","molecule"],["literature_curated","Literature curated","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"slctables","name":"SLC tables","d":"Solute carrier proteins, transporter families and reference annotations.","e":458,"r":0,"s":80782,"t":[["molecular_transport","Molecular transport","content"],["molecular_annotations","Molecular annotations","content"],["proteins","Proteins","molecule"]],"lic":{"academic":"unknown","commercial":"unknown"},"v":"2026.10.6"},{"id":"stitch","name":"STITCH","d":"Chemical\u2013protein interactions with action annotations and confidence evidence.","e":3440,"r":1940,"s":917788,"t":[["pharmacology","Pharmacology","topic"],["compound_target_interactions","Compound\u2013target interactions","content"],["proteins","Proteins","molecule"],["metabolites","Metabolites","molecule"],["drugs","Drugs","molecule"],["experimental","Experimental","knowledge_origin"],["computationally_predicted","Computationally predicted","knowledge_origin"],["text_mined","Text mined","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"swisslipids","name":"SwissLipids","d":"Lipid identities, classifications and molecular annotations.","e":1230,"r":262,"s":446446,"t":[["metabolism","Metabolism","topic"],["molecular_annotations","Molecular annotations","content"],["identifier_mappings","Identifier mappings","content"],["lipids","Lipids","molecule"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"tcdb","name":"TCDB","d":"Transporter protein classifications and transporter\u2013substrate relationships.","e":1453,"r":0,"s":219998,"t":[["molecular_transport","Molecular transport","content"],["molecular_annotations","Molecular annotations","content"],["proteins","Proteins","molecule"],["metabolites","Metabolites","molecule"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"uniprot","name":"UniProt","d":"Protein identities, functional annotations and reference identifier translations.","e":8669,"r":30699,"s":5742057,"t":[["molecular_annotations","Molecular annotations","content"],["identifier_mappings","Identifier mappings","content"],["proteins","Proteins","molecule"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"},{"id":"wikipathways","name":"WikiPathways","d":"Biological pathways and source-defined diagram interactions.","e":1587,"r":1744,"s":836725,"t":[["signaling","Signaling","topic"],["metabolism","Metabolism","topic"],["pathways","Pathways","content"],["proteins","Proteins","molecule"],["metabolites","Metabolites","molecule"],["literature_curated","Literature curated","knowledge_origin"]],"lic":{"academic":"allowed","commercial":"allowed"},"v":"2026.10.6"}];
+const DIMS = [
+  ['topic', 'Topic'],
+  ['content', 'Content'],
+  ['molecule', 'Molecules'],
+  ['knowledge_origin', 'Origin'],
+];
+const DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>';
+const SEARCH = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>';
+
+const state = { v: 'b', q: '', topic: null, tags: [], sort: 'name', dir: 1 };
+try { const s = JSON.parse(localStorage.getItem('res-proto') || '{}'); if (s.v) state.v = s.v; } catch (e) {}
+
+const NOTES = {
+  cur: '<b>Current.</b> The page has its own palette (navy panels and cyan titles in dark mode), 16px rounded cards, 20px titles and a large donut on every card. Filters are big rounded pills. It reads as a different product next to the explorer.',
+  a: '<b>A · Cards with donut.</b> The same grid of cards and the donut, in the app\'s own colours and sizes. The name in normal text colour, the description in two lines, then the donut (download size inside) beside entities and relations with their share. Tags sit in a quiet footer, and topic chips filter the grid.',
+  b: '<b>B · List rows.</b> One row per resource, like the explorer\'s entity list. A small donut shows the entity/relation split at a glance. Counts and size are right-aligned columns you sort by clicking the header. Filters live in a side panel like the explorer\'s, covering topic, content, molecules and origin. About three times as many resources fit on screen.',
+};
+
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmt = (n) => n.toLocaleString('en');
+function size(bytes) {
+  if (!bytes) return '0 B';
+  const u = ['B', 'KB', 'MB', 'GB'];
+  let i = 0;
+  let v = bytes;
+  while (v >= 1024 && i < u.length - 1) { v /= 1024; i++; }
+  return { v: v >= 100 ? v.toFixed(0) : v.toFixed(1), u: u[i] };
+}
+const sizeText = (b) => { const s = size(b); return `${s.v} ${s.u}`; };
+const share = (x) => { const t = x.e + x.r; return t ? Math.round((100 * x.e) / t) : 0; };
+function donut(x, px, ring, center) {
+  const t = x.e + x.r;
+  const p = t ? (100 * x.e) / t : 0;
+  const bg = t ? `conic-gradient(var(--ent) 0 ${p}%, var(--rel) ${p}% 100%)` : 'var(--ring-bg)';
+  return `<span class="donut" style="width:${px}px;height:${px}px;--w:${ring}px;background:${bg}" role="img" aria-label="${share(x)}% entities, ${100 - share(x)}% relations">${center || ''}</span>`;
+}
+const topicOf = (x) => x.t.filter(([, , d]) => d === 'topic');
+
+function filtered() {
+  const q = state.q.trim().toLowerCase();
+  let list = RES.filter((x) =>
+    (!q || [x.name, x.id, x.d, ...x.t.map((t) => t[1])].join(' ').toLowerCase().includes(q)) &&
+    (!state.topic || x.t.some(([id]) => id === state.topic)) &&
+    state.tags.every((tag) => x.t.some(([id]) => id === tag)),
+  );
+  const key = { name: (x) => x.name.toLowerCase(), e: (x) => x.e, r: (x) => x.r, s: (x) => x.s }[state.sort];
+  list = [...list].sort((a, b) => {
+    const A = key(a), B = key(b);
+    return (A < B ? -1 : A > B ? 1 : 0) * state.dir;
+  });
+  return list;
+}
+function topicCounts() {
+  const c = new Map();
+  for (const x of RES) for (const [id, label, d] of x.t) if (d === 'topic') c.set(id, [label, (c.get(id)?.[1] || 0) + 1]);
+  return [...c].sort((a, b) => a[1][0].localeCompare(b[1][0]));
+}
+function header() {
+  return `<div class="hdr"><span class="logo"><i></i>OmniPath</span><nav class="nav"><a href="#">Explore</a><a href="#">Selection</a><a href="#" class="on">Resources</a><a href="#">Skills</a></nav><div class="right"><span>Documentation ↗</span><span>Release Latest ⌄</span></div></div>`;
+}
+function searchBox(placeholder) {
+  return `<label class="search">${SEARCH}<input id="q" type="search" placeholder="${placeholder}" value="${esc(state.q)}" aria-label="Search resources"><span class="kbd">↵</span></label>`;
+}
+function topicChips() {
+  return `<div class="chips"><button class="chip" data-topic="" aria-pressed="${!state.topic}">All <span class="c">${RES.length}</span></button>${topicCounts().map(([id, [label, n]]) => `<button class="chip" data-topic="${id}" aria-pressed="${state.topic === id}">${esc(label)} <span class="c">${n}</span></button>`).join('')}</div>`;
+}
+
+/* current */
+function current(list) {
+  return `<div><h2 class="title">Explore resources</h2><div class="sub">Browse and download the databases integrated into OmniPath.</div></div>
+  <div class="toolbar">${searchBox('Search resources, topics, entities…')}<select class="sel" aria-label="Sort"><option>Name A–Z</option></select></div>
+  ${topicChips()}
+  <div class="meta"><span>${list.length} of ${RES.length} resources</span><span>Ring: share of records · Center: download size</span></div>
+  <div class="grid">${list.map((x) => { const s = size(x.s); return `<article class="card"><div><h3>${esc(x.id)}</h3><p>${esc(x.d)}</p></div>
+    <p>Sample: up to 1000 input records per dataset; supporting records may expand these counts.</p>
+    <div class="row">${donut(x, 104, 14, `<span><b>${s.v}</b><small>${s.u}</small></span>`)}<div class="legend"><div><span><i style="background:var(--old-cyan)"></i>Entities</span><b class="num">${fmt(x.e)}</b></div><div><span><i style="background:var(--old-green)"></i>Relations</span><b class="num">${fmt(x.r)}</b></div></div></div>
+    <div class="chips tags"><span class="tag">v${esc(x.v)}</span>${x.t.slice(0, 2).map(([, l]) => `<span class="tag">${esc(l)}</span>`).join('')}</div></article>`; }).join('')}</div>`;
+}
+
+/* A: cards */
+function cards(list) {
+  return `<div class="toolbar">${searchBox('Search resources, topics, molecules…')}<select class="sel" id="sortsel" aria-label="Sort">
+    ${[['name', 'Name A–Z'], ['e', 'Most entities'], ['r', 'Most relations'], ['s', 'Largest download']].map(([v, l]) => `<option value="${v}" ${state.sort === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+  ${topicChips()}
+  <div class="banner">This release is a sample build: up to 1,000 input records per dataset. Supporting records can make the counts larger.</div>
+  <div class="meta"><span>${list.length} of ${RES.length} resources</span><span class="legendline"><span><i style="background:var(--ent)"></i>Entities</span><span><i style="background:var(--rel)"></i>Relations</span><span>Center: download size</span></span></div>
+  ${list.length ? `<div class="grid">${list.map((x) => { const s = size(x.s); const p = share(x); return `<article class="card">
+    <div class="head"><div><h3><a href="#">${esc(x.name)}</a></h3><p class="desc">${esc(x.d)}</p></div><button class="ibtn" aria-label="Download ${esc(x.name)}" title="Download ZIP">${DOWNLOAD}</button></div>
+    <div class="body">${donut(x, 76, 10, `<span><b>${s.v}</b><small>${s.u}</small></span>`)}
+      <div class="stats"><div class="stat"><span><i style="background:var(--ent)"></i>Entities</span><b>${fmt(x.e)}<small>${p}%</small></b></div>
+      <div class="stat"><span><i style="background:var(--rel)"></i>Relations</span><b>${fmt(x.r)}<small>${100 - p}%</small></b></div></div></div>
+    <div class="tags">${x.t.filter(([, , d]) => d === 'topic' || d === 'content').slice(0, 3).map(([, l, d]) => `<span class="tag ${d === 'topic' ? 'topic' : ''}">${esc(l)}</span>`).join('')}</div>
+  </article>`; }).join('')}</div>` : '<div class="empty">No resources match. Clear a filter or change the search.</div>'}`;
+}
+
+/* B: list rows */
+function sortHead(key, label, cls = '') {
+  const on = state.sort === key;
+  return `<th class="${cls}"><button data-sort="${key}" ${on ? `aria-sort="${state.dir > 0 ? 'ascending' : 'descending'}"` : ''}>${label}${on ? (state.dir > 0 ? ' ↑' : ' ↓') : ''}</button></th>`;
+}
+function facets() {
+  return DIMS.map(([dim, title]) => {
+    const c = new Map();
+    for (const x of RES) for (const [id, label, d] of x.t) if (d === dim) c.set(id, [label, (c.get(id)?.[1] || 0) + 1]);
+    const items = [...c].sort((a, b) => b[1][1] - a[1][1]);
+    return `<div class="facet"><h4>${title}</h4>${items.map(([id, [label, n]]) => `<label><input type="checkbox" data-tag="${id}" ${state.tags.includes(id) || state.topic === id ? 'checked' : ''}><span>${esc(label)}</span><span class="c">${n}</span></label>`).join('')}</div>`;
+  }).join('');
+}
+function rows(list) {
+  return `<div class="toolbar">${searchBox('Search resources, topics, molecules…')}</div>
+  <div class="banner">This release is a sample build: up to 1,000 input records per dataset. Supporting records can make the counts larger.</div>
+  <div class="layout">
+    <section class="pnl"><header>Resources <span>${list.length} of ${RES.length}</span></header>
+      ${list.length ? `<table class="tbl"><colgroup><col><col style="width:96px"><col style="width:96px"><col style="width:84px"><col class="hide-sm" style="width:170px"><col style="width:52px"></colgroup>
+      <thead><tr>${sortHead('name', 'Resource')}${sortHead('e', 'Entities', 'r')}${sortHead('r', 'Relations', 'r')}${sortHead('s', 'Size', 'r')}<th class="hide-sm">Topic</th><th></th></tr></thead>
+      <tbody>${list.map((x) => { const p = share(x); return `<tr><td><div class="res">${donut(x, 26, 6)}<div><div class="nm">${esc(x.name)}</div><div class="ds" title="${esc(x.d)}">${esc(x.d)}</div></div></div></td>
+        <td class="r n">${fmt(x.e)}<span class="pct">${p}%</span></td><td class="r n">${fmt(x.r)}<span class="pct">${100 - p}%</span></td><td class="r n">${sizeText(x.s)}</td>
+        <td class="hide-sm"><div class="tg">${topicOf(x).slice(0, 2).map(([, l]) => `<span class="tag topic">${esc(l)}</span>`).join('')}</div></td>
+        <td class="r"><button class="ibtn" aria-label="Download ${esc(x.name)}" title="Download ZIP">${DOWNLOAD}</button></td></tr>`; }).join('')}</tbody></table>` : '<div class="empty">No resources match. Clear a filter or change the search.</div>'}
+    </section>
+    <aside class="pnl side"><header>Filters ${state.tags.length || state.topic ? '<button class="chip" data-clear style="height:22px;padding:0 7px">Clear</button>' : ''}</header>${facets()}</aside>
+  </div>`;
+}
+
+function render(keepFocus) {
+  document.querySelectorAll('[data-v]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.v === state.v));
+  document.getElementById('note').innerHTML = NOTES[state.v];
+  const list = filtered();
+  const app = document.getElementById('app');
+  app.className = `app v-${state.v}`;
+  app.innerHTML = header() + `<div class="content">${state.v === 'cur' ? current(list) : state.v === 'a' ? cards(list) : rows(list)}</div>`;
+  if (keepFocus) { const q = document.getElementById('q'); if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); } }
+  try { localStorage.setItem('res-proto', JSON.stringify({ v: state.v })); } catch (e) {}
+}
+document.addEventListener('click', (e) => {
+  const v = e.target.closest('[data-v]'); if (v) { state.v = v.dataset.v; state.sort = 'name'; state.dir = 1; render(); return; }
+  const t = e.target.closest('[data-topic]'); if (t) { state.topic = t.dataset.topic || null; render(); return; }
+  const s = e.target.closest('[data-sort]');
+  if (s) { const k = s.dataset.sort; if (state.sort === k) state.dir *= -1; else { state.sort = k; state.dir = k === 'name' ? 1 : -1; } render(); return; }
+  if (e.target.closest('[data-clear]')) { state.tags = []; state.topic = null; render(); }
+});
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'sortsel') { state.sort = e.target.value; state.dir = state.sort === 'name' ? 1 : -1; render(); }
+  const tag = e.target.dataset?.tag;
+  if (tag) { state.topic = null; state.tags = e.target.checked ? [...state.tags, tag] : state.tags.filter((x) => x !== tag); render(); }
+});
+document.addEventListener('input', (e) => { if (e.target.id === 'q') { state.q = e.target.value; render(true); } });
+render();
+</script>

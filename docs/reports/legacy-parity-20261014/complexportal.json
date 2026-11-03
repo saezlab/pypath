@@ -1,0 +1,18 @@
+{
+  "resource": "complexportal",
+  "kind": "complex",
+  "note": "Legacy reads the PSI-MI XML archive; inputs_v2 reads ComplexTAB.",
+  "v2_seconds": 0.2,
+  "error": "legacy: NotCached('legacy download with no inputs_v2 file: ftp://ftp.ebi.ac.uk/pub/databases/intact/complex/current/psi25//Homo_sapiens.zip')",
+  "traceback": "Traceback (most recent call last):\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 1363, in run\n    outputs[side] = list(produce())\n                    ~~~~^^^^^^^^^^^\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 724, in _complexportal\n    for cplex in complexportal.complexportal_complexes(9606).values():\n                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File \"/root/projects/omnipath-migration/omnipath-build/pypath/pypath/inputs/complexportal.py\", line 45, in complexportal_complexes\n    c = curl.Curl(zipurl, large = True, silent = False)\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 264, in cached_curl_init\n    raise NotCached(\n        f'legacy download with no inputs_v2 file: {url} {post or \"\"}'.strip()\n    )\nNotCached: legacy download with no inputs_v2 file: ftp://ftp.ebi.ac.uk/pub/databases/intact/complex/current/psi25//Homo_sapiens.zip\n",
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://ftp.ebi.ac.uk/pub/databases/intact/complex/current/complextab/9606.tsv",
+      "path": "/root/data/pypath-cache/complexportal/complexportal_9606.tsv",
+      "size": 5292514,
+      "sha256": "29d3aeec7ede35e8686de3cf73620b5871c3e68d7ca069385153a9b28e80012a",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "resource": "ca1",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.2,
+  "legacy_seconds": 0.0,
+  "legacy_pairs": 1259,
+  "legacy_pairs_found_in_v2": 1056,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 203,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 173,
+    "neither": 30
+  },
+  "v2_relations": 1477,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "+": 790,
+    "-": 389,
+    "None": 298
+  },
+  "signs_compared": 553,
+  "signs_agree": 551,
+  "signs_disagree": 2,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "GLYCINE",
+        "NMDAR"
+      ],
+      [
+        "GLYT1",
+        "GLYCINE"
+      ],
+      [
+        "CALCIUM",
+        "CALMODULIN"
+      ],
+      [
+        "GLUTAMATE",
+        "AMPAR"
+      ],
+      [
+        "GIRK",
+        "NA"
+      ],
+      [
+        "NA",
+        "GIRK"
+      ],
+      [
+        "NA",
+        "GIRK"
+      ],
+      [
+        "AMPAR",
+        "NA"
+      ],
+      [
+        "GABA",
+        "GABABR"
+      ],
+      [
+        "ATF2",
+        "CRE"
+      ],
+      [
+        "ATF2",
+        "NA"
+      ],
+      [
+        "GLUTAMATE",
+        "NMDAR"
+      ],
+      [
+        "P42336",
+        "NA"
+      ],
+      [
+        "P42336",
+        "NA"
+      ],
+      [
+        "NA",
+        "O15530"
+      ],
+      [
+        "CAMP",
+        "CAMPGEFII"
+      ],
+      [
+        "PLA2",
+        "AA"
+      ],
+      [
+        "AA",
+        "P17252"
+      ],
+      [
+        "NA",
+        "P31749"
+      ],
+      [
+        "NA",
+        "P31749"
+      ],
+      [
+        "NA",
+        "P20020"
+      ],
+      [
+        "P20020",
+        "CALCIUM"
+      ],
+      [
+        "CAMP",
+        "P17612"
+      ],
+      [
+        "CREB",
+        "CRE"
+      ],
+      [
+        "DAG",
+        "P17252"
+      ]
+    ],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": [
+      {
+        "pair": [
+          "Q8IV61",
+          "RAS"
+        ],
+        "legacy": [
+          "+"
+        ],
+        "v2": [
+          "+",
+          "-"
+        ]
+      },
+      {
+        "pair": [
+          "Q8IV61",
+          "RAS"
+        ],
+        "legacy": [
+          "+"
+        ],
+        "v2": [
+          "+",
+          "-"
+        ]
+      }
+    ]
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/maayan2005_som_external_files.zip",
+      "path": "/root/data/pypath-cache/ca1/maayan2005_som_external_files.zip",
+      "size": 508706,
+      "sha256": "4b1b807f4f1c6c72ae0da00acdcc7ab778956743976023ef61e8f41378cae8d8",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/maayan2005_som_external_files.zip",
+      "path": "/root/data/pypath-cache/ca1/maayan2005_som_external_files.zip",
+      "size": 508706,
+      "sha256": "4b1b807f4f1c6c72ae0da00acdcc7ab778956743976023ef61e8f41378cae8d8",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

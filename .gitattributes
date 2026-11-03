@@ -1,0 +1,3 @@
+
+# Frozen deployed SQL is hash-checked byte-for-byte, including original spaces.
+packages/postgres/tests/oracles/cosmos_project_edges_951d500.sql -whitespace

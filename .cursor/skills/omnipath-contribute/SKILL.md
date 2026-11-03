@@ -1,0 +1,1 @@
+../../../packages/web/content/skills/omnipath-contribute/SKILL.md

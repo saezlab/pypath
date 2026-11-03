@@ -1,0 +1,84 @@
+{
+  "resource": "lncdisease",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.5,
+  "legacy_seconds": 0.0,
+  "legacy_pairs": 313,
+  "legacy_pairs_found_in_v2": 277,
+  "legacy_pairs_reversed_in_v2": 34,
+  "legacy_pairs_missing_in_v2": 2,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 2,
+    "neither": 0
+  },
+  "v2_relations": 475,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 41,
+  "v2_signs": {
+    "None": 475
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "SRG1",
+        "SPT2"
+      ],
+      [
+        "SRG1",
+        "SPT6"
+      ]
+    ],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [
+      "['OCT1'] -[affects]-> ['7SK', 'RN7SK', '7SK']",
+      "['PTF'] -[affects]-> ['7SK', 'RN7SK', '7SK']",
+      "['BRF1'] -[affects]-> ['7SL', 'RN7SL1', '7SL', '7L1a', 'RN7SL', 'RNSRP1']",
+      "['Oct1'] -[affects]-> ['AK028326', 'Miat', 'Rncr2', 'gomafu', '3632434I06', 'A230057G18Rik']",
+      "['Nanog'] -[affects]-> ['AK141205', 'Rbfa', 'AI595940', '1110032A13Rik']",
+      "['CELO'] -[affects]-> ['B2 SINE RNA']",
+      "['E2F1'] -[affects]-> ['CDKN2B-AS1', 'CDKN2B-AS1', 'ANRIL', 'p15AS', 'CDKN2BAS', 'CDKN2B-AS', 'NCRNA00089', 'RP11-145E5.4']",
+      "['REST'] -[affects]-> ['DGCR5', 'DGCR5', 'LINC00037', 'NCRNA00037']",
+      "['TWIST1'] -[affects]-> ['DNM3OS', 'DNM3OS', 'DNM3-AS1', 'MIR199A2HG']",
+      "['DLX'] -[affects]-> ['Evf2', 'Dlx6as1', 'Evf1', 'Evf2', 'Evf-1', 'Evf-2', 'Shhrs', 'Evf1/2', 'mEvf-1', 'Dlx6os1', 'A230055N17Rik']",
+      "['DLX2'] -[affects]-> ['Evf2', 'Dlx6as1', 'Evf1', 'Evf2', 'Evf-1', 'Evf-2', 'Shhrs', 'Evf1/2', 'mEvf-1', 'Dlx6os1', 'A230055N17Rik']",
+      "['MECP2'] -[affects]-> ['Evf2', 'Dlx6as1', 'Evf1', 'Evf2', 'Evf-1', 'Evf-2', 'Shhrs', 'Evf1/2', 'mEvf-1', 'Dlx6os1', 'A230055N17Rik']",
+      "['Reb1'] -[affects]-> ['GAL10', 'GAL10']",
+      "['c-myc'] -[affects]-> ['H19', 'H19', 'ASM', 'BWS', 'WT2', 'ASM1', 'PRO2605', 'D11S813E', 'LINC00008', 'NCRNA00008']",
+      "['GLI1'] -[affects]-> ['H19', 'H19', 'ASM', 'BWS', 'WT2', 'ASM1', 'PRO2605', 'D11S813E', 'LINC00008', 'NCRNA00008']",
+      "['p53'] -[affects]-> ['H19', 'H19', 'ASM', 'BWS', 'WT2', 'ASM1', 'PRO2605', 'D11S813E', 'LINC00008', 'NCRNA00008']",
+      "['SHH'] -[affects]-> ['H19', 'H19', 'ASM', 'BWS', 'WT2', 'ASM1', 'PRO2605', 'D11S813E', 'LINC00008', 'NCRNA00008']",
+      "['RELN'] -[affects]-> ['HAR1A', 'HAR1A', 'HAR1F', 'LINC00064', 'NCRNA00064']",
+      "['REST'] -[affects]-> ['HAR1A', 'HAR1A', 'HAR1F', 'LINC00064', 'NCRNA00064']",
+      "['Sfl1'] -[affects]-> ['ICR1', 'ICR1']",
+      "['p53'] -[affects]-> ['lincRNA-p21', 'Gm16197', 'OTTMUSG00000031656']",
+      "['p53'] -[affects]-> ['lincRNA-p21', 'Gm16197', 'OTTMUSG00000031656']",
+      "['p53'] -[affects]-> ['lincRNA-p21', 'Gm16197', 'OTTMUSG00000031656']",
+      "['Nanog'] -[affects]-> ['LINC-ROR', 'LINC-ROR', 'lincRNA-RoR']",
+      "['Oct4'] -[affects]-> ['LINC-ROR', 'LINC-ROR', 'lincRNA-RoR']"
+    ],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/LncRNADisease_data2.txt",
+      "path": "/root/data/pypath-cache/lncdisease/LncRNADisease_data2.txt",
+      "size": 117603,
+      "sha256": "c84664d70738a095f203a1e4520aae209d22d5421102940510a5ec79d1610221",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://rescued.omnipathdb.org/LncRNADisease_data2.txt",
+      "path": "/root/data/pypath-cache/lncdisease/LncRNADisease_data2.txt",
+      "size": 117603,
+      "sha256": "c84664d70738a095f203a1e4520aae209d22d5421102940510a5ec79d1610221",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

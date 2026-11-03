@@ -1,0 +1,67 @@
+{
+  "time": "2026-10-05T04:36:37.192821+00:00",
+  "status": "complete",
+  "method": "Fresh Python process. First constructor verifies all component bytes; second uses process-local stat/checksum proofs. OS page caches are not flushed. Indexed reads and full matcher calls use repeated fixed examples; no application result cache. These small warm examples are not a whole-resource throughput estimate.",
+  "base_manifest_sha256": "3dd0780ae3b5c04ec4bbdd201e0eee7037de7a8de592bd2c535cd57bb7342cea",
+  "component_manifest_sha256": "19d8cfefc5dd6ceb3ad365d10a3701375e8e93bb47c56e6695a7eeecacef4489",
+  "startup": [
+    {
+      "construction": 1,
+      "seconds": 14.868196,
+      "component_files_hashed": 512
+    },
+    {
+      "construction": 2,
+      "seconds": 0.027174,
+      "component_files_hashed": 0
+    }
+  ],
+  "indexed_examples": [
+    {
+      "name": "human_tp53_symbol",
+      "candidate_count": 1,
+      "first_ms": 2.695546,
+      "samples": 1000,
+      "median_ms": 0.016861,
+      "p95_ms": 0.026001
+    },
+    {
+      "name": "human_brca1_symbol",
+      "candidate_count": 1,
+      "first_ms": 2.25624,
+      "samples": 1000,
+      "median_ms": 0.022445,
+      "p95_ms": 0.032381
+    },
+    {
+      "name": "brca1_ensembl_gene",
+      "candidate_count": 1,
+      "first_ms": 1.060815,
+      "samples": 1000,
+      "median_ms": 0.021613,
+      "p95_ms": 0.027743
+    },
+    {
+      "name": "tp53_primary_protein",
+      "candidate_count": 1,
+      "first_ms": 2.358119,
+      "samples": 1000,
+      "median_ms": 0.014893,
+      "p95_ms": 0.015254
+    },
+    {
+      "name": "refseq_product_ambiguity",
+      "candidate_count": 3,
+      "first_ms": 3.292276,
+      "samples": 1000,
+      "median_ms": 0.024969,
+      "p95_ms": 0.029105
+    }
+  ],
+  "matcher_batch": {
+    "observations_per_batch": 5,
+    "samples": 100,
+    "median_ms": 0.296252,
+    "p95_ms": 0.332089
+  }
+}

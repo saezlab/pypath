@@ -1,0 +1,61 @@
+{
+  "resource": "pazar",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 1.6,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 10045,
+  "legacy_pairs_found_in_v2": 10043,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 2,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 2,
+    "neither": 0
+  },
+  "v2_relations": 16385,
+  "v2_relations_without_legacy_pair": 2,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 16385
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "00000416339",
+        "ENSG00000189056"
+      ],
+      [
+        "ENSMUST00000068264",
+        "ENSMUST00000111087"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['PAX6'] -[interacts_with]-> ['ENSG00000189056']",
+      "['PAX6'] -[interacts_with]-> ['ENSG00000189056']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/pazar_tftargets.zip",
+      "path": "/root/data/pypath-cache/pazar/pazar_tftargets.zip",
+      "size": 268855,
+      "sha256": "3dfc1182aee0bd3ff782ac94c98ad4e574e6ce21e62f489ac3e41f8aada978ec",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://rescued.omnipathdb.org/pazar_tftargets.zip",
+      "path": "/root/data/pypath-cache/pazar/pazar_tftargets.zip",
+      "size": 268855,
+      "sha256": "3dfc1182aee0bd3ff782ac94c98ad4e574e6ce21e62f489ac3e41f8aada978ec",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

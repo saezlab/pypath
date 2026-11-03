@@ -1,0 +1,66 @@
+{
+  "resource": "cellchat",
+  "kind": "relation",
+  "note": "Legacy side is the interaction table of the R data file (its processing needs UniProt mapping); a metabolite ligand label also matches its abbreviation.",
+  "v2_seconds": 4.5,
+  "legacy_seconds": 5.8,
+  "legacy_pairs": 3233,
+  "legacy_pairs_found_in_v2": 3229,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 4,
+  "missing_by_ids_known_to_v2": {
+    "both": 1,
+    "one": 3,
+    "neither": 0
+  },
+  "v2_relations": 3233,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 3233
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "CXCL8",
+        "CXCR1"
+      ],
+      [
+        "B-ENDORPHIN-POMC",
+        "OPRD1"
+      ],
+      [
+        "B-ENDORPHIN-POMC",
+        "OPRM1"
+      ],
+      [
+        "B-ENDORPHIN-POMC",
+        "OPRK1"
+      ]
+    ],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://raw.githubusercontent.com/jinworks/CellChat/main/data/CellChatDB.human.rda",
+      "path": "/root/data/pypath-cache/cellchat/cellchatdb_human.rda",
+      "size": 1519587,
+      "sha256": "582e99db2bb1b1e05c0364553893d804952bd007fef870720a9cc659a7bd3ad8",
+      "mtime": "2026-09-05"
+    },
+    {
+      "side": "legacy",
+      "url": "https://raw.githubusercontent.com/jinworks/CellChat/master/data/CellChatDB.human.rda",
+      "path": "/root/data/pypath-cache/cellchat/cellchatdb_human.rda",
+      "size": 1519587,
+      "sha256": "582e99db2bb1b1e05c0364553893d804952bd007fef870720a9cc659a7bd3ad8",
+      "mtime": "2026-09-05"
+    }
+  ]
+}

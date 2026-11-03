@@ -1,0 +1,26 @@
+{
+  "resource": "mir2disease",
+  "kind": "relation",
+  "note": "Legacy reads OmniPath's copy of the file.",
+  "v2_seconds": 0.1,
+  "error": "legacy: TypeError(\"Mir2diseaseInteraction.__new__() missing 3 required positional arguments: 'target_genesymbol', 'year', and 'sentence'\")",
+  "traceback": "Traceback (most recent call last):\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 1363, in run\n    outputs[side] = list(produce())\n                    ~~~~^^^^^^^^^^^\n  File \"/root/data/scratch/parity/legacy_parity.py\", line 779, in run\n    records = getattr(importlib.import_module(f'pypath.inputs.{module}'), function)(**kwargs)\n  File \"/root/projects/omnipath-migration/omnipath-build/pypath/pypath/inputs/mir2disease.py\", line 47, in mir2disease_interactions\n    Mir2diseaseInteraction(\n    ~~~~~~~~~~~~~~~~~~~~~~^\n        *l.strip('\\r\\n\\t \"').split('\\t')\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\nTypeError: Mir2diseaseInteraction.__new__() missing 3 required positional arguments: 'target_genesymbol', 'year', and 'sentence'\n",
+  "files": [
+    {
+      "side": "v2",
+      "url": "http://watson.compbio.iupui.edu:8080/miR2Disease/download/miRtar.txt",
+      "path": "/root/data/pypath-cache/mir2disease/miRtar.txt",
+      "size": 102778,
+      "sha256": "cd862d07d9fd09b152980c6042138c374731395b052eee7e0220141c646ace5c",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://rescued.omnipathdb.org/miR2Disease_miRtar.txt",
+      "path": "/root/data/pypath-cache/mir2disease/miRtar.txt",
+      "size": 102778,
+      "sha256": "cd862d07d9fd09b152980c6042138c374731395b052eee7e0220141c646ace5c",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

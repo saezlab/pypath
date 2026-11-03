@@ -1,0 +1,204 @@
+{
+  "resource": "spike",
+  "kind": "relation",
+  "note": "Regulations and interactions of all quality levels.",
+  "v2_seconds": 20.3,
+  "legacy_seconds": 3.1,
+  "legacy_pairs": 8327,
+  "legacy_pairs_found_in_v2": 7622,
+  "legacy_pairs_reversed_in_v2": 30,
+  "legacy_pairs_missing_in_v2": 675,
+  "missing_by_ids_known_to_v2": {
+    "both": 160,
+    "one": 503,
+    "neither": 12
+  },
+  "v2_relations": 46320,
+  "v2_relations_without_legacy_pair": 36352,
+  "v2_relations_reversed_in_legacy": 240,
+  "v2_signs": {
+    "None": 39296,
+    "+": 4488,
+    "-": 2536
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "5515_5524_5525",
+        "5933"
+      ],
+      [
+        "51422_53632_5562_5563_5564_5565_5571",
+        "200186"
+      ],
+      [
+        "79577",
+        "51692"
+      ],
+      [
+        "8189",
+        "1477"
+      ],
+      [
+        "1026",
+        "983"
+      ],
+      [
+        "1457_1460",
+        "121504"
+      ],
+      [
+        "1386_3725",
+        "6401"
+      ],
+      [
+        "5499_5500_5501_5502_5504_5506_5507_5509_5510_5511_5512_84152_84687",
+        "5925"
+      ],
+      [
+        "6500_8454_8945",
+        "8864"
+      ],
+      [
+        "6500_8454_8945",
+        "5187"
+      ],
+      [
+        "3014_9656",
+        "9025"
+      ],
+      [
+        "3014_9656",
+        "4683"
+      ],
+      [
+        "2547_5591",
+        "7518"
+      ],
+      [
+        "1457_1460",
+        "4609"
+      ],
+      [
+        "4149_4609_57178",
+        "1026"
+      ],
+      [
+        "2547_7520",
+        "5591"
+      ],
+      [
+        "2547_7520",
+        "79840"
+      ],
+      [
+        "10006_2059_6654",
+        "5879"
+      ],
+      [
+        "1612",
+        "5597"
+      ],
+      [
+        "9140_9474",
+        "64422"
+      ],
+      [
+        "56852_7319",
+        "5111"
+      ],
+      [
+        "5163",
+        "5582"
+      ],
+      [
+        "10092_10093_10094_10095_10096_10097_10109_10552_81873",
+        "999"
+      ],
+      [
+        "999",
+        "10095"
+      ],
+      [
+        "51422_53632_5562_5563_5564_5565_5571",
+        "7249"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['1981', 'EIF4G1', 'eukaryotic translation initiation factor 4 gamma, 1'] -[affects]-> ['WSC:E-000014', 'protein translation', 'cap-dependent translation initiation']",
+      "['8672', 'EIF4G3', 'eukaryotic translation initiation factor 4 gamma, 3'] -[affects]-> ['WSC:E-000014', 'protein translation', 'cap-dependent translation initiation']",
+      "['83939', 'EIF2A', 'eukaryotic translation initiation factor 2A, 65kDa'] -[affects]-> ['WSC:E-000014', 'protein translation', 'cap-dependent translation initiation']",
+      "['1975', 'EIF4B', 'eukaryotic translation initiation factor 4B'] -[affects]-> ['WSC:E-000014', 'protein translation', 'cap-dependent translation initiation']",
+      "['1978', 'EIF4EBP1', 'eukaryotic translation initiation factor 4E binding protein 1'] -[affects]-> ['WSC:E-000014', 'protein translation', 'cap-dependent translation initiation']",
+      "['8669', 'EIF3J', 'eukaryotic translation initiation factor 3, subunit J'] -[affects]-> ['WSC:E-000014', 'protein translation', 'cap-dependent translation initiation']",
+      "['8669', 'EIF3J', 'eukaryotic translation initiation factor 3, subunit J'] -[affects]-> ['WSC:E-000014', 'protein translation', 'cap-dependent translation initiation']",
+      "['1982', 'EIF4G2', 'eukaryotic translation initiation factor 4 gamma, 2'] -[affects]-> ['WSC:E-000015', 'cap-independent translation', 'IRES-mediated translation']",
+      "['WSC:F-000007', 'caspases, initiator', 'initiator caspases'] -[affects]-> ['WSC:F-000006', 'Caspases, effector', 'Executioner caspases']",
+      "['WSC:F-000007', 'caspases, initiator', 'initiator caspases'] -[affects]-> ['836', 'CASP3', 'caspase 3, apoptosis-related cysteine peptidase']",
+      "['CEN:F-329889', 'CK1', 'Casein kinase 1 isozymes'] -[affects]-> ['1385', 'CREB1', 'cAMP responsive element binding protein 1']",
+      "['CEN:F-329889', 'CK1', 'Casein kinase 1 isozymes'] -[affects]-> ['1385', 'CREB1', 'cAMP responsive element binding protein 1']",
+      "['6495', 'SIX1', 'SIX homeobox 1'] -[affects]-> ['TAU:E-000003', 'Developmental regulation', 'Apoptosis - one of the ways to control development']",
+      "['CEN:C-000044', 'CstF', 'CstF [nucleoplasm]'] -[affects]-> ['TAU:E-000005', 'Downstream U/GU-rich element']",
+      "['79577', 'CDC73', 'cell division cycle 73, Paf1/RNA polymerase II complex component, homolog (S. cerevisiae)'] -[affects]-> ['CEN:C-000041', 'CPSF', 'CPSF [nucleoplasm]']",
+      "['CEN:C-000042', 'CF II', 'CF II [nucleoplasm]'] -[affects]-> ['TAU:E-000007', 'Transcription Termination']",
+      "['CEN:C-000043', 'CF I', 'CF I [nucleoplasm]'] -[affects]-> ['TAU:E-000006', 'UGUA element']",
+      "['8189', 'SYMPK', 'symplekin'] -[affects]-> ['CEN:C-000044', 'CstF', 'CstF [nucleoplasm]']",
+      "['8106', 'PABPN1', 'poly(A) binding protein, nuclear 1'] -[affects]-> ['TAU:E-000009', 'Poly-A tail']",
+      "['10914', 'PAPOLA', 'poly(A) polymerase alpha'] -[affects]-> ['TAU:E-000009', 'Poly-A tail']",
+      "['CEN:C-000041', 'CPSF', 'CPSF [nucleoplasm]'] -[affects]-> ['TAU:E-000008', 'PAS (AAUAAA)', 'Poly-A signal']",
+      "['ELK:C-000021', 'APC/C-FZR1', 'Anaphase promoting complex / FZR1(CDH1) activator'] -[affects]-> ['6241', 'RRM2', 'ribonucleotide reductase M2']",
+      "['ELK:C-000021', 'APC/C-FZR1', 'Anaphase promoting complex / FZR1(CDH1) activator'] -[affects]-> ['6241', 'RRM2', 'ribonucleotide reductase M2']",
+      "['1026', 'CDKN1A', 'cyclin-dependent kinase inhibitor 1A (p21, Cip1)'] -[affects]-> ['TAU:C-000003', 'CycB-Cdc2', 'CyclinB-Cdc2 (CDK1)- M-phase-promoting factor (MPF)']",
+      "['CEN:C-000227', 'MRN', 'MRE11-RAD50-NBS1'] -[affects]-> ['ARN:E-000017', 'Damage processing']"
+    ],
+    "v2_reversed_in_legacy": [
+      "['472', 'ATM', 'ataxia telangiectasia mutated'] -[affects]-> ['142', 'PARP1', 'poly (ADP-ribose) polymerase 1']",
+      "['472', 'ATM', 'ataxia telangiectasia mutated'] -[affects]-> ['7508', 'XPC', 'xeroderma pigmentosum, complementation group C']",
+      "['5663', 'PSEN1', 'presenilin 1'] -[affects]-> ['1499', 'CTNNB1', 'catenin (cadherin-associated protein), beta 1, 88kDa']",
+      "['596', 'BCL2', 'B-cell CLL/lymphoma 2'] -[affects]-> ['7157', 'TP53', 'tumor protein p53']",
+      "['5829', 'PXN', 'paxillin'] -[affects]-> ['5747', 'PTK2', 'PTK2 protein tyrosine kinase 2']",
+      "['1500', 'CTNND1', 'catenin (cadherin-associated protein), delta 1'] -[affects]-> ['999', 'CDH1', 'cadherin 1, type 1, E-cadherin (epithelial)']",
+      "['1499', 'CTNNB1', 'catenin (cadherin-associated protein), beta 1, 88kDa'] -[affects]-> ['999', 'CDH1', 'cadherin 1, type 1, E-cadherin (epithelial)']",
+      "['1499', 'CTNNB1', 'catenin (cadherin-associated protein), beta 1, 88kDa'] -[affects]-> ['999', 'CDH1', 'cadherin 1, type 1, E-cadherin (epithelial)']",
+      "['51588', 'PIAS4', 'protein inhibitor of activated STAT, 4'] -[affects]-> ['51176', 'LEF1', 'lymphoid enhancer-binding factor 1']",
+      "['51588', 'PIAS4', 'protein inhibitor of activated STAT, 4'] -[affects]-> ['51176', 'LEF1', 'lymphoid enhancer-binding factor 1']",
+      "['545', 'ATR', 'ataxia telangiectasia and Rad3 related'] -[affects]-> ['11073', 'TOPBP1', 'topoisomerase (DNA) II binding protein 1']",
+      "['9212', 'AURKB', 'aurora kinase B'] -[affects]-> ['332', 'BIRC5', 'baculoviral IAP repeat containing 5']",
+      "['983', 'CDK1', 'cyclin-dependent kinase 1'] -[affects]-> ['9088', 'PKMYT1', 'protein kinase, membrane associated tyrosine/threonine 1']",
+      "['472', 'ATM', 'ataxia telangiectasia mutated'] -[affects]-> ['64858', 'DCLRE1B', 'DNA cross-link repair 1B']",
+      "['3643', 'INSR', 'insulin receptor'] -[affects]-> ['3630', 'INS', 'insulin']",
+      "['5921', 'RASA1', 'RAS p21 protein activator (GTPase activating protein) 1'] -[affects]-> ['3064', 'HTT', 'huntingtin']",
+      "['8115', 'TCL1A', 'T-cell leukemia/lymphoma 1A'] -[affects]-> ['4792', 'NFKBIA', 'nuclear factor of kappa light polypeptide gene enhancer in B-cells inhibitor, alpha']",
+      "['8626', 'TP63', 'tumor protein p63'] -[affects]-> ['4193', 'MDM2', 'Mdm2 p53 binding protein homolog (mouse)']",
+      "['596', 'BCL2', 'B-cell CLL/lymphoma 2'] -[affects]-> ['836', 'CASP3', 'caspase 3, apoptosis-related cysteine peptidase']",
+      "['4790', 'NFKB1', 'nuclear factor of kappa light polypeptide gene enhancer in B-cells 1'] -[affects]-> ['1147', 'CHUK', 'conserved helix-loop-helix ubiquitous kinase']",
+      "['1869', 'E2F1', 'E2F transcription factor 1'] -[affects]-> ['1876', 'E2F6', 'E2F transcription factor 6']",
+      "['1869', 'E2F1', 'E2F transcription factor 1'] -[affects]-> ['4609', 'MYC', 'v-myc myelocytomatosis viral oncogene homolog (avian)']",
+      "['1869', 'E2F1', 'E2F transcription factor 1'] -[affects]-> ['11200', 'CHEK2', 'CHK2 checkpoint homolog (S. pombe)']",
+      "['1869', 'E2F1', 'E2F transcription factor 1'] -[affects]-> ['472', 'ATM', 'ataxia telangiectasia mutated']",
+      "['1874', 'E2F4', 'E2F transcription factor 4, p107/p130-binding'] -[affects]-> ['5933', 'RBL1', 'retinoblastoma-like 1 (p107)']"
+    ],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://www.cs.tau.ac.il/~spike/download/LatestSpikeDB.xml.zip",
+      "path": "/root/data/pypath-cache/spike/LatestSpikeDB.xml.zip",
+      "size": 3889411,
+      "sha256": "033e4b4cdaa9d89aee59d7b3937256b5bbc846634a77b2a72ac43473e72f63e9",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://www.cs.tau.ac.il/~spike/download/LatestSpikeDB.xml.zip",
+      "path": "/root/data/pypath-cache/spike/LatestSpikeDB.xml.zip",
+      "size": 3889411,
+      "sha256": "033e4b4cdaa9d89aee59d7b3937256b5bbc846634a77b2a72ac43473e72f63e9",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

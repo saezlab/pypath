@@ -1,0 +1,45 @@
+{
+  "resource": "corum",
+  "kind": "complex",
+  "note": "",
+  "v2_seconds": 0.4,
+  "legacy_seconds": 0.1,
+  "legacy_keys": 2734,
+  "v2_keys": 2734,
+  "both": 2733,
+  "legacy_only": 1,
+  "v2_only": 1,
+  "samples": {
+    "legacy_only": [
+      [
+        "Q00266",
+        "Q9NZL9-"
+      ]
+    ],
+    "v2_only": [
+      [
+        "Q00266",
+        "Q9NZL9"
+      ]
+    ]
+  },
+  "legacy_only_with_all_members_in_v2": 0,
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/CORUM_allComplexes.txt.zip",
+      "path": "/root/data/pypath-cache/corum/CORUM_allComplexes.txt.zip",
+      "size": 770439,
+      "sha256": "7aa209f2661b9fd6624bf0a043c1361f127c3a1b99421c5f5b23771239698038",
+      "mtime": "2026-09-05"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/CORUM_allComplexes.txt.zip",
+      "path": "/root/data/pypath-cache/corum/CORUM_allComplexes.txt.zip",
+      "size": 770439,
+      "sha256": "7aa209f2661b9fd6624bf0a043c1361f127c3a1b99421c5f5b23771239698038",
+      "mtime": "2026-09-05"
+    }
+  ]
+}

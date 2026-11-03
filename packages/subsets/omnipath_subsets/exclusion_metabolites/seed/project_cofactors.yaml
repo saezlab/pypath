@@ -1,0 +1,50 @@
+# Cofactors this project lists by hand. Authored here, not vendored.
+#
+# The ChEBI cofactor role (CHEBI:23357) finds most of them at build time. On the
+# 2026.10.19 build it carries NAD(P)(H), ATP and AMP and misses ADP, CoA and GTP,
+# so this list is the reviewed core: the named cofactors, and the coupled-reaction
+# partners the role does not reach (the other nucleotide phosphates and the
+# flavin cofactors). A charge or tautomer variant of a listed form is added by the
+# structure-key match and does not need a line here.
+#
+# One line per member. The name is for the reviewer and is not matched.
+#
+# Ids marked "verified" were found in the 2026.10.19 dev5 build under that ChEBI
+# id. The others were written from knowledge of ChEBI and are checked by the
+# validation script, which prints each id's label next to the name below.
+class: cofactors
+namespace: chebi
+members:
+  # The named cofactors.
+  - {id: "CHEBI:15846", name: NAD+}            # verified
+  - {id: "CHEBI:16908", name: NADH}            # verified
+  - {id: "CHEBI:18009", name: NADP+}           # verified
+  - {id: "CHEBI:16474", name: NADPH}           # verified
+  - {id: "CHEBI:15422", name: ATP}             # verified
+  - {id: "CHEBI:16761", name: ADP}             # verified
+  - {id: "CHEBI:16027", name: AMP}             # verified
+  - {id: "CHEBI:15346", name: coenzyme A}      # verified
+  # The charged forms that carry the role in the release.
+  - {id: "CHEBI:57540", name: NAD(1-)}         # verified
+  - {id: "CHEBI:57945", name: NADH(2-)}        # verified
+  - {id: "CHEBI:58349", name: NADP(3-)}        # verified
+  - {id: "CHEBI:57783", name: NADPH(4-)}       # verified
+  - {id: "CHEBI:30616", name: ATP(4-)}         # verified
+  - {id: "CHEBI:456216", name: ADP(3-)}        # verified
+  - {id: "CHEBI:456215", name: AMP(2-)}        # verified
+  - {id: "CHEBI:57287", name: coenzyme A(4-)}  # verified
+  # Other nucleotide phosphates.
+  - {id: "CHEBI:15996", name: GTP}             # verified
+  - {id: "CHEBI:37565", name: GTP(4-)}         # verified
+  - {id: "CHEBI:17552", name: GDP}
+  - {id: "CHEBI:17345", name: GMP}
+  - {id: "CHEBI:15713", name: UTP}
+  - {id: "CHEBI:17659", name: UDP}
+  - {id: "CHEBI:16695", name: UMP}
+  - {id: "CHEBI:17677", name: CTP}
+  - {id: "CHEBI:17239", name: CDP}
+  - {id: "CHEBI:17361", name: CMP}
+  # Flavin cofactors.
+  - {id: "CHEBI:16238", name: FAD}
+  - {id: "CHEBI:17877", name: FADH2}
+  - {id: "CHEBI:17621", name: FMN}

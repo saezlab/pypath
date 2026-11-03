@@ -1,0 +1,24 @@
+Package: omnipath.client
+Type: Package
+Title: Install OmniPath Resources and Query Them Locally with DuckDB
+Version: 0.1.0
+Authors@R: person("Jonathan", "Schaul", email = "schauljonathan@gmail.com", role = c("aut", "cre"))
+Description: Downloads versioned OmniPath resources (Parquet files) into a local
+    data directory and writes a DuckDB database of them. Query it with any SQL, or
+    with the explorer's search, relation export and entity details, which are SQL
+    macros in the database and give the same answers as the Python client
+    'omnipath_client' and the hosted API. Both clients read and write the same data
+    directory.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 4.1)
+Imports:
+    DBI,
+    duckdb (>= 1.5.0),
+    httr2 (>= 1.0.0),
+    jsonlite
+Suggests:
+    dbplyr,
+    dplyr,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

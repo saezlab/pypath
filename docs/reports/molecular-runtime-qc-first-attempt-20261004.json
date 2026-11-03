@@ -1,0 +1,359 @@
+{
+  "status": "failed",
+  "audit": "coordinated-molecular-compact-runtime-v1",
+  "summary": {
+    "cases": 22,
+    "passed": 17,
+    "coverage_missing": 1,
+    "defects": 4
+  },
+  "reference_fingerprint": "08588fd14d4b5501aadc8b7b0ce7a730d3543cf6f9fbf7ebeeaf197d5f5379ac",
+  "runtime_provenance": {
+    "omnipath_resolver.canonical.match": {
+      "path": "/root/projects/omnipath-releases/20261004-molecular-forms/candidate/packages/omnipath_build/src/omnipath_build/canonical/match.py",
+      "sha256": "1cf60b90b21f05d5c331ffd1988537aefa5e265dd10a69dee72969da96000228"
+    },
+    "omnipath_resolver.canonical.policy": {
+      "path": "/root/projects/omnipath-releases/20261004-molecular-forms/candidate/packages/omnipath_build/src/omnipath_build/canonical/policy.py",
+      "sha256": "5853bced417a39df7459847b41abd59c14f00134f3c80a010a321fcaf3740459"
+    },
+    "omnipath_resolver.index": {
+      "path": "/root/projects/omnipath-releases/20261004-molecular-forms/candidate/packages/omnipath_build/src/omnipath_build/reference/full_index_runtime.py",
+      "sha256": "4c469093bad16f42c45a6b105eb9d6bf4fb237555d2301b781493e6c73d6c6f6"
+    },
+    "omnipath_build.reference.replay_resources": {
+      "path": "/root/projects/omnipath-releases/20261004-molecular-forms/candidate/packages/omnipath_build/src/omnipath_build/reference/replay_resources.py",
+      "sha256": "494022e0b20d6d4421f58903b3c94390ed59d37967e202a644737185fe5646f5"
+    },
+    "omnipath_resolver._omnipath_resolver": {
+      "path": "/root/projects/omnipath-releases/20261004-molecular-forms/candidate/packages/omnipath_resolver/src/omnipath_resolver/_omnipath_resolver.abi3.so",
+      "sha256": "10689dd7f3dfeb0df4124b32e03604d2da6c9140509396aded20c2ae7e31ddaf"
+    }
+  },
+  "failed_cases": {
+    "tp53_symbol_gene_evidence": {
+      "input": {
+        "entity_key": "tp53_symbol_gene_evidence",
+        "entity_type": "protein",
+        "namespace": "genesymbol",
+        "identifier": "TP53",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "genesymbol",
+        "canonical_identifier": "TP53",
+        "label": "TP53",
+        "resolved_by": "unmatched",
+        "taxon": "9606",
+        "node_id": null,
+        "entity_type": "protein",
+        "reference_library": null,
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "missing",
+        "gene_candidates": [],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": false
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": null,
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "defect",
+      "lookup_postings": [
+        {
+          "namespace": "genesymbol",
+          "identifier": "TP53",
+          "scope": "9606",
+          "route": 1,
+          "gene_only": false,
+          "candidate_count": 0,
+          "gene_role": true,
+          "candidate_facts": []
+        }
+      ],
+      "alias_counts": {
+        "genesymbol": 1
+      },
+      "product_alias_counts": {},
+      "seconds": 0.000679
+    },
+    "brca1_symbol_more_than_ten_products": {
+      "input": {
+        "entity_key": "brca1_symbol_more_than_ten_products",
+        "entity_type": "gene",
+        "namespace": "genesymbol",
+        "identifier": "BRCA1",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "genesymbol",
+        "canonical_identifier": "BRCA1",
+        "label": "BRCA1",
+        "resolved_by": "unmatched",
+        "taxon": "9606",
+        "node_id": null,
+        "entity_type": "gene",
+        "reference_library": null,
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "missing",
+        "gene_candidates": [],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": false
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "672",
+        "protein_identifier": null,
+        "entity_type": "gene",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "defect",
+      "lookup_postings": [
+        {
+          "namespace": "genesymbol",
+          "identifier": "BRCA1",
+          "scope": "9606",
+          "route": 1,
+          "gene_only": false,
+          "candidate_count": 0,
+          "gene_role": true,
+          "candidate_facts": []
+        }
+      ],
+      "alias_counts": {
+        "genesymbol": 1
+      },
+      "product_alias_counts": {},
+      "seconds": 0.000849
+    },
+    "brca1_ensembl_gene": {
+      "input": {
+        "entity_key": "brca1_ensembl_gene",
+        "entity_type": "gene",
+        "namespace": "ensg",
+        "identifier": "ENSG00000012048.25",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "ensg",
+        "canonical_identifier": "ENSG00000012048",
+        "label": "ENSG00000012048",
+        "resolved_by": "unmatched",
+        "taxon": "9606",
+        "node_id": null,
+        "entity_type": "gene",
+        "reference_library": null,
+        "protein_namespace": null,
+        "protein_identifier": null,
+        "protein_node_id": null,
+        "protein_label": null,
+        "protein_taxon": null,
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "missing",
+        "gene_candidates": [],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": false
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "672",
+        "protein_identifier": null,
+        "entity_type": "gene",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "defect",
+      "lookup_postings": [
+        {
+          "namespace": "ensg",
+          "identifier": "ENSG00000012048",
+          "scope": "",
+          "route": 1,
+          "gene_only": false,
+          "candidate_count": 0,
+          "gene_role": true,
+          "candidate_facts": []
+        }
+      ],
+      "alias_counts": {
+        "ensg": 1
+      },
+      "product_alias_counts": {},
+      "seconds": 0.000738
+    },
+    "tp53_refseq_protein_version": {
+      "input": {
+        "entity_key": "tp53_refseq_protein_version",
+        "entity_type": "protein",
+        "namespace": "refseq",
+        "identifier": "NP_000537.3",
+        "taxon": "9606",
+        "label": null,
+        "identifiers": [],
+        "annotations": [],
+        "identity_scope": null,
+        "structure_derivations": [],
+        "molecular_form": null,
+        "evidence": []
+      },
+      "output": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "label": "7157",
+        "resolved_by": "parquet",
+        "taxon": "9606",
+        "node_id": "entrez:7157",
+        "entity_type": "protein",
+        "reference_library": "gene_protein",
+        "protein_namespace": "refseq",
+        "protein_identifier": "NP_000537.3",
+        "protein_node_id": null,
+        "protein_label": "NP_000537.3",
+        "protein_taxon": "9606",
+        "protein_gene_candidates": [],
+        "gene_mapping_status": "resolved",
+        "gene_candidates": [
+          "entrez:7157"
+        ],
+        "transcript_namespace": null,
+        "transcript_identifier": null,
+        "matched": true
+      },
+      "expected": {
+        "canonical_namespace": "entrez",
+        "canonical_identifier": "7157",
+        "protein_identifier": "P04637",
+        "entity_type": "protein",
+        "gene_mapping_status": "resolved",
+        "matched": true
+      },
+      "classification": "defect",
+      "lookup_postings": [
+        {
+          "namespace": "refseq_protein",
+          "identifier": "NP_000537",
+          "scope": "",
+          "route": 1,
+          "gene_only": false,
+          "candidate_count": 3,
+          "gene_role": false,
+          "candidate_facts": [
+            [
+              50027779746663,
+              "uniprot:Q53GA5",
+              2,
+              "uniprot:Q53GA5",
+              false,
+              false,
+              [
+                "7157"
+              ]
+            ],
+            [
+              101704826243580,
+              "uniprot:K7PPA8",
+              2,
+              "uniprot:K7PPA8",
+              false,
+              false,
+              [
+                "7157"
+              ]
+            ],
+            [
+              231447198325441,
+              "uniprot:P04637",
+              2,
+              "uniprot:P04637",
+              false,
+              true,
+              [
+                "7157"
+              ]
+            ]
+          ]
+        }
+      ],
+      "alias_counts": {
+        "refseq_protein": 1,
+        "ensp": 20,
+        "entrez": 1,
+        "genesymbol-syn": 1
+      },
+      "product_alias_counts": {
+        "refseq": 1
+      },
+      "seconds": 0.001083
+    }
+  },
+  "coverage_limitations": [
+    {
+      "case": "tp53_transcript_version_refseq",
+      "mismatches": {
+        "canonical_namespace": {
+          "expected": "entrez",
+          "actual": "refseq"
+        },
+        "canonical_identifier": {
+          "expected": "7157",
+          "actual": "NM_000546.999"
+        },
+        "gene_mapping_status": {
+          "expected": "resolved",
+          "actual": "missing"
+        },
+        "matched": {
+          "expected": true,
+          "actual": false
+        }
+      },
+      "reason": "No indexed posting for the asserted stable transcript accession."
+    },
+    "Primary TP53 product record has no explicit transcript aliases; fixed transcript assertions are reported individually above."
+  ],
+  "investigation": {
+    "gene_lookup_failures": "Independent gene assertions were discarded when mixed product candidate lists exceeded ten. A broad gene-role component is being implemented; genuine ambiguity and taxon guards retained.",
+    "refseq_oracle": "Exact and normalized NP_000537.3 identify three distinct primary UniProt entries (Q53GA5, K7PPA8, P04637), all Gene7157. Resolved gene and reported RefSeq version are correct; expecting P04637 without extra product evidence was over-specific. This is product ambiguity, not a coverage gap.",
+    "nullable_pilot_failure": "Serialized optional sequence_identifiers=null caused matcher iteration failure; fixed with a null-safe reader and Parquet round-trip regression tests.",
+    "retry_status": "Not started; actual-data validation and publication pending."
+  }
+}

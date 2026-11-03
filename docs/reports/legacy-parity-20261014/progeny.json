@@ -1,0 +1,49 @@
+{
+  "resource": "progeny",
+  "kind": "relation",
+  "note": "Gene and pathway.",
+  "v2_seconds": 60.1,
+  "legacy_seconds": 34.1,
+  "legacy_pairs": 274143,
+  "legacy_pairs_found_in_v2": 274143,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 274143,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 274143
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://raw.githubusercontent.com/saezlab/progeny/master/data/model_human_full.rda",
+      "path": "/root/data/pypath-cache/progeny/progeny_model_human_full.rda",
+      "size": 4338248,
+      "sha256": "3094f1fa1bb5395c1074280402c0e30ef47ba9ec36f4829ca3e539d019255ee5",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://github.com/saezlab/progeny/raw/master/data/model_human_full.rda",
+      "path": "/root/data/pypath-cache/progeny/progeny_model_human_full.rda",
+      "size": 4338248,
+      "sha256": "3094f1fa1bb5395c1074280402c0e30ef47ba9ec36f4829ca3e539d019255ee5",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

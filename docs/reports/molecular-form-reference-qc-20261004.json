@@ -1,0 +1,1128 @@
+{
+  "audit": "gene-product-graph-bounded-v1",
+  "memory_limit": "1GB",
+  "threads": 1,
+  "scope": "Graph and assignment only; no compact compiler/runtime audit",
+  "checks": {
+    "native_entrez_identity": {
+      "rows": [
+        {
+          "members": 14792732,
+          "changed_identity": 0,
+          "invalid_native_key": 0,
+          "unexpected_decision": 0,
+          "anchored_genes": 0
+        }
+      ],
+      "seconds": 2.079
+    },
+    "explicit_product_shape": {
+      "rows": [
+        {
+          "links": 19822353,
+          "invalid_gene_id": 0,
+          "invalid_product_id": 0,
+          "unknown_taxon": 0,
+          "reviewed_links": 320418
+        }
+      ],
+      "seconds": 2.521
+    },
+    "component_boundaries_exclude_gene_product": {
+      "rows": [
+        {
+          "boundaries": 52742,
+          "biological_links_in_identity_boundaries": 0
+        }
+      ],
+      "seconds": 0.002
+    },
+    "edge_roles": {
+      "rows": [
+        {
+          "semantics": "gene_product",
+          "edges": 19856826,
+          "absent_target": 15280588
+        },
+        {
+          "semantics": "identity_xref",
+          "edges": 94300,
+          "absent_target": 24394
+        }
+      ],
+      "seconds": 0.203
+    },
+    "source_gene_mapping_roles": {
+      "rows": [
+        {
+          "namespace": "ramp_gene",
+          "admission": "explicit_source_gene",
+          "mappings": 20500,
+          "invalid_explicit_gene_mapping": 0
+        },
+        {
+          "namespace": "ramp_gene",
+          "admission": "source_gene_only",
+          "mappings": 7696,
+          "invalid_explicit_gene_mapping": 0
+        }
+      ],
+      "seconds": 0.005
+    },
+    "known_gene_taxon_guard": {
+      "rows": [
+        {
+          "entrez_id": "1956",
+          "links": 7,
+          "known_taxon_mismatches": 0
+        },
+        {
+          "entrez_id": "22059",
+          "links": 5,
+          "known_taxon_mismatches": 0
+        },
+        {
+          "entrez_id": "4609",
+          "links": 1,
+          "known_taxon_mismatches": 0
+        },
+        {
+          "entrez_id": "4790",
+          "links": 1,
+          "known_taxon_mismatches": 0
+        },
+        {
+          "entrez_id": "672",
+          "links": 23,
+          "known_taxon_mismatches": 0
+        },
+        {
+          "entrez_id": "675",
+          "links": 3,
+          "known_taxon_mismatches": 0
+        },
+        {
+          "entrez_id": "7157",
+          "links": 7,
+          "known_taxon_mismatches": 0
+        },
+        {
+          "entrez_id": "801",
+          "links": 6,
+          "known_taxon_mismatches": 0
+        },
+        {
+          "entrez_id": "805",
+          "links": 5,
+          "known_taxon_mismatches": 0
+        },
+        {
+          "entrez_id": "808",
+          "links": 7,
+          "known_taxon_mismatches": 0
+        }
+      ],
+      "seconds": 1.349
+    },
+    "chemical-validation": {
+      "rows": [
+        {
+          "members": 130949702,
+          "changed_anchors": 0,
+          "missing_identity": 0
+        }
+      ]
+    },
+    "gene_protein-validation": {
+      "rows": [
+        {
+          "members": 165014951,
+          "changed_anchors": 0,
+          "missing_identity": 0
+        }
+      ]
+    },
+    "component_edges_exclude_gene_product": {
+      "rows": [
+        {
+          "gene_product_in_keyless_edges": 0
+        }
+      ],
+      "seconds": 0.39
+    },
+    "synthesized_gene_records_sample": {
+      "sampled_absent_target_edges": 32,
+      "sampled_genes": 32,
+      "missing_synthesized_genes": [],
+      "invalid_kind_or_anchor": [],
+      "unknown_taxon": []
+    },
+    "source_claim_locators_sample": {
+      "entrez": {
+        "sample_size": 32,
+        "missing_metadata": 0,
+        "invalid_source_row_locator": 0,
+        "sample_locator": "entrez:23916701"
+      },
+      "uniprot": {
+        "sample_size": 32,
+        "missing_metadata": 0,
+        "invalid_source_row_locator": 0,
+        "sample_locator": "uniprot:124123"
+      }
+    }
+  },
+  "samples": {
+    "known_gene_links": {
+      "rows": [
+        {
+          "entrez_id": "1956",
+          "protein_entity_id": "uniprot:B7Z2I3",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "1956",
+          "protein_entity_id": "uniprot:C9JYS6",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "1956",
+          "protein_entity_id": "uniprot:E7BSV0",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "1956",
+          "protein_entity_id": "uniprot:F2YGG7",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "1956",
+          "protein_entity_id": "uniprot:F6QWY5",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "1956",
+          "protein_entity_id": "uniprot:P00533",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "1956",
+          "protein_entity_id": "uniprot:Q504U8",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "22059",
+          "protein_entity_id": "uniprot:F6V780",
+          "taxon": "10090",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "22059",
+          "protein_entity_id": "uniprot:P02340",
+          "taxon": "10090",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "22059",
+          "protein_entity_id": "uniprot:Q3UGQ1",
+          "taxon": "10090",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "22059",
+          "protein_entity_id": "uniprot:Q549C9",
+          "taxon": "10090",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "22059",
+          "protein_entity_id": "uniprot:Q80ZA1",
+          "taxon": "10090",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "4609",
+          "protein_entity_id": "uniprot:P01106",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "4790",
+          "protein_entity_id": "uniprot:P19838",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A0U1RRA9",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A2R8Y7V5",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A9Y1QPR4",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A9Y1QPT7",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A9Y1QPY6",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A9Y1QQ47",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A9Y1QQD3",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A9Y1QQF1",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A9Y1QQJ6",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A9Y1QQK3",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A9Y1QQK7",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A9Y1VR53",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A9Y1VVD0",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0A9Y1VVE2",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:A0ACM8QT95",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:B4DES0",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:C9IZW4",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:E7ENB7",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:E7EQW4",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:E7EUM2",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:H0Y850",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:H0Y8D8",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "672",
+          "protein_entity_id": "uniprot:P38398",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "675",
+          "protein_entity_id": "uniprot:A0A7P0T9D7",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "675",
+          "protein_entity_id": "uniprot:A0A8V8TPZ2",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "675",
+          "protein_entity_id": "uniprot:P51587",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "7157",
+          "protein_entity_id": "uniprot:A0A087WT22",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "7157",
+          "protein_entity_id": "uniprot:A0A087WXZ1",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "7157",
+          "protein_entity_id": "uniprot:A0A087X1Q1",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "7157",
+          "protein_entity_id": "uniprot:H2EHT1",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "7157",
+          "protein_entity_id": "uniprot:K7PPA8",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "7157",
+          "protein_entity_id": "uniprot:P04637",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "7157",
+          "protein_entity_id": "uniprot:Q53GA5",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "801",
+          "protein_entity_id": "uniprot:B4DJ51",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "801",
+          "protein_entity_id": "uniprot:P0DP23",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "801",
+          "protein_entity_id": "uniprot:P0DP24",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "801",
+          "protein_entity_id": "uniprot:P0DP25",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "801",
+          "protein_entity_id": "uniprot:Q6Y2K5",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "801",
+          "protein_entity_id": "uniprot:Q96HY3",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "805",
+          "protein_entity_id": "uniprot:P0DP23",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "805",
+          "protein_entity_id": "uniprot:P0DP24",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "805",
+          "protein_entity_id": "uniprot:P0DP25",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "805",
+          "protein_entity_id": "uniprot:Q6Y2K5",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "805",
+          "protein_entity_id": "uniprot:Q96HY3",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "808",
+          "protein_entity_id": "uniprot:B4DJ51",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "808",
+          "protein_entity_id": "uniprot:P0DP23",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "808",
+          "protein_entity_id": "uniprot:P0DP24",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "808",
+          "protein_entity_id": "uniprot:P0DP25",
+          "taxon": "9606",
+          "reviewed": true,
+          "projection_eligible": true
+        },
+        {
+          "entrez_id": "808",
+          "protein_entity_id": "uniprot:Q6Y2K5",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "808",
+          "protein_entity_id": "uniprot:Q96HY3",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        },
+        {
+          "entrez_id": "808",
+          "protein_entity_id": "uniprot:Q9BRL5",
+          "taxon": "9606",
+          "reviewed": false,
+          "projection_eligible": false
+        }
+      ],
+      "seconds": 1.477
+    },
+    "known_native_genes": {
+      "rows": [
+        {
+          "local_id": "1956",
+          "record_id": "entrez:1956",
+          "entity_id": "entrez:1956",
+          "taxon": "9606",
+          "decision": "gene_identity"
+        },
+        {
+          "local_id": "22059",
+          "record_id": "entrez:22059",
+          "entity_id": "entrez:22059",
+          "taxon": "10090",
+          "decision": "gene_identity"
+        },
+        {
+          "local_id": "4609",
+          "record_id": "entrez:4609",
+          "entity_id": "entrez:4609",
+          "taxon": "9606",
+          "decision": "gene_identity"
+        },
+        {
+          "local_id": "4790",
+          "record_id": "entrez:4790",
+          "entity_id": "entrez:4790",
+          "taxon": "9606",
+          "decision": "gene_identity"
+        },
+        {
+          "local_id": "672",
+          "record_id": "entrez:672",
+          "entity_id": "entrez:672",
+          "taxon": "9606",
+          "decision": "gene_identity"
+        },
+        {
+          "local_id": "675",
+          "record_id": "entrez:675",
+          "entity_id": "entrez:675",
+          "taxon": "9606",
+          "decision": "gene_identity"
+        },
+        {
+          "local_id": "7157",
+          "record_id": "entrez:7157",
+          "entity_id": "entrez:7157",
+          "taxon": "9606",
+          "decision": "gene_identity"
+        },
+        {
+          "local_id": "801",
+          "record_id": "entrez:801",
+          "entity_id": "entrez:801",
+          "taxon": "9606",
+          "decision": "gene_identity"
+        },
+        {
+          "local_id": "805",
+          "record_id": "entrez:805",
+          "entity_id": "entrez:805",
+          "taxon": "9606",
+          "decision": "gene_identity"
+        },
+        {
+          "local_id": "808",
+          "record_id": "entrez:808",
+          "entity_id": "entrez:808",
+          "taxon": "9606",
+          "decision": "gene_identity"
+        }
+      ],
+      "seconds": 1.452
+    },
+    "known_gene_resolution": {
+      "rows": [
+        {
+          "namespace": "entrez",
+          "identifier": "1956",
+          "entity_id": "entrez:1956",
+          "admission": "explicit_gene_product"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "1956",
+          "entity_id": "entrez:1956",
+          "admission": "gene_identity"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "22059",
+          "entity_id": "entrez:22059",
+          "admission": "explicit_gene_product"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "22059",
+          "entity_id": "entrez:22059",
+          "admission": "gene_identity"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "4609",
+          "entity_id": "entrez:4609",
+          "admission": "explicit_gene_product"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "4609",
+          "entity_id": "entrez:4609",
+          "admission": "gene_identity"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "4790",
+          "entity_id": "entrez:4790",
+          "admission": "explicit_gene_product"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "4790",
+          "entity_id": "entrez:4790",
+          "admission": "gene_identity"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "672",
+          "entity_id": "entrez:672",
+          "admission": "explicit_gene_product"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "672",
+          "entity_id": "entrez:672",
+          "admission": "gene_identity"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "675",
+          "entity_id": "entrez:675",
+          "admission": "explicit_gene_product"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "675",
+          "entity_id": "entrez:675",
+          "admission": "gene_identity"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "7157",
+          "entity_id": "entrez:7157",
+          "admission": "explicit_gene_product"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "7157",
+          "entity_id": "entrez:7157",
+          "admission": "gene_identity"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "801",
+          "entity_id": "entrez:801",
+          "admission": "explicit_gene_product"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "801",
+          "entity_id": "entrez:801",
+          "admission": "gene_identity"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "805",
+          "entity_id": "entrez:805",
+          "admission": "explicit_gene_product"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "805",
+          "entity_id": "entrez:805",
+          "admission": "gene_identity"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "808",
+          "entity_id": "entrez:808",
+          "admission": "explicit_gene_product"
+        },
+        {
+          "namespace": "entrez",
+          "identifier": "808",
+          "entity_id": "entrez:808",
+          "admission": "gene_identity"
+        }
+      ],
+      "seconds": 3.505
+    },
+    "known_assigned_product_metadata": {
+      "rows": [
+        {
+          "entity_id": "uniprot:P00533",
+          "kind": "protein",
+          "primary_anchor": "uniprot:P00533",
+          "taxon": "9606",
+          "quarantined": false
+        },
+        {
+          "entity_id": "uniprot:P02340",
+          "kind": "protein",
+          "primary_anchor": "uniprot:P02340",
+          "taxon": "10090",
+          "quarantined": false
+        },
+        {
+          "entity_id": "uniprot:P04637",
+          "kind": "protein",
+          "primary_anchor": "uniprot:P04637",
+          "taxon": "9606",
+          "quarantined": false
+        },
+        {
+          "entity_id": "uniprot:P0DP23",
+          "kind": "protein",
+          "primary_anchor": "uniprot:P0DP23",
+          "taxon": "9606",
+          "quarantined": false
+        }
+      ],
+      "seconds": 10.204
+    },
+    "synthesized_gene_records": {
+      "rows": [
+        {
+          "entity_id": "entrez:100913187",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "9606",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:101867085",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "9541",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:1262804",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "10754",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:180450",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "6239",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:20187778",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "761204",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:2540937",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "284812",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:2675285",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "242507",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:2683909",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "242507",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:3511229",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "330879",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:4587430",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "331117",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:4702439",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "344612",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:4982486",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "425011",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:801763",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "1514140",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:823933",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "3702",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:824090",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "3702",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:828850",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "3702",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:834208",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "3702",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:855094",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "559292",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:857036",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "55529",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:8616081",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "44689",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:8617618",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "44689",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:8617885",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "44689",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:8622499",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "44689",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:8622603",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "44689",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:8623097",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "44689",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:8623263",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "44689",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:8626235",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "44689",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:8627252",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "44689",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:8629226",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "44689",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:945912",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "83333",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:9466643",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "403677",
+          "quarantined": false
+        },
+        {
+          "entity_id": "entrez:9469957",
+          "kind": "gene",
+          "primary_anchor": null,
+          "taxon": "403677",
+          "quarantined": false
+        }
+      ]
+    }
+  },
+  "manifests": {
+    "graph": {
+      "status": "complete",
+      "version": "gene-product-reference-v6",
+      "full_scope": true,
+      "fingerprint": "8f9c47a8a2258e1a18c4ff14fdd9cf15d3b8c730eea5020ae6816e131b505501"
+    },
+    "assigned": {
+      "status": "complete",
+      "version": "gene-product-reference-v6",
+      "full_scope": true,
+      "fingerprint": "08588fd14d4b5501aadc8b7b0ce7a730d3543cf6f9fbf7ebeeaf197d5f5379ac"
+    },
+    "parent_fingerprint": "8f9c47a8a2258e1a18c4ff14fdd9cf15d3b8c730eea5020ae6816e131b505501",
+    "lineage_matches": true
+  },
+  "metadata_counts": {
+    "members-entrez/members.parquet": 14792732,
+    "members-uniprot/members.parquet": 150188014,
+    "gene-products/gene_products.parquet": 19822353,
+    "gene-resolution/entrez_identifiers.parquet": 44301995,
+    "gene_protein-graph/keyless_edges.parquet": 17164,
+    "gene_protein-decisions/boundaries.parquet": 52742,
+    "source-gene-resolution/identifiers.parquet": 28196
+  },
+  "limitations": [
+    "Taxon consistency independently checked for ten known genes only; full product/member join deliberately omitted.",
+    "Native Entrez identity and product-shape checks scan narrow biological columns only; no whole identifier uniqueness scans.",
+    "Compact index/runtime not yet published and not audited here."
+  ]
+}

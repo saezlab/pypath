@@ -1,0 +1,67 @@
+{
+  "resource": "signalink",
+  "kind": "relation",
+  "note": "Legacy with secondary sources included, as inputs_v2 has them; human pairs only.",
+  "v2_seconds": 1.1,
+  "legacy_seconds": 0.6,
+  "legacy_pairs": 21259,
+  "legacy_pairs_found_in_v2": 21259,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 21328,
+  "v2_relations_without_legacy_pair": 0,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 19217,
+    "+": 1935,
+    "-": 176
+  },
+  "signs_compared": 1669,
+  "signs_agree": 1669,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/SLK3_layer0_2020_03_23.csv",
+      "path": "/root/data/pypath-cache/signalink/SLK3_layer0_2020_03_23.csv",
+      "size": 5137905,
+      "sha256": "8ed467de22cfcfaa5b830cb5405663a1304da0751c20cce106186a3065f755a7",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/SLK3_nodes_2020_03_23.csv",
+      "path": "/root/data/pypath-cache/signalink/SLK3_nodes_2020_03_23.csv",
+      "size": 1687518,
+      "sha256": "7c5e90710bdcb39b65294a338378e9582540229529cea0843ae6a166cc1708a5",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://rescued.omnipathdb.org/SLK3_nodes_2020_03_23.csv",
+      "path": "/root/data/pypath-cache/signalink/SLK3_nodes_2020_03_23.csv",
+      "size": 1687518,
+      "sha256": "7c5e90710bdcb39b65294a338378e9582540229529cea0843ae6a166cc1708a5",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://rescued.omnipathdb.org/SLK3_layer0_2020_03_23.csv",
+      "path": "/root/data/pypath-cache/signalink/SLK3_layer0_2020_03_23.csv",
+      "size": 5137905,
+      "sha256": "8ed467de22cfcfaa5b830cb5405663a1304da0751c20cce106186a3065f755a7",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "resource": "lncrnadb",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 0.0,
+  "legacy_seconds": 0.1,
+  "legacy_pairs": 301,
+  "legacy_pairs_found_in_v2": 301,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 0,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 0,
+    "neither": 0
+  },
+  "v2_relations": 311,
+  "v2_relations_without_legacy_pair": 4,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 311
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [],
+    "v2_without_legacy_pair": [
+      "['Dali', 'DNMT1-Associated Long Intergenic. linc-Brn1a. linc-Brn1b'] -[interacts_with]-> ['DNMT1']",
+      "['Dali', 'DNMT1-Associated Long Intergenic. linc-Brn1a. linc-Brn1b'] -[interacts_with]-> ['BRG1']",
+      "['Dali', 'DNMT1-Associated Long Intergenic. linc-Brn1a. linc-Brn1b'] -[interacts_with]-> ['P66beta']",
+      "['Dali', 'DNMT1-Associated Long Intergenic. linc-Brn1a. linc-Brn1b'] -[interacts_with]-> ['SIN3A transcriptional co-factors,']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/lncrnadb_association.xml",
+      "path": "/root/data/pypath-cache/lncrnadb/lncrnadb_association.xml",
+      "size": 262591,
+      "sha256": "393d2a60c44eae45b7c5e042a1c79e910683f8ced30978c77a6adfe796d1c49a",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://rescued.omnipathdb.org/lncrnadb_association.xml",
+      "path": "/root/data/pypath-cache/lncrnadb/lncrnadb_association.xml",
+      "size": 262591,
+      "sha256": "393d2a60c44eae45b7c5e042a1c79e910683f8ced30978c77a6adfe796d1c49a",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

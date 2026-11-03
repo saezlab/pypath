@@ -1,0 +1,176 @@
+{
+  "resource": "lambert2018",
+  "kind": "relation",
+  "note": "Gene with the TF list and its DNA-binding domain family.",
+  "v2_seconds": 2.8,
+  "legacy_seconds": 1.4,
+  "legacy_pairs": 4404,
+  "legacy_pairs_found_in_v2": 3162,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 1242,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 270,
+    "neither": 972
+  },
+  "v2_relations": 3256,
+  "v2_relations_without_legacy_pair": 94,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 3256
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "ARID1A",
+        "ARID/BRIGHT"
+      ],
+      [
+        "ARID1B",
+        "ARID/BRIGHT"
+      ],
+      [
+        "ARID4A",
+        "ARID/BRIGHT"
+      ],
+      [
+        "ARID4B",
+        "ARID/BRIGHT"
+      ],
+      [
+        "JARID2",
+        "ARID/BRIGHT"
+      ],
+      [
+        "KDM5A",
+        "ARID/BRIGHT"
+      ],
+      [
+        "KDM5C",
+        "ARID/BRIGHT"
+      ],
+      [
+        "KDM5D",
+        "ARID/BRIGHT"
+      ],
+      [
+        "ARID2",
+        "ARID/BRIGHT; RFX"
+      ],
+      [
+        "ZBED8",
+        "BED ZF"
+      ],
+      [
+        "ID1",
+        "BHLH"
+      ],
+      [
+        "ID2",
+        "BHLH"
+      ],
+      [
+        "ID3",
+        "BHLH"
+      ],
+      [
+        "ID4",
+        "BHLH"
+      ],
+      [
+        "APC2",
+        "BZIP"
+      ],
+      [
+        "BEND4",
+        "BZIP"
+      ],
+      [
+        "CCDC3",
+        "BZIP"
+      ],
+      [
+        "CCDC83",
+        "BZIP"
+      ],
+      [
+        "CREBRF",
+        "BZIP"
+      ],
+      [
+        "GULP1",
+        "BZIP"
+      ],
+      [
+        "HOOK2",
+        "BZIP"
+      ],
+      [
+        "IQGAP1",
+        "BZIP"
+      ],
+      [
+        "KIF15",
+        "BZIP"
+      ],
+      [
+        "KRT13",
+        "BZIP"
+      ],
+      [
+        "MORC3",
+        "BZIP"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "https://rescued.omnipathdb.org/lambert2018-supplementary-S1.xlsx",
+      "path": "/root/data/pypath-cache/lambert2018/lambert2018-supplementary-S1.xlsx",
+      "size": 6088797,
+      "sha256": "ddf3a537edf7878810e04d662b54c07fbba8a38866ff2575e03e26f8eb3bca9f",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "https://rescued.omnipathdb.org/lambert2018-supplementary-S1.xlsx",
+      "path": "/root/data/pypath-cache/lambert2018/lambert2018-supplementary-S1.xlsx",
+      "size": 6088797,
+      "sha256": "ddf3a537edf7878810e04d662b54c07fbba8a38866ff2575e03e26f8eb3bca9f",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

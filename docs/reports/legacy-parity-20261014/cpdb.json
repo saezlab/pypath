@@ -1,0 +1,176 @@
+{
+  "resource": "cpdb",
+  "kind": "relation",
+  "note": "",
+  "v2_seconds": 41.7,
+  "legacy_seconds": 9.3,
+  "legacy_pairs": 531371,
+  "legacy_pairs_found_in_v2": 522618,
+  "legacy_pairs_reversed_in_v2": 0,
+  "legacy_pairs_missing_in_v2": 8753,
+  "missing_by_ids_known_to_v2": {
+    "both": 0,
+    "one": 8707,
+    "neither": 46
+  },
+  "v2_relations": 527816,
+  "v2_relations_without_legacy_pair": 5198,
+  "v2_relations_reversed_in_legacy": 0,
+  "v2_signs": {
+    "None": 527816
+  },
+  "signs_compared": 0,
+  "signs_agree": 0,
+  "signs_disagree": 0,
+  "samples": {
+    "legacy_missing_in_v2": [
+      [
+        "GLHA_HUMAN",
+        "CGB3_HUMAN.CGB7_HUMAN"
+      ],
+      [
+        "AP2A_HUMAN",
+        "NPM_HUMAN.RARA_HUMAN"
+      ],
+      [
+        "PML_HUMAN.RARA_HUMAN",
+        "RUNX1_HUMAN"
+      ],
+      [
+        "VENTX_HUMAN",
+        "ARF_HUMAN.CDN2A_HUMAN"
+      ],
+      [
+        "CALM1_HUMAN.CALM3_HUMAN",
+        "NEUG_HUMAN"
+      ],
+      [
+        "PML_HUMAN.RARA_HUMAN",
+        "DAXX_HUMAN"
+      ],
+      [
+        "SRF_HUMAN",
+        "MRTFA_HUMAN.RBM15_HUMAN"
+      ],
+      [
+        "CALM1_HUMAN.CALM3_HUMAN",
+        "MYO1C_HUMAN"
+      ],
+      [
+        "BRAF_HUMAN.K1549_HUMAN",
+        "SPY2_HUMAN"
+      ],
+      [
+        "NGF_HUMAN",
+        "NTRK1_HUMAN.TFG_HUMAN.TPR_HUMAN"
+      ],
+      [
+        "ARF_HUMAN.CDN2A_HUMAN",
+        "ETS1_HUMAN"
+      ],
+      [
+        "ARF_HUMAN.CDN2A_HUMAN",
+        "ETS2_HUMAN"
+      ],
+      [
+        "DDIT3_HUMAN.DT3UO_HUMAN",
+        "ATF4_HUMAN"
+      ],
+      [
+        "BRAF_HUMAN.K1549_HUMAN",
+        "1433B_HUMAN"
+      ],
+      [
+        "SUMO1_HUMAN",
+        "PML_HUMAN.RARA_HUMAN"
+      ],
+      [
+        "SUMO1_HUMAN",
+        "MRTFA_HUMAN.RBM15_HUMAN"
+      ],
+      [
+        "NPM_HUMAN.RARA_HUMAN",
+        "SUMO1_HUMAN"
+      ],
+      [
+        "MECOM_HUMAN.RUNX1_HUMAN",
+        "PTEN_HUMAN"
+      ],
+      [
+        "ADCY1_HUMAN",
+        "ALEX_HUMAN.GNAS1_HUMAN.GNAS2_HUMAN.GNAS3_HUMAN"
+      ],
+      [
+        "DNJA3_HUMAN",
+        "HS71A_HUMAN.HS71B_HUMAN"
+      ],
+      [
+        "CD3E_HUMAN",
+        "TRBR1_HUMAN.TRBR2_HUMAN"
+      ],
+      [
+        "CD3E_HUMAN",
+        "TRAR1_HUMAN.TRAR2_HUMAN"
+      ],
+      [
+        "TRBR1_HUMAN.TRBR2_HUMAN",
+        "CD3D_HUMAN"
+      ],
+      [
+        "TRAR1_HUMAN.TRAR2_HUMAN",
+        "CD3D_HUMAN"
+      ],
+      [
+        "TRBR1_HUMAN.TRBR2_HUMAN",
+        "CD3G_HUMAN"
+      ]
+    ],
+    "v2_without_legacy_pair": [
+      "['P27361', 'MK03_HUMAN', 'MAPK3', '6877', '5595', 'ENSG00000102882'] -[interacts_with]-> ['P27361', 'MK03_HUMAN', 'MAPK3', '6877', '5595', 'ENSG00000102882']",
+      "['P00742', 'FA10_HUMAN', 'F10', '3528', '2159', 'ENSG00000126218'] -[interacts_with]-> ['P00742', 'FA10_HUMAN', 'F10', '3528', '2159', 'ENSG00000126218']",
+      "['P04070', 'PROC_HUMAN', 'PROC', '9451', '5624', 'ENSG00000115718'] -[interacts_with]-> ['P04070', 'PROC_HUMAN', 'PROC', '9451', '5624', 'ENSG00000115718']",
+      "['P49366', 'DHYS_HUMAN', 'DHPS', '2869', '1725', 'ENSG00000095059'] -[interacts_with]-> ['P49366', 'DHYS_HUMAN', 'DHPS', '2869', '1725', 'ENSG00000095059']",
+      "['P15289', 'ARSA_HUMAN', 'ARSA', '713', '410', 'ENSG00000100299'] -[interacts_with]-> ['P15289', 'ARSA_HUMAN', 'ARSA', '713', '410', 'ENSG00000100299']",
+      "['P16066', 'ANPRA_HUMAN', 'NPR1', '7943', '4881', 'ENSG00000169418'] -[interacts_with]-> ['P16066', 'ANPRA_HUMAN', 'NPR1', '7943', '4881', 'ENSG00000169418']",
+      "['Q96S42', 'NODAL_HUMAN', 'NODAL', '7865', '4838', 'ENSG00000156574'] -[interacts_with]-> ['Q96S42', 'NODAL_HUMAN', 'NODAL', '7865', '4838', 'ENSG00000156574']",
+      "['O95813', 'CER1_HUMAN', 'CER1', '1862', '9350', 'ENSG00000147869'] -[interacts_with]-> ['O95813', 'CER1_HUMAN', 'CER1', '1862', '9350', 'ENSG00000147869']",
+      "['Q09013', 'DMPK_HUMAN', 'DMPK', '2933', '1760', 'ENSG00000104936'] -[interacts_with]-> ['Q09013', 'DMPK_HUMAN', 'DMPK', '2933', '1760', 'ENSG00000104936']",
+      "['P26678', 'PPLA_HUMAN', 'PLN', '9080', '5350', 'ENSG00000198523'] -[interacts_with]-> ['P26678', 'PPLA_HUMAN', 'PLN', '9080', '5350', 'ENSG00000198523']",
+      "['Q96D31', 'CRCM1_HUMAN', 'ORAI1', '25896', '84876', 'ENSG00000276045'] -[interacts_with]-> ['Q96D31', 'CRCM1_HUMAN', 'ORAI1', '25896', '84876', 'ENSG00000276045']",
+      "['Q96SN7', 'ORAI2_HUMAN', 'ORAI2', '21667', '80228', 'ENSG00000160991'] -[interacts_with]-> ['Q96SN7', 'ORAI2_HUMAN', 'ORAI2', '21667', '80228', 'ENSG00000160991']",
+      "['Q92736', 'RYR2_HUMAN', 'RYR2', '10484', '6262', 'ENSG00000198626'] -[interacts_with]-> ['Q92736', 'RYR2_HUMAN', 'RYR2', '10484', '6262', 'ENSG00000198626']",
+      "['P21817', 'RYR1_HUMAN', 'RYR1', '10483', '6261', 'ENSG00000196218'] -[interacts_with]-> ['P21817', 'RYR1_HUMAN', 'RYR1', '10483', '6261', 'ENSG00000196218']",
+      "['Q15413', 'RYR3_HUMAN', 'RYR3', '10485', '6263', 'ENSG00000198838'] -[interacts_with]-> ['Q15413', 'RYR3_HUMAN', 'RYR3', '10485', '6263', 'ENSG00000198838']",
+      "['Q14573', 'ITPR3_HUMAN', 'ITPR3', '6182', '3710', 'ENSG00000096433'] -[interacts_with]-> ['Q14573', 'ITPR3_HUMAN', 'ITPR3', '6182', '3710', 'ENSG00000096433']",
+      "['Q14571', 'ITPR2_HUMAN', 'ITPR2', '6181', '3709', 'ENSG00000123104'] -[interacts_with]-> ['Q14571', 'ITPR2_HUMAN', 'ITPR2', '6181', '3709', 'ENSG00000123104']",
+      "['Q14643', 'ITPR1_HUMAN', 'ITPR1', '6180', '3708', 'ENSG00000150995'] -[interacts_with]-> ['Q14643', 'ITPR1_HUMAN', 'ITPR1', '6180', '3708', 'ENSG00000150995']",
+      "['O75874', 'IDHC_HUMAN', 'IDH1', '5382', '3417', 'ENSG00000138413'] -[interacts_with]-> ['O75874', 'IDHC_HUMAN', 'IDH1', '5382', '3417', 'ENSG00000138413']",
+      "['P32929', 'CGL_HUMAN', 'CTH', '2501', '1491', 'ENSG00000116761'] -[interacts_with]-> ['P32929', 'CGL_HUMAN', 'CTH', '2501', '1491', 'ENSG00000116761']",
+      "['Q96I15', 'SCLY_HUMAN', 'SCLY', '18161', '51540', 'ENSG00000132330'] -[interacts_with]-> ['Q96I15', 'SCLY_HUMAN', 'SCLY', '18161', '51540', 'ENSG00000132330']",
+      "['Q9UQM7', 'KCC2A_HUMAN', 'CAMK2A', '1460', '815', 'ENSG00000070808'] -[interacts_with]-> ['Q9UQM7', 'KCC2A_HUMAN', 'CAMK2A', '1460', '815', 'ENSG00000070808']",
+      "['Q13976', 'KGP1_HUMAN', 'PRKG1', '9414', '5592', 'ENSG00000185532'] -[interacts_with]-> ['Q13976', 'KGP1_HUMAN', 'PRKG1', '9414', '5592', 'ENSG00000185532']",
+      "['Q13237', 'KGP2_HUMAN', 'PRKG2', '9416', '5593', 'ENSG00000138669'] -[interacts_with]-> ['Q13237', 'KGP2_HUMAN', 'PRKG2', '9416', '5593', 'ENSG00000138669']",
+      "['Q9UBE8', 'NLK_HUMAN', 'NLK', '29858', '51701', 'ENSG00000087095'] -[interacts_with]-> ['Q9UBE8', 'NLK_HUMAN', 'NLK', '29858', '51701', 'ENSG00000087095']"
+    ],
+    "v2_reversed_in_legacy": [],
+    "sign_disagreements": []
+  },
+  "files": [
+    {
+      "side": "v2",
+      "url": "http://cpdb.molgen.mpg.de/download/ConsensusPathDB_human_PPI.gz",
+      "path": "/root/data/pypath-cache/cpdb/ConsensusPathDB_human_PPI.gz",
+      "size": 29201196,
+      "sha256": "65d71aaf5f545211973adf696f4885224c7dd50b412959d684ce226dcb5bacc9",
+      "mtime": "2026-10-13"
+    },
+    {
+      "side": "legacy",
+      "url": "http://cpdb.molgen.mpg.de/download/ConsensusPathDB_human_PPI.gz",
+      "path": "/root/data/pypath-cache/cpdb/ConsensusPathDB_human_PPI.gz",
+      "size": 29201196,
+      "sha256": "65d71aaf5f545211973adf696f4885224c7dd50b412959d684ce226dcb5bacc9",
+      "mtime": "2026-10-13"
+    }
+  ]
+}

@@ -1,0 +1,397 @@
+{
+  "status": "passed",
+  "scope": "SIGNOR and IntAct isolated release; full raw and projected output validation, bounded actual API/client examples",
+  "candidate_commit": "808989e0b1dce44a5a70c42ca2f39a89567995d1",
+  "reports": {
+    "original": {
+      "created_at": "2026-10-05T04:47:49.013291+00:00",
+      "validator_sha256": "e24e5364a1de1c1c603d1f053a2071b963234008e14794343846185dcb84825e",
+      "client_sha256": "4a42f4b42c44dca81a75121abe11c865f3612e3d365ebdaf47e263fe6d41eb2e",
+      "projection_mode": "raw",
+      "limits": {
+        "examples_per_kind": 2,
+        "max_export_relations": 10000
+      },
+      "status": "passed",
+      "full_server_report": "reports/molecular-validation-original.json",
+      "resources": [
+        {
+          "resource": "signor/2026.10.4.1",
+          "status": "passed",
+          "elapsed_seconds": 23.808,
+          "coverage": {
+            "relation_side_forms": 67997,
+            "standalone_forms": 3811,
+            "isoforms": 88,
+            "modifications": 12869,
+            "variants": 0,
+            "sequence_identifiers": 162,
+            "paired_occurrences": 26498,
+            "distinct_referenced_products": 8288
+          },
+          "client_snapshot": {
+            "staging": "temporary_hardlinks",
+            "memory_limit": "2GB",
+            "sample_relations": 5,
+            "sample_product_records": 100
+          },
+          "serving_projections": {
+            "entities": {
+              "available": false,
+              "paths": [
+                "/root/projects/omnipath-releases/20261004-molecular-forms/data/resources/signor/2026.10.4.1/entities.parquet"
+              ]
+            },
+            "relations": {
+              "available": false,
+              "paths": [
+                "/root/projects/omnipath-releases/20261004-molecular-forms/data/resources/signor/2026.10.4.1/relations.parquet"
+              ]
+            }
+          },
+          "checks": {
+            "passed": 136,
+            "unavailable": 3,
+            "failed": 0
+          },
+          "unavailable": [
+            {
+              "name": "observed.variants",
+              "status": "unavailable",
+              "reason": "No such molecular case is present in the selected dataset"
+            },
+            {
+              "name": "api.opposite_endpoint_constraints_1",
+              "status": "unavailable",
+              "reason": "Paired occurrence has no subject product or no object isoform"
+            },
+            {
+              "name": "api.opposite_endpoint_constraints_2",
+              "status": "unavailable",
+              "reason": "Paired occurrence has no subject product or no object isoform"
+            }
+          ],
+          "tables": {
+            "entities": {
+              "rows": 19245,
+              "bytes": 3210472
+            },
+            "relations": {
+              "rows": 35630,
+              "bytes": 10827598
+            },
+            "evidence_payloads": {
+              "rows": 45765,
+              "bytes": 17364511
+            }
+          },
+          "client_check_count": 48,
+          "client_product_record_timings_ms": {
+            "client.product_1.product_records": 184.52,
+            "client.product_2.product_records": 179.474,
+            "client.isoform_1.product_records": 198.2,
+            "client.isoform_2.product_records": 221.838,
+            "client.product_any.product_records": 175.095,
+            "client.product_both.product_records": 174.212
+          }
+        },
+        {
+          "resource": "intact/2026.10.4.1",
+          "status": "passed",
+          "elapsed_seconds": 373.732,
+          "coverage": {
+            "relation_side_forms": 2386336,
+            "standalone_forms": 0,
+            "isoforms": 152185,
+            "modifications": 1553,
+            "variants": 31917,
+            "sequence_identifiers": 160945,
+            "paired_occurrences": 1165480,
+            "distinct_referenced_products": 45092
+          },
+          "client_snapshot": {
+            "staging": "temporary_hardlinks",
+            "memory_limit": "2GB",
+            "sample_relations": 5,
+            "sample_product_records": 100
+          },
+          "serving_projections": {
+            "entities": {
+              "available": false,
+              "paths": [
+                "/root/projects/omnipath-releases/20261004-molecular-forms/data/resources/intact/2026.10.4.1/entities.parquet"
+              ]
+            },
+            "relations": {
+              "available": false,
+              "paths": [
+                "/root/projects/omnipath-releases/20261004-molecular-forms/data/resources/intact/2026.10.4.1/relations.parquet"
+              ]
+            }
+          },
+          "checks": {
+            "passed": 115,
+            "unavailable": 3,
+            "failed": 0
+          },
+          "unavailable": [
+            {
+              "name": "observed.standalone_forms",
+              "status": "unavailable",
+              "reason": "No such molecular case is present in the selected dataset"
+            },
+            {
+              "name": "api.opposite_endpoint_constraints_1",
+              "status": "unavailable",
+              "reason": "Paired occurrence has no subject product or no object isoform"
+            },
+            {
+              "name": "api.opposite_endpoint_constraints_2",
+              "status": "unavailable",
+              "reason": "Paired occurrence has no subject product or no object isoform"
+            }
+          ],
+          "tables": {
+            "entities": {
+              "rows": 91765,
+              "bytes": 11403034
+            },
+            "relations": {
+              "rows": 730839,
+              "bytes": 132353551
+            },
+            "evidence_payloads": {
+              "rows": 1240522,
+              "bytes": 1023465634
+            }
+          },
+          "client_check_count": 40,
+          "client_product_record_timings_ms": {
+            "client.product_1.product_records": 2447.7,
+            "client.product_2.product_records": 2568.107,
+            "client.isoform_1.product_records": 2423.505,
+            "client.isoform_2.product_records": 2615.617,
+            "client.product_any.product_records": 2439.236,
+            "client.product_both.product_records": 2389.619
+          }
+        }
+      ]
+    },
+    "projected": {
+      "created_at": "2026-10-05T04:54:29.989367+00:00",
+      "validator_sha256": "e24e5364a1de1c1c603d1f053a2071b963234008e14794343846185dcb84825e",
+      "client_sha256": "4a42f4b42c44dca81a75121abe11c865f3612e3d365ebdaf47e263fe6d41eb2e",
+      "projection_mode": "projected",
+      "limits": {
+        "examples_per_kind": 2,
+        "max_export_relations": 10000
+      },
+      "status": "passed",
+      "full_server_report": "reports/molecular-validation-projected.json",
+      "resources": [
+        {
+          "resource": "signor/2026.10.4.1",
+          "status": "passed",
+          "elapsed_seconds": 18.08,
+          "coverage": {
+            "relation_side_forms": 67997,
+            "standalone_forms": 3811,
+            "isoforms": 88,
+            "modifications": 12869,
+            "variants": 0,
+            "sequence_identifiers": 162,
+            "paired_occurrences": 26498,
+            "distinct_referenced_products": 8288
+          },
+          "client_snapshot": {
+            "staging": "temporary_hardlinks",
+            "memory_limit": "2GB",
+            "sample_relations": 5,
+            "sample_product_records": 100
+          },
+          "serving_projections": {
+            "entities": {
+              "available": true,
+              "paths": [
+                "/root/projects/omnipath-releases/20261004-molecular-forms/data/.serving/v2/entities/d41edec4aee963503a2010bc2a14dfcab341ebf4d1b4e452741f1cbd22f8c344.parquet"
+              ]
+            },
+            "relations": {
+              "available": true,
+              "paths": [
+                "/root/projects/omnipath-releases/20261004-molecular-forms/data/.serving/v2/relations/bbb9de7d210dfff5aebdd69585076091f209b2d46298931ffc1635b6463a0cf0.parquet"
+              ]
+            }
+          },
+          "checks": {
+            "passed": 136,
+            "unavailable": 3,
+            "failed": 0
+          },
+          "unavailable": [
+            {
+              "name": "observed.variants",
+              "status": "unavailable",
+              "reason": "No such molecular case is present in the selected dataset"
+            },
+            {
+              "name": "api.opposite_endpoint_constraints_1",
+              "status": "unavailable",
+              "reason": "Paired occurrence has no subject product or no object isoform"
+            },
+            {
+              "name": "api.opposite_endpoint_constraints_2",
+              "status": "unavailable",
+              "reason": "Paired occurrence has no subject product or no object isoform"
+            }
+          ],
+          "tables": {
+            "entities": {
+              "rows": 19245,
+              "bytes": 3210472
+            },
+            "relations": {
+              "rows": 35630,
+              "bytes": 10827598
+            },
+            "evidence_payloads": {
+              "rows": 45765,
+              "bytes": 17364511
+            }
+          },
+          "client_check_count": 48,
+          "client_product_record_timings_ms": {
+            "client.product_1.product_records": 182.357,
+            "client.product_2.product_records": 153.939,
+            "client.isoform_1.product_records": 164.999,
+            "client.isoform_2.product_records": 169.217,
+            "client.product_any.product_records": 172.789,
+            "client.product_both.product_records": 175.615
+          }
+        },
+        {
+          "resource": "intact/2026.10.4.1",
+          "status": "passed",
+          "elapsed_seconds": 265.296,
+          "coverage": {
+            "relation_side_forms": 2386336,
+            "standalone_forms": 0,
+            "isoforms": 152185,
+            "modifications": 1553,
+            "variants": 31917,
+            "sequence_identifiers": 160945,
+            "paired_occurrences": 1165480,
+            "distinct_referenced_products": 45092
+          },
+          "client_snapshot": {
+            "staging": "temporary_hardlinks",
+            "memory_limit": "2GB",
+            "sample_relations": 5,
+            "sample_product_records": 100
+          },
+          "serving_projections": {
+            "entities": {
+              "available": true,
+              "paths": [
+                "/root/projects/omnipath-releases/20261004-molecular-forms/data/.serving/v2/entities/cdf225a602f5113850b1a527b65ab057551a0474cf396bcdd710f2af26d010f9.parquet"
+              ]
+            },
+            "relations": {
+              "available": true,
+              "paths": [
+                "/root/projects/omnipath-releases/20261004-molecular-forms/data/.serving/v2/relations/de6cad11224bcaa1a244cc37efe3551d28007fe85db7d73d0c132e63494a7aef.parquet"
+              ]
+            }
+          },
+          "checks": {
+            "passed": 115,
+            "unavailable": 3,
+            "failed": 0
+          },
+          "unavailable": [
+            {
+              "name": "observed.standalone_forms",
+              "status": "unavailable",
+              "reason": "No such molecular case is present in the selected dataset"
+            },
+            {
+              "name": "api.opposite_endpoint_constraints_1",
+              "status": "unavailable",
+              "reason": "Paired occurrence has no subject product or no object isoform"
+            },
+            {
+              "name": "api.opposite_endpoint_constraints_2",
+              "status": "unavailable",
+              "reason": "Paired occurrence has no subject product or no object isoform"
+            }
+          ],
+          "tables": {
+            "entities": {
+              "rows": 91765,
+              "bytes": 11403034
+            },
+            "relations": {
+              "rows": 730839,
+              "bytes": 132353551
+            },
+            "evidence_payloads": {
+              "rows": 1240522,
+              "bytes": 1023465634
+            }
+          },
+          "client_check_count": 40,
+          "client_product_record_timings_ms": {
+            "client.product_1.product_records": 2509.617,
+            "client.product_2.product_records": 2422.162,
+            "client.isoform_1.product_records": 2350.898,
+            "client.isoform_2.product_records": 2574.259,
+            "client.product_any.product_records": 2443.294,
+            "client.product_both.product_records": 2223.816
+          }
+        }
+      ]
+    }
+  },
+  "publication": {
+    "time": "2026-10-05T04:59:35.683542+00:00",
+    "status": "published",
+    "release": {
+      "schema_version": 1,
+      "version": "2026.10.4.1",
+      "resources": {
+        "signor": "2026.10.4.1",
+        "intact": "2026.10.4.1"
+      },
+      "references": {
+        "taxonomy": {
+          "version": "37cc9eb35b0a01e705b7c9052ff8d35e7e21ea93a97fcddd8d86e7b31d1b04d9",
+          "source_url": "https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz",
+          "source_sha256": "a3f25b7dec491938f95f7f7c5e895d0f5c70661e873e5d1108eee9959be5d6cc",
+          "taxon_count": 841,
+          "missing_taxon_ids": [
+            "3470597"
+          ]
+        }
+      },
+      "created_at": "2026-10-05T04:59:35.673073+00:00"
+    },
+    "manifest": "/root/projects/omnipath-releases/20261004-molecular-forms/data/releases/2026.10.4.1.json",
+    "note": "Isolated release only; production deployment and pointers unchanged.",
+    "browser_validation": "passed",
+    "browser_audit": "molecular-completion-audit-20261005.json"
+  },
+  "subsequent_serving_amendments": [
+    {
+      "commit": "e6cb1977ec58b56c62dd63921141fed1b09ef90e",
+      "archive_sha256": "91a63ba25fca075486c74f21b52079f849002639b0f8680cacd70b220a4574f1",
+      "installed_at": "2026-10-05T05:23:59.017446+00:00",
+      "immutable_outputs_reference_manifest_and_validation_producers_unchanged": true
+    },
+    {
+      "commit": "f07cc3ec93cc474dc40f8338a7a716a0c35013d8",
+      "archive_sha256": "5d80c11993ce44ddcf03bb365abb7d1f88005fdf93adf4bca6a2f54b2983abfe",
+      "installed_at": "2026-10-05T05:32:08.903409+00:00",
+      "immutable_outputs_reference_manifest_and_validation_producers_unchanged": true
+    }
+  ]
+}

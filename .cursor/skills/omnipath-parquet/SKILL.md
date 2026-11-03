@@ -1,0 +1,1 @@
+../../../packages/web/content/skills/omnipath-parquet/SKILL.md
