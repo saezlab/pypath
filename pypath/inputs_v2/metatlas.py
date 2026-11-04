@@ -12,31 +12,27 @@ Gene rules are associations, not independent catalysis claims for every listed g
 
 from __future__ import annotations
 
-import hashlib
-import json
+from functools import partial
+import math
 import os
 from pathlib import Path
-from functools import partial
-
-import math
 
 from biolink_model.datamodel.model import (
     ChemicalEntity,
     Gene,
     MacromolecularComplex,
     MolecularActivity,
-    NamedThing,
     QuantityValue,
     slots,
 )
 from omnipath_core.measurements import Measurement
 from omnipath_core.naming import Namespace
-from omnipath_core.resource_metadata import Content, Topic
 from omnipath_core.reactions import COMPARTMENT
+from omnipath_core.resource_metadata import Content, Topic
 from omnipath_core.source_attributes import CELLULAR_LOCATION
 
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2._reactions import (
+    _gene_rule_group,
     model_reaction_compartments,
     model_reaction_type,
     reaction_compartments_cv,
@@ -44,10 +40,23 @@ from pypath.inputs_v2._reactions import (
     source_reaction_type_cv,
     stoichiometry_compartment_go,
 )
-from pypath.inputs_v2._source_context import compartment_name, conversion_direction_cv
-from pypath.inputs_v2.parsers.metatlas import _raw, _metabolite_xrefs, _METABOLITE_XREF_URL
+from pypath.inputs_v2._source_context import (
+    compartment_name,
+    conversion_direction_cv,
+)
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.inputs_v2.parsers.metatlas import (
+    _METABOLITE_XREF_URL,
+    _metabolite_xrefs,
+    _raw,
+)
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
+from pypath.internals.silver_schema import (
+    Annotation,
+    Entity,
+    Identifier,
+    Membership,
+)
 from pypath.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
@@ -59,25 +68,12 @@ from pypath.internals.tabular_builder import (
 )
 
 
-
-def _gene_rule_group(genes: list[str]) -> Entity:
-    """Source-scoped logical AND clause, without a physical assembly claim."""
-    genes = sorted(set(genes))
-    digest = hashlib.sha256(json.dumps(genes, separators=(',', ':')).encode()).hexdigest()
-    return Entity(
-        type=NamedThing,
-        identifiers=[Identifier(type='human_gem.gpr_and', value=digest)],
-        membership=[
-            Membership(
-                member=Entity(
-                    type=Gene,
-                    identifiers=[Identifier(type=Namespace.ENSG, value=gene)],
-                    annotations=[Annotation(term=slots.in_taxon, value='NCBITaxon:9606')],
-                ),
-                predicate=slots.has_member,
-            )
-            for gene in genes
-        ],
+def _human_gem_gene_rule_group(genes: list[str]) -> Entity:
+    return _gene_rule_group(
+        genes,
+        identifier_type='human_gem.gpr_and',
+        taxon='NCBITaxon:9606',
+        gene_namespace=Namespace.ENSG,
     )
 
 
@@ -89,7 +85,7 @@ class _ReactionMembership(MembershipBuilder):
         for genes in row.get('gene_rule_clauses', []):
             if not genes:
                 continue
-            group = _gene_rule_group(genes)
+            group = _human_gem_gene_rule_group(genes)
             member = group.membership[0].member if len(genes) == 1 else group
             members.append(Membership(member=member, predicate=slots.associated_with))
         return members
@@ -387,7 +383,7 @@ reactions_schema = EntityBuilder(
 def enzyme_complexes_schema(row: dict) -> Entity | None:
     """Retain a source model AND group with a deterministic internal ID."""
     genes = [gene for gene in str(row.get('complex_subunits') or '').split('||') if gene]
-    return _gene_rule_group(genes) if genes else None
+    return _human_gem_gene_rule_group(genes) if genes else None
 
 
 

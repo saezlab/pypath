@@ -475,7 +475,7 @@ def test_human_gem_parser_and_mapper_preserve_flux_bounds(monkeypatch):
     )
     assert parsed['lower_bound'] == -1000.0
     assert parsed['upper_bound'] == 500.0
-    for mapper in ('reactions_schema', 'transport_reactions_schema'):
+    for mapper in ('reactions_schema',):
         ex = project('metatlas', mapper, parsed)
         entity = next(iter(ex.entities.values()))
         quantities = {

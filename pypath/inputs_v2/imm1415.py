@@ -1,28 +1,50 @@
-"""
-Parse iMM1415 data and emit Entity records.
+"""iMM1415 mouse metabolic model: its own metabolites, plus the shared BiGG reaction content.
 
-This module converts information from the BiGG Model iMM1415 into Entity
-records using the declarative schema pattern.
+iMM1415 (Sigurdsson et al. 2010) is a mouse genome-scale metabolic
+reconstruction, distributed as BiGG JSON exactly like Recon3D's. Its
+``reactions``, ``enzyme_complexes`` and ``genes`` datasets come from the
+shared factory in :mod:`pypath.inputs_v2._bigg`, with the mouse taxon and a
+GPR identifier prefix of their own.
+
+The ``metabolites`` dataset stays hand-written and unfiltered: it lists
+every metabolite the model carries, not only the ones no reaction mentions
+(``orphan_filter=False`` is therefore never passed to the shared factory —
+this dataset is not built from it at all). The 16-namespace cross-reference
+set and the per-metabolite ``located_in`` compartment relation are wider
+than what a reaction participant row carries, and iMM1415 had no
+`reactions` dataset at all until this module existed to filter against. A
+metabolite that is also a reaction participant is therefore described
+twice after this module's reaction content lands: once here, standalone,
+and once per reaction, as a participant. That duplication is accepted
+rather than resolved by a filter that would cost the wider identifier
+coverage and the compartment relation to buy it back.
 """
 
 import json
-from pypath.inputs_v2.base import ResourceConfig, Download, Resource, Dataset
+
+from biolink_model.datamodel.model import ChemicalEntity, OntologyClass, slots
+from omnipath_core.naming import Namespace
+from omnipath_core.reactions import go_compartment
+from omnipath_core.resource_metadata import Content, Topic
+
+from pypath.inputs_v2._bigg import bigg_resource
 from pypath.inputs_v2._source_context import compartment_name
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
     CV,
+    AnnotationsBuilder,
     AssociationBuilder,
     AssociationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from biolink_model.datamodel.model import ChemicalEntity, OntologyClass, slots
-from omnipath_core.naming import Namespace
-from omnipath_core.reactions import go_compartment
-from omnipath_core.resource_metadata import Content, Topic
+from pypath.resources import urls
 
-URL = 'http://bigg.ucsd.edu/static/models/iMM1415.json'
+MOUSE_TAXON_ID = 'NCBITaxon:10090'
+GPR_PREFIX = 'imm1415.gpr_and'
+
 config = ResourceConfig(
     id=ResourceCv.IMM1415,
     name='iMM1415',
@@ -42,6 +64,8 @@ def parser(opener, **kwargs):
         proc = {k: metabolite.get(k, '') for k in ('id', 'name')}
         proc['compartment'] = comps.get(metabolite.get('compartment'), '')
         proc['compartment_code'] = metabolite.get('compartment') or ''
+        proc['formula'] = metabolite.get('formula') or ''
+        proc['charge'] = metabolite.get('charge')
         proc.update(
             {
                 k: (metabolite.get('annotation') or {}).get(k, [])
@@ -61,7 +85,7 @@ def parser(opener, **kwargs):
 
 
 download = Download(
-    url=URL,
+    url=urls.urls['imm1415']['bigg_json'],
     filename='iMM1415.json',
     subfolder='bigg',
     large=True,
@@ -93,7 +117,10 @@ schema = EntityBuilder(
         CV(term=Namespace.SWISSLIPIDS, value=f('slm')),
         CV(term=Namespace.NAME, value=f('name')),
     ),
-    # No annotations: every metabolite has the SBO term of a simple chemical.
+    annotations=AnnotationsBuilder(
+        CV(term='chemrof:charge', value=f('charge')),
+        CV(term=slots.has_chemical_formula, value=f('formula')),
+    ),
     # A metabolite of the model is located in its compartment. The model names
     # its compartments in its own way ("mitochondria", "peroxisome/glyoxysome");
     # the codes are those of Recon3D and Human-GEM, so they take the same GO terms.
@@ -108,7 +135,15 @@ schema = EntityBuilder(
         ),
     ),
 )
+
+_bigg_datasets = bigg_resource(download=download, taxon=MOUSE_TAXON_ID, gpr_prefix=GPR_PREFIX)
+reactions_schema = _bigg_datasets['reactions'].mapper
+enzyme_complexes_schema = _bigg_datasets['enzyme_complexes'].mapper
+
 resource = Resource(
     config=config,
     metabolites=Dataset(download=download, mapper=schema, raw_parser=parser),
+    reactions=_bigg_datasets['reactions'],
+    enzyme_complexes=_bigg_datasets['enzyme_complexes'],
+    genes=_bigg_datasets['genes'],
 )
