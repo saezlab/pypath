@@ -65,6 +65,7 @@ RESOURCES_TESTS = $(RESOURCES)/test/test_chembl_molecular_queries.py \
 	$(RESOURCES)/test/test_inputs_v2_slc.py \
 	$(RESOURCES)/test/test_inputs_v2_metatlas_models.py \
 	$(RESOURCES)/test/test_inputs_v2_imm1415.py \
+	$(RESOURCES)/test/test_inputs_v2_brenda_regulation.py \
 	$(RESOURCES)/test/test_tabular_execution.py
 test-resources:
 	uv run --frozen pytest $(RESOURCES_TESTS) -q

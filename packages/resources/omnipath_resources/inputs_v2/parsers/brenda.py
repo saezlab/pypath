@@ -9,24 +9,8 @@ from typing import Any, NamedTuple
 
 from omnipath_resources.internals.ontology_schema import OntologyRelationship, OntologyTerm
 
-RECORDS_ENABLED = {
-    'ID',
-    'PR',
-    'AC',
-    'IN',
-    'CF',
-    'KI',
-    'KM',
-    'RF',
-}
 
 ID = re.compile(r'^#([\d,]+)#')
-PR_ORGANISM_NAME = re.compile(r"#\d+# '?([-\w\s\.\[\]]+[^\s#\{<\('])")
-PR_IDENTIFIER = re.compile(r'.*\{(.*?)\;.*')
-REFERENCE = re.compile(r'.*\<([\d,\s]+)\>$')
-ROLE_COMPOUND = re.compile(r'^#[\d,]+# ([^#]+) [\(\<].*')
-K_COMPOUND = re.compile(r'^#[\d,]+# ([-\d.e]+ \{.*\}).*')
-DETAILS = re.compile(r'.*\((#.*\>)\).*')
 REF_ID = re.compile(r'^\<(\d+)\>.*')
 REF_PMID = re.compile(r'.*\{Pubmed:(\d+)\}')
 EC_ID = re.compile(
@@ -35,7 +19,7 @@ EC_ID = re.compile(
 )
 EC_REFERENCE = re.compile(r'\bEC\s+(\d+\.\d+\.\d+\.(?:\d+|[nB]\d+))\b')
 UNIPROT_IDENTIFIER = re.compile(
-    r'\{([^{};]+);\s*source:\s*(?:UniProt|SwissProt)\}',
+    r'\{([^{};]+);\s*source:\s*(?:UniProt|SwissProt|TrEMBL)\}',
     flags=re.IGNORECASE,
 )
 TRAILING_REFERENCE = re.compile(r'\s*<[\d,]+>\s*$')
@@ -44,7 +28,6 @@ REFERENCE_MARKER = re.compile(r'\s*<[\d,\s]+>')
 NOTE_START = re.compile(r'\(\s*#[\d,]+#')
 NOTE_SEPARATOR = re.compile(r';\s*(?=#[\d,]+#)')
 ACCESSION_BLOCK = re.compile(r'\s*\{[^{}]*\}')
-
 
 
 class Commentary(NamedTuple):
@@ -65,26 +48,6 @@ TOP_EC_CLASS_NAMES = {
     '6': 'Ligases',
     '7': 'Translocases',
 }
-
-ROLES_MAPPER = {
-    'AC': ('Activator', ROLE_COMPOUND),
-    'IN': ('Inhibitor', ROLE_COMPOUND),
-    'CF': ('Cofactor', ROLE_COMPOUND),
-    'KI': ('Ki', K_COMPOUND),
-    'KM': ('Km', K_COMPOUND),
-}
-
-
-def parser(opener, **_kwargs):
-    for record in iter_brenda_records(opener, fields=RECORDS_ENABLED):
-        ec, status = parse_ec_id(record.get('ID'))
-        if not ec or status:
-            continue
-
-        parsed_record = defaultdict(list, record)
-        parsed_record['ID'] = ec
-        for row in process_record(parsed_record).values():
-            yield normalize_processed_record(row)
 
 
 def iter_enzyme_ontology(opener, max_records: int | None = None, **_kwargs):
@@ -277,89 +240,6 @@ def ec_term_id(row: dict[str, Any]) -> str:
     return ec_term_id_from_ec(row['EC'])
 
 
-def process_record(record):
-    eid = record['ID']
-    ref_dict = process_references(record)
-    proc = defaultdict(lambda: defaultdict(set))
-
-    for pr in record.get('PR', []):
-        id_match = ID.match(pr)
-        organism_match = PR_ORGANISM_NAME.match(pr)
-        reference_match = REFERENCE.match(pr)
-        if not id_match or not organism_match or not reference_match:
-            continue
-
-        pid = id_match.group(1)
-        org = organism_match.group(1)
-        upids = g.group(1) if (g := PR_IDENTIFIER.match(pr)) else ''
-        upids = [i for i in upids.split(' AND ') if i]
-        refs = split_ref_ids(reference_match.group(1))
-
-        proc[pid]['EC'] = eid
-        proc[pid]['UniProt'].update(upids)
-        proc[pid]['#'] = pid
-        proc[pid]['Organism'].add(org)
-        proc[pid]['Refs'].update(refs)
-
-    for key in ['AC', 'IN', 'CF', 'KI', 'KM']:
-        proc = process_record_roles(proc, record, key)
-
-    for pid in proc.keys():
-        proc[pid]['Refs'] = [
-            ref
-            for i in proc[pid]['Refs']
-            if (ref := ref_dict[i])
-        ]
-
-    return proc
-
-
-def process_record_roles(proc, record, key):
-    if key not in ROLES_MAPPER:
-        return {'ERROR': '`key` not found in `ROLES_MAPPER` for processing'}
-
-    new_key, comp_regex = ROLES_MAPPER[key]
-
-    for role_record in record.get(key, []):
-        compound_match = comp_regex.match(role_record)
-        id_match = ID.match(role_record)
-        reference_match = REFERENCE.match(role_record)
-        if not compound_match or not id_match or not reference_match:
-            continue
-
-        compound = compound_match.group(1)
-        aux = x.group(1) if (x := DETAILS.match(role_record)) else ''
-        initial_pids = set(id_match.group(1).split(','))
-        initial_refs = set(split_ref_ids(reference_match.group(1)))
-
-        aux = re.sub(r'; #', r'||#', aux)
-
-        for entry in aux.split('||'):
-            if not entry:
-                continue
-
-            entry_id_match = ID.match(entry)
-            entry_reference_match = REFERENCE.match(entry)
-            if not entry_id_match or not entry_reference_match:
-                continue
-
-            pids = entry_id_match.group(1).split(',')
-            refs = split_ref_ids(entry_reference_match.group(1))
-
-            for pid in pids:
-                proc[pid][new_key].add(compound)
-                proc[pid]['Refs'].update(refs)
-                initial_pids -= {pid}
-
-            initial_refs -= set(refs)
-
-        for pid in initial_pids:
-            proc[pid][new_key].add(compound)
-            proc[pid]['Refs'].update(initial_refs)
-
-    return proc
-
-
 def process_references(record):
     refs = {}
     regexes = [
@@ -375,13 +255,6 @@ def process_references(record):
         refs[res[0]] = res[1]
 
     return refs
-
-
-def normalize_processed_record(row: dict[str, Any]) -> dict[str, Any]:
-    return {
-        key: sorted(value) if isinstance(value, set) else value
-        for key, value in row.items()
-    }
 
 
 def term_to_row(term: OntologyTerm) -> dict[str, Any]:
@@ -586,3 +459,149 @@ def extract_uniprot_ids(value: str) -> list[str]:
             if item.strip()
         )
     return sorted(set(identifiers))
+
+
+# ── regulation ───────────────────────────────────────────────────────────────
+
+# The roles of a compound in BRENDA's AC, IN and CF fields.
+REGULATION_ROLES = {'AC': 'activator', 'IN': 'inhibitor', 'CF': 'cofactor'}
+# A Ki line: ``#1,2# 0.0051 {pyrazole} (notes) <refs>``; -999 means "no value".
+KI_VALUE = re.compile(r'^#([\d,]+)#\s+(\S+)\s+\{(.+?)\}')
+_SPACE = re.compile(r'\s+')
+
+
+def _tsv_value(value: str) -> str:
+    """A SPARQL TSV cell: a quoted literal is unquoted, an IRI or number stays."""
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] == '"':
+        value = value[1:-1].replace('\\"', '"').replace('\\t', '\t').replace('\\\\', '\\')
+    return value
+
+
+def _iter_tsv(opener) -> Generator[list[str], None, None]:
+    handle = opener.result if not isinstance(opener.result, dict) else opener.result[sorted(opener.result)[0]]
+    lines = iter(handle)
+    next(lines, None)  # the header names the query variables
+    for line in lines:
+        line = line.decode('utf-8') if isinstance(line, bytes) else line
+        if line.strip():
+            yield [_tsv_value(cell) for cell in line.rstrip('\r\n').split('\t')]
+
+
+class BrendaCompounds:
+    """BRENDA's own ligand table: names and synonyms to ligand IDs and structures.
+
+    A BRENDA name finds its ligand when it names exactly one: a label first,
+    then any name, then the same ignoring whitespace (the flat file wraps long
+    names and gains spaces where it does). A name of several ligands finds none.
+    """
+
+    def __init__(self, names_opener, structures_opener) -> None:
+        labels, names = defaultdict(set), defaultdict(set)
+        squashed_labels, squashed = defaultdict(set), defaultdict(set)
+        for ligand, kind, name in _iter_tsv(names_opener):
+            key = _SPACE.sub('', name)
+            names[name].add(ligand)
+            squashed[key].add(ligand)
+            if kind == 'label':
+                labels[name].add(ligand)
+                squashed_labels[key].add(ligand)
+        self._lookups = (labels, names, squashed_labels, squashed)
+        self.structures = {
+            ligand: (inchikey.removeprefix('InChIKey='), inchi)
+            for ligand, inchikey, inchi in _iter_tsv(structures_opener)
+        }
+
+    def ligand(self, name: str) -> str | None:
+        for lookup, key in zip(self._lookups, (name, name, _SPACE.sub('', name), _SPACE.sub('', name))):
+            found = lookup.get(key, ())
+            if len(found) == 1:
+                return next(iter(found))
+            if found:
+                return None
+        return None
+
+
+def _ki_values(record: dict) -> dict[tuple[str, str], list[str]]:
+    """Ki values by protein and compound name; BRENDA's -999 is "no value"."""
+    values = defaultdict(list)
+    for line in record.get('KI', []):
+        if not (match := KI_VALUE.match(line)) or match[2].startswith('-999'):
+            continue
+        compound = clean_text(match[3])
+        for pid in split_ref_ids(match[1]):
+            values[pid, compound].append(match[2])
+    return values
+
+
+def iter_regulation(
+    opener,
+    *,
+    names_download,
+    structures_download,
+    max_records: int | None = None,
+    **kwargs: Any,
+) -> Generator[dict[str, Any], None, None]:
+    """One record per protein and compound of an AC, IN or CF statement.
+
+    Each protein keeps only the notes and references the source assigns to it,
+    as the molecular forms do. The compound is BRENDA's own ligand where its
+    name finds one (``BrendaCompounds``); Ki values of the same protein and
+    compound go with it.
+    """
+    if not opener or not getattr(opener, 'result', None):
+        return
+    force_refresh = kwargs.get('force_refresh', False)
+    compounds = BrendaCompounds(
+        names_download.open(force_refresh=force_refresh),
+        structures_download.open(force_refresh=force_refresh),
+    )
+    emitted = 0
+    for record in iter_brenda_records(
+        opener, fields={'ID', 'PR', 'RF', 'AC', 'IN', 'CF', 'KI'}
+    ):
+        ec, status = parse_ec_id(record.get('ID'))
+        if not ec or status:
+            continue
+        proteins = {}
+        for protein in record.get('PR', []):
+            if parsed := parse_commentary(protein):
+                organism = clean_text(ACCESSION_BLOCK.sub('', parsed.text))
+                accessions = extract_uniprot_ids(protein)
+                for pid in parsed.proteins:
+                    proteins[pid] = (organism or None, accessions)
+        references = process_references(record)
+        ki = _ki_values(record)
+        for section, role in REGULATION_ROLES.items():
+            for statement in record.get(section, []):
+                parsed = parse_commentary(statement)
+                if not parsed or parsed.text.lower() in {'more', 'additional information'}:
+                    continue
+                ligand = compounds.ligand(parsed.text)
+                inchikey, inchi = compounds.structures.get(ligand, (None, None))
+                noted = {ref for note in parsed.notes for ref in note.references}
+                for pid in parsed.proteins:
+                    own = [note for note in parsed.notes if pid in note.proteins]
+                    own_refs = (
+                        dedupe([ref for note in own for ref in note.references])
+                        or [ref for ref in parsed.references if ref not in noted]
+                        or parsed.references
+                    )
+                    organism, accessions = proteins.get(pid, (None, []))
+                    yield {
+                        'EC': ec,
+                        'protein_record_id': pid,
+                        'UniProt': accessions[0] if len(accessions) == 1 else None,
+                        'organism': organism,
+                        'role': role,
+                        'compound_name': parsed.text,
+                        'brenda_ligand': ligand,
+                        'inchikey': inchikey,
+                        'inchi': inchi,
+                        'notes': dedupe([note.text for note in own]),
+                        'ki': ki.get((pid, parsed.text), []) if role == 'inhibitor' else [],
+                        'Refs': [references[ref] for ref in own_refs if references.get(ref)],
+                    }
+                    emitted += 1
+                    if max_records is not None and emitted >= max_records:
+                        return

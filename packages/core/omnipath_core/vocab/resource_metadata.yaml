@@ -174,9 +174,10 @@
   },
   "brenda": {
     "display_name": "BRENDA",
-    "description": "Protein enzyme-class annotations and the enzyme classification hierarchy.",
+    "description": "Enzyme activators, inhibitors and cofactors, protein enzyme-class annotations and the enzyme classification hierarchy.",
     "tags": [
       "metabolism",
+      "compound_target_interactions",
       "molecular_annotations",
       "ontologies"
     ],
