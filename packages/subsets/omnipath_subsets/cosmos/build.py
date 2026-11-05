@@ -71,7 +71,7 @@ DIRECTION_TERM = "biopax:conversionDirection"
 # A reaction two resources report keeps its place as long as one of them is
 # named here, because the gate is an overlap rather than a containment: the 532
 # reactions Reactome and Rhea both describe stay, on Rhea's word.
-REACTION_SOURCES = ("kegg", "rhea", "metatlas", "recon3d")
+REACTION_SOURCES = ("kegg", "rhea", "metatlas", "recon3d", "imm1415")
 
 # The participant roles the projection reads. The rest of the vocabulary —
 # cofactor, regulator, member — is counted and left out, for the reason the
