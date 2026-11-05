@@ -10,12 +10,25 @@ apart after resolution. Recon3D and Human-GEM share the participant encoding
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Mapping
+import hashlib
+import json
 from typing import Any
 
+from biolink_model.datamodel.model import Gene, NamedThing, slots
 from omnipath_core import reactions as _r
-from omnipath_core.source_attributes import SOURCE_REACTION, SOURCE_REACTION_TYPE
+from omnipath_core.naming import Namespace
+from omnipath_core.source_attributes import (
+    SOURCE_REACTION,
+    SOURCE_REACTION_TYPE,
+)
 
 from omnipath_resources.inputs_v2._source_context import compartment_name
+from omnipath_resources.internals.silver_schema import (
+    Annotation,
+    Entity,
+    Identifier,
+    Membership,
+)
 from omnipath_resources.internals.tabular_builder import CV
 
 Row = Mapping[str, Any]
@@ -93,3 +106,49 @@ def _number(value: Any) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _gene_rule_group(
+    genes: list[str],
+    *,
+    identifier_type: str,
+    taxon: str,
+    gene_namespace: Namespace,
+) -> Entity:
+    """Source-scoped logical AND clause, without a physical assembly claim.
+
+    Shared by every genome-scale model that emits a gene-protein-reaction
+    (GPR) rule. ``identifier_type`` must be unique per model (e.g.
+    ``'recon3d.gpr_and'``, ``'imm1415.gpr_and'``) so that two models never
+    collide on an identical, unqualified gene-rule digest.
+
+    Args:
+        genes: The subunit identifiers of one AND clause.
+        identifier_type: The model-scoped identifier type for the group
+            entity — not a registered namespace, a model-private digest key.
+        taxon: The ``NCBITaxon:...`` value every subunit gene is annotated
+            with.
+        gene_namespace: The identifier namespace the model's genes use
+            (Entrez for Recon3D and iMM1415, Ensembl for Human-GEM).
+
+    Returns:
+        A ``NamedThing`` entity whose membership is one ``Gene`` per
+        subunit, each in ``gene_namespace`` and annotated with ``taxon``.
+    """
+    genes = sorted(set(genes))
+    digest = hashlib.sha256(json.dumps(genes, separators=(',', ':')).encode()).hexdigest()
+    return Entity(
+        type=NamedThing,
+        identifiers=[Identifier(type=identifier_type, value=digest)],
+        membership=[
+            Membership(
+                member=Entity(
+                    type=Gene,
+                    identifiers=[Identifier(type=gene_namespace, value=gene)],
+                    annotations=[Annotation(term=slots.in_taxon, value=taxon)],
+                ),
+                predicate=slots.has_member,
+            )
+            for gene in genes
+        ],
+    )

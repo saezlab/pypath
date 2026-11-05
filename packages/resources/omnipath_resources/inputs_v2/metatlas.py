@@ -22,8 +22,6 @@ Gene rules are associations, not independent catalysis claims for every listed g
 
 from __future__ import annotations
 
-import hashlib
-import json
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -36,7 +34,6 @@ from biolink_model.datamodel.model import (
     Gene,
     MacromolecularComplex,
     MolecularActivity,
-    NamedThing,
     QuantityValue,
     slots,
 )
@@ -47,6 +44,7 @@ from omnipath_core.reactions import COMPARTMENT
 from omnipath_core.source_attributes import CELLULAR_LOCATION
 
 from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.inputs_v2._reactions import _gene_rule_group as _shared_gene_rule_group
 from omnipath_resources.inputs_v2._reactions import (
     model_reaction_compartments,
     model_reaction_type,
@@ -104,22 +102,11 @@ HUMAN = MODELS[0]
 
 def _gene_rule_group(genes: list[str], model: GemModel = HUMAN) -> Entity:
     """Source-scoped logical AND clause, without a physical assembly claim."""
-    genes = sorted(set(genes))
-    digest = hashlib.sha256(json.dumps(genes, separators=(',', ':')).encode()).hexdigest()
-    return Entity(
-        type=NamedThing,
-        identifiers=[Identifier(type=model.gene_rule_namespace, value=digest)],
-        membership=[
-            Membership(
-                member=Entity(
-                    type=Gene,
-                    identifiers=[Identifier(type=model.gene_namespace, value=gene)],
-                    annotations=[Annotation(term=slots.in_taxon, value=f'NCBITaxon:{model.taxon}')],
-                ),
-                predicate=slots.has_member,
-            )
-            for gene in genes
-        ],
+    return _shared_gene_rule_group(
+        genes,
+        identifier_type=model.gene_rule_namespace,
+        taxon=f'NCBITaxon:{model.taxon}',
+        gene_namespace=model.gene_namespace,
     )
 
 

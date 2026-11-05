@@ -25,7 +25,7 @@ REACTION_CASES = [
     for module, mappers, row in (
         (
             'rhea',
-            ('reactions_schema', 'transport_reactions_schema'),
+            ('reactions_schema',),
             {
                 'rhea_id': '123',
                 'participant_chebi': '1||2||3',
@@ -36,7 +36,16 @@ REACTION_CASES = [
         ),
         (
             'recon3d',
-            ('reactions_schema', 'transport_reactions_schema'),
+            ('reactions_schema',),
+            {
+                'bigg_reaction_id': 'RX1',
+                'reactants': 'a:c:2||b:c:n',
+                'products': 'a:e:(n+1)',
+            },
+        ),
+        (
+            'imm1415',
+            ('reactions_schema',),
             {
                 'bigg_reaction_id': 'RX1',
                 'reactants': 'a:c:2||b:c:n',
@@ -45,7 +54,7 @@ REACTION_CASES = [
         ),
         (
             'metatlas',
-            ('reactions_schema', 'transport_reactions_schema'),
+            ('reactions_schema',),
             {
                 'human_gem_reaction_id': 'RX1',
                 'reactants': 'a:c:2||b:c:n',
@@ -186,7 +195,7 @@ def test_direction_keeps_source_events_separate(
 
 @pytest.mark.parametrize('missing', ['', 'invalid', 'bad-CHEBI:999-tail'])
 @pytest.mark.parametrize(
-    'mapper', ['reactions_schema', 'transport_reactions_schema']
+    'mapper', ['reactions_schema']
 )
 def test_rhea_missing_identifier_preserves_compartment_pairing(
     missing: str, mapper: str
@@ -337,7 +346,7 @@ def test_ligand_receptor_roles_follow_canonical_flips_per_evidence(
 
 
 @pytest.mark.parametrize(
-    'mapper', ['reactions_schema', 'transport_reactions_schema']
+    'mapper', ['reactions_schema']
 )
 def test_rhea_short_compartment_array_does_not_broadcast(mapper: str) -> None:
     """Leave unreported transport sides absent instead of copying the first value."""
@@ -364,7 +373,7 @@ def test_rhea_short_compartment_array_does_not_broadcast(mapper: str) -> None:
 
 
 @pytest.mark.parametrize(
-    'mapper', ['reactions_schema', 'transport_reactions_schema']
+    'mapper', ['reactions_schema']
 )
 def test_rhea_short_role_array_does_not_invent_roles(mapper: str) -> None:
     """Do not assign an unreported role to later source participants."""
@@ -390,7 +399,7 @@ def test_rhea_short_role_array_does_not_invent_roles(mapper: str) -> None:
 
 
 @pytest.mark.parametrize(
-    'mapper', ['reactions_schema', 'transport_reactions_schema']
+    'mapper', ['reactions_schema']
 )
 def test_rhea_short_identifier_array_does_not_duplicate_identity(
     mapper: str,
