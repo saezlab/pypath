@@ -12,6 +12,7 @@ AND groups of genes; these groups do not assert physical assemblies.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import hashlib
 import json
 
@@ -45,19 +46,35 @@ from omnipath_resources.internals.tabular_builder import (
 )
 
 
-def _gene_rule_group(genes: list[str]) -> Entity:
+@dataclass(frozen=True)
+class BiggModel:
+    """A BiGG genome-scale model: its organism and the namespace of its AND clauses.
+
+    Genes are Entrez identifiers, as BiGG models give them; reaction and
+    metabolite identifiers are BiGG's universal ones, shared by every model.
+    """
+
+    name: str
+    taxon: str
+    gene_rule_namespace: str
+
+
+RECON3D = BiggModel('Recon3D', '9606', 'recon3d.gpr_and')
+
+
+def _gene_rule_group(genes: list[str], bigg_model: BiggModel = RECON3D) -> Entity:
     """Source-scoped logical AND clause, without a physical assembly claim."""
     genes = sorted(set(genes))
     digest = hashlib.sha256(json.dumps(genes, separators=(',', ':')).encode()).hexdigest()
     return Entity(
         type=model.NamedThing,
-        identifiers=[Identifier(type='recon3d.gpr_and', value=digest)],
+        identifiers=[Identifier(type=bigg_model.gene_rule_namespace, value=digest)],
         membership=[
             Membership(
                 member=Entity(
                     type=model.Gene,
                     identifiers=[Identifier(type=Namespace.ENTREZ, value=gene)],
-                    annotations=[Annotation(term=slots.in_taxon, value='NCBITaxon:9606')],
+                    annotations=[Annotation(term=slots.in_taxon, value=f'NCBITaxon:{bigg_model.taxon}')],
                 ),
                 predicate=slots.has_member,
             )
@@ -69,12 +86,16 @@ def _gene_rule_group(genes: list[str]) -> Entity:
 class _ReactionMembership(MembershipBuilder):
     """Attach alternative GPR clauses, retaining required genes within each."""
 
+    def __init__(self, bigg_model: BiggModel, *members) -> None:
+        super().__init__(*members)
+        self.bigg_model = bigg_model
+
     def build(self, row, cache):
         members = super().build(row, cache)
         for genes in row.get('gene_rule_clauses', []):
             if not genes:
                 continue
-            group = _gene_rule_group(genes)
+            group = _gene_rule_group(genes, self.bigg_model)
             member = group.membership[0].member if len(genes) == 1 else group
             members.append(Membership(member=member, predicate=slots.associated_with))
         return members
@@ -151,201 +172,206 @@ metabolites_schema = EntityBuilder(
 
 # ── reactions ────────────────────────────────────────────────────────────────
 
-reactions_schema = EntityBuilder(
-    entity_type=model.MolecularActivity,
-    identifiers=IdentifiersBuilder(
-        CV(term=Namespace.BIGG_REACTION, value=f('bigg_reaction_id')),
-        CV(term=Namespace.METANETX_REACTION, value=f('metanetx_reaction')),
-        CV(term=Namespace.NAME, value=f('name')),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(
-            term=slots.has_topic,
-            value=f(
-                'ec', transform=lambda v: 'EC:' + str(v).removeprefix('EC:')
+def _reactions_schema(bigg_model: BiggModel) -> EntityBuilder:
+    return EntityBuilder(
+        entity_type=model.MolecularActivity,
+        identifiers=IdentifiersBuilder(
+            CV(term=Namespace.BIGG_REACTION, value=f('bigg_reaction_id')),
+            CV(term=Namespace.METANETX_REACTION, value=f('metanetx_reaction')),
+            CV(term=Namespace.NAME, value=f('name')),
+        ),
+        annotations=AnnotationsBuilder(
+            CV(
+                term=slots.has_topic,
+                value=f(
+                    'ec', transform=lambda v: 'EC:' + str(v).removeprefix('EC:')
+                ),
+            ),
+            reaction_type_cv(f('sbo')),
+            # The model's subsystem ("Glycolysis/gluconeogenesis"), as Human-GEM
+            # keeps its own.
+            source_reaction_type_cv(f('subsystem')),
+            reaction_compartments_cv(model_reaction_compartments),
+        ),
+        membership=_ReactionMembership(
+            bigg_model,
+            MembersFromList(
+                entity_type=model.ChemicalEntity,
+                identifiers=IdentifiersBuilder(
+                    CV(
+                        term=Namespace.BIGG_METABOLITE,
+                        value=f(
+                            'reactants',
+                            delimiter='||',
+                            map='stoich_id',
+                            preserve_indices=True,
+                        ),
+                    ),
+                    CV(
+                        term=Namespace.HMDB,
+                        value=f(
+                            'reactant_hmdb',
+                            delimiter='||',
+                            map='split_member_values',
+                            preserve_indices=True,
+                        ),
+                    ),
+                    CV(
+                        term=Namespace.CHEBI,
+                        value=f(
+                            'reactant_chebi',
+                            delimiter='||',
+                            map='split_member_values',
+                            preserve_indices=True,
+                        ),
+                    ),
+                    CV(
+                        term=Namespace.KEGG,
+                        value=f(
+                            'reactant_kegg_compound',
+                            delimiter='||',
+                            map='split_member_values',
+                            preserve_indices=True,
+                        ),
+                    ),
+                    CV(
+                        term=Namespace.METANETX,
+                        value=f(
+                            'reactant_metanetx',
+                            delimiter='||',
+                            map='split_member_values',
+                            preserve_indices=True,
+                        ),
+                    ),
+                    CV(
+                        term=Namespace.NAME,
+                        value=f(
+                            'reactant_name', delimiter='||', preserve_indices=True
+                        ),
+                    ),
+                ),
+                annotations=AnnotationsBuilder(
+                    conversion_direction_cv(),
+                    CV(
+                        term=slots.stoichiometry,
+                        value=f(
+                            'reactants',
+                            delimiter='||',
+                            map='stoich_val',
+                            preserve_indices=True,
+                        ),
+                    ),
+                    CV(term=COMPARTMENT, value=f('reactants', delimiter='||', map='stoich_go', preserve_indices=True)),
+                    CV(term=CELLULAR_LOCATION, value=f('reactants', delimiter='||', map='stoich_comp', preserve_indices=True)),
+                ),
+                entity_annotations=AnnotationsBuilder(
+                    CV(
+                        term='chemrof:charge',
+                        value=f(
+                            'reactant_charge', delimiter='||', preserve_indices=True
+                        ),
+                    ),
+                    CV(
+                        term=slots.has_chemical_formula,
+                        value=f(
+                            'reactant_formula',
+                            delimiter='||',
+                            preserve_indices=True,
+                        ),
+                    ),
+                ),
+                predicate=slots.has_input,
+            ),
+            MembersFromList(
+                entity_type=model.ChemicalEntity,
+                identifiers=IdentifiersBuilder(
+                    CV(
+                        term=Namespace.BIGG_METABOLITE,
+                        value=f(
+                            'products',
+                            delimiter='||',
+                            map='stoich_id',
+                            preserve_indices=True,
+                        ),
+                    ),
+                    CV(
+                        term=Namespace.HMDB,
+                        value=f(
+                            'product_hmdb',
+                            delimiter='||',
+                            map='split_member_values',
+                            preserve_indices=True,
+                        ),
+                    ),
+                    CV(
+                        term=Namespace.CHEBI,
+                        value=f(
+                            'product_chebi',
+                            delimiter='||',
+                            map='split_member_values',
+                            preserve_indices=True,
+                        ),
+                    ),
+                    CV(
+                        term=Namespace.KEGG,
+                        value=f(
+                            'product_kegg_compound',
+                            delimiter='||',
+                            map='split_member_values',
+                            preserve_indices=True,
+                        ),
+                    ),
+                    CV(
+                        term=Namespace.METANETX,
+                        value=f(
+                            'product_metanetx',
+                            delimiter='||',
+                            map='split_member_values',
+                            preserve_indices=True,
+                        ),
+                    ),
+                    CV(
+                        term=Namespace.NAME,
+                        value=f(
+                            'product_name', delimiter='||', preserve_indices=True
+                        ),
+                    ),
+                ),
+                annotations=AnnotationsBuilder(
+                    conversion_direction_cv(),
+                    CV(
+                        term=slots.stoichiometry,
+                        value=f(
+                            'products',
+                            delimiter='||',
+                            map='stoich_val',
+                            preserve_indices=True,
+                        ),
+                    ),
+                    CV(term=COMPARTMENT, value=f('products', delimiter='||', map='stoich_go', preserve_indices=True)),
+                    CV(term=CELLULAR_LOCATION, value=f('products', delimiter='||', map='stoich_comp', preserve_indices=True)),
+                ),
+                entity_annotations=AnnotationsBuilder(
+                    CV(
+                        term='chemrof:charge',
+                        value=f(
+                            'product_charge', delimiter='||', preserve_indices=True
+                        ),
+                    ),
+                    CV(
+                        term=slots.has_chemical_formula,
+                        value=f(
+                            'product_formula', delimiter='||', preserve_indices=True
+                        ),
+                    ),
+                ),
+                predicate=slots.has_output,
             ),
         ),
-        reaction_type_cv(f('sbo')),
-        # The model's subsystem ("Glycolysis/gluconeogenesis"), as Human-GEM
-        # keeps its own.
-        source_reaction_type_cv(f('subsystem')),
-        reaction_compartments_cv(model_reaction_compartments),
-    ),
-    membership=_ReactionMembership(
-        MembersFromList(
-            entity_type=model.ChemicalEntity,
-            identifiers=IdentifiersBuilder(
-                CV(
-                    term=Namespace.BIGG_METABOLITE,
-                    value=f(
-                        'reactants',
-                        delimiter='||',
-                        map='stoich_id',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.HMDB,
-                    value=f(
-                        'reactant_hmdb',
-                        delimiter='||',
-                        map='split_member_values',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.CHEBI,
-                    value=f(
-                        'reactant_chebi',
-                        delimiter='||',
-                        map='split_member_values',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.KEGG,
-                    value=f(
-                        'reactant_kegg_compound',
-                        delimiter='||',
-                        map='split_member_values',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.METANETX,
-                    value=f(
-                        'reactant_metanetx',
-                        delimiter='||',
-                        map='split_member_values',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.NAME,
-                    value=f(
-                        'reactant_name', delimiter='||', preserve_indices=True
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                conversion_direction_cv(),
-                CV(
-                    term=slots.stoichiometry,
-                    value=f(
-                        'reactants',
-                        delimiter='||',
-                        map='stoich_val',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(term=COMPARTMENT, value=f('reactants', delimiter='||', map='stoich_go', preserve_indices=True)),
-                CV(term=CELLULAR_LOCATION, value=f('reactants', delimiter='||', map='stoich_comp', preserve_indices=True)),
-            ),
-            entity_annotations=AnnotationsBuilder(
-                CV(
-                    term='chemrof:charge',
-                    value=f(
-                        'reactant_charge', delimiter='||', preserve_indices=True
-                    ),
-                ),
-                CV(
-                    term=slots.has_chemical_formula,
-                    value=f(
-                        'reactant_formula',
-                        delimiter='||',
-                        preserve_indices=True,
-                    ),
-                ),
-            ),
-            predicate=slots.has_input,
-        ),
-        MembersFromList(
-            entity_type=model.ChemicalEntity,
-            identifiers=IdentifiersBuilder(
-                CV(
-                    term=Namespace.BIGG_METABOLITE,
-                    value=f(
-                        'products',
-                        delimiter='||',
-                        map='stoich_id',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.HMDB,
-                    value=f(
-                        'product_hmdb',
-                        delimiter='||',
-                        map='split_member_values',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.CHEBI,
-                    value=f(
-                        'product_chebi',
-                        delimiter='||',
-                        map='split_member_values',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.KEGG,
-                    value=f(
-                        'product_kegg_compound',
-                        delimiter='||',
-                        map='split_member_values',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.METANETX,
-                    value=f(
-                        'product_metanetx',
-                        delimiter='||',
-                        map='split_member_values',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.NAME,
-                    value=f(
-                        'product_name', delimiter='||', preserve_indices=True
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                conversion_direction_cv(),
-                CV(
-                    term=slots.stoichiometry,
-                    value=f(
-                        'products',
-                        delimiter='||',
-                        map='stoich_val',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(term=COMPARTMENT, value=f('products', delimiter='||', map='stoich_go', preserve_indices=True)),
-                CV(term=CELLULAR_LOCATION, value=f('products', delimiter='||', map='stoich_comp', preserve_indices=True)),
-            ),
-            entity_annotations=AnnotationsBuilder(
-                CV(
-                    term='chemrof:charge',
-                    value=f(
-                        'product_charge', delimiter='||', preserve_indices=True
-                    ),
-                ),
-                CV(
-                    term=slots.has_chemical_formula,
-                    value=f(
-                        'product_formula', delimiter='||', preserve_indices=True
-                    ),
-                ),
-            ),
-            predicate=slots.has_output,
-        ),
-    ),
-)
+    )
+
+
+reactions_schema = _reactions_schema(RECON3D)
 
 
 # ── catalysis ────────────────────────────────────────────────────────────────
@@ -353,26 +379,35 @@ reactions_schema = EntityBuilder(
 
 # ── enzyme_complexes ─────────────────────────────────────────────────────────
 
-def enzyme_complexes_schema(row: dict) -> Entity | None:
+def _enzyme_complexes_schema(row: dict, bigg_model: BiggModel = RECON3D) -> Entity | None:
     """Retain a source model AND group with a deterministic internal ID."""
     genes = [gene for gene in str(row.get('complex_subunits') or '').split('||') if gene]
     if not genes:
         return None
-    return _gene_rule_group(genes)
+    return _gene_rule_group(genes, bigg_model)
+
+
+def enzyme_complexes_schema(row: dict) -> Entity | None:
+    """Recon3D's AND groups."""
+    return _enzyme_complexes_schema(row, RECON3D)
 
 
 # ── genes ────────────────────────────────────────────────────────────────────
 
-genes_schema = EntityBuilder(
-    entity_type=model.Gene,
-    identifiers=IdentifiersBuilder(
-        CV(term=Namespace.ENTREZ, value=f('entrez_id')),
-        CV(term=Namespace.GENESYMBOL, value=f('name')),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term=slots.in_taxon, value='NCBITaxon:9606'),
-    ),
-)
+def _genes_schema(bigg_model: BiggModel) -> EntityBuilder:
+    return EntityBuilder(
+        entity_type=model.Gene,
+        identifiers=IdentifiersBuilder(
+            CV(term=Namespace.ENTREZ, value=f('entrez_id')),
+            CV(term=Namespace.GENESYMBOL, value=f('name')),
+        ),
+        annotations=AnnotationsBuilder(
+            CV(term=slots.in_taxon, value=f'NCBITaxon:{bigg_model.taxon}'),
+        ),
+    )
+
+
+genes_schema = _genes_schema(RECON3D)
 
 
 # ── resource ─────────────────────────────────────────────────────────────────

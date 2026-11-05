@@ -1,13 +1,25 @@
 """
-Parse iMM1415 data and emit Entity records.
+The BiGG model iMM1415 of mouse metabolism: metabolites, reactions and genes.
 
-This module converts information from the BiGG Model iMM1415 into Entity
-records using the declarative schema pattern.
+Metabolites keep their full BiGG cross-references and compartments. Reactions,
+their participants and gene rules, AND groups of genes, and the model genes are
+read as Recon3D's are, since both are BiGG models: BiGG reaction and metabolite
+identifiers are shared by every BiGG model, so a reaction iMM1415 shares with
+Recon3D is one entity, and what is iMM1415's own stays apart: its genes (mouse
+Entrez identifiers, taxon 10090), its flux bounds and its datasets.
 """
 
+from functools import partial
 import json
 from omnipath_resources.inputs_v2.base import ResourceConfig, Download, Resource, Dataset
 from omnipath_resources.inputs_v2._source_context import compartment_name
+from omnipath_resources.inputs_v2.parsers.recon3d import _raw as _bigg_raw
+from omnipath_resources.inputs_v2.recon3d import (
+    BiggModel,
+    _enzyme_complexes_schema,
+    _genes_schema,
+    _reactions_schema,
+)
 from omnipath_resources.internals.tabular_builder import (
     CV,
     AssociationBuilder,
@@ -32,7 +44,7 @@ config = ResourceConfig(
     pubmed='20959003',
     topics=(Topic.METABOLISM,),
     content=(Content.BIOCHEMICAL_REACTIONS,),
-    summary='Mouse metabolic model entities and metabolic network information.',
+    summary='Mouse metabolic model metabolites, reactions with stoichiometry, and gene associations.',
     description='A high-quality mouse genome-scale metabolic reconstruction, iMM1415(Mus Musculus, 1415 genes)',
 )
 
@@ -108,7 +120,32 @@ schema = EntityBuilder(
         ),
     ),
 )
+IMM1415 = BiggModel('iMM1415', '10090', 'imm1415.gpr_and')
+reactions_schema = _reactions_schema(IMM1415)
+genes_schema = _genes_schema(IMM1415)
+
+
+def enzyme_complexes_schema(row: dict):
+    """iMM1415's AND groups of genes."""
+    return _enzyme_complexes_schema(row, IMM1415)
+
+
 resource = Resource(
     config=config,
     metabolites=Dataset(download=download, mapper=schema, raw_parser=parser),
+    reactions=Dataset(
+        download=download,
+        mapper=reactions_schema,
+        raw_parser=partial(_bigg_raw, data_type='reactions'),
+    ),
+    enzyme_complexes=Dataset(
+        download=download,
+        mapper=enzyme_complexes_schema,
+        raw_parser=partial(_bigg_raw, data_type='enzyme_complexes'),
+    ),
+    genes=Dataset(
+        download=download,
+        mapper=genes_schema,
+        raw_parser=partial(_bigg_raw, data_type='genes'),
+    ),
 )

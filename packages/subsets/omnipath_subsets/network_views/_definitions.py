@@ -391,7 +391,7 @@ REACTIONS = NetworkDefinition(
         # prose will find it, and the scope shortfall in machine-readable form.
         "participant_grain": "hyperedge",
         "excluded_from_scope": ["reactome"],
-        "never_loaded": ["imm1415"],
+        "never_loaded": [],
     },
     # Every entry is a resource publishing the field itself, so no stage is
     # named: there is no interim vocabulary standing in for a later rebuild the
