@@ -62,6 +62,7 @@ PYPATH_TESTS = pypath/test/test_chembl_molecular_queries.py \
 	pypath/test/test_reactome_molecular_coverage.py \
 	pypath/test/test_resource_representation_review.py \
 	pypath/test/test_signor_identifiers.py \
+	pypath/test/test_inputs_v2_slc.py \
 	pypath/test/test_tabular_execution.py
 test-pypath:
 	uv run --frozen pytest $(PYPATH_TESTS) -q
