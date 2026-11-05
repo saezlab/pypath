@@ -206,3 +206,4 @@ class ResourceCv(CvEnum):
     WBPHENOTYPE = ("OM:1726", "C. elegans Phenotype Ontology", "https://github.com/obophenotype/c-elegans-phenotype-ontology")
     ONCOTREE = ("OM:1727", "OncoTree", "https://oncotree.mskcc.org/")
     ECO = ("OM:1728", "Evidence and Conclusion Ontology", "https://www.evidenceontology.org/")
+    SLC = ("OM:1729", "SLC", "https://opendata.cemm.at/gsflab/slcontology/")
