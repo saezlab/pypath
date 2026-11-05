@@ -1211,7 +1211,7 @@
   },
   "imm1415": {
     "display_name": "iMM1415",
-    "description": "Mouse metabolic model metabolites, reactions with stoichiometry, and gene associations.",
+    "description": "Mouse metabolic model entities and metabolic network information.",
     "tags": [
       "metabolism",
       "biochemical_reactions"
