@@ -38,7 +38,12 @@ from omnipath_subsets.network_views._framework import NetworkDefinition
 # loads under `metatlas` and the retiring views only read `humangem` because
 # they label their own rows so by hand. A preset naming `humangem` would
 # resolve it to nothing, and an empty contribution reads exactly like a
-# resource that failed to load. `labels` carries the published name for output.
+# resource that failed to load.
+#
+# **`metatlas` keeps its loaded name in the output.** It holds Human-GEM and
+# the mouse, rat, zebrafish, fruit fly and worm GEMs, so the retiring views'
+# `humangem` would name most of it wrongly, and a name per organism would be
+# an organism stored in a preset (2026-11-05).
 #
 # **One of the thirteen contributes nothing, and it is worth stating so it does
 # not read as a defect.** BindingDB is excluded by the recipe: its assertions
@@ -173,7 +178,6 @@ METALINKSDB = NetworkDefinition(
     mandatory_attributes=("annotation",),
     labels={
         "preset": "MetaLinksDB",
-        "resources": {"metatlas": "humangem"},
     },
     curation={
         # Every threshold the retiring SQL held inline, as configuration.
@@ -376,7 +380,7 @@ LIANA = NetworkDefinition(
 REACTIONS = NetworkDefinition(
     name="reactions",
     kind="reaction",
-    included_sources=("kegg", "rhea", "metatlas", "recon3d"),
+    included_sources=("kegg", "rhea", "metatlas", "recon3d", "imm1415"),
     interaction_class_scope=(),
     default_attributes=("endpoints", "label", "evidence"),
     mandatory_attributes=("role", "side", "stoichiometry", "compartment"),
@@ -384,7 +388,6 @@ REACTIONS = NetworkDefinition(
     collapse_mode="none",
     labels={
         "preset": "Reactions",
-        "resources": {"metatlas": "humangem"},
     },
     curation={
         # The grain restated where a consumer reading configuration rather than
@@ -398,24 +401,24 @@ REACTIONS = NetworkDefinition(
     # way the node annotation layer has one.
     attribute_sources={
         "role": {
-            "sources": ["kegg", "rhea", "metatlas", "recon3d"],
+            "sources": ["kegg", "rhea", "metatlas", "recon3d", "imm1415"],
             "note": "every participant of every reaction carries one",
         },
         "side": {
-            "sources": ["kegg", "rhea", "metatlas", "recon3d"],
+            "sources": ["kegg", "rhea", "metatlas", "recon3d", "imm1415"],
             "note": "derived from the reactant or product role",
         },
         "stoichiometry": {
-            "sources": ["kegg", "metatlas", "recon3d"],
+            "sources": ["kegg", "metatlas", "recon3d", "imm1415"],
             "note": (
-                "complete on every reaction these three publish; rhea states "
+                "complete on every reaction these four publish; rhea states "
                 "none on any of its reactions, and serves null"
             ),
         },
         "compartment": {
-            "sources": ["metatlas", "recon3d"],
+            "sources": ["metatlas", "recon3d", "imm1415"],
             "note": (
-                "per-participant subcellular location, complete on both; kegg "
+                "per-participant subcellular location, complete on all three; kegg "
                 "states none, and rhea states membrane sides that sit on "
                 "transport records rather than on reactions"
             ),

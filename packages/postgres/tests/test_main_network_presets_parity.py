@@ -63,8 +63,11 @@ def _modules():
 # The partner and predicate gates are this port's own: one chemical end let a
 # resource's annotation links of its chemicals into the dataset (2026-10-19).
 _PORT_ONLY_FILTERS = {"partner_types", "predicates"}
-# Resources this port adds to a preset; main has no module for them (2026-10-25).
-_PORT_ONLY_SOURCES = {"metachatdb"}
+# Resources this port adds to a preset; main has no module for them (2026-10-25),
+# or main loaded no reactions of (iMM1415, 2026-11-05).
+_PORT_ONLY_SOURCES = {"metachatdb", "imm1415"}
+# Reactions attributes whose notes this port rewrote for the sources it adds.
+_PORT_ONLY_NOTES = {"stoichiometry", "compartment"}
 
 
 def _normalize(value):
@@ -74,8 +77,29 @@ def _normalize(value):
         for key, item in value.items():
             if key in _PORT_ONLY_FILTERS:
                 continue
-            if key in ("included_sources", "resources") and isinstance(item, (tuple, list)):
+            if key in ("included_sources", "resources", "sources") and isinstance(
+                item, (tuple, list)
+            ):
                 result[key] = [s for s in item if s not in _PORT_ONLY_SOURCES]
+                continue
+            # These notes count their sources in prose, and this port adds
+            # iMM1415 to them (2026-11-05); the sources still compare.
+            if key == "attribute_sources" and isinstance(item, dict):
+                result[key] = _normalize(
+                    {
+                        name: {
+                            k: v
+                            for k, v in spec.items()
+                            if not (k == "note" and name in _PORT_ONLY_NOTES)
+                        }
+                        for name, spec in item.items()
+                    }
+                )
+                continue
+            # Main published `metatlas` as `humangem`; this port, holding six
+            # organisms' GEMs, keeps the loaded name (2026-11-05).
+            if key == "labels" and isinstance(item, dict):
+                result[key] = _normalize({k: v for k, v in item.items() if k != "resources"})
                 continue
             if key == "entity_types" and item in (
                 ["Chemical:OM:0037"],
@@ -127,10 +151,17 @@ def test_main_exports_registry_builds_and_no_preset_query_or_fold(oracle):
         assert [d.collapse_mode for d in module.NETWORKS] == ["endpoints", "endpoints", "none"]
         assert [d.grain for d in module.NETWORKS] == ["interaction", "interaction", "participant"]
         assert module.LIANA.included_sources == ("connectomedb2025",)
-        assert module.REACTIONS.included_sources == ("kegg", "rhea", "metatlas", "recon3d")
+        assert [s for s in module.REACTIONS.included_sources if s not in _PORT_ONLY_SOURCES] == [
+            "kegg",
+            "rhea",
+            "metatlas",
+            "recon3d",
+        ]
         assert "reactome" not in module.REACTIONS.included_sources
         assert "humangem" not in module.METALINKSDB.included_sources
-        assert module.METALINKSDB.labels["resources"] == {"metatlas": "humangem"}
+        assert module.METALINKSDB.labels.get("resources") == (
+            {"metatlas": "humangem"} if module is expected else None
+        )
         assert [s["operation"] for s in module.METALINKSDB.composition["steps"]] == [
             "exclude",
             "collapse",
@@ -403,7 +434,7 @@ def test_complete_registry_literal_sources_apply_refresh_and_upsert_match_main(
     assert original == current
     assert set(current) == {"metalinksdb", "liana", "reactions", "fixture_scoped"}
     assert current["liana"]["included_sources"] == ["connectomedb2025"]
-    assert current["metalinksdb"]["labels"]["resources"] == {"metatlas": "humangem"}
+    assert current["metalinksdb"]["labels"] == {"preset": "MetaLinksDB"}
     assert current["fixture_scoped"]["license_scope"] == {"purpose": 15, "sharing": 0, "attrib": 0}
     assert current["fixture_scoped"]["evidence_scope"]["min_confidence"] == 2
     assert _registry_ddl(conn, main) == _registry_ddl(conn, adapted)
