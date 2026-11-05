@@ -1,4 +1,10 @@
-"""Raw parser for the Human-GEM YAML model.
+"""Raw parser for the Metabolic Atlas GEM YAML models.
+
+Human-GEM and the animal models derived from it (Mouse-, Rat-, Zebrafish-,
+Fruitfly- and Worm-GEM) share one layout and one identifier scheme: the same
+``MAM``/``MAR`` identifiers, and cross-references in ``model/metabolites.tsv``
+and ``model/reactions.tsv`` of each model's repository. Every function takes
+the model by name and defaults to Human-GEM.
 
 The Human-GEM YAML (``model/Human-GEM.yml``) follows the standard-GEM format
 from SysBioChalmers.  Its top-level keys are ``metabolites``, ``reactions``,
@@ -43,14 +49,16 @@ from omnipath_resources.inputs_v2._source_context import flux_direction
 from omnipath_resources.inputs_v2.parsers.recon3d import _parse_gene_rule
 from omnipath_resources.share.downloads import download_and_open
 
-_METABOLITE_XREF_URL = (
-    'https://raw.githubusercontent.com/SysBioChalmers/Human-GEM/main/model/'
-    'metabolites.tsv'
-)
-_REACTION_XREF_URL = (
-    'https://raw.githubusercontent.com/SysBioChalmers/Human-GEM/main/model/'
-    'reactions.tsv'
-)
+HUMAN_GEM = 'Human-GEM'
+
+
+def model_url(model: str, file: str) -> str:
+    """A file of a model's repository, e.g. ``model/metabolites.tsv``."""
+    return f'https://raw.githubusercontent.com/SysBioChalmers/{model}/main/{file}'
+
+
+_METABOLITE_XREF_URL = model_url(HUMAN_GEM, 'model/metabolites.tsv')
+_REACTION_XREF_URL = model_url(HUMAN_GEM, 'model/reactions.tsv')
 # Cross-references copied from metabolites onto reaction participants.
 _MEMBER_XREFS = (
     'chebi', 'hmdb', 'pubchem_compound', 'lipidmaps', 'kegg_compound', 'bigg', 'metanetx',
@@ -124,10 +132,14 @@ def _metabolite_xrefs() -> dict[str, dict[str, str]]:
     return _read_metabolite_xrefs()
 
 
-def _read_metabolite_xrefs() -> dict[str, dict[str, str]]:
+def _read_metabolite_xrefs(model: str = HUMAN_GEM) -> dict[str, dict[str, str]]:
+    return _read_xref_table(model, 'metabolites', _parse_metabolite_xrefs)
+
+
+def _read_xref_table(model: str, table: str, parse) -> dict[str, dict[str, str]]:
     opener = download_and_open(
-        url = _METABOLITE_XREF_URL,
-        filename = 'Human-GEM-metabolites.tsv',
+        url = model_url(model, f'model/{table}.tsv'),
+        filename = f'{model}-{table}.tsv',
         ext = 'tsv',
         subfolder = 'metatlas',
         large = True,
@@ -135,9 +147,19 @@ def _read_metabolite_xrefs() -> dict[str, dict[str, str]]:
     )
 
     try:
-        return _parse_metabolite_xrefs(opener.result)
+        return parse(opener.result)
     finally:
         opener.close()
+
+
+def model_metabolite_xrefs(model: str = HUMAN_GEM) -> dict[str, dict[str, str]]:
+    """A model's metabolite cross-references, by identifier without compartment."""
+    return _metabolite_xrefs() if model == HUMAN_GEM else _other_metabolite_xrefs(model)
+
+
+@cache
+def _other_metabolite_xrefs(model: str) -> dict[str, dict[str, str]]:
+    return _read_metabolite_xrefs(model)
 
 
 def _parse_metabolite_xrefs(handle):
@@ -174,19 +196,17 @@ def _reaction_xrefs() -> dict[str, dict[str, str]]:
     if path := os.environ.get('OMNIPATH_HUMAN_GEM_REACTION_XREFS'):
         with Path(path).open() as handle:
             return _parse_reaction_xrefs(handle)
-    opener = download_and_open(
-        url = _REACTION_XREF_URL,
-        filename = 'Human-GEM-reactions.tsv',
-        ext = 'tsv',
-        subfolder = 'metatlas',
-        large = True,
-        default_mode = 'r',
-    )
+    return _read_xref_table(HUMAN_GEM, 'reactions', _parse_reaction_xrefs)
 
-    try:
-        return _parse_reaction_xrefs(opener.result)
-    finally:
-        opener.close()
+
+def model_reaction_xrefs(model: str = HUMAN_GEM) -> dict[str, dict[str, str]]:
+    """A model's reaction cross-references, by reaction identifier."""
+    return _reaction_xrefs() if model == HUMAN_GEM else _other_reaction_xrefs(model)
+
+
+@cache
+def _other_reaction_xrefs(model: str) -> dict[str, dict[str, str]]:
+    return _read_xref_table(model, 'reactions', _parse_reaction_xrefs)
 
 
 def _parse_reaction_xrefs(handle):
@@ -292,7 +312,7 @@ def _strip_compartment(met_id: str, compartment: str) -> str:
     return met_id
 
 
-def _metabolites(data: dict) -> Generator[dict, None, None]:
+def _metabolites(data: dict, model: str = HUMAN_GEM) -> Generator[dict, None, None]:
     """
     Yield one record per unique base metabolite ID.
 
@@ -309,7 +329,7 @@ def _metabolites(data: dict) -> Generator[dict, None, None]:
     """
 
     seen: set[str] = set()
-    xrefs = _metabolite_xrefs()
+    xrefs = model_metabolite_xrefs(model)
 
     for m in data.get('metabolites', []):
 
@@ -332,7 +352,7 @@ def _metabolites(data: dict) -> Generator[dict, None, None]:
         }
 
 
-def _reactions(data: dict) -> Generator[dict, None, None]:
+def _reactions(data: dict, model: str = HUMAN_GEM) -> Generator[dict, None, None]:
     """
     Yield one record per reaction with stoichiometry encoded as strings.
 
@@ -352,8 +372,8 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
         and ``products``.
     """
 
-    xrefs = _metabolite_xrefs()
-    reaction_xrefs = _reaction_xrefs()
+    xrefs = model_metabolite_xrefs(model)
+    reaction_xrefs = model_reaction_xrefs(model)
     gene_names = {
         dict(g)['id']: dict(g).get('name')
         for g in data.get('genes', [])
@@ -560,7 +580,16 @@ _PARSERS = {
 }
 
 
-def _raw(opener: Any, data_type: str, **kwargs) -> Generator[dict, None, None]:
+# The parsers that read a model's cross-reference tables.
+_MODEL_PARSERS = {'metabolites', 'reactions'}
+
+
+def _raw(
+    opener: Any,
+    data_type: str,
+    model: str = HUMAN_GEM,
+    **kwargs,
+) -> Generator[dict, None, None]:
     """
     Entry point called by each Dataset.raw_parser lambda in metatlas.py.
 
@@ -571,6 +600,7 @@ def _raw(opener: Any, data_type: str, **kwargs) -> Generator[dict, None, None]:
         opener: An opener object as provided by the inputs_v2 framework.
         data_type: One of ``'metabolites'``, ``'reactions'``,
             ``'catalysis'``, or ``'enzyme_complexes'``.
+        model: The GEM the opener holds, e.g. ``'Mouse-GEM'``.
         **kwargs: Accepted but unused; present for compatibility with the
             inputs_v2 raw parser signature.
 
@@ -579,5 +609,6 @@ def _raw(opener: Any, data_type: str, **kwargs) -> Generator[dict, None, None]:
     """
 
     data = _load(opener)
+    parse = _PARSERS[data_type]
 
-    yield from _PARSERS[data_type](data)
+    yield from parse(data, model) if data_type in _MODEL_PARSERS else parse(data)

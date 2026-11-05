@@ -1734,12 +1734,12 @@
   },
   "metatlas": {
     "display_name": "Metabolic Atlas",
-    "description": "Human-GEM chemicals and metabolic reactions with stoichiometry and gene associations.",
+    "description": "Chemicals and metabolic reactions with stoichiometry and gene associations of Human-GEM and the mouse, rat, zebrafish, fruit fly and worm GEMs.",
     "tags": [
       "metabolism",
       "biochemical_reactions"
     ],
-    "website": "https://github.com/SysBioChalmers/Human-GEM",
+    "website": "https://metabolicatlas.org/",
     "license": "Creative Commons Attribution 4.0 International license",
     "license_url": "https://creativecommons.org/licenses/by/4.0/",
     "license_use": {
