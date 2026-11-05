@@ -62,6 +62,7 @@ RESOURCES_TESTS = $(RESOURCES)/test/test_chembl_molecular_queries.py \
 	$(RESOURCES)/test/test_reactome_molecular_coverage.py \
 	$(RESOURCES)/test/test_resource_representation_review.py \
 	$(RESOURCES)/test/test_signor_identifiers.py \
+	$(RESOURCES)/test/test_inputs_v2_slc.py \
 	$(RESOURCES)/test/test_tabular_execution.py
 test-resources:
 	uv run --frozen pytest $(RESOURCES_TESTS) -q
