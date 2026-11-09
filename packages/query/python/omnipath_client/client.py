@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,7 @@ from .contracts import CONTRACT, SERVING, ResourceRecord
 from .database import DATABASE, in_sync, synchronize
 from .errors import ClientError
 from .installation import data_directory, read_installation
+from .remote import ApiClient
 
 RELATION_EXPORT_LIMIT: int = CONTRACT["relation_export_limit"]
 # Macro parameters that take one value; every other filter takes a list, and one value
@@ -117,6 +119,10 @@ class Client:
     def release(self) -> str:
         """The release of the last ``init()``."""
         return self._release
+
+    @property
+    def mode(self) -> str:
+        return "local"
 
     def _ensure_open(self) -> None:
         if self._closed:
@@ -249,9 +255,33 @@ class Client:
 def connect(
     data_dir: str | Path | None = None,
     *,
+    mode: str | None = None,
+    api_url: str | None = None,
+    release: str = "latest",
     memory_limit: str = "2GB",
     threads: int | None = None,
-) -> Client:
-    """Open the data directory's database: the directory given, else OMNIPATH_DATA_DIR,
-    else the per-user default."""
+    timeout: float = 120,
+    http_client: Any = None,
+) -> Client | ApiClient:
+    """A client in one of two modes, with the same ``search``, ``relations`` and
+    ``entity``.
+
+    - ``"api"`` (the default without ``data_dir`` and OMNIPATH_DATA_DIR): the hosted
+      API answers, for ``release``; nothing is downloaded.
+    - ``"local"`` (the default with ``data_dir`` or OMNIPATH_DATA_DIR): the database of
+      a local installation (``init()``): the directory given, else OMNIPATH_DATA_DIR,
+      else the per-user default. It also runs ``sql()``.
+    """
+    if mode is None:
+        local = data_dir is not None or os.environ.get("OMNIPATH_DATA_DIR")
+        mode = "local" if local else "api"
+    if mode == "api":
+        if data_dir is not None:
+            raise ValueError("API mode reads no data directory; use mode='local'")
+        return ApiClient(
+            api_url, release=release, timeout=timeout, memory_limit=memory_limit,
+            threads=threads, http_client=http_client,
+        )
+    if mode != "local":
+        raise ValueError("mode must be 'api' or 'local'")
     return Client(data_dir, memory_limit=memory_limit, threads=threads)

@@ -52,4 +52,27 @@ answers <- function(dir) {
   )
 }
 
-cat(jsonlite::toJSON(list(r = answers(r_dir), python = answers(python_dir)), auto_unbox = TRUE, digits = NA))
+out <- list(r = answers(r_dir), python = answers(python_dir))
+
+# API mode, when the test serves the Python client's directory as the API.
+if (!is.null(questions$api_url)) {
+  api <- op_connect(mode = "api", api_url = questions$api_url)
+  local <- op_connect(python_dir)
+  on.exit({ op_disconnect(api); op_disconnect(local) }, add = TRUE)
+  out$api <- list(
+    search = lapply(questions$search, function(q) {
+      rows <- do.call(op_search, c(list(api, q$query), q$filters))
+      jsonlite::toJSON(rows, dataframe = "rows", na = "null", null = "null", digits = NA)
+    }),
+    relations = lapply(questions$relations, function(q) {
+      rows <- do.call(op_relations, c(list(api, q$entities), q$filters))
+      jsonlite::toJSON(rows, dataframe = "rows", na = "null", null = "null", digits = NA)
+    }),
+    entity_identical = vapply(questions$entity, function(key) {
+      identical(op_entity(api, key, simplify = FALSE), op_entity(local, key, simplify = FALSE))
+    }, TRUE),
+    sql_refused = inherits(tryCatch(op_sql(api, "SELECT 1"), error = function(e) e), "error")
+  )
+}
+
+cat(jsonlite::toJSON(out, auto_unbox = TRUE, digits = NA))

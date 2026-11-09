@@ -20,7 +20,14 @@ from omnipath_api.models import (
     ScopedEntityFacetsRequest,
 )
 from fastapi import APIRouter
-from omnipath_api.routers.common import _call, _cursor_dict, _dump, _parse_json_param, _timed
+from omnipath_api.routers.common import (
+    EngineJSONResponse,
+    _call,
+    _cursor_dict,
+    _dump,
+    _parse_json_param,
+    _timed,
+)
 
 router = APIRouter()
 
@@ -239,16 +246,21 @@ def get_entity(
     detail_limit: int = Query(20, ge=1, le=500),
     detail_offset: int = Query(0, ge=0),
     detail_field: DetailField | None = None,
+    paged: bool = True,
 ) -> dict[str, Any]:
     """Fetch one entity by its exact entity key. No identifier or text fallback.
 
-    ``detail_field`` pages one collection (identifiers or attributes) on its own.
+    ``detail_field`` pages one collection (identifiers or attributes) on its own;
+    ``paged=false`` returns every collection whole, as the clients' ``entity()`` does.
     """
     result = _call(
         request, "get_entity_details" if includeRelationships else "get_entity_core", entity_id
     )
     if not result:
         raise HTTPException(status_code=404, detail="Entity not found")
+    if not paged:
+        # As the engine answers, not through the paged response model.
+        return EngineJSONResponse(result)
     from omnipath_api.queries.entity_details import page_details
 
     result["entity"] = page_details(result["entity"], detail_limit, detail_offset, detail_field)

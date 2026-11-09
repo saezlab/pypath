@@ -1,3 +1,4 @@
+S3method(print,omnipath_api)
 export(op_available)
 export(op_connect)
 export(op_data_directory)

@@ -570,6 +570,50 @@ def test_prebuilt_queries_match_the_engine(service):
         api.close()
 
 
+def test_api_mode_answers_like_local_mode(service):
+    """The hosted API (here in-process over the same files) gives the local answers."""
+    from fastapi.testclient import TestClient
+    from omnipath_api.server import create_app
+
+    service.init(["alpha", "beta", "gamma"], include_evidence=True)
+    serve_newest(service.data, memory_limit="1GB", threads=1)
+    engine = ReleaseQueries(service.data)
+    try:
+        with TestClient(create_app(queries=engine)) as http, connect(service.data) as local, connect(
+            mode="api", api_url="http://testserver", http_client=http
+        ) as remote:
+            assert (local.mode, remote.mode) == ("local", "api")
+            for filters in [
+                {"entity_ids": ["TP53"]},
+                {"entity_ids": ["TP53"], "sources": ["alpha"]},
+                {"entity_ids": ["TP53"], "gene_mode": "source"},
+                {"entity_ids": ["gene:entrez:7157"]},
+                {"reference_entity_keys": ["entrez:7157"]},
+                {"predicates": ["biolink:interacts_with"]},
+                {"sources": ["beta"]},
+                {},
+            ]:
+                rest = dict(filters)
+                entities = rest.pop("entity_ids", None)
+                want = local.relations(entities, **rest).to_arrow_table()
+                got = remote.relations(entities, **rest).to_arrow_table()
+                assert got.schema.names == want.schema.names, filters
+                assert canonical(got) == canonical(want), filters
+            for query, filters in [("TP53", {}), ("tp", {}), ("caffeine", {}), ("", {}),
+                                   ("TP53", {"sources": ["beta"]}), ("TP53", {"entity_types": ["protein"]})]:
+                assert remote.search(query, **filters).fetchall() == local.search(query, **filters).fetchall()
+            for ident in ("P04637", "CHEBI:27732", "quote"):
+                assert remote.entity(key(ident)) == local.entity(key(ident)), ident
+            assert remote.entity("0" * 64) is None
+            with pytest.raises(TypeError, match="Unknown filters"):
+                remote.relations("TP53", no_such_filter=1)
+            with pytest.raises(ClientError, match="local installation"):
+                remote.sql("SELECT 1")
+            assert {r["resource_id"] for r in remote.resources()} == {"alpha", "beta", "gamma"}
+    finally:
+        engine.close()
+
+
 def test_query_layer_of_another_client_version_is_rewritten(service):
     service.init("alpha")
     database = service.data / "omnipath.duckdb"
