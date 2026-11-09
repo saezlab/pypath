@@ -378,6 +378,11 @@ class ReleaseQueries(
             connection.execute("SET temp_directory = ?", [self._temp_directory])
             # Lists of up to LITERAL_LIMIT ids read through the indexes.
             connection.execute(f"SET index_scan_max_count = {LITERAL_LIMIT}")
+            connection.execute("SET index_scan_percentage = 0.5")
+            # A query reading one table twice (two lookups on entity_term, say) would
+            # have its table materialized whole, once, before any filter: 13 s instead
+            # of 0.3 s for a gene's entity keys in a full release.
+            connection.execute("SET disabled_optimizers = 'common_subplan'")
             for name, value in CONTRACT["settings"].items():
                 connection.execute(f"SET {name} = {int(value)}")
             for served in self._state.releases.values():
@@ -651,10 +656,27 @@ class ReleaseQueries(
         return " UNION ALL ".join(parts), values
 
     def _lookup(self, table, column, pairs, fields="*", extra="", params=()):
-        """Rows of ``table`` for (resource, value) pairs, one query per resource:
-        ``extra`` (conditions, order, limit) applies to each resource's rows."""
+        """Rows of ``table`` for (resource, value) pairs, in resource order:
+        ``extra`` (conditions, order, limit) applies to each resource's rows.
+
+        Without a LIMIT in ``extra`` this is one query over every resource; with one,
+        one query per resource.
+        """
+        by_resource = self._by_resource(pairs)
+        if by_resource and self._in_database(table) and not re.search(r"\bLIMIT\b", extra, re.I):
+            cte, values = self._rows_sql(table, column, by_resource)
+            selected = "*" if fields.strip() == "*" else f"{fields}, resource"
+            order = re.search(r"\bORDER\s+BY\b", extra, re.I)
+            extra = (
+                extra[: order.start()] + "ORDER BY resource, " + extra[order.end():]
+                if order
+                else f"{extra} ORDER BY resource"
+            )
+            return self._fetch_dicts(
+                f"{cte} SELECT {selected} FROM __rows WHERE TRUE {extra}", [*values, *params]
+            )
         rows = []
-        for resource, items in self._by_resource(pairs).items():
+        for resource, items in by_resource.items():
             if not self._in_database(table):
                 condition, items = self._in(column, items)
                 path = sql_literal(str(self.resources[resource]["tables"][table]))
