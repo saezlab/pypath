@@ -263,6 +263,14 @@ and collects evidence across all selected resource files with stable occurrence
 keys. Entity details count standalone evidence (`molecularEvidenceTotal`); the items
 are paged from `GET /entities/{key}/evidence`.
 
+`POST /relations/evidence` summarizes the evidence of up to 1,000 relations in one
+request: `{"relation_pks": [...], "filters": {...}}` returns, for each pk, one entry per
+evidence source with the modification `sites` of either endpoint's molecular form and
+the PubMed ids (`pmids`) of its records, read from all resources that state the
+relation. A client reading the sites and PMIDs of a gene's relations needs one call
+instead of one evidence request per relation (PLN: 174 relations in ~2 s, TRDN: 526
+in ~4 s, against 15 and 48 s).
+
 `GET /entities/{key}/molecular-context` separates catalogue-linked products from
 observed forms and matching relations. A `gene:entrez:ID` group opens the gene
 view; a reusable product key selects evidence explicitly naming that product.
