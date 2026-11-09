@@ -62,6 +62,32 @@ uv run python scripts/explorer_load_test.py --users 8,12,16,24,32 \
   --abort-step-p95 15 --out load.json
 ```
 
+## Release databases
+
+The API serves each published release from its DuckDB database,
+`serving/<version>.duckdb` in the artifact root. The default view (`latest`) is the
+newest release that has one. A request for an older release whose database was
+pruned answers 410; its files stay downloadable. The API mounts the artifact root
+read-only, so the database is written on the host:
+
+```sh
+cd /root/projects/omnipath-migration/omnipath-build
+# Publish a release, then write its database and keep the newest three.
+make publish-release RELEASE_MANIFEST=release.json DATA_ROOT=/root/data/release-20261007-native
+# Or, for a release that is already published:
+make release-db RELEASE=2026.10.25.1 DATA_ROOT=/root/data/release-20261007-native
+```
+
+- **Time and size:** a full release (173 resources, 2026.10.25.1) takes about 14 minutes
+  at 2 threads and 4 GB, and the database is about 19 GB.
+- **Disk:** the command refuses to start without the last database's size plus 20 GiB
+  free. Three kept databases need about 60 GB.
+- **Pickup:** the running API sees a new database as soon as it is in place: no restart
+  and no deploy.
+- **Query memory:** with the database's indexes, a query needs about 3.5 GB
+  (`API_QUERY_MEMORY=3500MB`). DuckDB spills to the container's `/tmp`, or to
+  `OMNIPATH_DUCKDB_TEMP_DIRECTORY`.
+
 ## Rollback
 
 Every deployed commit keeps its images (`omnipath-api:serving-<commit>`,
