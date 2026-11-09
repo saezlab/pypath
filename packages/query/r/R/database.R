@@ -116,8 +116,15 @@
 .derived <- function(con, present) {
   derived <- .contract()$derived_tables
   for (name in names(derived)) {
+    # A derived table that replaces a written one takes its name when complete.
+    replaces <- isTRUE(derived[[name]]$replaces)
+    target <- if (replaces) paste0(name, "__derived") else name
     .exec(con, sprintf("CREATE TABLE %s AS SELECT * FROM (%s) ORDER BY %s",
-      name, derived[[name]]$select, derived[[name]]$order))
+      target, derived[[name]]$select, derived[[name]]$order))
+    if (replaces) {
+      .exec(con, sprintf("DROP TABLE %s", name))
+      .exec(con, sprintf("ALTER TABLE %s RENAME TO %s", target, name))
+    }
   }
   for (index in .contract()$indexes) {
     if (index[[2]] %in% present) {

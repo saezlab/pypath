@@ -211,10 +211,11 @@ class RelationsQueries:
         forms) or without the table."""
         filters = normalize_filters(filters)
         tokens = filters["entity_ids"] + filters["entity_pks"]
+        references = filters["reference_entity_keys"]
         if (
-            not tokens
+            not (tokens or references)
+            or (tokens and references)
             or filters["scope_entity_ids"]
-            or filters["reference_entity_keys"]
             or has_form_filters(filters)
         ):
             return None
@@ -226,12 +227,23 @@ class RelationsQueries:
         if derived is None:
             return None
         source, in_resources = derived
-        keys = self._entity_keys(tokens, resources)
+        members = None
+        if references:
+            # A relation with a reference key at an end: the end is an entity of that
+            # reference group in the relation's own resource (any side, as before).
+            members = self._reference_members(references, resources)
+            keys = sorted({key for _, key in members})
+        else:
+            keys = self._entity_keys(tokens, resources)
         if not keys:
             return "SELECT * EXCLUDE (entity_key, side) FROM " + source + " WHERE FALSE", []
         where, params = self._relation_where(filters, qualifiers=qualifiers)
-        mode = filters["gene_mode"]
+        mode = filters["gene_mode"] if not references else "any"
         side = "TRUE"
+        if members is not None:
+            in_resources += " AND (resource, entity_key) IN (SELECT * FROM (VALUES " + ", ".join(
+                f"({sql_literal(resource)}, {sql_literal(key)})" for resource, key in members
+            ) + "))"
         if mode in {"source", "source_only"}:
             side = "side = 'subject'"
         elif mode in {"target", "target_only"}:
@@ -260,6 +272,33 @@ class RelationsQueries:
             lambda payload, resources: self.resolve_entity_keys(payload["tokens"], resources),
             cache=self._order_cache,
         )
+
+    def _reference_members(self, references, resources=None):
+        """(resource, entity key) of the entities whose reference key is one of these,
+        per resource (``entity_group``), kept with the page orders."""
+
+        def compute(payload, resources):
+            hits = self._fetch_dicts(
+                f"SELECT DISTINCT resource, entity_id FROM {self._table('entity_group', resources)} "
+                "WHERE kind = 'reference' AND group_key IN (SELECT unnest(?::VARCHAR[]))",
+                [payload["references"]],
+            )
+            rows = self._lookup(
+                "entity", "entity_id", [(h["resource"], h["entity_id"]) for h in hits],
+                "entity_id, entity_key", narrow=True,
+            )
+            return sorted({(r["resource"], r["entity_key"]) for r in rows})
+
+        return [
+            tuple(pair)
+            for pair in self._cached_facets(
+                "reference-members",
+                {"references": sorted(references)},
+                resources,
+                compute,
+                cache=self._order_cache,
+            )
+        ]
 
     def _page_rows(self, filters, resources, pairs):
         """The relation rows of a page of a plain entity selection, with their endpoint

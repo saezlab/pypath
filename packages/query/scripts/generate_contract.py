@@ -21,7 +21,7 @@ import shutil
 import sys
 
 from omnipath_core import biolink
-from omnipath_core.schema import PUBLISHED_TABLES, ROW_GROUP_SIZE, SERVING_TABLES
+from omnipath_core.schema import PUBLISHED_TABLES, RELATION_QUALIFIERS, ROW_GROUP_SIZE, SERVING_TABLES
 from omnipath_core.serving_tables import serving_queries
 from omnipath_api.queries.services.export import RELATION_EXPORT_LIMIT
 
@@ -76,14 +76,11 @@ def derived_tables() -> dict:
     each sorted for the reads it serves. They keep each row's resource, so a query over
     some resources only (or without the ones a query policy disables) filters them."""
     resource = "_resource || '/' || _resource_version AS resource"
-    # What a relation's endpoint shows (omnipath_api's shape_entity_summary).
-    endpoint = ", ".join(
-        f"{name} := {name}"
-        for name in (
-            "entity_key", "namespace", "identifier", "label", "entity_type", "taxon",
-            "has_hierarchy", "parent_count", "child_count", "reference_entity_key",
-            "gene_reference_keys", "relation_count",
-        )
+    qualifiers = ", ".join(RELATION_QUALIFIERS)
+    # A relation's page-order, filter and facet columns.
+    columns = (
+        "category, predicate, subject_label, object_label, subject_type, object_type, taxon, "
+        f"sign, is_directed, sources, evidence_count, {qualifiers}"
     )
     directions = hierarchy_predicates()
     listed = ", ".join(f"'{name}'" for name in directions)
@@ -96,25 +93,21 @@ def derived_tables() -> dict:
         # reading them by key reads a few row groups. (The entity table itself is in
         # global id order, for reads by id.)
         "entity_by_key": {"select": "SELECT * FROM entity", "order": "entity_key, _resource, entity_id"},
-        # Every resource's lowercase labels and identifiers sorted by term, with the
-        # entity's key: a prefix is one range.
-        "term_index": {
+        # The lowercase labels and identifiers, rewritten sorted by term over every
+        # resource and with the entity's key ("replaces": the table itself, not a copy):
+        # a prefix is one range.
+        "entity_term": {
             "select": "SELECT t.*, e.entity_key FROM entity_term t JOIN entity e USING (_eid)",
             "order": "term, _resource, entity_id",
+            "replaces": True,
         },
-        # Every relation row of an entity, at either end: the whole relation row and its
-        # two endpoint entities' summary fields (from the relation's own resource), so a
-        # gene's relations are one range, in page order, ready to show.
+        # Every relation row of an entity, at either end, with the relation's page-order,
+        # filter and facet columns: a gene's relations are one range, in page order.
         "entity_relation": {
-            "select": f"""WITH ends AS (
-                    SELECT _resource, entity_key, struct_pack({endpoint}) AS e FROM entity
-                ), rows AS (
-                    SELECT r.*, r._resource || '/' || r._resource_version AS resource, s.e AS subject_entity, o.e AS object_entity FROM relation r
-                    LEFT JOIN ends s ON s._resource = r._resource AND s.entity_key = r.subject_entity_key
-                    LEFT JOIN ends o ON o._resource = r._resource AND o.entity_key = r.object_entity_key
-                )
-                SELECT subject_entity_key AS entity_key, 'subject' AS side, * FROM rows
-                UNION ALL SELECT object_entity_key, 'object', * FROM rows""",
+            "select": f"""SELECT subject_entity_key AS entity_key, 'subject' AS side, _rid, {resource},
+                relation_id, {columns} FROM relation
+                UNION ALL SELECT object_entity_key, 'object', _rid, {resource}, relation_id, {columns}
+                FROM relation""",
             "order": "entity_key, category, predicate, subject_label, object_label, resource, relation_id",
         },
         # The ontologies' hierarchies as child -> parent edges.
@@ -148,7 +141,7 @@ INDEXES = [
     ["relation_evidence_rid", "relation_evidence", "_rid"],
 ]
 # Changes when the tables, derived tables or indexes a database holds change.
-DATABASE_FORMAT = 4
+DATABASE_FORMAT = 5
 
 
 def biolink_names() -> list[list[str]]:

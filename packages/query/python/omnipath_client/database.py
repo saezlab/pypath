@@ -173,9 +173,14 @@ def _query_layer(db) -> None:
 def _derived(db, present: set[str]) -> None:
     """The derived tables (each sorted) and the indexes, once the tables are written."""
     for name, query in CONTRACT["derived_tables"].items():
+        # A derived table that replaces a written one takes its name when complete.
+        target = f"{name}__derived" if query.get("replaces") else name
         db.execute(
-            f"CREATE TABLE {name} AS SELECT * FROM ({query['select']}) ORDER BY {query['order']}"
+            f"CREATE TABLE {target} AS SELECT * FROM ({query['select']}) ORDER BY {query['order']}"
         )
+        if query.get("replaces"):
+            db.execute(f"DROP TABLE {name}")
+            db.execute(f"ALTER TABLE {target} RENAME TO {name}")
     for name, table, column in CONTRACT["indexes"]:
         if table in present:
             db.execute(f"CREATE INDEX {name} ON {table}({column})")

@@ -67,6 +67,11 @@ _HELPERS = ("_resource", "_resource_version", "_rid", "_eid")
 # {table: (its sorted copy, the column)}. Reads by that column (and scans) use the copy;
 # reads by global id the table itself, which is in id order.
 SORTED_COPIES = {"entity": ("entity_by_key", "entity_key"), "entity_term": ("term_index", "term")}
+# The entity columns a relation's endpoint shows (shape_entity_summary).
+ENDPOINT_FIELDS = (
+    "entity_id, entity_key, namespace, identifier, label, entity_type, taxon, has_hierarchy, "
+    "parent_count, child_count, reference_entity_key, gene_reference_keys, relation_count"
+)
 _NUMERIC = re.compile(r"[0-9]+(?:\.[0-9]+)*")
 
 
@@ -569,9 +574,13 @@ class ReleaseQueries(
         return f"{served.alias}.main.{self._physical(table, column)}"
 
     def _sorted_by(self, table: str, column: str) -> bool:
-        """Whether a read of ``table`` by ``column`` uses a copy sorted by it."""
+        """Whether a read of ``table`` by ``column`` reads rows sorted by it over every
+        resource: a sorted copy, or the table itself rewritten so (entity_term with its
+        entity keys)."""
         copy = SORTED_COPIES.get(table)
-        return copy is not None and copy[1] == column and self._physical(table, column) == copy[0]
+        if copy is not None and copy[1] == column and self._physical(table, column) == copy[0]:
+            return True
+        return (table, column) == ("entity_term", "term") and "entity_key" in self._served().columns.get(table, ())
 
     def _file_table(self, table: str, selected_resources: list[str] | None = None) -> str:
         """A table that is only in the resources' files (raw payloads), read from them."""
@@ -688,12 +697,24 @@ class ReleaseQueries(
             )
         return " OR ".join(parts), []
 
-    def _rows_sql(self, table: str, column: str, by_resource: dict[str, list]) -> tuple[str, list]:
+    def _rows_sql(
+        self, table: str, column: str, by_resource: dict[str, list], fields: str = "*"
+    ) -> tuple[str, list]:
         """A MATERIALIZED read of the rows of (resource, value) pairs: further
-        conditions in the same WHERE would make DuckDB scan instead of using an index."""
+        conditions in the same WHERE would make DuckDB scan instead of using an index.
+        With plain column names as ``fields``, only those columns (and the row order's)
+        are read."""
         condition, params = self._matching(table, column, by_resource)
+        projection = self._projection(table, column)
+        names = [name.strip() for name in fields.split(",")]
+        if fields.strip() != "*" and all(re.fullmatch(r"[a-z_][a-z0-9_]*", n) for n in names):
+            available = self._served().columns[self._physical(table, column)]
+            ids = GLOBAL_IDS.get(table)
+            ordered = [c for c in (ids[0] if ids else None, "ordinal") if c and c in available]
+            wanted = list(dict.fromkeys([*names, *ordered]))
+            projection = ", ".join(wanted) + ", _resource || '/' || _resource_version AS resource"
         return (
-            f"WITH __rows AS MATERIALIZED (SELECT {self._projection(table, column)} FROM "
+            f"WITH __rows AS MATERIALIZED (SELECT {projection} FROM "
             f"{self._source(table, column)} WHERE {condition})",
             params,
         )
@@ -721,16 +742,17 @@ class ReleaseQueries(
             values += [resource, *items, *params]
         return " UNION ALL ".join(parts), values
 
-    def _lookup(self, table, column, pairs, fields="*", extra="", params=()):
+    def _lookup(self, table, column, pairs, fields="*", extra="", params=(), *, narrow=False):
         """Rows of ``table`` for (resource, value) pairs, in resource order:
         ``extra`` (conditions, order, limit) applies to each resource's rows.
 
         Without a LIMIT in ``extra`` this is one query over every resource; with one,
-        one query per resource.
+        one query per resource. ``narrow`` reads only the ``fields`` (plain column
+        names) and the row order's columns, for an ``extra`` that refers to no others.
         """
         by_resource = self._by_resource(pairs)
         if by_resource and self._in_database(table) and not re.search(r"\bLIMIT\b", extra, re.I):
-            cte, values = self._rows_sql(table, column, by_resource)
+            cte, values = self._rows_sql(table, column, by_resource, fields if narrow else "*")
             selected = "*" if fields.strip() == "*" else f"{fields}, resource"
             order = re.search(r"\bORDER\s+BY\b", extra, re.I)
             # Each resource's rows in its file's order, as one read of its file gave them.
@@ -757,7 +779,7 @@ class ReleaseQueries(
                     [resource, *items, *params],
                 )
                 continue
-            cte, values = self._rows_sql(table, column, {resource: items})
+            cte, values = self._rows_sql(table, column, {resource: items}, fields if narrow else "*")
             selected = "*" if fields.strip() == "*" else f"{fields}, resource"
             rows += self._fetch_dicts(
                 f"{cte} SELECT {selected} FROM __rows WHERE TRUE {extra}", [*values, *params]
@@ -833,7 +855,8 @@ class ReleaseQueries(
             for side in ("subject_entity_key", "object_entity_key")
             if r.get(side)
         ]
-        rows = self._lookup("entity", "entity_key", pairs) if pairs else []
+        # What an endpoint shows (shape_entity_summary), not the whole row.
+        rows = self._lookup("entity", "entity_key", pairs, ENDPOINT_FIELDS, narrow=True) if pairs else []
         if nested:
             self._with_entity_children(rows)
         return {(r["resource"], r["entity_key"]): r for r in rows}
