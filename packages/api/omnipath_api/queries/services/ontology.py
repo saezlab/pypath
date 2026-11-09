@@ -50,28 +50,116 @@ class OntologyQueries:
             predicate, parent_key AS object_entity_key, parent_label AS object_label
             FROM {source} WHERE {in_resources})"""
 
-    def _ontology_seed(self, ent_read, term_id, ontology_id=None):
+    def _ontology_seed(self, ent_read, term_id, ontology_id=None, resources=None):
         namespace = ontology_id
         if "|" in term_id:
             qualified_namespace, term_id = term_id.split("|", 1)
             if namespace and namespace.casefold() != qualified_namespace.casefold():
                 raise ValueError("Term namespace contradicts ontologyId")
             namespace = qualified_namespace
-        where = "(entity_key = ? OR identifier = ? OR label = ?)"
-        params = [term_id, term_id, term_id]
-        if namespace:
-            where += " AND lower(namespace) = lower(?)"
-            params.append(namespace)
-        rows = self._fetch_dicts(
-            f"SELECT DISTINCT entity_key, label, identifier, namespace FROM {ent_read} WHERE {where} ORDER BY entity_key",
-            params,
-        )
+        if self._has_term_keys():
+            rows = self._seed_rows(term_id, namespace, resources)
+        else:
+            where = "(entity_key = ? OR identifier = ? OR label = ?)"
+            params = [term_id, term_id, term_id]
+            if namespace:
+                where += " AND lower(namespace) = lower(?)"
+                params.append(namespace)
+            rows = self._fetch_dicts(
+                f"SELECT DISTINCT entity_key, label, identifier, namespace FROM {ent_read} WHERE {where} ORDER BY entity_key",
+                params,
+            )
         keys = {row["entity_key"] for row in rows}
         if len(keys) > 1:
             raise ValueError(
                 "Ambiguous ontology term; use ontologyId and an exact identifier or entity key"
             )
         return rows[0] if rows else None
+
+    def _seed_rows(self, term_id, namespace, resources):
+        """The entities whose key, identifier or label is ``term_id`` (in ``namespace``),
+        found among the lowercase terms (sorted) and read by id or by key, instead of
+        a scan of every entity row."""
+        hits = self._fetch_dicts(
+            f"SELECT DISTINCT resource, entity_id FROM {self._table('entity_term', resources)} WHERE term = ?",
+            [term_id.lower()],
+        )
+        fields = "entity_id, entity_key, label, identifier, namespace"
+        rows = self._lookup(
+            "entity", "entity_id", [(h["resource"], h["entity_id"]) for h in hits], fields, narrow=True
+        )
+        rows += self._fetch_dicts(
+            f"SELECT {fields}, resource FROM {self._table('entity', resources)} WHERE entity_key = ?",
+            [term_id],
+        )
+        found = {
+            (r["entity_key"], r["label"], r["identifier"], r["namespace"])
+            for r in rows
+            if term_id in (r["entity_key"], r["identifier"], r["label"])
+            and (not namespace or str(r["namespace"] or "").lower() == namespace.lower())
+        }
+        return [
+            dict(entity_key=k, label=l, identifier=i, namespace=n)
+            for k, l, i, n in sorted(found, key=lambda row: tuple("" if v is None else v for v in row))
+        ]
+
+    def _in_namespace(self, keys, namespace, resources):
+        """The ``keys`` with an entity row in ``namespace``, read by key."""
+        if not keys:
+            return set()
+        literals = ", ".join(sql_literal(k) for k in sorted(keys))
+        return {
+            r["entity_key"]
+            for r in self._fetch_dicts(
+                f"SELECT DISTINCT entity_key FROM {self._table('entity', resources)} "
+                f"WHERE entity_key IN ({literals}) AND namespace = ?",
+                [namespace],
+            )
+        }
+
+    def _edge_range(self, column, keys, resources):
+        """Distinct hierarchy edges with ``column`` (child_key or parent_key) among ``keys``:
+        a few ranges of ``ontology_edge`` (sorted by child) for children."""
+        source, in_resources = self._derived("ontology_edge", resources)
+        literals = ", ".join(sql_literal(k) for k in sorted(keys))
+        return self._fetch_dicts(
+            f"""SELECT DISTINCT child_key, child_label, predicate, parent_key, parent_label
+            FROM {source} WHERE {column} IN ({literals}) AND {in_resources}"""
+        )
+
+    def _tree_edges(self, seed_k, namespace, resources, *, ancestors=True):
+        """(the seed's child rows, its ancestor edges) within one namespace, read level by
+        level from ``ontology_edge``; None without that table. The same rows as the
+        recursive query over the scoped hierarchy, which rescanned it at each level."""
+        if self._derived("ontology_edge", resources) is None:
+            return None
+        # Both ends of an edge in the namespace (the seed's own rows may be in another).
+        known = self._in_namespace({seed_k}, namespace, resources)
+        children = self._edge_range("parent_key", [seed_k], resources) if known else []
+        known |= self._in_namespace({e["child_key"] for e in children}, namespace, resources)
+        child_rows = sorted(
+            (
+                dict(subject_entity_key=e["child_key"], subject_label=e["child_label"])
+                for e in children
+                if e["child_key"] in known
+            ),
+            key=lambda r: r["subject_entity_key"],
+        )
+        edges, seen, frontier = set(), {seed_k}, {seed_k}
+        for _ in range(10 if ancestors else 0):
+            frontier &= known
+            if not frontier:
+                break
+            found = self._edge_range("child_key", frontier, resources)
+            known |= self._in_namespace({e["parent_key"] for e in found} - known, namespace, resources)
+            found = [e for e in found if e["parent_key"] in known]
+            edges |= {(e["parent_key"], e["parent_label"], e["child_key"], e["child_label"]) for e in found}
+            frontier = {e["parent_key"] for e in found} - seen
+            seen |= frontier
+        ancestor_edges = [
+            dict(parent_key=p, parent_label=pl, child_key=c, child_label=cl) for p, pl, c, cl in edges
+        ]
+        return child_rows, ancestor_edges
 
     def _scoped_hierarchy(self, ent_read, rel_read, namespace):
         # Keep both endpoints in the resolved seed namespace; cross-ontology links
@@ -80,29 +168,8 @@ class OntologyQueries:
         keys = f"SELECT entity_key FROM {ent_read} WHERE namespace = {literal}"
         return f"(SELECT * FROM {rel_read} WHERE subject_entity_key IN ({keys}) AND object_entity_key IN ({keys}))"
 
-    def get_ontology_tree(
-        self,
-        term_ids: list[str],
-        ontology_id: str | None = None,
-        resources: list[str] | None = None,
-    ) -> dict[str, Any]:
-        """Build ontology tree hierarchy node with all ancestor paths down to the seed term."""
-        if not term_ids:
-            return {"root": None}
-        seed_id = str(term_ids[0]).strip()
-        if not self._selected_resource_infos(resources):
-            return {"root": {"id": seed_id, "name": seed_id, "children": [], "distance": 0}}
-
-        ent_read = self._table("entity", resources)
-        rel_read = self._hierarchy_edges(resources)
-
-        seed_ent = self._ontology_seed(ent_read, seed_id, ontology_id)
-        if seed_ent is None:
-            return {"root": {"id": seed_id, "name": seed_id, "children": [], "distance": 0}}
-        rel_read = self._scoped_hierarchy(ent_read, rel_read, seed_ent["namespace"])
-        seed_k = seed_ent["entity_key"]
-        seed_public_id = seed_ent.get("identifier") or seed_ent.get("label") or seed_id
-
+    def _tree_edges_sql(self, seed_k, rel_read):
+        """_tree_edges by a recursive query over a hierarchy read."""
         # 1. Fetch direct children of seed
         child_rows = self._fetch_dicts(
             f"""
@@ -114,9 +181,6 @@ class OntologyQueries:
             """,
             [seed_k],
         )
-
-        children_has_more = len(child_rows) > 100
-        child_rows = child_rows[:100]
 
         # 2. Fetch all ancestor edges (walking parents recursively)
         ancestor_edges = self._fetch_dicts(
@@ -151,6 +215,39 @@ class OntologyQueries:
             """,
             [seed_k],
         )
+
+        return child_rows, ancestor_edges
+
+    def get_ontology_tree(
+        self,
+        term_ids: list[str],
+        ontology_id: str | None = None,
+        resources: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Build ontology tree hierarchy node with all ancestor paths down to the seed term."""
+        if not term_ids:
+            return {"root": None}
+        seed_id = str(term_ids[0]).strip()
+        if not self._selected_resource_infos(resources):
+            return {"root": {"id": seed_id, "name": seed_id, "children": [], "distance": 0}}
+
+        ent_read = self._table("entity", resources)
+        rel_read = self._hierarchy_edges(resources)
+
+        seed_ent = self._ontology_seed(ent_read, seed_id, ontology_id, resources)
+        if seed_ent is None:
+            return {"root": {"id": seed_id, "name": seed_id, "children": [], "distance": 0}}
+        seed_k = seed_ent["entity_key"]
+        seed_public_id = seed_ent.get("identifier") or seed_ent.get("label") or seed_id
+        found = self._tree_edges(seed_k, seed_ent["namespace"], resources)
+        if found is not None:
+            child_rows, ancestor_edges = found
+        else:
+            child_rows, ancestor_edges = self._tree_edges_sql(
+                seed_k, self._scoped_hierarchy(ent_read, rel_read, seed_ent["namespace"])
+            )
+        children_has_more = len(child_rows) > 100
+        child_rows = child_rows[:100]
 
         if not ancestor_edges and not child_rows:
             return {"root": None}
@@ -245,21 +342,37 @@ class OntologyQueries:
         if not self._selected_resource_infos(resources):
             return empty
         ent_read = self._table("entity", resources)
-        seed = self._ontology_seed(ent_read, term_id, ontology_id)
+        seed = self._ontology_seed(ent_read, term_id, ontology_id, resources)
         if seed is None:
             return empty
-        rel_read = self._scoped_hierarchy(ent_read, self._hierarchy_edges(resources), seed["namespace"])
-        children_sql = f"""SELECT e.entity_key, min(e.identifier) AS identifier, min(e.label) AS label, min(e.namespace) AS namespace
-            FROM {ent_read} e WHERE e.entity_key IN
-                (SELECT subject_entity_key FROM {rel_read} WHERE object_entity_key = ?)
-            GROUP BY e.entity_key"""
-        total = self._db.execute(
-            f"SELECT count(*) FROM ({children_sql})", [seed["entity_key"]]
-        ).fetchone()[0]
-        rows = self._fetch_dicts(
-            f"{children_sql} ORDER BY entity_key LIMIT ? OFFSET ?",
-            [seed["entity_key"], limit, offset],
-        )
+        found = self._tree_edges(seed["entity_key"], seed["namespace"], resources, ancestors=False)
+        if found is not None:
+            # The children's keys from the edges, then their entity rows by key.
+            keys = sorted({row["subject_entity_key"] for row in found[0]})
+            grouped = (
+                self._fetch_dicts(
+                    f"""SELECT entity_key, min(identifier) AS identifier, min(label) AS label,
+                        min(namespace) AS namespace FROM {ent_read}
+                    WHERE entity_key IN ({", ".join(sql_literal(k) for k in keys)})
+                    GROUP BY entity_key ORDER BY entity_key"""
+                )
+                if keys
+                else []
+            )
+            total, rows = len(grouped), grouped[offset : offset + limit]
+        else:
+            rel_read = self._scoped_hierarchy(ent_read, self._hierarchy_edges(resources), seed["namespace"])
+            children_sql = f"""SELECT e.entity_key, min(e.identifier) AS identifier, min(e.label) AS label, min(e.namespace) AS namespace
+                FROM {ent_read} e WHERE e.entity_key IN
+                    (SELECT subject_entity_key FROM {rel_read} WHERE object_entity_key = ?)
+                GROUP BY e.entity_key"""
+            total = self._db.execute(
+                f"SELECT count(*) FROM ({children_sql})", [seed["entity_key"]]
+            ).fetchone()[0]
+            rows = self._fetch_dicts(
+                f"{children_sql} ORDER BY entity_key LIMIT ? OFFSET ?",
+                [seed["entity_key"], limit, offset],
+            )
         children = [
             dict(
                 id=row["identifier"],
