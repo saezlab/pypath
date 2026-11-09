@@ -65,7 +65,7 @@ class FacetsQueries:
             "elapsed_ms": elapsed_ms,
         }
 
-    def _cached_facets(self, kind, payload, resources, compute):
+    def _cached_facets(self, kind, payload, resources, compute, cache=None):
         # Paths identify pinned releases; fingerprint also invalidates moving latest.
         infos = self._selected_resource_infos(None)
         key = (
@@ -81,7 +81,7 @@ class FacetsQueries:
                 [m.get("references") for m in self.releases.list()], sort_keys=True, default=str
             ),
         )
-        return self._facet_cache.get(key, lambda: compute(payload, resources))
+        return (cache or self._facet_cache).get(key, lambda: compute(payload, resources))
 
     def get_scoped_entity_facets(self, payload=None, resources=None):
         return self._cached_facets("entities", payload, resources, self._compute_entity_facets)

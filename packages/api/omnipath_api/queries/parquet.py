@@ -119,6 +119,8 @@ class ParquetQueries(
         self._inventory_lock = threading.Lock()
         self._inventory_fingerprint: tuple[tuple[Any, ...], ...] | None = None
         self._facet_cache = QueryCache()
+        # Page order of endpoint selections: a gene's relations are sorted once for all pages.
+        self._order_cache = QueryCache(max_entries=256, max_bytes=64 * 1024**2)
         self._detail_cache = QueryCache(max_entries=256, max_bytes=32 * 1024**2)
         self._relationship_cache = QueryCache(max_entries=128, max_bytes=32 * 1024**2)
         self._example_cache = QueryCache(max_entries=16, max_bytes=1024**2)
@@ -239,6 +241,7 @@ class ParquetQueries(
     def _reset_query_connection(self) -> None:
         self._db_generation += 1
         self._facet_cache.clear()
+        self._order_cache.clear()
         conn = getattr(self._db_local, "conn", None)
         if conn is not None:
             try:

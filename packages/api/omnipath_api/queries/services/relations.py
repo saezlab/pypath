@@ -23,6 +23,8 @@ logger = logging.getLogger(__name__)
 
 # Relation pages are ordered by these columns, then by resource and position.
 RELATION_ORDER = "category, predicate, subject_label, object_label, resource, relation_id"
+# Endpoint selections up to this many relations keep their page order between pages.
+ORDER_CACHE_LIMIT = 100_000
 
 
 class RelationsQueries:
@@ -158,6 +160,24 @@ class RelationsQueries:
         those relations (and their evidence, for molecular forms) per resource.
         """
         filters = normalize_filters(filters)
+        resources, where, params, form, pairs = self._selection_parts(
+            filters, resources, qualifiers
+        )
+        if pairs is None:
+            sql = f"SELECT * FROM {self._table('relation', resources)} WHERE {where}"
+            if form:
+                sql += (
+                    " AND (resource, relation_id) IN (SELECT resource, relation_id FROM "
+                    f"{self._table('relation_evidence', resources)} WHERE {form[0]})"
+                )
+                params += form[1]
+            return sql, params
+        return self._lookup_sql("relation", "relation_id", pairs, where, params)
+
+    def _selection_parts(self, filters, resources, qualifiers):
+        """The resources, relation conditions (and parameters), molecular form condition
+        and, under endpoint filters, the candidate (resource, relation id) pairs (else
+        None) of normalized ``filters``."""
         if not resources and filters["sources"]:
             # A relation lists only its own resource among its sources, so a source filter
             # needs the files of those resources only; the WHERE below keeps the filter. A
@@ -169,14 +189,7 @@ class RelationsQueries:
         form = form_match_sql(filters) if has_form_filters(filters) else None
         candidates = self._endpoint_candidates(filters, resources)
         if candidates is None:
-            sql = f"SELECT * FROM {self._table('relation', resources)} WHERE {where}"
-            if form:
-                sql += (
-                    " AND (resource, relation_id) IN (SELECT resource, relation_id FROM "
-                    f"{self._table('relation_evidence', resources)} WHERE {form[0]})"
-                )
-                params += form[1]
-            return sql, params
+            return resources, where, params, form, None
         pairs = [(resource, i) for resource, ids in candidates.items() for i in ids]
         if form:
             # Relations with a matching evidence row, read by relation id per resource.
@@ -187,7 +200,33 @@ class RelationsQueries:
                     f"SELECT DISTINCT resource, relation_id FROM ({sql})", values
                 )
             ]
-        return self._lookup_sql("relation", "relation_id", pairs, where, params)
+        return resources, where, params, form, pairs
+
+    def _relation_order(self, filters, resources=None):
+        """The (resource, relation id) pairs of an endpoint selection in page order, or
+        None without endpoint filters or above ORDER_CACHE_LIMIT relations.
+
+        Kept between requests: paging through a gene's relations finds and sorts them
+        once, and every page has the total.
+        """
+
+        def compute(payload, resources):
+            resources, where, params, _, pairs = self._selection_parts(
+                filters, resources, RELATION_QUALIFIER_FILTERS
+            )
+            if pairs is None or len(pairs) > ORDER_CACHE_LIMIT:
+                return None
+            sql, values = self._lookup_sql("relation", "relation_id", pairs, where, params)
+            return [
+                [r["resource"], r["relation_id"]]
+                for r in self._fetch_dicts(
+                    f"SELECT resource, relation_id FROM ({sql}) ORDER BY {RELATION_ORDER}", values
+                )
+            ]
+
+        return self._cached_facets(
+            "relation-order", {"filters": filters}, resources, compute, cache=self._order_cache
+        )
 
     def search_relations(
         self,
@@ -200,22 +239,30 @@ class RelationsQueries:
         """A page of matching relations; with details, their annotations and evidence."""
         t0 = time.perf_counter()
         filters = normalize_filters(filters)
-        selection, params = self._relation_selection(filters, resources)
-        # The page is ordered on its sort columns only; then its rows are read in full.
-        page = self._fetch_dicts(
-            f"SELECT resource, relation_id FROM ({selection}) ORDER BY {RELATION_ORDER} LIMIT ? OFFSET ?",
-            [*params, int(limit), int(offset)],
-        )
-        pairs = [(r["resource"], r["relation_id"]) for r in page]
+        order = self._relation_order(filters, resources)
+        if order is not None:
+            pairs = [tuple(pair) for pair in order[int(offset) : int(offset) + int(limit)]]
+            total = len(order)
+        else:
+            selection, params = self._relation_selection(filters, resources)
+            # The page is ordered on its sort columns only; then its rows are read in full.
+            page = self._fetch_dicts(
+                f"SELECT resource, relation_id FROM ({selection}) ORDER BY {RELATION_ORDER} LIMIT ? OFFSET ?",
+                [*params, int(limit), int(offset)],
+            )
+            pairs = [(r["resource"], r["relation_id"]) for r in page]
+            total = None
         found = {
             (r["resource"], r["relation_id"]): r
             for r in self._lookup("relation", "relation_id", pairs)
         }
         rows = [found[pair] for pair in pairs]
-        if rows and (offset or len(rows) == limit) or not rows and offset:
-            total = self._fetch_dicts(f"SELECT count(*) AS n FROM ({selection})", params)[0]["n"]
-        else:
-            total = offset + len(rows)
+        if total is None:
+            if rows and (offset or len(rows) == limit) or not rows and offset:
+                total = self._fetch_dicts(f"SELECT count(*) AS n FROM ({selection})", params)
+                total = total[0]["n"]
+            else:
+                total = offset + len(rows)
         if include_details:
             self._children("relation_annotation", rows, "annotations")
             self._children("relation_evidence", rows, "evidence")
