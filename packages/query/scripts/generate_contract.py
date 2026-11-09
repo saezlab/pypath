@@ -21,7 +21,7 @@ import shutil
 import sys
 
 from omnipath_core import biolink
-from omnipath_core.schema import PUBLISHED_TABLES, ROW_GROUP_SIZE, SERVING_TABLES
+from omnipath_core.schema import PUBLISHED_TABLES, RELATION_QUALIFIERS, ROW_GROUP_SIZE, SERVING_TABLES
 from omnipath_core.serving_tables import serving_queries
 from omnipath_api.queries.services.export import RELATION_EXPORT_LIMIT
 
@@ -60,12 +60,66 @@ GLOBAL_IDS = {
     "entity_group": ["entity_id", "_eid"],
 }
 
-# The database's own tables, derived from the tables above once they are written: what a
-# query reads by a key that is not sorted in the tables (relation keys are sorted only
-# within each resource).
-DERIVED_TABLES = {
-    "relation_key_lookup": {"select": "SELECT relation_key, _rid FROM relation", "order": "relation_key"},
-}
+def hierarchy_predicates() -> dict[str, bool]:
+    """{predicate: whether its edges point parent -> child} of the hierarchy's predicates."""
+    names = {name for kind, _, name in biolink_names() if kind == "predicate"} | {"is_a"}
+    return {
+        name: reverse
+        for name in sorted(names)
+        if (reverse := biolink.hierarchy_direction(name)) is not None
+    }
+
+
+def derived_tables() -> dict:
+    """The database's own tables, derived from the tables above once they are written:
+    the same statements merged or regrouped across every resource the database holds,
+    each sorted for the reads it serves. They keep each row's resource, so a query over
+    some resources only (or without the ones a query policy disables) filters them."""
+    qualifiers = ", ".join(RELATION_QUALIFIERS)
+    columns = (
+        "category, predicate, subject_label, object_label, subject_type, object_type, taxon, "
+        f"sign, is_directed, sources, evidence_count, {qualifiers}"
+    )
+    resource = "_resource || '/' || _resource_version AS resource"
+    directions = hierarchy_predicates()
+    listed = ", ".join(f"'{name}'" for name in directions)
+    reversed_ = ", ".join(f"'{name}'" for name, reverse in directions.items() if reverse) or "NULL"
+    flip = f"predicate IN ({reversed_})"
+    return {
+        # Relation keys are sorted only within each resource: one table over all of them.
+        "relation_key_lookup": {"select": "SELECT relation_key, _rid FROM relation", "order": "relation_key"},
+        # Every relation row of an entity, at either end, with the relation's page-order,
+        # filter and facet columns: a gene's relations are one range, in page order.
+        "entity_relation": {
+            "select": f"""SELECT subject_entity_key AS entity_key, 'subject' AS side, _rid, {resource},
+                relation_id, {columns} FROM relation
+                UNION ALL SELECT object_entity_key, 'object', _rid, {resource}, relation_id, {columns}
+                FROM relation""",
+            "order": "entity_key, category, predicate, subject_label, object_label, resource, relation_id",
+        },
+        # The ontologies' hierarchies as child -> parent edges.
+        "ontology_edge": {
+            "select": f"""SELECT
+                CASE WHEN {flip} THEN object_entity_key ELSE subject_entity_key END AS child_key,
+                CASE WHEN {flip} THEN object_label ELSE subject_label END AS child_label,
+                predicate,
+                CASE WHEN {flip} THEN subject_entity_key ELSE object_entity_key END AS parent_key,
+                CASE WHEN {flip} THEN subject_label ELSE object_label END AS parent_label,
+                {resource}
+                FROM relation WHERE statement_kind = 'ontology' AND predicate IN ({listed or 'NULL'})""",
+            "order": "child_key, parent_key",
+        },
+        # Each relation touching an ontology term, from the term's side: what the term
+        # annotates.
+        "term_entity": {
+            "select": f"""WITH terms AS (SELECT DISTINCT entity_key FROM entity WHERE entity_type = 'ontology_class')
+                SELECT object_entity_key AS term_key, subject_entity_key AS entity_key, relation_key, {resource}
+                FROM relation WHERE object_entity_key IN (SELECT entity_key FROM terms)
+                UNION ALL SELECT subject_entity_key, object_entity_key, relation_key, {resource}
+                FROM relation WHERE subject_entity_key IN (SELECT entity_key FROM terms)""",
+            "order": "term_key",
+        },
+    }
 # ART indexes: rows by a list of global ids (DuckDB uses an index only for ids written into
 # the SQL as a literal list). Measured on a full release: 7,582 relations in 0.3 s instead
 # of 5.6 s. Indexes on entity_key or on entity._eid were slower than a scan.
@@ -74,7 +128,7 @@ INDEXES = [
     ["relation_evidence_rid", "relation_evidence", "_rid"],
 ]
 # Changes when the tables, derived tables or indexes a database holds change.
-DATABASE_FORMAT = 1
+DATABASE_FORMAT = 2
 
 
 def biolink_names() -> list[list[str]]:
@@ -111,7 +165,7 @@ def contract() -> dict:
         "lookups": LOOKUPS,
         "global_ids": GLOBAL_IDS,
         "database_format": DATABASE_FORMAT,
-        "derived_tables": DERIVED_TABLES,
+        "derived_tables": derived_tables(),
         "indexes": INDEXES,
         "macro_files": ["relations.sql", "search.sql", "entity.sql"],
         "relation_export_limit": RELATION_EXPORT_LIMIT,

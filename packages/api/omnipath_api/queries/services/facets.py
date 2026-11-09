@@ -123,7 +123,10 @@ class FacetsQueries:
         """The ``relation_facet`` rows (with ``resource``) of the relations an endpoint or
         molecular form scope selects, as columns of plain values."""
         scope = normalize_filters(_flattened(scope_payload))
-        selection, params = self._relation_selection(scope, resources, qualifiers=())
+        fast = self._entity_relation_sql(scope, resources, qualifiers=())
+        selection, params = fast if fast is not None else self._relation_selection(
+            scope, resources, qualifiers=()
+        )
         return (
             self._db.execute(
                 f"""SELECT {", ".join(SELECTED_COMBINATIONS.names)}

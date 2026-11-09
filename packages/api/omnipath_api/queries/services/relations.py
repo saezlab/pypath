@@ -18,6 +18,7 @@ from omnipath_api.queries.filters import normalize_filters
 
 
 from omnipath_api.queries.services.constants import RELATION_QUALIFIER_FILTERS
+from omnipath_api.queries.store.connection import sql_literal
 
 logger = logging.getLogger(__name__)
 
@@ -202,6 +203,54 @@ class RelationsQueries:
             ]
         return resources, where, params, form, pairs
 
+    def _entity_relation_sql(self, filters, resources=None, *, qualifiers=RELATION_QUALIFIER_FILTERS):
+        """SQL and parameters of the relation rows (one per relation and resource, with
+        the page-order, filter and facet columns, ``resource`` and ``_rid``) of a plain
+        entity selection, from the ``entity_relation`` table: the entities' rows are one
+        range of it. None for other selections (reference keys, a scope, molecular
+        forms) or without the table."""
+        filters = normalize_filters(filters)
+        tokens = filters["entity_ids"] + filters["entity_pks"]
+        if (
+            not tokens
+            or filters["scope_entity_ids"]
+            or filters["reference_entity_keys"]
+            or has_form_filters(filters)
+        ):
+            return None
+        if not resources and filters["sources"]:
+            # As in _selection_parts: a source filter reads only those resources.
+            queryable = {info["resource"] for info in self._selected_resource_infos(None)}
+            resources = [source for source in filters["sources"] if source in queryable] or None
+        derived = self._derived("entity_relation", resources)
+        if derived is None:
+            return None
+        source, in_resources = derived
+        keys = self.resolve_entity_keys(tokens, resources)
+        if not keys:
+            return "SELECT * EXCLUDE (entity_key, side) FROM " + source + " WHERE FALSE", []
+        where, params = self._relation_where(filters, qualifiers=qualifiers)
+        mode = filters["gene_mode"]
+        side = "TRUE"
+        if mode in {"source", "source_only"}:
+            side = "side = 'subject'"
+        elif mode in {"target", "target_only"}:
+            side = "side = 'object'"
+        elif mode == "both":
+            side = (
+                "_rid IN (SELECT _rid FROM er GROUP BY _rid "
+                "HAVING bool_or(side = 'subject') AND bool_or(side = 'object'))"
+            )
+        literals = ", ".join(sql_literal(key) for key in dict.fromkeys(keys))
+        # The keys alone first (the table is sorted by them); a relation with both ends
+        # among them is one relation.
+        return (
+            f"""WITH er AS MATERIALIZED (SELECT * FROM {source} WHERE entity_key IN ({literals}))
+            SELECT DISTINCT ON (_rid) * EXCLUDE (entity_key, side) FROM er
+            WHERE {in_resources} AND {side} AND {where}""",
+            params,
+        )
+
     def _relation_order(self, filters, resources=None):
         """The (resource, relation id) pairs of an endpoint selection in page order, or
         None without endpoint filters or above ORDER_CACHE_LIMIT relations.
@@ -211,6 +260,13 @@ class RelationsQueries:
         """
 
         def compute(payload, resources):
+            fast = self._entity_relation_sql(filters, resources)
+            if fast is not None:
+                sql, values = fast
+                rows = self._db.execute(
+                    f"SELECT resource, relation_id FROM ({sql}) ORDER BY {RELATION_ORDER}", values
+                ).fetchall()
+                return None if len(rows) > ORDER_CACHE_LIMIT else [list(row) for row in rows]
             resources, where, params, _, pairs = self._selection_parts(
                 filters, resources, RELATION_QUALIFIER_FILTERS
             )

@@ -91,9 +91,10 @@ def test_pages_match_the_uncached_order(engine, monkeypatch):
 
 def test_later_pages_skip_the_candidate_search(engine, monkeypatch):
     calls = []
-    original = engine._endpoint_candidates
+    # A gene's relations are found in the entity_relation table of the release database.
+    original = engine._entity_relation_sql
     monkeypatch.setattr(
-        engine, "_endpoint_candidates", lambda *a, **k: calls.append(1) or original(*a, **k)
+        engine, "_entity_relation_sql", lambda *a, **k: calls.append(1) or original(*a, **k)
     )
     filters = {"entity_ids": ["entrez:1"]}
     page_through(engine, filters)

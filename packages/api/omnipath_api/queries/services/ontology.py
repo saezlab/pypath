@@ -39,6 +39,17 @@ class OntologyQueries:
             CASE WHEN ({reversed_sql}) THEN subject_label ELSE object_label END AS object_label
             FROM {rel_read} WHERE {context} AND ({allowed_sql}))"""
 
+    def _hierarchy_edges(self, resources=None) -> str:
+        """Child-to-parent edges of the ontologies: the ``ontology_edge`` table of the
+        database, else from the relations."""
+        derived = self._derived("ontology_edge", resources)
+        if derived is None:
+            return self._hierarchy_read(self._table("relation", resources))
+        source, in_resources = derived
+        return f"""(SELECT DISTINCT child_key AS subject_entity_key, child_label AS subject_label,
+            predicate, parent_key AS object_entity_key, parent_label AS object_label
+            FROM {source} WHERE {in_resources})"""
+
     def _ontology_seed(self, ent_read, term_id, ontology_id=None):
         namespace = ontology_id
         if "|" in term_id:
@@ -83,7 +94,7 @@ class OntologyQueries:
             return {"root": {"id": seed_id, "name": seed_id, "children": [], "distance": 0}}
 
         ent_read = self._table("entity", resources)
-        rel_read = self._hierarchy_read(self._table("relation", resources))
+        rel_read = self._hierarchy_edges(resources)
 
         seed_ent = self._ontology_seed(ent_read, seed_id, ontology_id)
         if seed_ent is None:
@@ -237,9 +248,7 @@ class OntologyQueries:
         seed = self._ontology_seed(ent_read, term_id, ontology_id)
         if seed is None:
             return empty
-        rel_read = self._scoped_hierarchy(
-            ent_read, self._hierarchy_read(self._table("relation", resources)), seed["namespace"]
-        )
+        rel_read = self._scoped_hierarchy(ent_read, self._hierarchy_edges(resources), seed["namespace"])
         children_sql = f"""SELECT e.entity_key, min(e.identifier) AS identifier, min(e.label) AS label, min(e.namespace) AS namespace
             FROM {ent_read} e WHERE e.entity_key IN
                 (SELECT subject_entity_key FROM {rel_read} WHERE object_entity_key = ?)
@@ -290,11 +299,18 @@ class OntologyQueries:
         relations = self._table("relation", resources)
         # Each endpoint can carry the ontology term; count unique neighbours and relations.
         predicate = "WHERE entity_key IN (SELECT unnest(?::VARCHAR[]))" if scoped else ""
-        edges = f"""SELECT * FROM (
-            SELECT object_entity_key term_key, subject_entity_key entity_key, relation_key FROM {relations}
-            UNION ALL
-            SELECT subject_entity_key term_key, object_entity_key entity_key, relation_key FROM {relations}
-        ) {predicate}"""
+        derived = self._derived("term_entity", resources)
+        if derived is not None:
+            # Precomputed from the term's side, for terms only.
+            source, in_resources = derived
+            edges = f"""SELECT term_key, entity_key, relation_key FROM {source}
+                WHERE {in_resources}{" AND entity_key IN (SELECT unnest(?::VARCHAR[]))" if scoped else ""}"""
+        else:
+            edges = f"""SELECT * FROM (
+                SELECT object_entity_key term_key, subject_entity_key entity_key, relation_key FROM {relations}
+                UNION ALL
+                SELECT subject_entity_key term_key, object_entity_key entity_key, relation_key FROM {relations}
+            ) {predicate}"""
         params = [keys] if scoped else []
         where = ""
         if scoped:

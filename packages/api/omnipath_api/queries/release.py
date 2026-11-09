@@ -529,6 +529,21 @@ class ReleaseQueries(
     def _in_database(self, table: str) -> bool:
         return table in self._served().columns
 
+    def _derived(self, table: str, resources: list[str] | None = None) -> tuple[str, str] | None:
+        """(source, condition on its ``resource``) of a derived table over the selected
+        resources, or None when the database has no such table. Derived tables hold
+        every resource's rows, so a selection or the query policy is a filter."""
+        if not self._in_database(table):
+            return None
+        infos = self._selected_resource_infos(resources)
+        if len(infos) == len(self.resources):
+            condition = "TRUE"
+        elif not infos:
+            condition = "FALSE"
+        else:
+            condition = f"resource IN ({', '.join(sql_literal(info['key']) for info in infos)})"
+        return self._source(table), condition
+
     def _projection(self, table: str) -> str:
         """The table's columns as the resource files have them, then ``resource``."""
         columns = self._served().columns[table]
