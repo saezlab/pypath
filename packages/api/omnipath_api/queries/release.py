@@ -63,6 +63,10 @@ GLOBAL_IDS: dict[str, tuple[str, str]] = {t: tuple(c) for t, c in CONTRACT["glob
 # join, which scans.
 LITERAL_LIMIT = 100_000
 _HELPERS = ("_resource", "_resource_version", "_rid", "_eid")
+# Tables the database also holds sorted by one column across every resource:
+# {table: (its sorted copy, the column)}. Reads by that column (and scans) use the copy;
+# reads by global id the table itself, which is in id order.
+SORTED_COPIES = {"entity": ("entity_by_key", "entity_key"), "entity_term": ("term_index", "term")}
 _NUMERIC = re.compile(r"[0-9]+(?:\.[0-9]+)*")
 
 
@@ -544,17 +548,30 @@ class ReleaseQueries(
             condition = f"resource IN ({', '.join(sql_literal(info['key']) for info in infos)})"
         return self._source(table), condition
 
-    def _projection(self, table: str) -> str:
+    def _physical(self, table: str, column: str | None = None) -> str:
+        """The database table a read of ``table`` (by ``column``, or a scan) uses."""
+        copy = SORTED_COPIES.get(table)
+        if copy is not None and copy[0] in self._served().columns:
+            if column is None or column == copy[1] or table == "entity_term":
+                return copy[0]
+        return table
+
+    def _projection(self, table: str, column: str | None = None) -> str:
         """The table's columns as the resource files have them, then ``resource``."""
-        columns = self._served().columns[table]
+        columns = self._served().columns[self._physical(table, column)]
         hidden = [c for c in _HELPERS if c in columns]
         return (
             f"* EXCLUDE ({', '.join(hidden)}), _resource || '/' || _resource_version AS resource"
         )
 
-    def _source(self, table: str) -> str:
+    def _source(self, table: str, column: str | None = None) -> str:
         served = self._served()
-        return f"{served.alias}.main.{table}"
+        return f"{served.alias}.main.{self._physical(table, column)}"
+
+    def _sorted_by(self, table: str, column: str) -> bool:
+        """Whether a read of ``table`` by ``column`` uses a copy sorted by it."""
+        copy = SORTED_COPIES.get(table)
+        return copy is not None and copy[1] == column and self._physical(table, column) == copy[0]
 
     def _file_table(self, table: str, selected_resources: list[str] | None = None) -> str:
         """A table that is only in the resources' files (raw payloads), read from them."""
@@ -629,6 +646,20 @@ class ReleaseQueries(
         literal = lambda v: (  # noqa: E731
             str(int(v)) if isinstance(v, int) and not isinstance(v, bool) else sql_literal(str(v))
         )
+        if self._sorted_by(table, column):
+            # A copy sorted by the column: its values are a few row groups; the pairs
+            # keep each resource's own rows.
+            values = sorted({str(v) for vs in by_resource.values() for v in vs})
+            pairs = ", ".join(
+                f"({sql_literal(resource.split('/', 1)[0])}, {literal(v)})"
+                for resource, vs in by_resource.items()
+                for v in dict.fromkeys(vs)
+            )
+            return (
+                f"{column} IN ({', '.join(literal(v) for v in values)}) "
+                f"AND (_resource, {column}) IN (SELECT * FROM (VALUES {pairs}))",
+                [],
+            )
         if ids is not None and len(by_resource) > 3:
             # By key from more than a few resources, in two steps: the global ids of the wanted (resource, key) pairs
             # from a narrow read of the key column, then the rows by those ids. One
@@ -662,8 +693,8 @@ class ReleaseQueries(
         conditions in the same WHERE would make DuckDB scan instead of using an index."""
         condition, params = self._matching(table, column, by_resource)
         return (
-            f"WITH __rows AS MATERIALIZED (SELECT {self._projection(table)} FROM "
-            f"{self._source(table)} WHERE {condition})",
+            f"WITH __rows AS MATERIALIZED (SELECT {self._projection(table, column)} FROM "
+            f"{self._source(table, column)} WHERE {condition})",
             params,
         )
 

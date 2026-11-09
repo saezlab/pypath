@@ -145,11 +145,19 @@
    "_eid"
   ]
  },
- "database_format": 2,
+ "database_format": 3,
  "derived_tables": {
   "relation_key_lookup": {
    "select": "SELECT relation_key, _rid FROM relation",
    "order": "relation_key"
+  },
+  "entity_by_key": {
+   "select": "SELECT * FROM entity",
+   "order": "entity_key, _resource, entity_id"
+  },
+  "term_index": {
+   "select": "SELECT t.*, e.entity_key FROM entity_term t JOIN entity e USING (_eid)",
+   "order": "term, _resource, entity_id"
   },
   "entity_relation": {
    "select": "SELECT subject_entity_key AS entity_key, 'subject' AS side, _rid, _resource || '/' || _resource_version AS resource,\n                relation_id, category, predicate, subject_label, object_label, subject_type, object_type, taxon, sign, is_directed, sources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier FROM relation\n                UNION ALL SELECT object_entity_key, 'object', _rid, _resource || '/' || _resource_version AS resource, relation_id, category, predicate, subject_label, object_label, subject_type, object_type, taxon, sign, is_directed, sources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\n                FROM relation",

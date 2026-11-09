@@ -55,23 +55,29 @@ class EntitiesQueries:
         """
         q = query.strip().lower()
         terms = self._table("entity_term", resources)
+        # The release database's term index also holds each term's entity key.
+        key = "entity_key" if self._has_term_keys() else "NULL::VARCHAR"
         parts = [
-            f"SELECT resource, entity_id, {_TERM_RANK} AS match_rank, term, NULL::VARCHAR AS namespace "
-            f"FROM {terms} WHERE term >= ? AND term < ?"
+            f"SELECT resource, entity_id, {_TERM_RANK} AS match_rank, term, NULL::VARCHAR AS namespace, "
+            f"{key} AS entity_key FROM {terms} WHERE term >= ? AND term < ?"
         ]
         params = [q, *_prefix_range(q)]
         if curie := _curie(query.strip()):
             namespace, identifier = curie
             parts.append(
-                f"SELECT resource, entity_id, {_TERM_RANK}, term, ? FROM {terms} WHERE term = ?"
+                f"SELECT resource, entity_id, {_TERM_RANK}, term, ?, {key} FROM {terms} WHERE term = ?"
             )
             params += [identifier.lower(), namespace, identifier.lower()]
             parts.append(
-                f"SELECT resource, entity_id, 2, ?, NULL FROM {self._table('entity_group', resources)} "
+                f"SELECT resource, entity_id, 2, ?, NULL, NULL FROM {self._table('entity_group', resources)} "
                 "WHERE group_key = ? AND kind = 'reference'"
             )
             params += [q, f"{namespace}:{identifier}"]
         return " UNION ALL ".join(parts), params
+
+    def _has_term_keys(self) -> bool:
+        physical = self._physical("entity_term") if hasattr(self, "_physical") else "entity_term"
+        return "entity_key" in self._served().columns.get(physical, ())
 
     def _search_phases(self, query):
         q = (query or "").strip()
@@ -426,8 +432,8 @@ class EntitiesQueries:
         filters. Hits are cheap (``entity_term`` is sorted by term); entity rows are read
         only for the hits needed, at most doubling the number read each round."""
         hits, values = self._term_hits(query, resources)
-        ordered = f"""SELECT resource, entity_id, min(match_rank) AS match_rank,
-              min(length(term)) AS term_length, min(term) AS term,
+        ordered = f"""SELECT resource, entity_id, any_value(entity_key) AS entity_key,
+              min(match_rank) AS match_rank, min(length(term)) AS term_length, min(term) AS term,
               list(DISTINCT namespace) FILTER (WHERE namespace IS NOT NULL) AS namespaces,
               bool_or(namespace IS NULL) AS any_namespace
             FROM ({hits}) GROUP BY resource, entity_id
@@ -435,10 +441,15 @@ class EntitiesQueries:
         limit = max(4 * count, 64)
         while True:
             found = self._fetch_dicts(ordered, [*values, limit])
+            # Hits with their entity's key are read by key (the copies of an entity
+            # are adjacent); the others by id.
+            keyed = [(h["resource"], h["entity_key"]) for h in found if h["entity_key"]]
             rows = self._lookup(
+                "entity", "entity_key", keyed, extra=f"AND ({where})", params=params
+            ) + self._lookup(
                 "entity",
                 "entity_id",
-                [(h["resource"], h["entity_id"]) for h in found],
+                [(h["resource"], h["entity_id"]) for h in found if not h["entity_key"]],
                 extra=f"AND ({where})",
                 params=params,
             )
@@ -485,13 +496,19 @@ class EntitiesQueries:
         known = {(r["resource"], r["entity_id"]) for found in rows.values() for r in found}
         condition, values = self._in("entity_key", keys)
         located = self._fetch_dicts(
-            f"SELECT resource, entity_id FROM {self._table('entity', resources)} "
+            f"SELECT resource, entity_id, entity_key FROM {self._table('entity', resources)} "
             f"WHERE {condition} AND ({where})",
             [*values, *params],
         )
-        others = [pair for r in located if (pair := (r["resource"], r["entity_id"])) not in known]
-        for row in self._lookup("entity", "entity_id", others):
-            rows[row["entity_key"]].append(row)
+        others = {
+            (r["resource"], r["entity_id"]): r["entity_key"]
+            for r in located
+            if (r["resource"], r["entity_id"]) not in known
+        }
+        # Read by key: an entity's copies are adjacent in the database's sorted copy.
+        for row in self._lookup("entity", "entity_key", sorted({(r, k) for (r, _), k in others.items()})):
+            if (row["resource"], row["entity_id"]) in others:
+                rows[row["entity_key"]].append(row)
         return [row for key in keys for row in sorted(rows[key], key=lambda r: r["resource"])]
 
     def search_entities_api(

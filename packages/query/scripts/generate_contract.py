@@ -88,6 +88,16 @@ def derived_tables() -> dict:
     return {
         # Relation keys are sorted only within each resource: one table over all of them.
         "relation_key_lookup": {"select": "SELECT relation_key, _rid FROM relation", "order": "relation_key"},
+        # Every resource's entity rows sorted by key: an entity's copies are adjacent, so
+        # reading them by key reads a few row groups. (The entity table itself is in
+        # global id order, for reads by id.)
+        "entity_by_key": {"select": "SELECT * FROM entity", "order": "entity_key, _resource, entity_id"},
+        # Every resource's lowercase labels and identifiers sorted by term, with the
+        # entity's key: a prefix is one range.
+        "term_index": {
+            "select": "SELECT t.*, e.entity_key FROM entity_term t JOIN entity e USING (_eid)",
+            "order": "term, _resource, entity_id",
+        },
         # Every relation row of an entity, at either end, with the relation's page-order,
         # filter and facet columns: a gene's relations are one range, in page order.
         "entity_relation": {
@@ -128,7 +138,7 @@ INDEXES = [
     ["relation_evidence_rid", "relation_evidence", "_rid"],
 ]
 # Changes when the tables, derived tables or indexes a database holds change.
-DATABASE_FORMAT = 2
+DATABASE_FORMAT = 3
 
 
 def biolink_names() -> list[list[str]]:
