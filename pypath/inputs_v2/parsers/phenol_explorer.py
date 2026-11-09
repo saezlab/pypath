@@ -18,9 +18,6 @@ import csv
 import io
 from typing import Any
 
-from pypath.share.downloads import download_and_open
-
-
 # Delimiter for member lists (using || as per reactome pattern)
 MEMBER_DELIMITER = '||'
 
@@ -265,3 +262,37 @@ def _raw(
             **member_fields,
         }
         yield output_row
+
+def _raw_metabolites(
+    opener,
+    **_kwargs,
+) -> Generator[dict[str, Any], None, None]:
+    if not opener or not opener.result:
+        return
+
+    handle = (
+        next(iter(opener.result.values()), None)
+        if isinstance(opener.result, dict)
+        else opener.result
+    )
+    if not handle:
+        return
+
+    for row in csv.DictReader(handle):
+        metabolite_id = _clean_value(row.get('id', ''))
+        name = _clean_value(row.get('name', ''))
+
+        # Skip rows with neither an id nor a name
+        if not metabolite_id and not name:
+            continue
+
+        yield {
+            'id': metabolite_id,
+            'name': name,
+            'molecular_weight': _clean_value(row.get('molecular_weight', '')),
+            'synonyms': _clean_value(row.get('synonyms', '')),
+            'formula': _clean_value(row.get('formula', '')),
+            'cas': _clean_value(row.get('cas_number', '')),
+            'chebi': _format_chebi(_clean_value(row.get('chebi_id', ''))),
+            'pubchem': _clean_value(row.get('pubchem_compound_id', '')),
+        }
