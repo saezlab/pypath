@@ -99,12 +99,11 @@ def same(python, r):
     assert clean(python["entity"]) == clean(r["entity"])
 
 
-@pytest.mark.parametrize("materialize", [True, False])
-def test_r_and_python_share_directories_and_answers(service, tmp_path, materialize):  # noqa: F811
-    service.init(["alpha", "beta", "gamma"], include_evidence=True, materialize=materialize)
+def test_r_and_python_share_directories_and_answers(service, tmp_path):  # noqa: F811
+    service.init(["alpha", "beta", "gamma"], include_evidence=True)
     r_dir = tmp_path / "r"
     questions = tmp_path / "questions.json"
-    questions.write_text(json.dumps({**QUESTIONS, "materialize": materialize}))
+    questions.write_text(json.dumps(QUESTIONS))
     database = service.data / "omnipath.duckdb"
     before = database.stat().st_ino
     run = subprocess.run(

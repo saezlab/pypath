@@ -256,8 +256,8 @@ def queries(db):
     )
 
 
-def test_sql_on_views_and_native_tables(service, monkeypatch):
-    service.init(["alpha", "beta"], materialize=False)
+def test_sql_on_native_tables(service, monkeypatch):
+    service.init(["alpha", "beta"])
     database = service.data / "omnipath.duckdb"
 
     def forbidden(*args, **kwargs):
@@ -268,39 +268,38 @@ def test_sql_on_views_and_native_tables(service, monkeypatch):
         patched.setattr(httpx.Client, "stream", forbidden)
         with connect(service.data) as db:
             assert db.path == database
-            views = queries(db)
-            assert ("alpha", "relation") in views["tables"]
-            assert ("main", "entity_term") in views["tables"]
-            assert ("main", "evidence_payloads") not in views["tables"]
-            assert len(views["entities"]) == 6
-            assert views["quoted"] == [("quote",), ("quote",)]
-            assert views["additive"] == (3,)
-            assert views["one"] == (2,)
-            assert views["joined"] == [("TP53", "alpha"), ("TP53", "beta")]
-            assert views["endpoints"] == (2,) and views["terms"] == (1,)
+            tables = queries(db)
+            assert ("alpha", "relation") in tables["tables"]
+            assert ("main", "entity_term") in tables["tables"]
+            assert ("main", "evidence_payloads") not in tables["tables"]
+            assert len(tables["entities"]) == 6
+            assert tables["quoted"] == [("quote",), ("quote",)]
+            assert tables["additive"] == (3,)
+            assert tables["one"] == (2,)
+            assert tables["joined"] == [("TP53", "alpha"), ("TP53", "beta")]
+            assert tables["endpoints"] == (2,) and tables["terms"] == (1,)
             # The database is read-only; temporary tables are the session's own.
             with pytest.raises(duckdb.Error):
                 db.sql("CREATE TABLE mine AS SELECT 1")
             db.connection.execute("CREATE TEMP TABLE mine AS SELECT label FROM alpha.entity")
             assert db.sql("SELECT count(*) FROM mine").fetchone() == (3,)
             types = db.sql(
-                "SELECT DISTINCT table_type FROM information_schema.tables WHERE table_name = 'entity'"
+                "SELECT table_type FROM information_schema.tables "
+                "WHERE table_name = 'entity' AND table_schema = 'main'"
             ).fetchall()
-            assert types == [("VIEW",)]
-    # The same answers from native tables; the choice is kept by later runs.
-    service.init(["alpha", "beta"], materialize=True)
-    with connect(service.data) as db:
-        assert queries(db) == views
-        types = db.sql(
-            "SELECT table_type FROM information_schema.tables "
-            "WHERE table_name = 'entity' AND table_schema = 'main'"
-        ).fetchall()
-        assert types == [("BASE TABLE",)]
-    # A new version and a new resource replace only their rows, in place.
+            assert types == [("BASE TABLE",)]
+            # The database format's own tables and indexes.
+            assert db.sql(
+                "SELECT count(*) = (SELECT count(*) FROM relation) FROM relation_key_lookup"
+            ).fetchone() == (True,)
+            assert sorted(r[0] for r in db.sql("SELECT index_name FROM duckdb_indexes()").fetchall()) == [
+                "relation_evidence_rid", "relation_rid"
+            ]
+    # A new version and a new resource: the database is written anew.
     service.publish("alpha", "2.0")
     before = database.stat().st_ino
     service.init("gamma")
-    assert database.stat().st_ino == before
+    assert database.stat().st_ino != before
     with connect(service.data) as db:
         assert db.sql(
             "SELECT _resource, _resource_version, count(*) FROM entity GROUP BY ALL ORDER BY ALL"
@@ -311,19 +310,16 @@ def test_sql_on_views_and_native_tables(service, monkeypatch):
             ("beta", "1.0", False),
             ("gamma", "1.0", False),
         ]
-    # Raw evidence has no table yet: the database is written anew for it.
+    # Raw evidence for one resource.
     service.init("gamma", include_evidence=True)
-    assert database.stat().st_ino != before
     with connect(service.data) as db:
         assert db.sql("SELECT _resource FROM evidence_payloads").fetchall() == [("gamma",)]
         assert db.sql("SELECT count(*) FROM entity").fetchone() == (9,)
         assert json.loads((service.data / "installed.json").read_text())["materialize"] is True
-    service.init(materialize=False)
-    with connect(service.data) as db:
-        assert db.sql("SELECT count(*) FROM entity").fetchone() == (9,)
-        assert db.sql(
-            "SELECT DISTINCT table_type FROM information_schema.tables WHERE table_name = 'entity'"
-        ).fetchall() == [("VIEW",)]
+    # Nothing changed: the database stays.
+    before = database.stat().st_ino
+    service.init()
+    assert database.stat().st_ino == before
 
 
 def test_prebuilt_queries_answer_like_the_api(service):
@@ -529,10 +525,9 @@ def canonical(table):
     return sorted(rows)
 
 
-@pytest.mark.parametrize("materialize", [True, False])
-def test_prebuilt_queries_match_the_engine(service, materialize):
-    """The macros give the API's answers, in both database modes."""
-    service.init(["alpha", "beta", "gamma"], include_evidence=True, materialize=materialize)
+def test_prebuilt_queries_match_the_engine(service):
+    """The macros give the API's answers."""
+    service.init(["alpha", "beta", "gamma"], include_evidence=True)
     api = ParquetQueries(service.data)
     try:
         with connect(service.data) as db:

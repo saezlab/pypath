@@ -80,23 +80,20 @@ queries <- function(con) {
   )
 }
 
-test_that("SQL on views and native tables gives the same answers", {
+test_that("SQL on native tables, the derived tables and a database written anew", {
   service <- local_service()
-  service$init(c("alpha", "beta"), materialize = FALSE)
+  service$init(c("alpha", "beta"))
   con <- service$connect()
-  views <- queries(con)
-  expect_equal(nrow(views$entities), 6)
-  expect_equal(views$quoted$identifier, c("quote", "quote"))
-  expect_equal(views$additive$n, 3)
-  expect_equal(op_sql(con, "SELECT DISTINCT table_type FROM information_schema.tables WHERE table_name = 'entity'")$table_type, "VIEW")
+  tables <- queries(con)
+  expect_equal(nrow(tables$entities), 6)
+  expect_equal(tables$quoted$identifier, c("quote", "quote"))
+  expect_equal(tables$additive$n, 3)
+  expect_equal(op_sql(con, "SELECT table_type FROM information_schema.tables WHERE table_name = 'entity' AND table_schema = 'main'")$table_type, "BASE TABLE")
+  expect_true(op_sql(con, "SELECT count(*) = (SELECT count(*) FROM relation) AS same FROM relation_key_lookup")$same)
+  expect_equal(sort(op_sql(con, "SELECT index_name FROM duckdb_indexes()")$index_name), c("relation_evidence_rid", "relation_rid"))
   expect_error(op_sql(con, "CREATE TABLE mine AS SELECT 1"))
   op_disconnect(con)
-  service$init(c("alpha", "beta"), materialize = TRUE)
-  con <- service$connect()
-  expect_equal(queries(con), views)
-  expect_equal(op_sql(con, "SELECT table_type FROM information_schema.tables WHERE table_name = 'entity' AND table_schema = 'main'")$table_type, "BASE TABLE")
-  op_disconnect(con)
-  # A new version and a new resource replace only their rows.
+  # A new version and a new resource: the database is written anew.
   service$catalog <- 2
   service$init("gamma")
   con <- local_connection(service)

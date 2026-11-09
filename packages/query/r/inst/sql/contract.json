@@ -78,6 +78,11 @@
    "at"
   ],
   [
+   "entity_evidence",
+   "entity_id",
+   "at"
+  ],
+  [
    "entity",
    "entity_key",
    "with"
@@ -127,6 +132,10 @@
    "entity_id",
    "_eid"
   ],
+  "entity_evidence": [
+   "entity_id",
+   "_eid"
+  ],
   "entity_term": [
    "entity_id",
    "_eid"
@@ -136,6 +145,25 @@
    "_eid"
   ]
  },
+ "database_format": 1,
+ "derived_tables": {
+  "relation_key_lookup": {
+   "select": "SELECT relation_key, _rid FROM relation",
+   "order": "relation_key"
+  }
+ },
+ "indexes": [
+  [
+   "relation_rid",
+   "relation",
+   "_rid"
+  ],
+  [
+   "relation_evidence_rid",
+   "relation_evidence",
+   "_rid"
+  ]
+ ],
  "macro_files": [
   "relations.sql",
   "search.sql",

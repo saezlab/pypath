@@ -252,7 +252,6 @@ def init(
     release: str = "latest",
     data_dir: str | Path | None = None,
     include_evidence: bool = False,
-    materialize: bool | None = None,
     api_url: str | None = None,
     timeout: float = 30,
     memory_limit: str = "2GB",
@@ -268,11 +267,10 @@ def init(
     complete; an interrupted init keeps the resources it finished. Raw evidence
     payloads are downloaded only with ``include_evidence``, and then kept on updates.
 
-    Ends by writing the directory's DuckDB database (``omnipath.duckdb``): native
-    tables copied from the downloaded files (the default for a new directory), or with
-    ``materialize=False`` views over the files, which need almost no disk but make the
-    prebuilt queries slower the more resources are installed. The choice is kept on
-    later runs unless given again. Returns the data directory.
+    Ends by writing the directory's DuckDB database (``omnipath.duckdb``): the same
+    database the hosted API serves a release from, with native tables copied from the
+    downloaded files (about twice their size in addition). Any change to the installed
+    resources writes it anew. Returns the data directory.
     """
     if not isinstance(release, str) or not release.strip():
         raise ValueError("release must not be empty")
@@ -297,8 +295,6 @@ def init(
         installation = read_installation(root) or Installation(
             format=1, api_url=api_url, release=release, materialize=True, resources=[]
         )
-        if materialize is None:
-            materialize = installation["materialize"]
         installed = {record["resource_id"]: record for record in installation["resources"]}
         wanted = {record["resource_id"] for record in chosen}
         # Installed resources follow the release too: one directory, one release.
@@ -322,17 +318,17 @@ def init(
                     format=1,
                     api_url=api_url,
                     release=release,
-                    materialize=materialize,
+                    materialize=True,
                     resources=list(installed.values()),
                 )
                 _write_installation(root, installation)
         finally:
             # The database describes what is installed, also after a failure midway.
             if installation["resources"]:
-                installation["materialize"] = materialize
+                installation["materialize"] = True
                 _write_installation(root, installation)
                 if not in_sync(root, installation):
-                    say("Writing the database" + (" (native tables)" if materialize else ""))
+                    say("Writing the database")
                     synchronize(root, installation, memory_limit)
         say(f"{len(installed)} resources installed in {root}")
         say(f"Database: {root / DATABASE}")

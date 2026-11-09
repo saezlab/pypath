@@ -203,18 +203,16 @@ op_available <- function(release = "latest", api_url = NULL, timeout = 30) {
 #' versions, so running it again updates the directory. Only missing or new versions
 #' are downloaded; an interrupted run keeps the resources it finished.
 #'
-#' Ends by writing the directory's DuckDB database (`omnipath.duckdb`): native tables
-#' (the default for a new directory) or, with `materialize = FALSE`, views over the
-#' files. The choice is kept on later runs unless given again. The Python client
-#' `omnipath_client` reads and writes the same directory.
+#' Ends by writing the directory's DuckDB database (`omnipath.duckdb`): the same
+#' database the hosted API serves a release from, with native tables copied from the
+#' downloaded files. Any change to the installed resources writes it anew. The Python
+#' client `omnipath_client` reads and writes the same directory.
 #'
 #' @param resources Resource names, or `NULL`.
 #' @param topic,content,molecule,knowledge_origin Tags to select by.
 #' @param release A release, or "latest".
 #' @param data_dir The data directory; see [op_data_directory()].
 #' @param include_evidence Also download raw evidence payloads (kept on updates).
-#' @param materialize Native tables (`TRUE`) or views (`FALSE`); `NULL` keeps the
-#'   directory's choice.
 #' @param api_url The API; by default `OMNIPATH_API_URL` or the development deployment.
 #' @param timeout Seconds without data before a download fails.
 #' @param memory_limit DuckDB's memory limit while writing.
@@ -223,7 +221,7 @@ op_available <- function(release = "latest", api_url = NULL, timeout = 30) {
 #' @export
 op_init <- function(resources = NULL, topic = NULL, content = NULL, molecule = NULL,
                     knowledge_origin = NULL, release = "latest", data_dir = NULL,
-                    include_evidence = FALSE, materialize = NULL, api_url = NULL,
+                    include_evidence = FALSE, api_url = NULL,
                     timeout = 30, memory_limit = "2GB", progress = TRUE) {
   if (!is.character(release) || length(release) != 1 || !nzchar(trimws(release))) {
     stop("release must not be empty", call. = FALSE)
@@ -243,17 +241,16 @@ op_init <- function(resources = NULL, topic = NULL, content = NULL, molecule = N
   installation <- .read_installation(root) %||% list(
     format = 1L, api_url = api_url, release = release, materialize = TRUE, resources = list()
   )
-  materialize <- materialize %||% installation$materialize
   installed <- stats::setNames(installation$resources, vapply(installation$resources, function(r) r$resource_id, ""))
   wanted <- names(chosen)
   # Installed resources follow the release too: one directory, one release.
   targets <- catalog[names(catalog) %in% c(wanted, names(installed))]
   finish <- function() {
     if (length(installation$resources)) {
-      installation$materialize <<- materialize
+      installation$materialize <<- TRUE
       .write_installation(root, installation)
       if (!.in_sync(root, installation)) {
-        say("Writing the database", if (isTRUE(materialize)) " (native tables)" else "")
+        say("Writing the database")
         .synchronize(root, installation, memory_limit)
       }
     }
@@ -276,7 +273,7 @@ op_init <- function(resources = NULL, topic = NULL, content = NULL, molecule = N
         if (downloaded) sprintf("%.0f MB", size) else "up to date"))
       installed[[name]] <- record
       installation <- list(
-        format = 1L, api_url = api_url, release = release, materialize = materialize,
+        format = 1L, api_url = api_url, release = release, materialize = TRUE,
         resources = unname(installed)
       )
       .write_installation(root, installation)

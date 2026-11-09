@@ -13,7 +13,7 @@ questions <- jsonlite::fromJSON(args[[4]], simplifyVector = FALSE)
 pkgload::load_all(package, quiet = TRUE, export_all = FALSE)
 fixtures <- file.path(package, "tests", "testthat", "fixtures")
 
-install <- function(materialize) {
+install <- function() {
   testthat::local_mocked_bindings(
     .fetch_json = function(url, query = list(), timeout = 30) {
       path <- sub("^https?://[^/]+", "", url)
@@ -28,9 +28,9 @@ install <- function(materialize) {
     .package = "omnipath.client"
   )
   op_init(c("alpha", "beta", "gamma"), data_dir = r_dir, include_evidence = TRUE,
-    materialize = materialize, api_url = "https://api.example/api", progress = FALSE)
+    api_url = "https://api.example/api", progress = FALSE)
 }
-install(questions$materialize)
+install()
 
 answers <- function(dir) {
   con <- op_connect(dir)

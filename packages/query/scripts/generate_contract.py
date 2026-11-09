@@ -39,6 +39,7 @@ LOOKUPS = [
     ["entity", "entity_id", "at"],
     ["entity_identifier", "entity_id", "at"],
     ["entity_annotation", "entity_id", "at"],
+    ["entity_evidence", "entity_id", "at"],
     ["entity", "entity_key", "with"],
     ["relation_endpoint", "key", "with"],
     ["entity_term", "term", "with"],
@@ -54,9 +55,26 @@ GLOBAL_IDS = {
     "entity": ["entity_id", "_eid"],
     "entity_identifier": ["entity_id", "_eid"],
     "entity_annotation": ["entity_id", "_eid"],
+    "entity_evidence": ["entity_id", "_eid"],
     "entity_term": ["entity_id", "_eid"],
     "entity_group": ["entity_id", "_eid"],
 }
+
+# The database's own tables, derived from the tables above once they are written: what a
+# query reads by a key that is not sorted in the tables (relation keys are sorted only
+# within each resource).
+DERIVED_TABLES = {
+    "relation_key_lookup": {"select": "SELECT relation_key, _rid FROM relation", "order": "relation_key"},
+}
+# ART indexes: rows by a list of global ids (DuckDB uses an index only for ids written into
+# the SQL as a literal list). Measured on a full release: 7,582 relations in 0.3 s instead
+# of 5.6 s. Indexes on entity_key or on entity._eid were slower than a scan.
+INDEXES = [
+    ["relation_rid", "relation", "_rid"],
+    ["relation_evidence_rid", "relation_evidence", "_rid"],
+]
+# Changes when the tables, derived tables or indexes a database holds change.
+DATABASE_FORMAT = 1
 
 
 def biolink_names() -> list[list[str]]:
@@ -92,6 +110,9 @@ def contract() -> dict:
         "settings": {"dynamic_or_filter_threshold": 20000},
         "lookups": LOOKUPS,
         "global_ids": GLOBAL_IDS,
+        "database_format": DATABASE_FORMAT,
+        "derived_tables": DERIVED_TABLES,
+        "indexes": INDEXES,
         "macro_files": ["relations.sql", "search.sql", "entity.sql"],
         "relation_export_limit": RELATION_EXPORT_LIMIT,
         "biolink_names": biolink_names(),

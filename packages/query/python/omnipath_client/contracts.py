@@ -40,7 +40,8 @@ class Installation(TypedDict):
     format: int
     api_url: str
     release: str
-    # Whether the database holds native tables (True) or views over the files.
+    # Always true: the database holds native tables (an installation written before
+    # views were removed may say false; its database is written anew).
     materialize: bool
     resources: list[ResourceRecord]
 
