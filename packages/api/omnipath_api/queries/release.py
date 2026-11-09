@@ -61,7 +61,7 @@ _QUANTITY = [field.name for field in QUANTITY_STRUCT]
 GLOBAL_IDS: dict[str, tuple[str, str]] = {t: tuple(c) for t, c in CONTRACT["global_ids"].items()}
 # Up to this many ids go into the SQL as literals (and through the indexes); more are a
 # join, which scans.
-LITERAL_LIMIT = 20_000
+LITERAL_LIMIT = 100_000
 _HELPERS = ("_resource", "_resource_version", "_rid", "_eid")
 _NUMERIC = re.compile(r"[0-9]+(?:\.[0-9]+)*")
 
@@ -611,12 +611,32 @@ class ReleaseQueries(
             if len(global_ids) <= LITERAL_LIMIT:
                 return f"{ids[1]} IN ({','.join(map(str, global_ids))})", []
             return f"{ids[1]} IN (SELECT unnest(?::BIGINT[]))", [global_ids]
+        literal = lambda v: (  # noqa: E731
+            str(int(v)) if isinstance(v, int) and not isinstance(v, bool) else sql_literal(str(v))
+        )
+        if ids is not None and len(by_resource) > 3:
+            # By key from more than a few resources, in two steps: the global ids of the wanted (resource, key) pairs
+            # from a narrow read of the key column, then the rows by those ids. One
+            # condition per resource, OR-ed, would scan the whole table.
+            wanted = {
+                (resource.split("/", 1)[0], str(value))
+                for resource, values in by_resource.items()
+                for value in values
+            }
+            values = sorted({value for _, value in wanted})
+            found = self._db.execute(
+                f"SELECT _resource, {column}, {ids[1]} FROM {self._source(table)} "
+                f"WHERE {column} IN ({', '.join(literal(v) for v in values)})"
+            ).fetchall()
+            global_ids = sorted({g for r, v, g in found if (r, str(v)) in wanted})
+            if not global_ids:
+                return "FALSE", []
+            if len(global_ids) <= LITERAL_LIMIT:
+                return f"{ids[1]} IN ({','.join(map(str, global_ids))})", []
+            return f"{ids[1]} IN (SELECT unnest(?::BIGINT[]))", [global_ids]
         parts = []
         for resource, values in by_resource.items():
-            literals = ", ".join(
-                str(int(v)) if isinstance(v, int) and not isinstance(v, bool) else sql_literal(str(v))
-                for v in dict.fromkeys(values)
-            )
+            literals = ", ".join(literal(v) for v in dict.fromkeys(values))
             parts.append(
                 f"(_resource = {sql_literal(resource.split('/', 1)[0])} AND {column} IN ({literals}))"
             )
@@ -667,10 +687,16 @@ class ReleaseQueries(
             cte, values = self._rows_sql(table, column, by_resource)
             selected = "*" if fields.strip() == "*" else f"{fields}, resource"
             order = re.search(r"\bORDER\s+BY\b", extra, re.I)
+            # Each resource's rows in its file's order, as one read of its file gave them.
+            ids = GLOBAL_IDS.get(table)
+            native = ", ".join(
+                c for c in (ids[0] if ids else None, "ordinal")
+                if c and c in self._served().columns[table]
+            )
             extra = (
                 extra[: order.start()] + "ORDER BY resource, " + extra[order.end():]
                 if order
-                else f"{extra} ORDER BY resource"
+                else f"{extra} ORDER BY resource" + (f", {native}" if native else "")
             )
             return self._fetch_dicts(
                 f"{cte} SELECT {selected} FROM __rows WHERE TRUE {extra}", [*values, *params]
