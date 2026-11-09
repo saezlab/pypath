@@ -226,7 +226,7 @@ class RelationsQueries:
         if derived is None:
             return None
         source, in_resources = derived
-        keys = self.resolve_entity_keys(tokens, resources)
+        keys = self._entity_keys(tokens, resources)
         if not keys:
             return "SELECT * EXCLUDE (entity_key, side) FROM " + source + " WHERE FALSE", []
         where, params = self._relation_where(filters, qualifiers=qualifiers)
@@ -250,6 +250,41 @@ class RelationsQueries:
             WHERE {in_resources} AND {side} AND {where}""",
             params,
         )
+
+    def _entity_keys(self, tokens, resources=None):
+        """resolve_entity_keys, kept with the page orders: every page of a gene uses them."""
+        return self._cached_facets(
+            "entity-keys",
+            {"tokens": list(tokens)},
+            resources,
+            lambda payload, resources: self.resolve_entity_keys(payload["tokens"], resources),
+            cache=self._order_cache,
+        )
+
+    def _page_rows(self, filters, resources, pairs):
+        """The relation rows of a page of a plain entity selection, with their endpoint
+        entities, from the entities' range of ``entity_relation``; None when the
+        database cannot (no such table, or one without endpoints)."""
+        fast = self._entity_relation_sql(filters, resources)
+        if fast is None or "subject_entity" not in self._served().columns.get("entity_relation", ()):
+            return None
+        sql, params = fast
+        wanted = set(pairs)
+        index = self._served().index
+        ids = ",".join(
+            str((index[resource.split("/", 1)[0]] << 32) + int(rid)) for resource, rid in pairs
+        )
+        rows = self._fetch_dicts(
+            f"SELECT * EXCLUDE (_resource, _resource_version) FROM ({sql}) WHERE _rid IN ({ids or 'NULL'})",
+            params,
+        )
+        found = {}
+        for row in rows:
+            row.pop("_rid", None)
+            pair = (row["resource"], row["relation_id"])
+            if pair in wanted:
+                found[pair] = row
+        return found if len(found) == len(wanted) else None
 
     def _relation_order(self, filters, resources=None):
         """The (resource, relation id) pairs of an endpoint selection in page order, or
@@ -308,10 +343,12 @@ class RelationsQueries:
             )
             pairs = [(r["resource"], r["relation_id"]) for r in page]
             total = None
-        found = {
-            (r["resource"], r["relation_id"]): r
-            for r in self._lookup("relation", "relation_id", pairs)
-        }
+        found = self._page_rows(filters, resources, pairs) if order is not None else None
+        if found is None:
+            found = {
+                (r["resource"], r["relation_id"]): r
+                for r in self._lookup("relation", "relation_id", pairs)
+            }
         rows = [found[pair] for pair in pairs]
         if total is None:
             if rows and (offset or len(rows) == limit) or not rows and offset:

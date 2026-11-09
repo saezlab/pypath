@@ -341,7 +341,16 @@ class EntitiesQueries:
 
         ``extra`` maps response fields to functions of the relation row.
         """
-        endpoints = self._endpoint_rows(rows)
+        if rows and all("subject_entity" in row for row in rows):
+            # Rows from entity_relation carry their endpoints (from their own resource).
+            endpoints = {
+                (row["resource"], row[f"{side}_entity_key"]): row[f"{side}_entity"]
+                for row in rows
+                for side in ("subject", "object")
+                if row.get(f"{side}_entity") is not None
+            }
+        else:
+            endpoints = self._endpoint_rows(rows)
         return [
             {
                 "relation": self._to_entity_relation(row),

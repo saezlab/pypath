@@ -145,7 +145,7 @@
    "_eid"
   ]
  },
- "database_format": 3,
+ "database_format": 4,
  "derived_tables": {
   "relation_key_lookup": {
    "select": "SELECT relation_key, _rid FROM relation",
@@ -160,7 +160,7 @@
    "order": "term, _resource, entity_id"
   },
   "entity_relation": {
-   "select": "SELECT subject_entity_key AS entity_key, 'subject' AS side, _rid, _resource || '/' || _resource_version AS resource,\n                relation_id, category, predicate, subject_label, object_label, subject_type, object_type, taxon, sign, is_directed, sources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier FROM relation\n                UNION ALL SELECT object_entity_key, 'object', _rid, _resource || '/' || _resource_version AS resource, relation_id, category, predicate, subject_label, object_label, subject_type, object_type, taxon, sign, is_directed, sources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\n                FROM relation",
+   "select": "WITH ends AS (\n                    SELECT _resource, entity_key, struct_pack(entity_key := entity_key, namespace := namespace, identifier := identifier, label := label, entity_type := entity_type, taxon := taxon, has_hierarchy := has_hierarchy, parent_count := parent_count, child_count := child_count, reference_entity_key := reference_entity_key, gene_reference_keys := gene_reference_keys, relation_count := relation_count) AS e FROM entity\n                ), rows AS (\n                    SELECT r.*, r._resource || '/' || r._resource_version AS resource, s.e AS subject_entity, o.e AS object_entity FROM relation r\n                    LEFT JOIN ends s ON s._resource = r._resource AND s.entity_key = r.subject_entity_key\n                    LEFT JOIN ends o ON o._resource = r._resource AND o.entity_key = r.object_entity_key\n                )\n                SELECT subject_entity_key AS entity_key, 'subject' AS side, * FROM rows\n                UNION ALL SELECT object_entity_key, 'object', * FROM rows",
    "order": "entity_key, category, predicate, subject_label, object_label, resource, relation_id"
   },
   "ontology_edge": {
