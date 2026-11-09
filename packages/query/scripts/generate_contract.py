@@ -77,9 +77,9 @@ def derived_tables() -> dict:
     some resources only (or without the ones a query policy disables) filters them."""
     resource = "_resource || '/' || _resource_version AS resource"
     qualifiers = ", ".join(RELATION_QUALIFIERS)
-    # A relation's page-order, filter and facet columns.
+    # A relation's filter and facet columns.
     columns = (
-        "category, predicate, subject_label, object_label, subject_type, object_type, taxon, "
+        "category, predicate, subject_type, object_type, taxon, "
         f"sign, is_directed, sources, evidence_count, {qualifiers}"
     )
     directions = hierarchy_predicates()
@@ -95,30 +95,41 @@ def derived_tables() -> dict:
             "order": "key_prefix",
         },
         # Every resource's entity rows sorted by key: an entity's copies are adjacent, so
-        # reading them by key reads a few row groups. (The entity table itself is in
-        # global id order, for reads by id.)
-        "entity_by_key": {"select": "SELECT * FROM entity", "order": "entity_key, _resource, entity_id"},
+        # reading them by key reads a few row groups. key_rank numbers the keys in that
+        # order, so that other tables can name an entity by 4 bytes instead of its
+        # 64-character key. (The entity table itself is in global id order, for reads by
+        # id.)
+        "entity_by_key": {
+            "select": "SELECT *, dense_rank() OVER (ORDER BY entity_key)::INTEGER AS key_rank FROM entity",
+            "order": "entity_key, _resource, entity_id",
+        },
         # The lowercase labels and identifiers, rewritten sorted by term over every
-        # resource and with the entity's key ("replaces": the table itself, not a copy):
-        # a prefix is one range.
+        # resource and with the rank of the entity's key ("replaces": the table itself,
+        # not a copy): a prefix is one range, and its entities are read by key rank.
         "entity_term": {
-            "select": "SELECT t.*, e.entity_key FROM entity_term t JOIN entity e USING (_eid)",
+            "select": "SELECT t.*, e.key_rank FROM entity_term t JOIN entity_by_key e USING (_eid)",
             "order": "term, _resource, entity_id",
             "replaces": True,
         },
         # The endpoint table rewritten over every resource, sorted by key and then page
-        # order, each row with its relation's page-order, filter and facet columns: the
-        # relations of an entity (or of a reference key) are one range, in page order.
-        # Its columns are the written table's and more, so readers of it are unchanged.
+        # order, each row with its relation's filter and facet columns and its place in
+        # the page order of every relation (page_rank: category, predicate, labels,
+        # resource, id), instead of the labels themselves: the relations of an entity (or
+        # of a reference key) are one range, in page order. Its columns are the written
+        # table's and more, so readers of it are unchanged. One scan of relation gives
+        # each relation's four keys (two ends, entity and reference).
         "relation_endpoint": {
-            "select": " UNION ALL ".join(
-                f"""SELECT {side}_{key} AS key, '{kind}' AS key_kind, '{side}' AS side, relation_id,
-                    _resource, _resource_version, _rid, {resource}, {columns}
-                    FROM relation WHERE {side}_{key} IS NOT NULL"""
-                for side in ("subject", "object")
-                for kind, key in (("entity", "entity_key"), ("reference", "reference_entity_key"))
-            ),
-            "order": "key, key_kind, category, predicate, subject_label, object_label, resource, relation_id",
+            "select": f"""SELECT * FROM (
+                SELECT unnest([subject_entity_key, subject_reference_entity_key,
+                        object_entity_key, object_reference_entity_key]) AS key,
+                    unnest(['entity', 'reference', 'entity', 'reference']) AS key_kind,
+                    unnest(['subject', 'subject', 'object', 'object']) AS side,
+                    relation_id, _resource, _resource_version, _rid, {resource},
+                    row_number() OVER (ORDER BY category, predicate, subject_label, object_label,
+                        _resource || '/' || _resource_version, relation_id)::INTEGER AS page_rank,
+                    {columns}
+                FROM relation) WHERE key IS NOT NULL""",
+            "order": "key, key_kind, page_rank",
             "replaces": True,
         },
         # The ontologies' hierarchies as child -> parent edges.
@@ -158,7 +169,7 @@ INDEXES = [
     ["relation_evidence_rid", "relation_evidence", "_rid"],
 ]
 # Changes when the tables, derived tables or indexes a database holds change.
-DATABASE_FORMAT = 7
+DATABASE_FORMAT = 8
 
 
 def biolink_names() -> list[list[str]]:

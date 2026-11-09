@@ -55,11 +55,11 @@ class EntitiesQueries:
         """
         q = query.strip().lower()
         terms = self._table("entity_term", resources)
-        # The release database's term index also holds each term's entity key.
-        key = "entity_key" if self._has_term_keys() else "NULL::VARCHAR"
+        # The release database's term table also holds the rank of each term's entity key.
+        key = "key_rank" if self._has_term_keys() else "NULL::INTEGER"
         parts = [
             f"SELECT resource, entity_id, {_TERM_RANK} AS match_rank, term, NULL::VARCHAR AS namespace, "
-            f"{key} AS entity_key FROM {terms} WHERE term >= ? AND term < ?"
+            f"{key} AS key_rank FROM {terms} WHERE term >= ? AND term < ?"
         ]
         params = [q, *_prefix_range(q)]
         if curie := _curie(query.strip()):
@@ -76,8 +76,7 @@ class EntitiesQueries:
         return " UNION ALL ".join(parts), params
 
     def _has_term_keys(self) -> bool:
-        physical = self._physical("entity_term") if hasattr(self, "_physical") else "entity_term"
-        return "entity_key" in self._served().columns.get(physical, ())
+        return "key_rank" in self._served().columns.get("entity_term", ())
 
     def _search_phases(self, query):
         q = (query or "").strip()
@@ -341,16 +340,7 @@ class EntitiesQueries:
 
         ``extra`` maps response fields to functions of the relation row.
         """
-        if rows and all("subject_entity" in row for row in rows):
-            # Rows from entity_relation carry their endpoints (from their own resource).
-            endpoints = {
-                (row["resource"], row[f"{side}_entity_key"]): row[f"{side}_entity"]
-                for row in rows
-                for side in ("subject", "object")
-                if row.get(f"{side}_entity") is not None
-            }
-        else:
-            endpoints = self._endpoint_rows(rows)
+        endpoints = self._endpoint_rows(rows)
         return [
             {
                 "relation": self._to_entity_relation(row),
@@ -441,7 +431,7 @@ class EntitiesQueries:
         filters. Hits are cheap (``entity_term`` is sorted by term); entity rows are read
         only for the hits needed, at most doubling the number read each round."""
         hits, values = self._term_hits(query, resources)
-        ordered = f"""SELECT resource, entity_id, any_value(entity_key) AS entity_key,
+        ordered = f"""SELECT resource, entity_id, any_value(key_rank) AS key_rank,
               min(match_rank) AS match_rank, min(length(term)) AS term_length, min(term) AS term,
               list(DISTINCT namespace) FILTER (WHERE namespace IS NOT NULL) AS namespaces,
               bool_or(namespace IS NULL) AS any_namespace
@@ -450,15 +440,15 @@ class EntitiesQueries:
         limit = max(4 * count, 64)
         while True:
             found = self._fetch_dicts(ordered, [*values, limit])
-            # Hits with their entity's key are read by key (the copies of an entity
+            # Hits with their entity's key rank are read by it (the copies of an entity
             # are adjacent); the others by id.
-            keyed = [(h["resource"], h["entity_key"]) for h in found if h["entity_key"]]
+            keyed = [(h["resource"], h["key_rank"]) for h in found if h["key_rank"] is not None]
             rows = self._lookup(
-                "entity", "entity_key", keyed, extra=f"AND ({where})", params=params
+                "entity", "key_rank", keyed, extra=f"AND ({where})", params=params
             ) + self._lookup(
                 "entity",
                 "entity_id",
-                [(h["resource"], h["entity_id"]) for h in found if not h["entity_key"]],
+                [(h["resource"], h["entity_id"]) for h in found if h["key_rank"] is None],
                 extra=f"AND ({where})",
                 params=params,
             )

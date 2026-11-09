@@ -63,10 +63,10 @@ GLOBAL_IDS: dict[str, tuple[str, str]] = {t: tuple(c) for t, c in CONTRACT["glob
 # join, which scans.
 LITERAL_LIMIT = 100_000
 _HELPERS = ("_resource", "_resource_version", "_rid", "_eid")
-# Tables the database also holds sorted by one column across every resource:
-# {table: (its sorted copy, the column)}. Reads by that column (and scans) use the copy;
-# reads by global id the table itself, which is in id order.
-SORTED_COPIES = {"entity": ("entity_by_key", "entity_key"), "entity_term": ("term_index", "term")}
+# Tables the database also holds sorted across every resource:
+# {table: (its sorted copy, the columns it is sorted by)}. Reads by those columns (and
+# scans) use the copy; reads by global id the table itself, which is in id order.
+SORTED_COPIES = {"entity": ("entity_by_key", ("entity_key", "key_rank"))}
 # The entity columns a relation's endpoint shows (shape_entity_summary).
 ENDPOINT_FIELDS = (
     "entity_id, entity_key, namespace, identifier, label, entity_type, taxon, has_hierarchy, "
@@ -558,15 +558,17 @@ class ReleaseQueries(
         """The database table a read of ``table`` (by ``column``, or a scan) uses."""
         copy = SORTED_COPIES.get(table)
         if copy is not None and copy[0] in self._served().columns:
-            if column is None or column == copy[1] or table == "entity_term":
+            if column is None or column in copy[1]:
                 return copy[0]
         return table
 
     def _projection(self, table: str, column: str | None = None) -> str:
         """The table's columns as the resource files have them, then ``resource``."""
         columns = self._served().columns[self._physical(table, column)]
-        # A derived table's stored ``resource`` is computed here as for every table.
-        hidden = [c for c in (*_HELPERS, "resource") if c in columns]
+        # A derived table's stored ``resource`` is computed here as for every table; an
+        # entity row's key rank (in the sorted copy, standing for its key) is no field.
+        helpers = (*_HELPERS, "resource", *(("key_rank",) if table == "entity" else ()))
+        hidden = [c for c in helpers if c in columns]
         return (
             f"* EXCLUDE ({', '.join(hidden)}), _resource || '/' || _resource_version AS resource"
         )
@@ -578,11 +580,11 @@ class ReleaseQueries(
     def _sorted_by(self, table: str, column: str) -> bool:
         """Whether a read of ``table`` by ``column`` reads rows sorted by it over every
         resource: a sorted copy, or the table itself rewritten so (entity_term with its
-        entity keys)."""
+        entities' key ranks)."""
         copy = SORTED_COPIES.get(table)
-        if copy is not None and copy[1] == column and self._physical(table, column) == copy[0]:
+        if copy is not None and column in copy[1] and self._physical(table, column) == copy[0]:
             return True
-        return (table, column) == ("entity_term", "term") and "entity_key" in self._served().columns.get(table, ())
+        return (table, column) == ("entity_term", "term") and self._has_term_keys()
 
     def _file_table(self, table: str, selected_resources: list[str] | None = None) -> str:
         """A table that is only in the resources' files (raw payloads), read from them."""

@@ -223,10 +223,11 @@ class RelationsQueries:
             # As in _selection_parts: a source filter reads only those resources.
             queryable = {info["resource"] for info in self._selected_resource_infos(None)}
             resources = [source for source in filters["sources"] if source in queryable] or None
-        # The rewritten endpoint table (database format 7), or entity_relation (formats
-        # 2 to 6, entity tokens only).
+        # The rewritten endpoint table (database formats 7 and 8), or entity_relation
+        # (formats 2 to 6, entity tokens only).
         columns = self._served().columns
-        if "subject_label" in columns.get("relation_endpoint", ()):
+        endpoint = columns.get("relation_endpoint", ())
+        if "page_rank" in endpoint or "subject_label" in endpoint:
             table, key, kind = "relation_endpoint", "key", "reference" if references else "entity"
         elif "entity_relation" in columns and not references:
             table, key, kind = "entity_relation", "entity_key", None
@@ -269,31 +270,6 @@ class RelationsQueries:
             cache=self._order_cache,
         )
 
-    def _page_rows(self, filters, resources, pairs):
-        """The relation rows of a page of a plain entity selection, with their endpoint
-        entities, from the entities' range of ``entity_relation``; None when the
-        database cannot (no such table, or one without endpoints)."""
-        fast = self._entity_relation_sql(filters, resources)
-        if fast is None or "subject_entity" not in self._served().columns.get("entity_relation", ()):
-            return None
-        sql, params = fast
-        wanted = set(pairs)
-        index = self._served().index
-        ids = ",".join(
-            str((index[resource.split("/", 1)[0]] << 32) + int(rid)) for resource, rid in pairs
-        )
-        rows = self._fetch_dicts(
-            f"SELECT * EXCLUDE (_resource, _resource_version) FROM ({sql}) WHERE _rid IN ({ids or 'NULL'})",
-            params,
-        )
-        found = {}
-        for row in rows:
-            row.pop("_rid", None)
-            pair = (row["resource"], row["relation_id"])
-            if pair in wanted:
-                found[pair] = row
-        return found if len(found) == len(wanted) else None
-
     def _relation_order(self, filters, resources=None):
         """The (resource, relation id) pairs of an endpoint selection in page order, or
         None without endpoint filters or above ORDER_CACHE_LIMIT relations.
@@ -306,8 +282,14 @@ class RelationsQueries:
             fast = self._entity_relation_sql(filters, resources)
             if fast is not None:
                 sql, values = fast
+                # The endpoint table's place of each relation in page order (format 8).
+                order = (
+                    "page_rank"
+                    if "page_rank" in self._served().columns.get("relation_endpoint", ())
+                    else RELATION_ORDER
+                )
                 rows = self._db.execute(
-                    f"SELECT resource, relation_id FROM ({sql}) ORDER BY {RELATION_ORDER}", values
+                    f"SELECT resource, relation_id FROM ({sql}) ORDER BY {order}", values
                 ).fetchall()
                 return None if len(rows) > ORDER_CACHE_LIMIT else [list(row) for row in rows]
             resources, where, params, _, pairs = self._selection_parts(
@@ -351,12 +333,10 @@ class RelationsQueries:
             )
             pairs = [(r["resource"], r["relation_id"]) for r in page]
             total = None
-        found = self._page_rows(filters, resources, pairs) if order is not None else None
-        if found is None:
-            found = {
-                (r["resource"], r["relation_id"]): r
-                for r in self._lookup("relation", "relation_id", pairs)
-            }
+        found = {
+            (r["resource"], r["relation_id"]): r
+            for r in self._lookup("relation", "relation_id", pairs)
+        }
         rows = [found[pair] for pair in pairs]
         if total is None:
             if rows and (offset or len(rows) == limit) or not rows and offset:

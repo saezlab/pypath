@@ -145,24 +145,24 @@
    "_eid"
   ]
  },
- "database_format": 7,
+ "database_format": 8,
  "derived_tables": {
   "relation_key_lookup": {
    "select": "SELECT try_cast('0x' || substr(relation_key, 1, 15) AS BIGINT) AS key_prefix, _rid FROM relation",
    "order": "key_prefix"
   },
   "entity_by_key": {
-   "select": "SELECT * FROM entity",
+   "select": "SELECT *, dense_rank() OVER (ORDER BY entity_key)::INTEGER AS key_rank FROM entity",
    "order": "entity_key, _resource, entity_id"
   },
   "entity_term": {
-   "select": "SELECT t.*, e.entity_key FROM entity_term t JOIN entity e USING (_eid)",
+   "select": "SELECT t.*, e.key_rank FROM entity_term t JOIN entity_by_key e USING (_eid)",
    "order": "term, _resource, entity_id",
    "replaces": true
   },
   "relation_endpoint": {
-   "select": "SELECT subject_entity_key AS key, 'entity' AS key_kind, 'subject' AS side, relation_id,\n                    _resource, _resource_version, _rid, _resource || '/' || _resource_version AS resource, category, predicate, subject_label, object_label, subject_type, object_type, taxon, sign, is_directed, sources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\n                    FROM relation WHERE subject_entity_key IS NOT NULL UNION ALL SELECT subject_reference_entity_key AS key, 'reference' AS key_kind, 'subject' AS side, relation_id,\n                    _resource, _resource_version, _rid, _resource || '/' || _resource_version AS resource, category, predicate, subject_label, object_label, subject_type, object_type, taxon, sign, is_directed, sources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\n                    FROM relation WHERE subject_reference_entity_key IS NOT NULL UNION ALL SELECT object_entity_key AS key, 'entity' AS key_kind, 'object' AS side, relation_id,\n                    _resource, _resource_version, _rid, _resource || '/' || _resource_version AS resource, category, predicate, subject_label, object_label, subject_type, object_type, taxon, sign, is_directed, sources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\n                    FROM relation WHERE object_entity_key IS NOT NULL UNION ALL SELECT object_reference_entity_key AS key, 'reference' AS key_kind, 'object' AS side, relation_id,\n                    _resource, _resource_version, _rid, _resource || '/' || _resource_version AS resource, category, predicate, subject_label, object_label, subject_type, object_type, taxon, sign, is_directed, sources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\n                    FROM relation WHERE object_reference_entity_key IS NOT NULL",
-   "order": "key, key_kind, category, predicate, subject_label, object_label, resource, relation_id",
+   "select": "SELECT * FROM (\n                SELECT unnest([subject_entity_key, subject_reference_entity_key,\n                        object_entity_key, object_reference_entity_key]) AS key,\n                    unnest(['entity', 'reference', 'entity', 'reference']) AS key_kind,\n                    unnest(['subject', 'subject', 'object', 'object']) AS side,\n                    relation_id, _resource, _resource_version, _rid, _resource || '/' || _resource_version AS resource,\n                    row_number() OVER (ORDER BY category, predicate, subject_label, object_label,\n                        _resource || '/' || _resource_version, relation_id)::INTEGER AS page_rank,\n                    category, predicate, subject_type, object_type, taxon, sign, is_directed, sources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\n                FROM relation) WHERE key IS NOT NULL",
+   "order": "key, key_kind, page_rank",
    "replaces": true
   },
   "ontology_edge": {
