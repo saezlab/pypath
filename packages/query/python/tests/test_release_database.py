@@ -56,7 +56,7 @@ def test_release_database_holds_every_resource_with_global_ids(tmp_path):
         assert db.execute("SELECT bool_or(has_evidence) FROM resources").fetchone() == (False,)
         # The derived tables and indexes.
         assert db.execute(
-            "SELECT _rid FROM relation_key_lookup WHERE relation_key = ?", [fixture_key("relation")]
+            "SELECT _rid FROM relation_key_lookup WHERE key_prefix = ?", [int(fixture_key("relation")[:15], 16)]
         ).fetchall() == [((1 << 32) + 0,)]
         assert {r[0] for r in db.execute("SELECT index_name FROM duckdb_indexes()").fetchall()} == {
             "relation_rid", "relation_evidence_rid"

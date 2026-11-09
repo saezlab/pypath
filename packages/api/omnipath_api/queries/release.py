@@ -72,6 +72,7 @@ ENDPOINT_FIELDS = (
     "entity_id, entity_key, namespace, identifier, label, entity_type, taxon, has_hierarchy, "
     "parent_count, child_count, reference_entity_key, gene_reference_keys, relation_count"
 )
+_HEX_KEY = re.compile(r"[0-9a-f]{64}")
 _NUMERIC = re.compile(r"[0-9]+(?:\.[0-9]+)*")
 
 
@@ -796,10 +797,33 @@ class ReleaseQueries(
         selected = {info["key"] for info in self._selected_resource_infos(resources)}
         literals = ", ".join(sql_literal(k) for k in keys)
         found = []
-        for relation_key, global_id in self._db.execute(
-            f"SELECT relation_key, _rid FROM {served.alias}.main.relation_key_lookup "
-            f"WHERE relation_key IN ({literals})"
-        ).fetchall():
+        if "key_prefix" in served.columns["relation_key_lookup"]:
+            # By the keys' first 60 bits, then the full key on the relations found; a
+            # key that is no sha256 hex is looked for in the relation table itself.
+            prefixes = sorted({int(k[:15], 16) for k in keys if _HEX_KEY.fullmatch(k)})
+            ids = [
+                r[0] for r in self._db.execute(
+                    f"SELECT _rid FROM {served.alias}.main.relation_key_lookup "
+                    f"WHERE key_prefix IN ({','.join(map(str, prefixes)) or 'NULL'})"
+                ).fetchall()
+            ]
+            rows = self._db.execute(
+                f"WITH r AS MATERIALIZED (SELECT relation_key, _rid FROM {served.alias}.main.relation "
+                f"WHERE _rid IN ({','.join(map(str, ids)) or 'NULL'})) "
+                f"SELECT relation_key, _rid FROM r WHERE relation_key IN ({literals})"
+            ).fetchall()
+            other = [k for k in keys if not _HEX_KEY.fullmatch(k)]
+            if other:
+                rows += self._db.execute(
+                    f"SELECT relation_key, _rid FROM {served.alias}.main.relation "
+                    f"WHERE relation_key IN ({', '.join(sql_literal(k) for k in other)})"
+                ).fetchall()
+        else:
+            rows = self._db.execute(
+                f"SELECT relation_key, _rid FROM {served.alias}.main.relation_key_lookup "
+                f"WHERE relation_key IN ({literals})"
+            ).fetchall()
+        for relation_key, global_id in rows:
             resource = served.by_index.get(global_id >> 32)
             if resource in selected:
                 found.append(

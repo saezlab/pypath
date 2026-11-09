@@ -145,11 +145,11 @@
    "_eid"
   ]
  },
- "database_format": 5,
+ "database_format": 6,
  "derived_tables": {
   "relation_key_lookup": {
-   "select": "SELECT relation_key, _rid FROM relation",
-   "order": "relation_key"
+   "select": "SELECT try_cast('0x' || substr(relation_key, 1, 15) AS BIGINT) AS key_prefix, _rid FROM relation",
+   "order": "key_prefix"
   },
   "entity_by_key": {
    "select": "SELECT * FROM entity",

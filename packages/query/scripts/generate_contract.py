@@ -87,8 +87,13 @@ def derived_tables() -> dict:
     reversed_ = ", ".join(f"'{name}'" for name, reverse in directions.items() if reverse) or "NULL"
     flip = f"predicate IN ({reversed_})"
     return {
-        # Relation keys are sorted only within each resource: one table over all of them.
-        "relation_key_lookup": {"select": "SELECT relation_key, _rid FROM relation", "order": "relation_key"},
+        # Relation keys are sorted only within each resource: one table over all of
+        # them, by the key's first 60 bits (the keys are sha256 hex: 8 bytes instead of
+        # 64 characters). A reader confirms the full key on the relation rows it finds.
+        "relation_key_lookup": {
+            "select": "SELECT try_cast('0x' || substr(relation_key, 1, 15) AS BIGINT) AS key_prefix, _rid FROM relation",
+            "order": "key_prefix",
+        },
         # Every resource's entity rows sorted by key: an entity's copies are adjacent, so
         # reading them by key reads a few row groups. (The entity table itself is in
         # global id order, for reads by id.)
@@ -141,7 +146,7 @@ INDEXES = [
     ["relation_evidence_rid", "relation_evidence", "_rid"],
 ]
 # Changes when the tables, derived tables or indexes a database holds change.
-DATABASE_FORMAT = 5
+DATABASE_FORMAT = 6
 
 
 def biolink_names() -> list[list[str]]:
