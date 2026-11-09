@@ -40,7 +40,9 @@ class ExportQueries:
 
         filters = normalize_filters(filters)
         scope = resources or filters["sources"] or None
-        selection, params = self._relation_selection(filters, resources)
+        # A plain entity selection from its range of the sorted endpoint table.
+        fast = self._entity_relation_sql(filters, resources)
+        selection, params = fast if fast is not None else self._relation_selection(filters, resources)
         # Two phases, like the relation pages: the matching relations first, then only
         # their annotations and evidence, read per resource by sorted relation id (a join
         # against every resource's evidence table read millions of nested rows).
@@ -62,6 +64,25 @@ class ExportQueries:
         )
         evidence, evidence_params = self._lookup_sql(
             "relation_evidence", "relation_id", pairs, where=form, params=form_params
+        )
+        # The products the evidence names, then only those entities, by key: a join of
+        # every entity row read the whole entity table.
+        product_keys = [
+            row[0]
+            for row in self._db.execute(
+                f"""SELECT DISTINCT unnest([subject_molecular_form.protein_entity_key,
+                    subject_molecular_form.transcript_entity_key,
+                    object_molecular_form.protein_entity_key,
+                    object_molecular_form.transcript_entity_key]) AS k FROM ({evidence})""",
+                evidence_params,
+            ).fetchall()
+            if row[0]
+        ]
+        entities = (
+            f"(SELECT * FROM {self._table('entity', scope)} WHERE entity_key IN "
+            f"({', '.join(sql_literal(k) for k in product_keys)}))"
+            if product_keys
+            else f"(SELECT * FROM {self._table('entity', scope)} WHERE FALSE)"
         )
         # Rows as the published tables nest them: each relation with its annotations and
         # evidence (only the matching occurrences under a molecular form filter), and
@@ -94,7 +115,7 @@ class ExportQueries:
             -- each row's own products: one list shared by every row repeated it per row
             SELECT k.resource, k.relation_id,
                 list(e ORDER BY e.entity_key, e.resource) AS referenced_product_records
-            FROM product_keys k JOIN {self._table("entity", scope)} e USING (entity_key)
+            FROM product_keys k JOIN {entities} e USING (entity_key)
             GROUP BY ALL
         ) SELECT rows.* EXCLUDE (resource, relation_id),
             coalesce(products.referenced_product_records, []) AS referenced_product_records

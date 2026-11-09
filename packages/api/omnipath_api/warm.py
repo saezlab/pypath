@@ -15,10 +15,17 @@ def default_requests():
 
     # The explorer's landing page: curated examples, as entities and as groups; and the
     # relation filters' counts without a scope (the taxonomy limit is not part of the key).
+    from omnipath_api.models import OntologySearchRequest
+
     facets = ScopedRelationFacetsRequest(taxonomyLimit=16).model_dump()
+    # The ontology browser's unscoped terms with their counts (all terms of the release,
+    # computed once), as the POST and the GET search routes ask for them.
+    ontology = {**OntologySearchRequest().model_dump(), "scoped": False}
     return [
         ("get_entity_examples", {}),
         ("get_scoped_relation_facets", {"payload": facets, "resources": None}),
+        ("search_ontology", {"payload": ontology}),
+        ("search_ontology", {"payload": {"query": "", "limit": 24, "offset": 0}}),
     ]
 
 

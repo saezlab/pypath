@@ -565,7 +565,8 @@ class ReleaseQueries(
     def _projection(self, table: str, column: str | None = None) -> str:
         """The table's columns as the resource files have them, then ``resource``."""
         columns = self._served().columns[self._physical(table, column)]
-        hidden = [c for c in _HELPERS if c in columns]
+        # A derived table's stored ``resource`` is computed here as for every table.
+        hidden = [c for c in (*_HELPERS, "resource") if c in columns]
         return (
             f"* EXCLUDE ({', '.join(hidden)}), _resource || '/' || _resource_version AS resource"
         )

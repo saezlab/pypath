@@ -206,9 +206,9 @@ class RelationsQueries:
     def _entity_relation_sql(self, filters, resources=None, *, qualifiers=RELATION_QUALIFIER_FILTERS):
         """SQL and parameters of the relation rows (one per relation and resource, with
         the page-order, filter and facet columns, ``resource`` and ``_rid``) of a plain
-        entity selection, from the ``entity_relation`` table: the entities' rows are one
-        range of it. None for other selections (reference keys, a scope, molecular
-        forms) or without the table."""
+        entity selection (entity tokens, or reference keys), from the database's endpoint
+        table sorted by key: the selection is one range of it. None for other selections
+        (both kinds, a scope, molecular forms) or without such a table."""
         filters = normalize_filters(filters)
         tokens = filters["entity_ids"] + filters["entity_pks"]
         references = filters["reference_entity_keys"]
@@ -223,27 +223,23 @@ class RelationsQueries:
             # As in _selection_parts: a source filter reads only those resources.
             queryable = {info["resource"] for info in self._selected_resource_infos(None)}
             resources = [source for source in filters["sources"] if source in queryable] or None
-        derived = self._derived("entity_relation", resources)
-        if derived is None:
-            return None
-        source, in_resources = derived
-        members = None
-        if references:
-            # A relation with a reference key at an end: the end is an entity of that
-            # reference group in the relation's own resource (any side, as before).
-            members = self._reference_members(references, resources)
-            keys = sorted({key for _, key in members})
+        # The rewritten endpoint table (database format 7), or entity_relation (formats
+        # 2 to 6, entity tokens only).
+        columns = self._served().columns
+        if "subject_label" in columns.get("relation_endpoint", ()):
+            table, key, kind = "relation_endpoint", "key", "reference" if references else "entity"
+        elif "entity_relation" in columns and not references:
+            table, key, kind = "entity_relation", "entity_key", None
         else:
-            keys = self._entity_keys(tokens, resources)
+            return None
+        source, in_resources = self._derived(table, resources)
+        keys = references if references else self._entity_keys(tokens, resources)
         if not keys:
-            return "SELECT * EXCLUDE (entity_key, side) FROM " + source + " WHERE FALSE", []
+            return f"SELECT * FROM {source} WHERE FALSE", []
         where, params = self._relation_where(filters, qualifiers=qualifiers)
-        mode = filters["gene_mode"] if not references else "any"
+        # A reference key selects relations at either end, as before.
+        mode = "any" if references else filters["gene_mode"]
         side = "TRUE"
-        if members is not None:
-            in_resources += " AND (resource, entity_key) IN (SELECT * FROM (VALUES " + ", ".join(
-                f"({sql_literal(resource)}, {sql_literal(key)})" for resource, key in members
-            ) + "))"
         if mode in {"source", "source_only"}:
             side = "side = 'subject'"
         elif mode in {"target", "target_only"}:
@@ -253,13 +249,13 @@ class RelationsQueries:
                 "_rid IN (SELECT _rid FROM er GROUP BY _rid "
                 "HAVING bool_or(side = 'subject') AND bool_or(side = 'object'))"
             )
-        literals = ", ".join(sql_literal(key) for key in dict.fromkeys(keys))
+        literals = ", ".join(sql_literal(k) for k in dict.fromkeys(keys))
+        kind_condition = f" AND key_kind = '{kind}'" if kind else ""
         # The keys alone first (the table is sorted by them); a relation with both ends
         # among them is one relation.
         return (
-            f"""WITH er AS MATERIALIZED (SELECT * FROM {source} WHERE entity_key IN ({literals}))
-            SELECT DISTINCT ON (_rid) * EXCLUDE (entity_key, side) FROM er
-            WHERE {in_resources} AND {side} AND {where}""",
+            f"""WITH er AS MATERIALIZED (SELECT * FROM {source} WHERE {key} IN ({literals}){kind_condition})
+            SELECT DISTINCT ON (_rid) * FROM er WHERE {in_resources} AND {side} AND {where}""",
             params,
         )
 
@@ -272,33 +268,6 @@ class RelationsQueries:
             lambda payload, resources: self.resolve_entity_keys(payload["tokens"], resources),
             cache=self._order_cache,
         )
-
-    def _reference_members(self, references, resources=None):
-        """(resource, entity key) of the entities whose reference key is one of these,
-        per resource (``entity_group``), kept with the page orders."""
-
-        def compute(payload, resources):
-            hits = self._fetch_dicts(
-                f"SELECT DISTINCT resource, entity_id FROM {self._table('entity_group', resources)} "
-                "WHERE kind = 'reference' AND group_key IN (SELECT unnest(?::VARCHAR[]))",
-                [payload["references"]],
-            )
-            rows = self._lookup(
-                "entity", "entity_id", [(h["resource"], h["entity_id"]) for h in hits],
-                "entity_id, entity_key", narrow=True,
-            )
-            return sorted({(r["resource"], r["entity_key"]) for r in rows})
-
-        return [
-            tuple(pair)
-            for pair in self._cached_facets(
-                "reference-members",
-                {"references": sorted(references)},
-                resources,
-                compute,
-                cache=self._order_cache,
-            )
-        ]
 
     def _page_rows(self, filters, resources, pairs):
         """The relation rows of a page of a plain entity selection, with their endpoint

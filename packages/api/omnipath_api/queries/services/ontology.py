@@ -303,7 +303,11 @@ class OntologyQueries:
         if derived is not None:
             # Precomputed from the term's side, for terms only.
             source, in_resources = derived
-            edges = f"""SELECT term_key, entity_key, relation_key FROM {source}
+            # Entities and relations by their numbers, where the table has them: the
+            # counts below count distinct integers instead of keys.
+            numbered = "entity_n" in self._served().columns.get("term_entity", ())
+            counted = "entity_n AS entity_key, relation_n AS relation_key" if numbered else "entity_key, relation_key"
+            edges = f"""SELECT term_key, {counted} FROM {source}
                 WHERE {in_resources}{" AND entity_key IN (SELECT unnest(?::VARCHAR[]))" if scoped else ""}"""
         else:
             edges = f"""SELECT * FROM (

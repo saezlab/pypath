@@ -106,14 +106,20 @@ def derived_tables() -> dict:
             "order": "term, _resource, entity_id",
             "replaces": True,
         },
-        # Every relation row of an entity, at either end, with the relation's page-order,
-        # filter and facet columns: a gene's relations are one range, in page order.
-        "entity_relation": {
-            "select": f"""SELECT subject_entity_key AS entity_key, 'subject' AS side, _rid, {resource},
-                relation_id, {columns} FROM relation
-                UNION ALL SELECT object_entity_key, 'object', _rid, {resource}, relation_id, {columns}
-                FROM relation""",
-            "order": "entity_key, category, predicate, subject_label, object_label, resource, relation_id",
+        # The endpoint table rewritten over every resource, sorted by key and then page
+        # order, each row with its relation's page-order, filter and facet columns: the
+        # relations of an entity (or of a reference key) are one range, in page order.
+        # Its columns are the written table's and more, so readers of it are unchanged.
+        "relation_endpoint": {
+            "select": " UNION ALL ".join(
+                f"""SELECT {side}_{key} AS key, '{kind}' AS key_kind, '{side}' AS side, relation_id,
+                    _resource, _resource_version, _rid, {resource}, {columns}
+                    FROM relation WHERE {side}_{key} IS NOT NULL"""
+                for side in ("subject", "object")
+                for kind, key in (("entity", "entity_key"), ("reference", "reference_entity_key"))
+            ),
+            "order": "key, key_kind, category, predicate, subject_label, object_label, resource, relation_id",
+            "replaces": True,
         },
         # The ontologies' hierarchies as child -> parent edges.
         "ontology_edge": {
@@ -128,13 +134,19 @@ def derived_tables() -> dict:
             "order": "child_key, parent_key",
         },
         # Each relation touching an ontology term, from the term's side: what the term
-        # annotates.
+        # annotates. The annotated entity and the relation are also numbered (dense
+        # ranks of their keys), so that counting distinct ones counts integers.
         "term_entity": {
-            "select": f"""WITH terms AS (SELECT DISTINCT entity_key FROM entity WHERE entity_type = 'ontology_class')
-                SELECT object_entity_key AS term_key, subject_entity_key AS entity_key, relation_key, {resource}
-                FROM relation WHERE object_entity_key IN (SELECT entity_key FROM terms)
-                UNION ALL SELECT subject_entity_key, object_entity_key, relation_key, {resource}
-                FROM relation WHERE subject_entity_key IN (SELECT entity_key FROM terms)""",
+            "select": f"""WITH terms AS (SELECT DISTINCT entity_key FROM entity WHERE entity_type = 'ontology_class'),
+                edges AS (
+                    SELECT object_entity_key AS term_key, subject_entity_key AS entity_key, relation_key, {resource}
+                    FROM relation WHERE object_entity_key IN (SELECT entity_key FROM terms)
+                    UNION ALL SELECT subject_entity_key, object_entity_key, relation_key, {resource}
+                    FROM relation WHERE subject_entity_key IN (SELECT entity_key FROM terms))
+                SELECT term_key, entity_key, resource,
+                    dense_rank() OVER (ORDER BY entity_key)::INTEGER AS entity_n,
+                    dense_rank() OVER (ORDER BY relation_key)::INTEGER AS relation_n
+                FROM edges""",
             "order": "term_key",
         },
     }
@@ -146,7 +158,7 @@ INDEXES = [
     ["relation_evidence_rid", "relation_evidence", "_rid"],
 ]
 # Changes when the tables, derived tables or indexes a database holds change.
-DATABASE_FORMAT = 6
+DATABASE_FORMAT = 7
 
 
 def biolink_names() -> list[list[str]]:
