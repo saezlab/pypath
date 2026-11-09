@@ -1,22 +1,22 @@
-"""Unit tests for DuckDB ParquetQueries."""
+"""Unit tests for the release database queries."""
 
 import tempfile
 import time
 import unittest
 from pathlib import Path
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import republish, served_queries
 
 from omnipath_core.fixtures import write_dataset
 from omnipath_core.fixtures import write_resource_version as _write_resource
 
 
-class TestParquetQueries(unittest.TestCase):
+class TestReleaseQueries(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.tmp = tempfile.TemporaryDirectory()
         cls.addClassCleanup(cls.tmp.cleanup)
-        cls.engine = ParquetQueries(data_root=write_dataset(cls.tmp.name))
+        cls.engine = served_queries(data_root=write_dataset(cls.tmp.name))
         cls.addClassCleanup(cls.engine.close)
 
     def test_01_list_resources(self):
@@ -127,8 +127,7 @@ class TestParquetQueries(unittest.TestCase):
         for resource in resources:
             filters = {"sources": [resource]}
             selection, _ = self.engine._relation_selection(filters)
-            self.assertIn(f"/{resource}/", selection)
-            self.assertEqual(selection.count("relation.parquet"), 1)
+            self.assertIn(f"_resource IN ('{resource}')", selection)
             scoped = self.engine.search_relations(filters=filters, limit=1000)
             full = self.engine.search_relations(filters=filters, resources=resources, limit=1000)
             def key(rows):
@@ -274,29 +273,31 @@ class TestParquetQueries(unittest.TestCase):
         self.assertGreaterEqual(hierarchy["childCount"], 0)
 
 
-class TestInventoryHotReload(unittest.TestCase):
-    def test_picks_up_new_version_without_reload_call(self):
+class TestServedReleases(unittest.TestCase):
+    def test_picks_up_a_new_release_without_reload_call(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            _write_resource(root, "uniprot", "v1", n_relations=1)
-            engine = ParquetQueries(data_root=root)
-            self.assertEqual(engine._latest_by_resource["uniprot"]["version"], "v1")
+            _write_resource(root, "uniprot", "1", n_relations=1)
+            engine = served_queries(data_root=root)
+            self.assertEqual(engine._latest_by_resource["uniprot"]["version"], "1")
             (path,) = engine._table_paths("relation", ["uniprot"]).values()
-            self.assertTrue(path.endswith("/v1/relation.parquet"))
-
-            time.sleep(0.05)
-            _write_resource(root, "uniprot", "v2", n_relations=3)
+            self.assertTrue(path.endswith("/1/relation.parquet"))
+            # A new version is served once a release pins it and its database is built.
+            _write_resource(root, "uniprot", "2", n_relations=3)
+            self.assertEqual(engine._selected_resource_infos(["uniprot"])[0]["version"], "1")
+            republish(root)
             infos = engine._selected_resource_infos(["uniprot"])
-            self.assertEqual(infos[0]["version"], "v2")
-            self.assertTrue(str(infos[0]["tables"]["relation"]).endswith("/v2/relation.parquet"))
+            self.assertEqual(infos[0]["version"], "2")
+            self.assertTrue(str(infos[0]["tables"]["relation"]).endswith("/2/relation.parquet"))
             listed = {item["key"]: item["relations_count"] for item in engine.list_resources()}
-            self.assertEqual(listed["uniprot/v2"], 3)
+            self.assertEqual(listed["uniprot/2"], 3)
+            self.assertEqual(engine.search_relations(limit=10)["total"], 3)
 
-    def test_catalog_is_kept_until_the_data_changes(self):
+    def test_catalog_is_kept_until_the_served_release_changes(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            _write_resource(root, "uniprot", "v1", n_relations=1)
-            engine = ParquetQueries(data_root=root)
+            _write_resource(root, "uniprot", "1", n_relations=1)
+            engine = served_queries(data_root=root)
             builds = []
             build = engine._build_resource_catalog
             engine._build_resource_catalog = lambda: builds.append(1) or build()
@@ -305,12 +306,12 @@ class TestInventoryHotReload(unittest.TestCase):
             self.assertEqual(len(builds), 1)
             # A caller's change does not reach the kept catalog.
             first[0]["version"] = "changed"
-            self.assertEqual(engine.list_resource_catalog()[0]["version"], "v1")
-            time.sleep(0.05)
-            _write_resource(root, "uniprot", "v2", n_relations=3)
+            self.assertEqual(engine.list_resource_catalog()[0]["version"], "1")
+            _write_resource(root, "uniprot", "2", n_relations=3)
+            republish(root)
             catalog = engine.list_resource_catalog()
             self.assertEqual(len(builds), 2)
-            self.assertEqual(catalog[0]["version"], "v2")
+            self.assertEqual(catalog[0]["version"], "2")
             self.assertEqual(catalog[0]["interaction_count"], 3)
             # So does a change of the query policy.
             (root / "query_policy.json").write_text('{"disabled_resources": ["uniprot"]}')
@@ -321,8 +322,8 @@ class TestInventoryHotReload(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             for name in ("signor", "uniprot", "chebi"):
-                _write_resource(root, name, "v1", n_relations=1)
-            engine = ParquetQueries(data_root=root)
+                _write_resource(root, name, "1", n_relations=1)
+            engine = served_queries(data_root=root)
             catalog = engine.list_resource_catalog()
             expected = {}
             for resource in catalog:
@@ -338,30 +339,31 @@ class TestInventoryHotReload(unittest.TestCase):
             sizes = [len(t["resources"]) for t in topics]
             self.assertEqual(sizes, sorted(sizes, reverse=True))
 
-    def test_skips_version_with_a_missing_table(self):
+    def test_an_incomplete_version_is_not_published(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            _write_resource(root, "uniprot", "v1", n_relations=1)
-            engine = ParquetQueries(data_root=root)
-            time.sleep(0.05)
-            pending = _write_resource(root, "uniprot", "v2", n_relations=9)
+            _write_resource(root, "uniprot", "1", n_relations=1)
+            engine = served_queries(data_root=root)
+            pending = _write_resource(root, "uniprot", "2", n_relations=9)
             serving = pending / "entity_term.parquet"
             serving.rename(pending / "entity_term.partial")
-            infos = engine._selected_resource_infos(["uniprot"])
-            self.assertEqual(infos[0]["version"], "v1")
+            republish(root)
+            self.assertEqual(engine._selected_resource_infos(["uniprot"])[0]["version"], "1")
             (pending / "entity_term.partial").rename(serving)
-            infos = engine._selected_resource_infos(["uniprot"])
-            self.assertEqual(infos[0]["version"], "v2")
+            republish(root)
+            self.assertEqual(engine._selected_resource_infos(["uniprot"])[0]["version"], "2")
 
-    def test_picks_up_in_place_overwrite(self):
+    def test_a_rewritten_resource_is_served_from_the_next_release(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            _write_resource(root, "uniprot", "v1", n_relations=1)
-            engine = ParquetQueries(data_root=root)
-            self.assertEqual(engine.list_resources()[0]["relations_count"], 1)
-            time.sleep(0.05)
-            _write_resource(root, "uniprot", "v1", n_relations=4)
-            self.assertEqual(engine.list_resources()[0]["relations_count"], 4)
+            _write_resource(root, "uniprot", "1", n_relations=1)
+            engine = served_queries(data_root=root)
+            self.assertEqual(engine.search_relations(limit=10)["total"], 1)
+            _write_resource(root, "uniprot", "1", n_relations=4)
+            # The served database is a snapshot: the release's answers do not change.
+            self.assertEqual(engine.search_relations(limit=10)["total"], 1)
+            republish(root)
+            self.assertEqual(engine.search_relations(limit=10)["total"], 4)
 
 
 if __name__ == "__main__":
@@ -373,7 +375,7 @@ def test_catalog_exposes_sample_limit_and_partial_build(tmp_path):
 
     folder = _write_resource(tmp_path, "sample", "1")
     (folder / "build_manifest.json").write_text(json.dumps({"max_records": 10, "datasets": None}))
-    engine = ParquetQueries(data_root=tmp_path)
+    engine = served_queries(data_root=tmp_path)
     item = engine.list_resource_catalog()[0]
     assert item["sample_build"] is True
     assert item["max_records"] == 10

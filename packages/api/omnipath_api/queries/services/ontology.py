@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class OntologyQueries:
-    """Ontology queries over ParquetQueries' storage and shaping contract."""
+    """Ontology queries over the release database and the shaping contract."""
 
     def _hierarchy_read(self, rel_read: str) -> str:
         """Normalize only hierarchical predicates into child-to-parent edges."""

@@ -7,7 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from omnipath_core.taxonomy import taxon_names
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 from omnipath_api.server import create_app
 from omnipath_api.queries.store.inventory import ReleaseStore
 from omnipath_core.fixtures import rewrite_resource
@@ -90,7 +90,7 @@ def test_release_names_entities_facets_and_cached_relations(tmp_path):
         manifests[0]["references"]["taxonomy"]["version"]
         != manifests[1]["references"]["taxonomy"]["version"]
     )
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     # Unfiltered relation facets share cached raw counts across these releases.
     for version, name in [
         ("1", "Arabidopsis thaliana"),
@@ -132,10 +132,11 @@ def test_latest_lookup_covers_new_taxa_without_changing_pinned_names(tmp_path):
     assert names.get("999") == "Arabidopsis thaliana"
     assert names.get("123") is None
     assert prepare(tmp_path) == path
-    engine = ParquetQueries(tmp_path)
-    with engine.release_scope("latest"):
-        assert engine._taxonomy_names().get("3702") == "Arabidopsis thaliana"
-        first_version = engine._taxonomy_cache_version()
+    # Calls outside a release (nothing is served here) use the moving lookup; a
+    # release names taxa from its own taxonomy reference.
+    engine = served_queries(tmp_path)
+    assert engine._taxonomy_names().get("3702") == "Arabidopsis thaliana"
+    first_version = engine._taxonomy_cache_version()
     # A pinned scope without a taxonomy snapshot does not inherit moving labels.
     token = engine._release_scope.set({"version": "old", "resources": {}})
     try:
@@ -144,6 +145,5 @@ def test_latest_lookup_covers_new_taxa_without_changing_pinned_names(tmp_path):
         engine._release_scope.reset(token)
     dump(archive, "Updated name")
     prepare(tmp_path)
-    with engine.release_scope("latest"):
-        assert engine._taxonomy_names().get("3702") == "Updated name"
-        assert engine._taxonomy_cache_version() != first_version
+    assert engine._taxonomy_names().get("3702") == "Updated name"
+    assert engine._taxonomy_cache_version() != first_version

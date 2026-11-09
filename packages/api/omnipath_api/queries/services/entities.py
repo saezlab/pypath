@@ -43,7 +43,7 @@ _GROUP_PREFIXES = ("gene:", "connectivity:", "entity:")
 
 
 class EntitiesQueries:
-    """Entities queries over ParquetQueries' storage and shaping contract."""
+    """Entities queries over the release database and the shaping contract."""
 
     def _term_hits(self, query, resources=None):
         """SQL and parameters of the prefix hits of a query: resource, entity_id,

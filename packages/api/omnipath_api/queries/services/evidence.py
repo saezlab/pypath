@@ -51,18 +51,17 @@ def _summarize(records):
 
 
 class EvidenceQueries:
-    """Evidence queries over ParquetQueries' storage and shaping contract."""
+    """Evidence queries over the release database and the shaping contract."""
 
     def get_relation_evidence(self, relation_pk, resources=None, filters=None):
         from omnipath_api.queries.molecular import matching_evidence, has_form_filters
         from omnipath_api.queries.filters import normalize_filters
         import hashlib
 
-        rows = self._fetch_dicts(
-            f"SELECT resource, relation_id FROM {self._table('relation', resources)} "
-            "WHERE relation_key = ? ORDER BY resource",
-            [relation_pk],
-        )
+        rows = [
+            {"resource": r["resource"], "relation_id": r["relation_id"]}
+            for r in self._relations_by_keys([relation_pk], resources)
+        ]
         self._children("relation_annotation", rows, "annotations")
         self._children("relation_evidence", rows, "evidence")
         filters = normalize_filters(filters)
@@ -127,12 +126,7 @@ class EvidenceQueries:
         filters = normalize_filters(filters)
         found = []
         if keys:
-            condition, values = self._in("relation_key", keys)
-            found = self._fetch_dicts(
-                f"SELECT resource, relation_id, relation_key FROM {self._table('relation', resources)} "
-                f"WHERE {condition}",
-                values,
-            )
+            found = self._relations_by_keys(keys, resources)
         key_of = {(r["resource"], r["relation_id"]): r["relation_key"] for r in found}
         if not key_of:
             elapsed = round((time.perf_counter() - started) * 1000, 2)

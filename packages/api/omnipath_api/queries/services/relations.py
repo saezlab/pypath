@@ -28,7 +28,7 @@ ORDER_CACHE_LIMIT = 100_000
 
 
 class RelationsQueries:
-    """Relations queries over ParquetQueries' storage and shaping contract."""
+    """Relations queries over the release database and the shaping contract."""
 
     def _relation_where(self, filters, *, qualifiers=RELATION_QUALIFIER_FILTERS):
         """Conditions on the relation table's own columns, and their parameters."""
@@ -319,9 +319,8 @@ class RelationsQueries:
     def get_relation_by_pk(
         self, relation_pk: str, resources: list[str] | None = None
     ) -> dict[str, Any] | None:
-        rows = self._fetch_dicts(
-            f"SELECT * FROM {self._table('relation', resources)} WHERE relation_key = ? "
-            "ORDER BY resource LIMIT 1",
-            [relation_pk],
+        found = self._relations_by_keys([relation_pk], resources)[:1]
+        rows = self._lookup(
+            "relation", "relation_id", [(r["resource"], r["relation_id"]) for r in found]
         )
         return self._relation_items(rows)[0] if rows else None

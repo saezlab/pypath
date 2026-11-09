@@ -5,7 +5,7 @@ from threading import Event
 import pytest
 from fastapi.testclient import TestClient
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 from omnipath_api.queries.store.query_cache import QueryCache
 from omnipath_api.server import create_app
 from omnipath_core.fixtures import write_resource
@@ -61,7 +61,7 @@ def engine(tmp_path):
             for i in range(30)
         ]
         write_resource(tmp_path / "resources" / source / "1", entities, rows)
-    return ParquetQueries(tmp_path)
+    return served_queries(tmp_path)
 
 
 def test_live_query_policy_preserves_catalog_and_invalidates_cached_queries(engine):

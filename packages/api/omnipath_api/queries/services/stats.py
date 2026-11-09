@@ -29,7 +29,7 @@ def interaction_types_query(read_expr: str) -> str:
 
 
 class StatsQueries:
-    """Stats queries over ParquetQueries' storage and shaping contract."""
+    """Stats queries over the release database and the shaping contract."""
 
     def get_stats_sources(self) -> list[dict[str, Any]]:
         return [
@@ -71,7 +71,7 @@ class StatsQueries:
             "partialBuild": any(
                 item.get("sample_build") or item.get("dataset_subset") for item in catalog
             ),
-            "engine": "duckdb-parquet",
+            "engine": "duckdb-release",
             "resources": [item["resource_id"] for item in catalog],
             "resourceVersions": {item["resource_id"]: item["version"] for item in catalog},
         }

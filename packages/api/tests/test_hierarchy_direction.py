@@ -1,6 +1,6 @@
 """Ontology projection uses declared statement context, not resource/type lists."""
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 from omnipath_core.fixtures import write_resource
 
 
@@ -33,7 +33,7 @@ def test_composition_is_not_an_ontology_but_axioms_are(tmp_path):
         ]
     ]
     write_resource(tmp_path / "resources/arbitrary_source/1", entities, relations)
-    engine = ParquetQueries(data_root=tmp_path)
+    engine = served_queries(data_root=tmp_path)
     food = engine.get_ontology_tree(["FOOD00005"])["root"]
     assert food is None
     assert engine.get_ontology_children("FOOD00005")["children"] == []

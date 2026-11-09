@@ -4,7 +4,7 @@ import duckdb
 import pytest
 from fastapi.testclient import TestClient
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import republish, served_queries
 from omnipath_api.server import create_app
 from omnipath_api.settings import Settings
 from omnipath_core.fixtures import write_resource
@@ -132,7 +132,7 @@ def engine(tmp_path):
             )
         ],
     )
-    queries = ParquetQueries(tmp_path)
+    queries = served_queries(tmp_path)
     yield queries
     queries.close()
 
@@ -190,7 +190,7 @@ def test_records_without_annotations_have_the_relations(engine, tmp_path):
             f" AS annotations) FROM read_parquet('{path}')) TO '{path}.new' (FORMAT PARQUET)"
         )
     path.with_suffix(".parquet.new").replace(path)
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     signor = engine.get_relation_evidence_summaries(["phospho"])["evidence"]["phospho"][1]
     assert signor == dict(source="signor", sites=[site(description="PLN_S16")], pmids=["9"])
 

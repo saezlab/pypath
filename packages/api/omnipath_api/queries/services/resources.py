@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class ResourcesQueries:
-    """Resources queries over ParquetQueries' storage and shaping contract."""
+    """Resources queries over the release database and the shaping contract."""
 
     def list_resources(self) -> list[dict[str, Any]]:
         """Return list of indexed resources with table statistics."""

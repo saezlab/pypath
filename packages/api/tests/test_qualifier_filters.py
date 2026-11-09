@@ -6,7 +6,7 @@ import shutil
 import pyarrow.parquet as pq
 import pytest
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 from omnipath_core.fixtures import rewrite_resource
 
 
@@ -59,7 +59,7 @@ def engine(tmp_path):
             )
         )
     rewrite_resource(directory / "relation.parquet", relations=rows)
-    return ParquetQueries(tmp_path)
+    return served_queries(tmp_path)
 
 
 def test_combined_filters_and_multi_select(engine):

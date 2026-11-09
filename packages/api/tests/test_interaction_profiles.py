@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 from omnipath_api.server import create_app
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 from omnipath_core.interaction_profiles import (
     BINDING_QUALIFIERS,
     TRANSPORT_QUALIFIERS,
@@ -48,7 +48,7 @@ def test_qualified_labels_survive_parquet_list_and_details(tmp_path):
             )
         )
     rewrite_resource(folder / "relation.parquet", relations=rows)
-    engine = ParquetQueries(data_root=tmp_path)
+    engine = served_queries(data_root=tmp_path)
     client = TestClient(create_app(queries=engine))
     response = client.post("/relations/search", json={})
     assert response.status_code == 200

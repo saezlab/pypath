@@ -13,12 +13,12 @@ router = APIRouter(tags=["health"])
 
 @router.get("/", response_model=HealthResponse)
 def root(request: Request) -> dict[str, Any]:
-    return {"status": "ok", "engine": "duckdb-parquet", "timestamp": time.time()}
+    return {"status": "ok", "engine": "duckdb-release", "timestamp": time.time()}
 
 
 @router.get("/health", response_model=HealthResponse)
 def health(request: Request) -> dict[str, Any]:
-    return {"status": "ok", "engine": "duckdb-parquet", "timestamp": time.time()}
+    return {"status": "ok", "engine": "duckdb-release", "timestamp": time.time()}
 
 
 @router.get("/status", response_model=ServingStatus)

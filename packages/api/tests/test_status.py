@@ -4,7 +4,7 @@ import threading
 
 from fastapi.testclient import TestClient
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 from omnipath_api.server import create_app
 from omnipath_api.status import RequestTimes
 from omnipath_core.fixtures import write_resource
@@ -12,7 +12,7 @@ from omnipath_core.fixtures import write_resource
 
 def test_status_reports_slots_and_recent_requests(tmp_path):
     write_resource(tmp_path / "resources/a/1", [dict(entity_key="p1", label="TP53")])
-    client = TestClient(create_app(queries=ParquetQueries(tmp_path)))
+    client = TestClient(create_app(queries=served_queries(tmp_path)))
     first = client.get("/status").json()
     assert first["state"] == "ok"
     assert first["queries"]["running"] == 0 and first["queries"]["waiting"] == 0
@@ -25,7 +25,7 @@ def test_status_reports_slots_and_recent_requests(tmp_path):
 
 def test_waiting_queries_mark_the_service_queued(tmp_path):
     write_resource(tmp_path / "resources/a/1", [dict(entity_key="p1", label="TP53")])
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     pool = engine._query_pool
     from omnipath_api.status import status
 

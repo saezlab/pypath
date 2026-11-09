@@ -1,11 +1,10 @@
-"""The API's queries over a serving root of resource Parquet files.
+"""The API's queries over the release databases of a serving root.
 
-Analytical queries, autocomplete, faceted filtering and binary exports directly from
-the resource Parquet tables via DuckDB, for the API's routes. The clients do not use
-this package: their search, relation export and entity details are the SQL macros of
-``packages/query/sql``, which give the same answers (the client tests compare them).
+Analytical queries, autocomplete, faceted filtering and binary exports over one DuckDB
+database per published release (``serving/<version>.duckdb``), for the API's routes.
+The database is the format the clients (``packages/query``) write locally too.
 """
 
-from .parquet import ParquetQueries
+from .release import ReleaseQueries
 
-__all__ = ["ParquetQueries"]
+__all__ = ["ReleaseQueries"]

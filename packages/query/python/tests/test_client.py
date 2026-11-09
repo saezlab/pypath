@@ -14,7 +14,8 @@ from omnipath_client import ClientError, available, connect, init
 from omnipath_client.installation import DEFAULT_API_URL
 from omnipath_core.fixtures import fixture_key as key, write_resource
 from omnipath_core.schema import PUBLISHED_TABLES, SERVING_TABLES
-from omnipath_api.queries import ParquetQueries
+from omnipath_api.queries import ReleaseQueries
+from omnipath_api.release_database import serve_newest
 
 TAGS = {
     "alpha": [("topic", "signaling"), ("molecule", "proteins")],
@@ -528,7 +529,9 @@ def canonical(table):
 def test_prebuilt_queries_match_the_engine(service):
     """The macros give the API's answers."""
     service.init(["alpha", "beta", "gamma"], include_evidence=True)
-    api = ParquetQueries(service.data)
+    # The API's engine over a release of the same files.
+    serve_newest(service.data, memory_limit="1GB", threads=1)
+    api = ReleaseQueries(service.data)
     try:
         with connect(service.data) as db:
             for filters in [

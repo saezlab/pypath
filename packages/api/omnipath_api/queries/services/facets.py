@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class FacetsQueries:
-    """Facets queries over ParquetQueries' storage and shaping contract."""
+    """Facets queries over the release database and the shaping contract."""
 
     def get_facets(
         self,

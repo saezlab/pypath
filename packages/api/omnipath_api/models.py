@@ -39,7 +39,7 @@ class ServingStatus(APIModel):
 
 class HealthResponse(APIModel):
     status: str
-    engine: str = "duckdb-parquet"
+    engine: str = "duckdb-release"
     timestamp: float | None = None
 
 

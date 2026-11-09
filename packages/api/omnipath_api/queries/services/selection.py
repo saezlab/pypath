@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class SelectionQueries:
-    """Selection queries over ParquetQueries' storage and shaping contract."""
+    """Selection queries over the release database and the shaping contract."""
 
     def resolve_selection_scope(self, payload=None):
         return self._cached_facets(

@@ -2,7 +2,7 @@
 
 import pytest
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import republish, served_queries
 from omnipath_api.queries.services import relations
 from omnipath_core.fixtures import rewrite_resource, write_resource
 
@@ -61,7 +61,7 @@ def write(root, source, predicates=("biolink:affects", "biolink:interacts_with")
 def engine(tmp_path):
     write(tmp_path, "a")
     write(tmp_path, "b", predicates=("biolink:affects",))
-    queries = ParquetQueries(tmp_path)
+    queries = served_queries(tmp_path)
     yield queries
     queries.close()
 
@@ -115,5 +115,5 @@ def test_reloaded_resources_reset_the_order(engine, tmp_path):
     path = tmp_path / "resources" / "b" / "1"
     others = partners("b")
     rewrite_resource(path, relations=[relation(others[0], "biolink:affects", "b")])
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     assert engine.search_relations(filters, limit=5)["total"] == 25

@@ -25,7 +25,7 @@ PARQUET = "application/vnd.apache.parquet"
 
 
 class ExportQueries:
-    """Export queries over ParquetQueries' storage and shaping contract."""
+    """Export queries over the release database and the shaping contract."""
 
     def export_slice(
         self,

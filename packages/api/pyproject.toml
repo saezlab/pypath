@@ -11,6 +11,8 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "omnipath-core>=0.1.0,<0.2.0",
+    # The release database's format and builder (omnipath_client.database).
+    "omnipath-client>=0.1.0,<0.2.0",
     "duckdb>=1.5,<2",
     "pyarrow>=14.0.0",
     "fastapi>=0.115.0",
@@ -38,4 +40,5 @@ include = ["omnipath_api*"]
 
 [tool.uv.sources]
 omnipath-core = { workspace = true }
+omnipath-client = { workspace = true }
 omnipath-build = { workspace = true }
