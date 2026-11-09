@@ -1,9 +1,8 @@
-"""
-Parse Phenol-Explorer data and emit Entity records.
+"""Parse Phenol-Explorer data and emit Entity records.
 
 Phenol-Explorer is a comprehensive database on polyphenol content in foods.
 This module creates Food entities with polyphenol compounds as members,
-where each compound member includes full identifiers (SMILES, CHEBI, etc.)
+where each compound member includes full identifiers (CHEBI, PubChem CID, etc.) 
 and concentration/measurement annotations.
 
 The food is associated with its food group and subgroup and its botanical
@@ -16,6 +15,8 @@ Data sources:
 """
 
 from __future__ import annotations
+
+from collections.abc import Callable, Iterable, Iterator
 
 from biolink_model.datamodel.model import (
     ChemicalEntity,
@@ -36,7 +37,11 @@ from pypath.inputs_v2._class_terms import (
 )
 from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.phenol_explorer import MEMBER_DELIMITER, _raw
+from pypath.inputs_v2.parsers.phenol_explorer import (
+    MEMBER_DELIMITER,
+    _raw,
+    _raw_metabolites,
+)
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
     CV,
@@ -91,14 +96,26 @@ download_composition = Download(
     ext='zip',
     default_mode='rb',
 )
+download_metabolites = Download(
+    url='http://phenol-explorer.eu/system/downloads/current/metabolites.csv.zip',
+    filename='metabolites.csv.zip',
+    subfolder='phenol_explorer',
+    large=True,
+    ext='zip',
+)
+
 f = FieldConfig(
     delimiter=MEMBER_DELIMITER,
     preserve_indices=True,
     extract={'chebi': '^(?:CHEBI:)?(\\d+)$'},
 )
-def _no_dash(value):
+
+
+def _no_dash(value: object) -> tuple[str, str] | None:
     """Phenol-Explorer writes "-" for a compound without an aglycone."""
-    return None if str(value or '').strip() == '-' else plain(value)
+    if str(value or '').strip().lower() in {'', '-', 'nan'}:
+        return None
+    return plain(value)
 
 
 FOOD_LEVELS = [
@@ -110,30 +127,48 @@ COMPOUND_LEVELS = [
     Level('member_compound_class', 'phenol_explorer_compound_class'),
     Level('member_compound_subclass', 'phenol_explorer_compound_subclass'),
 ]
+
 # A compound's aglycones ("Quercetin", "(-)-Epicatechin // Gallic acid") group
 # its glycosides; they are terms of their own, not placed under a subclass.
 AGLYCONE = [Level('member_aglycones', 'phenol_explorer_aglycone', _no_dash)]
 AGLYCONE_SEPARATOR = ' // '
 
 
-def _member_field(field):
+def _member_field(
+    field: str,
+) -> Callable[[dict[str, object]], list[str]]:
     """A per-member field, one value per member."""
     return lambda row: str(row.get(field) or '').split(MEMBER_DELIMITER)
 
 
-def _terms(opener, max_records=None, **kwargs):
-    rows = list(_raw(
-        opener,
-        download_compounds=download_compounds,
-        download_compounds_structures=download_compounds_structures,
-        download_composition=download_composition,
-        **kwargs,
-    ))
+def _terms(
+    opener: object,
+    max_records: int | None = None,
+    **kwargs: object,
+) -> Iterator[dict[str, object]]:
+
+    rows = list(
+        _raw(
+            opener,
+            download_compounds=download_compounds,
+            download_compounds_structures=download_compounds_structures,
+            download_composition=download_composition,
+            **kwargs,
+        )
+    )
     yield from iter_class_terms(rows, FOOD_LEVELS)
     yield from iter_class_terms(rows, BOTANICAL_FAMILY)
-    yield from iter_class_terms(member_rows(rows, [l.field for l in COMPOUND_LEVELS]), COMPOUND_LEVELS)
     yield from iter_class_terms(
-        member_rows(rows, [AGLYCONE[0].field], split=AGLYCONE_SEPARATOR), AGLYCONE
+        member_rows(rows, [level.field for level in COMPOUND_LEVELS]),
+        COMPOUND_LEVELS,
+    )
+    yield from iter_class_terms(
+        member_rows(
+            rows,
+            [AGLYCONE[0].field],
+            split=AGLYCONE_SEPARATOR,
+        ),
+        AGLYCONE,
     )
 
 
@@ -274,6 +309,23 @@ foods_schema = EntityBuilder(
         )
     ),
 )
+
+metabolites_schema = EntityBuilder(
+    entity_type=ChemicalEntity,
+    identifiers=IdentifiersBuilder(
+        CV(term=Namespace.PHENOL_EXPLORER_METABOLITE, value=f('id')),
+        CV(term=Namespace.NAME, value=f('name')),
+        CV(term=Namespace.SYNONYM, value=f('synonyms')),
+        CV(term=Namespace.CAS, value=f('cas')),
+        CV(term=Namespace.CHEBI, value=f('chebi', extract='chebi')),
+        CV(term=Namespace.PUBCHEM, value=f('pubchem')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=slots.has_chemical_formula, value=f('formula')),
+        CV(term='chemrof:mass', value=f('molecular_weight')),
+    ),
+)
+
 resource = Resource(
     config,
     foods=Dataset(
@@ -287,6 +339,15 @@ resource = Resource(
             **kwargs,
         ),
     ),
+    metabolites=Dataset(
+        download=download_metabolites,
+        mapper=metabolites_schema,
+        raw_parser=lambda opener, **kwargs: _raw_metabolites(
+            opener,
+            **kwargs,
+        ),
+    ),
+
     terms=Dataset(download=download_foods, mapper=map_class_term, raw_parser=_terms),
 )
 __all__ = ['config', 'resource']
