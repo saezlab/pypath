@@ -10,11 +10,14 @@ with a Python and an R client that install the data and write that database.
 | [`r/`](r/README.md) | `omnipath.client`: `op_init`, `op_connect`, `op_sql`, `op_search`, `op_relations`, `op_entity` |
 | [`scripts/`](scripts) | `generate_contract.py` (the contract from `packages/core`, and the copies of `sql/` in both clients) and `compare_with_api.py` (the clients' answers against the API's on a real installation) |
 
-Both clients download the same files into the same data directory and write the same
-database: published tables as native DuckDB tables (or views), lookup tables derived
-with the build's queries, global ids, the installation's lookup macros and the macros
-of `sql/`. Either client reads a directory the other installed. Any DuckDB client can
-run the SQL; neither client needs the API, its Python queries or Biolink at run time.
+Both clients have two modes: API mode (the default) asks the hosted API; local mode
+downloads the same files into the same data directory and writes the same database,
+which is also the database the API serves a release from (`omnipath_client.database`,
+`build_release_database` on the server): published tables as native DuckDB tables,
+lookup tables derived with the build's queries, global ids, a relation key table,
+indexes, the lookup macros and the macros of `sql/`. Either client reads a directory
+the other installed. Any DuckDB client can run the SQL; neither client needs the API,
+its Python queries or Biolink at run time in local mode.
 
 The hosted API (`packages/api`) answers the same three questions with its Python
 queries (`omnipath_api.queries`), and more besides. The Python client's tests compare
