@@ -47,6 +47,12 @@ def relation_params(filters):
         sign=f.get("sign"),
         min_evidence_count=f.get("min_evidence_count"),
     )
+    # Qualifier values as stored (Biolink enumerations); an unknown one is an error.
+    from omnipath_core.biolink import annotation_value
+
+    for term in ("object_aspect_qualifier", "object_direction_qualifier", "causal_mechanism_qualifier"):
+        if params[term] is not None:
+            params[term] = [annotation_value(term, value) for value in params[term]]
     if params["signs"] is not None:
         params["signs"] = [int(s) for s in params["signs"]]
     if params["taxonomy_ids"] is not None:

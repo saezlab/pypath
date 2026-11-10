@@ -319,6 +319,32 @@ class RelationsQueries:
         offset: int = 0,
         include_details: bool = False,
     ) -> dict[str, Any]:
+        """A page of matching relations as stored (with details, their annotations and
+        evidence): the query relation_page's records."""
+        from omnipath_api.queries.services.export import relation_params
+
+        started = time.perf_counter()
+        params = {
+            **relation_params(filters), "limit": int(limit), "offset": int(offset),
+            "details": bool(include_details), "records": True,
+        }
+        result = json.loads(self.run_query("relation_page", params, resources))
+        return {
+            "rows": result["records"],
+            "total": int(result["total"]),
+            "limit": limit,
+            "offset": offset,
+            "elapsed_ms": round((time.perf_counter() - started) * 1000, 2),
+        }
+
+    def _old_search_relations(
+        self,
+        filters: dict[str, Any] | None = None,
+        resources: list[str] | None = None,
+        limit: int = 50,
+        offset: int = 0,
+        include_details: bool = False,
+    ) -> dict[str, Any]:
         """A page of matching relations; with details, their annotations and evidence."""
         t0 = time.perf_counter()
         filters = normalize_filters(filters)

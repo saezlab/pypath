@@ -89,27 +89,6 @@ def test_pages_match_the_uncached_order(engine, monkeypatch):
     assert engine.search_relations(filters, limit=7, offset=100)["rows"] == []
 
 
-def test_later_pages_skip_the_candidate_search(engine, monkeypatch):
-    calls = []
-    # A gene's keys are resolved once; every page then reads its range of entity_relation.
-    original = engine.resolve_entity_keys
-    monkeypatch.setattr(
-        engine, "resolve_entity_keys", lambda *a, **k: calls.append(1) or original(*a, **k)
-    )
-    filters = {"entity_ids": ["entrez:1"]}
-    page_through(engine, filters)
-    assert len(calls) == 1
-    # Other filters are another selection of the same entities: the keys are kept.
-    engine.search_relations({"entity_ids": ["entrez:1"], "predicates": ["affects"]}, limit=5)
-    assert len(calls) == 1
-
-
-def test_selections_without_endpoint_filters_are_not_kept(engine):
-    first = engine.search_relations({"relation_categories": ["interaction"]}, limit=5)
-    assert first["total"] == 36
-    assert [value for value, _ in engine._order_cache.entries.values()] == [None]
-
-
 def test_reloaded_resources_reset_the_order(engine, tmp_path):
     filters = {"entity_ids": ["entrez:1"]}
     assert engine.search_relations(filters, limit=5)["total"] == 36
