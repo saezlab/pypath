@@ -220,7 +220,9 @@ def literal(value: Any, type_: str | None = None) -> str:
     if value is None:
         return f"NULL::{type_}" if type_ else "NULL"
     if type_ == "JSON":
-        return literal(json.dumps(value, sort_keys=True, separators=(",", ":"))) + "::JSON"
+        # JSON text as DuckDB returns it stays as it is; other values are encoded.
+        text = value if isinstance(value, str) else json.dumps(value, sort_keys=True, separators=(",", ":"))
+        return literal(text) + "::JSON"
     if isinstance(value, bool):
         return "true" if value else "false"
     if isinstance(value, int):

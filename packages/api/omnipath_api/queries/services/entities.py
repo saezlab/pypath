@@ -642,16 +642,37 @@ class EntitiesQueries:
         return self.get_entities_by_pks(public_ids, resources)
 
     def get_entity_core(self, public_id, resources=None):
+        text = self.run_query("entity_core", {"entity_key": str(public_id)}, resources)
+        return json.loads(text) if text else None
+
+    def get_entity_evidence(self, public_id, resources=None, limit=20, offset=0):
+        text = self.run_query(
+            "entity_evidence",
+            {"entity_key": str(public_id), "limit": int(limit), "offset": int(offset)},
+            resources,
+        )
+        return json.loads(text) if text else None
+
+    def get_entity_relationships(self, public_id, resources=None, limit=50, offset=0):
+        keys = public_id if isinstance(public_id, list) else [public_id]
+        text = self.run_query(
+            "entity_relationships",
+            {"entity_keys": [str(k) for k in keys], "limit": int(limit), "offset": int(offset)},
+            resources,
+        )
+        return json.loads(text)
+
+    def _old_get_entity_core(self, public_id, resources=None):
         from omnipath_api.queries.entity_details import core
 
         return core(self, public_id, resources)
 
-    def get_entity_evidence(self, public_id, resources=None, limit=20, offset=0):
+    def _old_get_entity_evidence(self, public_id, resources=None, limit=20, offset=0):
         from omnipath_api.queries.entity_details import evidence
 
         return evidence(self, public_id, resources, limit, offset)
 
-    def get_entity_relationships(self, public_id, resources=None, limit=50, offset=0):
+    def _old_get_entity_relationships(self, public_id, resources=None, limit=50, offset=0):
         from omnipath_api.queries.entity_details import relationships
 
         return relationships(self, public_id, resources, limit, offset)
