@@ -58,71 +58,74 @@ class ExportQueries:
         form, form_params = "TRUE", []
         if has_form_filters(filters):
             form, form_params = form_match_sql(filters)
-        relations, relation_params = self._lookup_sql("relation", "relation_id", pairs)
-        annotations, annotation_params = self._lookup_sql(
-            "relation_annotation", "relation_id", pairs
-        )
-        evidence, evidence_params = self._lookup_sql(
-            "relation_evidence", "relation_id", pairs, where=form, params=form_params
-        )
-        # The products the evidence names, then only those entities, by key: a join of
-        # every entity row read the whole entity table.
-        product_keys = [
-            row[0]
-            for row in self._db.execute(
-                f"""SELECT DISTINCT unnest([subject_molecular_form.protein_entity_key,
-                    subject_molecular_form.transcript_entity_key,
-                    object_molecular_form.protein_entity_key,
-                    object_molecular_form.transcript_entity_key]) AS k FROM ({evidence})""",
-                evidence_params,
-            ).fetchall()
-            if row[0]
-        ]
-        entities = (
-            f"(SELECT * FROM {self._table('entity', scope)} WHERE entity_key IN "
-            f"({', '.join(sql_literal(k) for k in product_keys)}))"
-            if product_keys
-            else f"(SELECT * FROM {self._table('entity', scope)} WHERE FALSE)"
-        )
-        # Rows as the published tables nest them: each relation with its annotations and
-        # evidence (only the matching occurrences under a molecular form filter), and
-        # the product entities its evidence names.
-        sql = f"""WITH selected AS MATERIALIZED ({relations}),
-        annotations AS (
-            SELECT resource, relation_id, list(struct_pack(term := term, value := value,
-                quantity := {quantity}, source := source, dataset := dataset, scope := scope)
-                ORDER BY ordinal) AS annotations
-            FROM ({annotations}) GROUP BY ALL
-        ), evidence AS (
-            SELECT resource, relation_id, list(struct_pack(source := source, dataset := dataset,
-                row_id := row_id, upstream_id := upstream_id, annotations := annotations,
-                subject_molecular_form := subject_molecular_form,
-                object_molecular_form := object_molecular_form) ORDER BY ordinal) AS evidence
-            FROM ({evidence}) GROUP BY ALL
-        ), rows AS (
-            SELECT s.* EXCLUDE (evidence_count),
-                coalesce(a.annotations, []) AS annotations, coalesce(e.evidence, []) AS evidence,
-                {"len(coalesce(e.evidence, []))" if form_params else "s.evidence_count"} AS evidence_count
-            FROM selected s LEFT JOIN annotations a USING (resource, relation_id)
-            LEFT JOIN evidence e USING (resource, relation_id)
-        ), product_keys AS (
-            SELECT DISTINCT resource, relation_id, unnest([f.subject_molecular_form.protein_entity_key,
-                f.subject_molecular_form.transcript_entity_key,
-                f.object_molecular_form.protein_entity_key,
-                f.object_molecular_form.transcript_entity_key]) AS entity_key
-            FROM rows, unnest(rows.evidence) AS occurrences(f)
-        ), products AS (
-            -- each row's own products: one list shared by every row repeated it per row
-            SELECT k.resource, k.relation_id,
-                list(e ORDER BY e.entity_key, e.resource) AS referenced_product_records
-            FROM product_keys k JOIN {entities} e USING (entity_key)
-            GROUP BY ALL
-        ) SELECT rows.* EXCLUDE (resource, relation_id),
-            coalesce(products.referenced_product_records, []) AS referenced_product_records
-        FROM rows LEFT JOIN products USING (resource, relation_id)"""
-        return self._write_parquet(
-            sql, [*relation_params, *annotation_params, *evidence_params]
-        ), PARQUET
+        # Each part is read on its own into a temporary table (read inside one statement,
+        # DuckDB scanned whole tables for them), and the evidence once.
+        staged = {
+            "__export_relations": self._lookup_sql("relation", "relation_id", pairs),
+            "__export_annotations": self._lookup_sql("relation_annotation", "relation_id", pairs),
+            "__export_evidence": self._lookup_sql(
+                "relation_evidence", "relation_id", pairs, where=form, params=form_params
+            ),
+        }
+        try:
+            for name, (part, part_params) in staged.items():
+                self._db.execute(f"CREATE OR REPLACE TEMP TABLE {name} AS {part}", part_params)
+            # The products the evidence names, then only those entities, by key: a join
+            # of every entity row read the whole entity table.
+            product_keys = [
+                row[0]
+                for row in self._db.execute(
+                    """SELECT DISTINCT unnest([subject_molecular_form.protein_entity_key,
+                        subject_molecular_form.transcript_entity_key,
+                        object_molecular_form.protein_entity_key,
+                        object_molecular_form.transcript_entity_key]) AS k FROM __export_evidence"""
+                ).fetchall()
+                if row[0]
+            ]
+            self._db.execute(
+                f"CREATE OR REPLACE TEMP TABLE __export_products AS SELECT * FROM {self._table('entity', scope)} "
+                f"WHERE entity_key IN ({', '.join(sql_literal(k) for k in product_keys) or 'NULL'})"
+            )
+            # Rows as the published tables nest them: each relation with its annotations
+            # and evidence (only the matching occurrences under a molecular form filter),
+            # and the product entities its evidence names.
+            sql = f"""WITH selected AS (SELECT * FROM __export_relations),
+            annotations AS (
+                SELECT resource, relation_id, list(struct_pack(term := term, value := value,
+                    quantity := {quantity}, source := source, dataset := dataset, scope := scope)
+                    ORDER BY ordinal) AS annotations
+                FROM __export_annotations GROUP BY ALL
+            ), evidence AS (
+                SELECT resource, relation_id, list(struct_pack(source := source, dataset := dataset,
+                    row_id := row_id, upstream_id := upstream_id, annotations := annotations,
+                    subject_molecular_form := subject_molecular_form,
+                    object_molecular_form := object_molecular_form) ORDER BY ordinal) AS evidence
+                FROM __export_evidence GROUP BY ALL
+            ), rows AS (
+                SELECT s.* EXCLUDE (evidence_count),
+                    coalesce(a.annotations, []) AS annotations, coalesce(e.evidence, []) AS evidence,
+                    {"len(coalesce(e.evidence, []))" if form_params else "s.evidence_count"} AS evidence_count
+                FROM selected s LEFT JOIN annotations a USING (resource, relation_id)
+                LEFT JOIN evidence e USING (resource, relation_id)
+            ), product_keys AS (
+                SELECT DISTINCT resource, relation_id, unnest([f.subject_molecular_form.protein_entity_key,
+                    f.subject_molecular_form.transcript_entity_key,
+                    f.object_molecular_form.protein_entity_key,
+                    f.object_molecular_form.transcript_entity_key]) AS entity_key
+                FROM rows, unnest(rows.evidence) AS occurrences(f)
+            ), products AS (
+                -- each row's own products: one list shared by every row repeated it per row
+                SELECT k.resource, k.relation_id,
+                    list(e ORDER BY e.entity_key, e.resource) AS referenced_product_records
+                FROM product_keys k JOIN __export_products e USING (entity_key)
+                GROUP BY ALL
+            ) SELECT rows.* EXCLUDE (resource, relation_id),
+                coalesce(products.referenced_product_records, []) AS referenced_product_records
+            FROM rows LEFT JOIN products USING (resource, relation_id)"""
+            return self._write_parquet(sql, []), PARQUET
+        finally:
+            for name in (*staged, "__export_products"):
+                self._db.execute(f"DROP TABLE IF EXISTS {name}")
 
     def _write_parquet(self, sql: str, params: list[Any]) -> bytes:
         import tempfile
