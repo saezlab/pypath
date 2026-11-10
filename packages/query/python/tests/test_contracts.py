@@ -112,3 +112,19 @@ def test_invalid_catalog_envelopes(payload):
     ) as http:
         with pytest.raises(ClientError):
             available(http_client=http)
+
+
+def test_the_package_ships_every_sql_file():
+    """The wheel's package data covers every file under sql/ (queries, fragments, ...)."""
+    import fnmatch
+    import tomllib
+    from pathlib import Path
+
+    root = Path(__file__).parents[1]
+    patterns = tomllib.loads((root / "pyproject.toml").read_text())["tool"]["setuptools"][
+        "package-data"
+    ]["omnipath_client"]
+    package = root / "omnipath_client"
+    files = [p.relative_to(package).as_posix() for p in (package / "sql").rglob("*") if p.is_file()]
+    missing = [f for f in files if not any(fnmatch.fnmatch(f, p) and f.count("/") == p.count("/") for p in patterns)]
+    assert not missing
