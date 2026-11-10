@@ -160,13 +160,17 @@ class Client:
         )
 
     def _filters(self, macro: str, internal: set[str], filters: dict[str, Any]) -> dict[str, Any]:
-        """The filters by name, checked against the macro's parameters."""
+        """The filters by name, checked against the query's (or macro's) parameters."""
         if macro not in self._parameters:
-            row = self.connection.execute(
-                "SELECT parameters FROM duckdb_functions() WHERE function_name = ? LIMIT 1",
-                [macro],
-            ).fetchone()
-            self._parameters[macro] = sorted(set(row[0]) - internal) if row else []
+            if macro in steps.names():
+                names = set(steps.load(macro).params) - {"resources"}
+            else:
+                row = self.connection.execute(
+                    "SELECT parameters FROM duckdb_functions() WHERE function_name = ? LIMIT 1",
+                    [macro],
+                ).fetchone()
+                names = set(row[0]) if row else set()
+            self._parameters[macro] = sorted(names - internal)
         available = self._parameters[macro]
         unknown = set(filters) - set(available)
         if unknown:
@@ -187,7 +191,8 @@ class Client:
                         f"SELECT list(name) FROM op_biolink({_literal(kind)}, {_literal(values[name])})"
                     ).fetchall()
                 except duckdb.InvalidInputException as exc:
-                    raise ValueError(str(exc).removeprefix("Invalid Input Error: ")) from None
+                    message = str(exc).removeprefix("Invalid Input Error: ")
+                    raise ValueError(message.removeprefix("invalid: ")) from None
         return values
 
     def _call(self, macro: str, positional: list[Any], named: dict[str, Any]) -> duckdb.DuckDBPyRelation:
@@ -219,17 +224,17 @@ class Client:
         as ``sources``, ``predicates``, ``taxonomy_ids``, ``signs``,
         ``reference_entity_keys``, ``protein_entity_keys`` and ``isoform_identifiers``.
         At most 100,000 relations; larger selections are SQL on ``relation``. The
-        macro ``op_relations``."""
+        query ``relations``."""
         if not 1 <= limit <= RELATION_EXPORT_LIMIT:
             raise ValueError(f"limit must be between 1 and {RELATION_EXPORT_LIMIT}")
         if "entity_ids" in filters:
             if entities is not None:
                 raise TypeError("Give entities once: positionally or as entity_ids")
             entities = filters.pop("entity_ids")
-        named = self._filters("op_relations", {"entities", "max_relations"}, filters)
+        named = self._filters("relations", {"entities", "max_relations"}, filters)
         if entities is not None:
             named["entities"] = _value("entities", entities)
-        return self._call("op_relations", [], {**named, "max_relations": int(limit)})
+        return self.query("relations", **named, max_relations=int(limit))
 
     def entity(self, entity_key: str) -> dict[str, Any] | None:
         """One entity by its exact key (as ``search`` returns it), with its identifiers,

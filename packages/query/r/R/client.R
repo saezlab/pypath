@@ -122,6 +122,9 @@ op_sql <- function(con, query, params = NULL) {
 .biolink <- c(predicates = "predicate", interaction_types = "class", entity_types = "class", partner_types = "class")
 
 .parameters <- function(con, macro, internal) {
+  if (file.exists(file.path(.sql_dir(), "queries", paste0(macro, ".sql")))) {
+    return(sort(setdiff(names(.load_query(macro)$params), c(internal, "resources"))))
+  }
   row <- DBI::dbGetQuery(con, sprintf(
     "SELECT parameters FROM duckdb_functions() WHERE function_name = %s LIMIT 1", .quote(macro)
   ))
@@ -161,6 +164,17 @@ op_sql <- function(con, query, params = NULL) {
   }, "")
 }
 
+# A query's rows as a data frame, or (lazy) a dplyr table over them.
+.lazy_or_frame <- function(con, frame, lazy) {
+  if (!isTRUE(lazy)) return(frame)
+  if (!requireNamespace("dplyr", quietly = TRUE) || !requireNamespace("dbplyr", quietly = TRUE)) {
+    stop("lazy = TRUE needs the packages dplyr and dbplyr", call. = FALSE)
+  }
+  name <- paste0("op_result_", as.integer(stats::runif(1, 1, 1e9)))
+  duckdb::duckdb_register(con, name, frame)
+  dplyr::tbl(con, name)
+}
+
 .call <- function(con, macro, positional, filters, lazy) {
   sql <- sprintf("SELECT * FROM %s(%s)", macro, paste(c(positional, .arguments(filters)), collapse = ", "))
   if (isTRUE(lazy)) {
@@ -196,7 +210,7 @@ op_search <- function(con, query, limit = 20, ..., lazy = FALSE) {
 #'
 #' One row per relation with its annotations, evidence and the product records its
 #' evidence names; at most 100,000 relations (larger selections are SQL on
-#' `relation`). The macro `op_relations`.
+#' `relation`). The query `relations`.
 #'
 #' @param con A connection from [op_connect()].
 #' @param entities Exact names, identifiers, entity keys or group keys such as
@@ -212,10 +226,10 @@ op_relations <- function(con, entities = NULL, limit = 100000, ..., lazy = FALSE
   most <- .contract()$relation_export_limit
   if (limit < 1 || limit > most) stop("limit must be between 1 and ", format(most, big.mark = ","), call. = FALSE)
   if (.is_api(con)) return(.api_relations(con, entities, limit, list(...)))
-  filters <- .filters(con, "op_relations", c("entities", "max_relations"), list(...))
-  if (!is.null(entities)) filters$entities <- entities
+  filters <- .filters(con, "relations", c("entities", "max_relations"), list(...))
+  if (!is.null(entities)) filters$entities <- as.list(entities)
   filters$max_relations <- as.integer(limit)
-  .call(con, "op_relations", character(), filters, lazy)
+  .lazy_or_frame(con, .run_query(con, "relations", filters, output = "table"), lazy)
 }
 
 #' One entity's details as the explorer shows them

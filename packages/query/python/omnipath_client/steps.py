@@ -371,12 +371,15 @@ class Run:
         def compute():
             cursor = self.execute(sql)
             columns = [c[0] for c in cursor.description]
-            return columns, cursor.fetchall()
+            return columns, cursor.fetchall(), str(cursor.description[0][1])
 
         if step.cache and self.cache is not None and not skip:
-            columns, rows = self.cache((self.scope, self.query.name, step.name, sql), compute)
+            columns, rows, type_ = self.cache((self.scope, self.query.name, step.name, sql), compute)
         else:
-            columns, rows = compute()
+            columns, rows, type_ = compute()
+        # The column's type, so that an empty list or NULL is a typed literal later.
+        if "(" not in type_ and step.kind in ("list", "value"):
+            self.types[step.name] = type_ + "[]" if step.kind == "list" else type_
         if step.kind == "list":
             self.values[step.name] = [row[0] for row in rows]
         elif step.kind == "value":

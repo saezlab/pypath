@@ -122,6 +122,16 @@ class EntitiesQueries:
         tokens: list[str] | None,
         resources: list[str] | None = None,
     ) -> list[str]:
+        values = [str(t) for t in (tokens or [])]
+        if not any(v.strip() for v in values):
+            return []
+        return json.loads(self.run_query("resolve_keys", {"tokens": values}, resources))
+
+    def _old_resolve_entity_keys(
+        self,
+        tokens: list[str] | None,
+        resources: list[str] | None = None,
+    ) -> list[str]:
         """Map labels, identifiers, ``ns:id`` / ``ns|id`` CURIEs, reference keys, entity
         keys or the explorer's group keys (``gene:entrez:7157``, ``connectivity:<block>``,
         ``entity:<key>``) to entity keys, by exact (case-insensitive) match."""

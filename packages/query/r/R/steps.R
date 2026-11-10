@@ -249,7 +249,8 @@
             items <- if (is.null(value)) list() else as.list(value)
             if (length(items) == 0) "NULL" else paste(vapply(items, .scalar_literal, ""), collapse = ", ")
           } else {
-            .step_literal(value, if (name %in% names(types)) types[[name]] else NULL)
+            type <- if (name %in% names(types) && !is.na(types[[name]])) types[[name]] else NULL
+            .step_literal(value, type)
           }
         }
       }
@@ -283,6 +284,16 @@
       return(invisible())
     }
     frame <- if (skip) execute(sql) else cached(step, sql, function() execute(sql))
+    # The column's type, so that an empty list or NULL is a typed literal later.
+    base <- function(x) switch(class(x)[[1]], character = "VARCHAR", integer = "INTEGER",
+      numeric = "DOUBLE", logical = "BOOLEAN", NULL)
+    column <- frame[[1]]
+    type <- if (is.list(column)) {
+      inner <- if (length(column) && !is.null(column[[1]])) base(column[[1]]) else NULL
+      if (is.null(inner)) NULL else paste0(inner, "[]")
+    } else base(column)
+    if (step$kind == "list" && !is.null(type) && !grepl("\\[\\]$", type)) type <- paste0(type, "[]")
+    if (step$kind %in% c("list", "value")) types[step$name] <<- if (is.null(type)) NA_character_ else type
     if (step$kind == "list") {
       env$values[step$name] <- list(if (nrow(frame) == 0) list() else as.list(frame[[1]]))
     } else if (step$kind == "value") {

@@ -37,7 +37,7 @@ CREATE OR REPLACE MACRO op_evidence_ok(ev, proteins, transcripts, isoforms, mode
 -- An unknown name is an error naming it.
 CREATE OR REPLACE MACRO op_biolink(kind_, names) AS TABLE
 SELECT CASE WHEN n.name IS NULL
-    THEN error('Unknown Biolink ' || kind_ || ': ' || u.v) ELSE n.name END AS name
+    THEN error('invalid: Unknown Biolink ' || kind_ || ': ' || u.v) ELSE n.name END AS name
 FROM unnest(names::VARCHAR[]) AS u(v)
 LEFT JOIN op_names n ON n.kind = kind_ AND n.alias = lower(trim(u.v));
 
