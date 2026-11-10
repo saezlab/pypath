@@ -17,6 +17,7 @@ from typing import Any
 from urllib.parse import quote
 
 import itertools
+import json
 from pathlib import Path
 import tempfile
 
@@ -30,17 +31,6 @@ from .errors import ClientError
 DEFAULT_API_URL = "https://omnipath-metabo-dev.schaul.click/api"
 RELATION_EXPORT_LIMIT: int = CONTRACT["relation_export_limit"]
 # The local search's columns and their types.
-SEARCH_COLUMNS = (
-    ("entity_key", "VARCHAR"),
-    ("label", "VARCHAR"),
-    ("entity_type", "VARCHAR"),
-    ("namespace", "VARCHAR"),
-    ("identifier", "VARCHAR"),
-    ("taxon", "VARCHAR"),
-    ("relation_count", "BIGINT"),
-    ("reference_entity_key", "VARCHAR"),
-    ("gene_reference_keys", "VARCHAR[]"),
-)
 _answers = itertools.count()
 _SCALARS = {"gene_mode", "molecular_endpoint_mode", "is_directed", "sign", "min_evidence_count"}
 
@@ -158,31 +148,7 @@ class ApiClient:
         """Entities matching a name or identifier, merged across resources and ranked
         as in the explorer's search; the filters of the local ``search``."""
         named = self._filters("entity_search", {"query", "limit", "cursor_phase", "cursor_offset", "cursor_key"}, filters)
-        response = self._request(
-            "POST", "/entities/search", json={"query": query, "limit": int(limit), "filters": named}
-        )
-        rows = [
-            (
-                e["entityPk"],
-                e.get("label"),
-                e.get("entityType"),
-                e.get("canonicalIdentifierType"),
-                e.get("canonicalIdentifier"),
-                e.get("taxonomyId"),
-                e.get("relationCount"),
-                e.get("referenceEntityKey"),
-                e.get("geneReferenceKeys") or [],
-            )
-            for e in response.json().get("entities") or []
-        ]
-        table = f"answer_{next(_answers)}"
-        columns = ", ".join(f"{name} {kind}" for name, kind in SEARCH_COLUMNS)
-        self._db.execute(f"CREATE TABLE {table} ({columns})")
-        if rows:
-            self._db.executemany(
-                f"INSERT INTO {table} VALUES ({', '.join('?' for _ in SEARCH_COLUMNS)})", rows
-            )
-        return self._db.table(table)
+        return self.query("entity_search", query=query, limit=int(limit), **named)
 
     def relations(
         self,
@@ -202,27 +168,33 @@ class ApiClient:
             entities = filters.pop("entity_ids")
         named = self._filters("relations", {"entities", "max_relations"}, filters)
         if entities is not None:
-            named["entity_ids"] = _value("entities", entities)
-        response = self._request("POST", "/export", json={"filters": named, "limit": int(limit)})
-        table = f"answer_{next(_answers)}"
-        with tempfile.TemporaryDirectory(prefix="omnipath-") as directory:
-            path = Path(directory) / "relations.parquet"
-            path.write_bytes(response.content)
-            self._db.execute(
-                f"CREATE TABLE {table} AS SELECT * FROM read_parquet('{str(path).replace(chr(39), chr(39) * 2)}')"
-            )
-        return self._db.table(table)
+            named["entities"] = _value("entities", entities)
+        return self.query("relations", **named, max_relations=int(limit))
 
     def entity(self, entity_key: str) -> dict[str, Any] | None:
         """One entity by its exact key, with its identifiers, annotations and
         relationship summary as the explorer's detail page shows them; None when the
         release has no such entity."""
+        text = self.query("entity_details", entity_key=str(entity_key), output="json")
+        return json.loads(text) if text else None
+
+    def query(self, name: str, *, output: str = "table", **params: Any):
+        """A query by name, answered by the API from the same SQL the local client runs:
+        a relation for ``output="table"``, JSON text (None for no answer) for ``"json"``."""
         response = self._request(
-            "GET", f"/entities/{quote(str(entity_key), safe='')}", params={"paged": "false"}
+            "POST", f"/query/{quote(name, safe='')}",
+            params={"format": "json" if output == "json" else "parquet"}, json=params,
         )
-        if response.status_code == 404:
-            return None
-        return response.json()
+        if output == "json":
+            return None if response.text == "null" else response.text
+        table = f"answer_{next(_answers)}"
+        with tempfile.TemporaryDirectory(prefix="omnipath-") as directory:
+            path = Path(directory) / "answer.parquet"
+            path.write_bytes(response.content)
+            self._db.execute(
+                f"CREATE TABLE {table} AS SELECT * FROM read_parquet('{str(path).replace(chr(39), chr(39) * 2)}')"
+            )
+        return self._db.table(table)
 
     def close(self) -> None:
         if not self._closed:

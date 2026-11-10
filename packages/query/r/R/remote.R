@@ -1,4 +1,5 @@
-# API mode: the hosted API answers op_search(), op_relations() and op_entity(), as
+# API mode: the hosted API answers op_search(), op_relations() and op_entity() (its
+# /query endpoint runs the same SQL files as local mode), as
 # the Python client's ApiClient does (omnipath_client/remote.py). Answers go through
 # an in-memory DuckDB database, so that they have the local answers' column types.
 
@@ -71,32 +72,17 @@ print.omnipath_api <- function(x, ...) {
   sprintf("answer_%d", con$state$answers)
 }
 
-.api_search <- function(con, query, limit, filters) {
-  filters <- .api_filters("entity_search", c("query", "limit", "cursor_phase", "cursor_offset", "cursor_key"), filters)
-  body <- list(query = query, limit = as.integer(limit), filters = if (length(filters)) filters else structure(list(), names = character()))
-  entities <- httr2::resp_body_json(.api_request(con, "POST", "/entities/search", body = body), simplifyVector = FALSE)$entities
-  table <- .api_table(con)
-  db <- con$state$db
-  DBI::dbExecute(db, sprintf(paste0(
-    "CREATE TABLE %s (entity_key VARCHAR, label VARCHAR, entity_type VARCHAR, namespace VARCHAR, ",
-    "identifier VARCHAR, taxon VARCHAR, relation_count BIGINT, reference_entity_key VARCHAR, ",
-    "gene_reference_keys VARCHAR[])"), table))
-  for (e in entities) {
-    value <- function(x) .scalar_literal(if (is.null(x)) NULL else x)
-    DBI::dbExecute(db, sprintf("INSERT INTO %s VALUES (%s)", table, paste(c(
-      value(e$entityPk), value(e$label), value(e$entityType), value(e$canonicalIdentifierType),
-      value(e$canonicalIdentifier), value(e$taxonomyId), value(e$relationCount),
-      value(e$referenceEntityKey), .literal(unlist(e$geneReferenceKeys) %||% character(), TRUE)
-    ), collapse = ", ")))
+# A query by name, answered by the API from the same SQL the local client runs: a data
+# frame (from the API's Parquet) or JSON text (NULL for no answer).
+.api_query <- function(con, name, params, output = "table") {
+  body <- if (length(params)) params else structure(list(), names = character())
+  format <- if (output == "json") "json" else "parquet"
+  response <- .api_request(con, "POST", paste0("/query/", utils::URLencode(name, reserved = TRUE)),
+    query = list(format = format), body = body)
+  if (output == "json") {
+    text <- httr2::resp_body_string(response)
+    return(if (identical(text, "null")) NULL else text)
   }
-  DBI::dbGetQuery(db, sprintf("SELECT * FROM %s", table))
-}
-
-.api_relations <- function(con, entities, limit, filters) {
-  filters <- .api_filters("relations", c("entities", "max_relations"), filters)
-  if (!is.null(entities)) filters$entity_ids <- as.list(unlist(entities))
-  body <- list(filters = if (length(filters)) filters else structure(list(), names = character()), limit = as.integer(limit))
-  response <- .api_request(con, "POST", "/export", body = body)
   path <- tempfile("omnipath-", fileext = ".parquet")
   on.exit(unlink(path), add = TRUE)
   writeBin(httr2::resp_body_raw(response), path)
@@ -105,9 +91,19 @@ print.omnipath_api <- function(x, ...) {
   DBI::dbGetQuery(con$state$db, sprintf("SELECT * FROM %s", table))
 }
 
+.api_search <- function(con, query, limit, filters) {
+  filters <- .api_filters("entity_search", c("query", "limit", "cursor_phase", "cursor_offset", "cursor_key"), filters)
+  .api_query(con, "entity_search", c(list(query = query, limit = as.integer(limit)), filters))
+}
+
+.api_relations <- function(con, entities, limit, filters) {
+  filters <- .api_filters("relations", c("entities", "max_relations"), filters)
+  if (!is.null(entities)) filters$entities <- as.list(unlist(entities))
+  .api_query(con, "relations", c(filters, list(max_relations = as.integer(limit))))
+}
+
 .api_entity <- function(con, entity_key, simplify) {
-  path <- paste0("/entities/", utils::URLencode(as.character(entity_key), reserved = TRUE))
-  response <- .api_request(con, "GET", path, query = list(paged = "false"))
-  if (httr2::resp_status(response) == 404) return(NULL)
-  jsonlite::fromJSON(httr2::resp_body_string(response), simplifyVector = simplify)
+  text <- .api_query(con, "entity_details", list(entity_key = as.character(entity_key)), output = "json")
+  if (is.null(text)) return(NULL)
+  jsonlite::fromJSON(text, simplifyVector = simplify)
 }

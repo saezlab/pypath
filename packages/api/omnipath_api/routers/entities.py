@@ -79,26 +79,15 @@ def search_entities_post(
     filters = body.get("filters") or {}
     if body.get("entity_types"):
         filters = {**filters, "entity_types": body.get("entity_types")}
-    if body.get("shape") == "web":
-        result = _call(
-            request,
-            "search_entities",
-            query=query,
-            resources=body.get("resources"),
-            entity_types=body.get("entity_types"),
-            taxon=body.get("taxon"),
-            limit=body.get("limit", 20),
-        )
-    else:
-        result = _call(
-            request,
-            "search_entities_api",
-            query=query,
-            filters=filters,
-            resources=body.get("resources"),
-            limit=body.get("limit", 20),
-            cursor=_cursor_dict(body.get("cursor")),
-        )
+    result = _call(
+        request,
+        "search_entities_api",
+        query=query,
+        filters=filters,
+        resources=body.get("resources"),
+        limit=body.get("limit", 20),
+        cursor=_cursor_dict(body.get("cursor")),
+    )
     return _timed(response, result)
 
 

@@ -170,6 +170,9 @@ def create_app(
     from omnipath_api.routers.export import router as export_router
 
     app.include_router(export_router)
+    from omnipath_api.routers.queries import router as queries_router
+
+    app.include_router(queries_router)
     from omnipath_api.routers.index import router as index_router
 
     app.include_router(index_router)
