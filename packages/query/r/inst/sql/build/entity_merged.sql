@@ -2,7 +2,8 @@
 -- (ranking them by their identifier and annotation counts), the summary that search
 -- results, relation endpoints and group cards show, the merged identifier and annotation
 -- lists an entity page shows, and the copies' resources, types, taxa and reference keys,
--- which filters test (an entity passes when some copy has the value).
+-- which filters test (an entity passes when some copy has the value). The lists come from
+-- merged_identifiers and merged_annotations (staged in the build's scratch database).
 WITH copies AS (
     SELECT * EXCLUDE (_resource_version), _resource || '/' || _resource_version AS resource,
         0 AS position,
@@ -10,54 +11,11 @@ WITH copies AS (
         NULL::STRUCT(term VARCHAR, "value" VARCHAR, quantity STRUCT(has_numeric_value DOUBLE,
             has_unit VARCHAR, has_unit_prefix VARCHAR, has_binary_relation VARCHAR,
             source_field VARCHAR, comparator VARCHAR), "source" VARCHAR, dataset VARCHAR)[] AS annotations
-    FROM entity
+    FROM entity WHERE {{partition entity_key}}
 ), merged AS (
     SELECT * FROM {{include:merged_entity copies}}
 ), shaped AS (
     SELECT * FROM {{include:entity_summary merged}}
-), identifier_rows AS (
-    -- the copies' identifiers united by (ns, id), first seen first (copies in resource and
-    -- entity order, each copy's in its order)
-    SELECT entity_key,
-        row_number() OVER (PARTITION BY entity_key ORDER BY resource, entity_id, ordinal)::INTEGER AS ordinal,
-        ns, id, is_canonical, source
-    FROM (
-        SELECT e.entity_key, e._resource || '/' || e._resource_version AS resource, e.entity_id,
-            i.ordinal, i.ns, i.id, i.is_canonical, i.source,
-            row_number() OVER (PARTITION BY e.entity_key, coalesce(i.ns, chr(1)), coalesce(i.id, chr(1))
-                ORDER BY e._resource || '/' || e._resource_version, e.entity_id, i.ordinal) AS seen
-        FROM entity_identifier i JOIN entity e USING (_eid))
-    WHERE seen = 1
-), annotation_rows AS (
-    -- the copies' annotations in the same order; with several copies, one of each
-    SELECT entity_key,
-        row_number() OVER (PARTITION BY entity_key ORDER BY resource, entity_id, ordinal)::INTEGER AS ordinal,
-        term, "value", quantity, "source", dataset
-    FROM (
-        SELECT e.entity_key, e._resource || '/' || e._resource_version AS resource, e.entity_id,
-            a.ordinal, a.term, a."value",
-            op_quantity(a.quantity_has_numeric_value, a.quantity_has_unit, a.quantity_has_unit_prefix,
-                a.quantity_has_binary_relation, a.quantity_source_field, a.quantity_comparator) AS quantity,
-            a."source", a.dataset,
-            row_number() OVER (PARTITION BY e.entity_key, a.term, a."value",
-                    op_quantity(a.quantity_has_numeric_value, a.quantity_has_unit, a.quantity_has_unit_prefix,
-                        a.quantity_has_binary_relation, a.quantity_source_field, a.quantity_comparator),
-                    a."source", a.dataset
-                ORDER BY e._resource || '/' || e._resource_version, e.entity_id, a.ordinal) AS seen,
-            c.copies
-        FROM entity_annotation a JOIN entity e USING (_eid)
-        JOIN (SELECT entity_key, count(*) AS copies FROM entity GROUP BY entity_key) c USING (entity_key))
-    WHERE copies = 1 OR seen = 1
-), lists AS (
-    SELECT entity_key,
-        list(struct_pack(ns := ns, id := id, is_canonical := is_canonical, source := source)
-            ORDER BY ordinal) AS identifiers
-    FROM identifier_rows GROUP BY entity_key
-), annotation_lists AS (
-    SELECT entity_key,
-        list(struct_pack(term := term, "value" := "value", quantity := quantity, "source" := "source",
-            dataset := dataset) ORDER BY ordinal) AS annotations
-    FROM annotation_rows GROUP BY entity_key
 ), facts AS (
     SELECT entity_key,
         list(DISTINCT _resource ORDER BY _resource) AS resources,
@@ -66,7 +24,7 @@ WITH copies AS (
         list(DISTINCT reference_entity_key ORDER BY reference_entity_key)
             FILTER (WHERE reference_entity_key IS NOT NULL) AS copy_reference_keys,
         count(*) AS copies
-    FROM entity GROUP BY entity_key
+    FROM entity WHERE {{partition entity_key}} GROUP BY entity_key
 )
 SELECT m.pk AS entity_key, m.raw_namespace AS namespace, m.raw_identifier AS identifier,
     m.raw_label AS label, m.raw_type AS entity_type, m.taxon, m.has_hierarchy, m.parent_count,
@@ -79,5 +37,5 @@ SELECT m.pk AS entity_key, m.raw_namespace AS namespace, m.raw_identifier AS ide
 FROM merged m
 JOIN shaped s ON s.summary.entityPk = m.pk
 JOIN facts f ON f.entity_key = m.pk
-LEFT JOIN lists i ON i.entity_key = m.pk
-LEFT JOIN annotation_lists a ON a.entity_key = m.pk
+LEFT JOIN merged_identifiers i ON i.entity_key = m.pk
+LEFT JOIN merged_annotations a ON a.entity_key = m.pk

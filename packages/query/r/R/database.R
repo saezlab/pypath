@@ -153,9 +153,24 @@
 # table that replaces a written one reads it from `work` (on the search path).
 .derived <- function(con, present) {
   derived <- .contract()$derived_tables
+  partition <- "\\{\\{partition ([A-Za-z0-9_.]+)\\}\\}"
   for (name in names(derived)) {
-    .exec(con, sprintf("CREATE TABLE omnipath.main.%s AS SELECT * FROM (%s) ORDER BY %s",
-      name, derived[[name]]$select, derived[[name]]$order))
+    # A stage of the build goes to the scratch database (on the search path).
+    target <- sprintf("%s.main.%s", if (isTRUE(derived[[name]]$scratch)) "work" else "omnipath", name)
+    select <- derived[[name]]$select
+    order <- derived[[name]]$order
+    if (!grepl(partition, select)) {
+      .exec(con, sprintf("CREATE TABLE %s AS SELECT * FROM (%s) ORDER BY %s", target, select, order))
+      next
+    }
+    # In slices of entity keys by their first character, in key order: the table is
+    # sorted as a whole, and no slice needs the memory of all of them.
+    .exec(con, sprintf("CREATE TABLE %s AS SELECT * FROM (%s) LIMIT 0", target, gsub(partition, "false", select)))
+    firsts <- DBI::dbGetQuery(con, "SELECT DISTINCT left(entity_key, 1) AS f FROM entity ORDER BY 1")$f
+    for (first in firsts) {
+      sliced <- gsub(partition, sprintf("left(\\1, 1) = %s", gsub("\\\\", "\\\\\\\\", .quote(first))), select)
+      .exec(con, sprintf("INSERT INTO %s SELECT * FROM (%s) ORDER BY %s", target, sliced, order))
+    }
   }
   for (index in .contract()$indexes) {
     if (index[[2]] %in% present || index[[2]] %in% names(.contract()$derived_tables)) {

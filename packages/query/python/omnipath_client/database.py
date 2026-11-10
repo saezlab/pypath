@@ -205,13 +205,33 @@ def _written_to(table: str) -> str | None:
     return "work." if re.search(rf"\b{table}\b", REPLACED[table]) else None
 
 
+_PARTITION = re.compile(r"\{\{partition ([\w.]+)\}\}")
+
+
+def _slice(select: str, first: str | None) -> str:
+    """A build statement for the entity keys that start with ``first`` (none for None)."""
+    return _PARTITION.sub(
+        lambda m: "false" if first is None else f"left({m[1]}, 1) = {_literal(first)}", select
+    )
+
+
 def _derived(db, present: set[str]) -> None:
     """The derived tables (each sorted) and the indexes, once the tables are written. A
-    table that replaces a written one reads it from ``work`` (on the search path)."""
+    table that replaces a written one reads it from ``work`` (on the search path), where
+    the stages of the build ("scratch") go too."""
     for name, query in CONTRACT["derived_tables"].items():
-        db.execute(
-            f"CREATE TABLE omnipath.main.{name} AS SELECT * FROM ({query['select']}) ORDER BY {query['order']}"
-        )
+        # A stage of the build goes to the scratch database (on the search path).
+        target = f"{'work' if query.get('scratch') else 'omnipath'}.main.{name}"
+        select, order = query["select"], query["order"]
+        if _PARTITION.search(select) is None:
+            db.execute(f"CREATE TABLE {target} AS SELECT * FROM ({select}) ORDER BY {order}")
+            continue
+        # In slices of entity keys by their first character, in key order: the table is
+        # sorted as a whole, and no slice needs the memory of all of them.
+        db.execute(f"CREATE TABLE {target} AS SELECT * FROM ({_slice(select, None)}) LIMIT 0")
+        firsts = [r[0] for r in db.execute("SELECT DISTINCT left(entity_key, 1) FROM entity ORDER BY 1").fetchall()]
+        for first in firsts:
+            db.execute(f"INSERT INTO {target} SELECT * FROM ({_slice(select, first)}) ORDER BY {order}")
     for name, table, column in CONTRACT["indexes"]:
         if table in present or table in CONTRACT["derived_tables"]:
             db.execute(f"CREATE INDEX {name} ON {table}({column})")

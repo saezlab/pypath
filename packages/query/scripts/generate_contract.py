@@ -165,12 +165,21 @@ def derived_tables() -> dict:
         # (sql/build/).
         # A request read an entity's copies by long key lists, which scan the tables, and
         # merged them (TP53's 64 copies: about 600 ms of CPU).
-        **{name: {"select": build_sql(name), "order": order} for name, order in MERGED_TABLES.items()},
+        **{
+            name: {"select": build_sql(name), "order": order, **({"scratch": True} if scratch else {})}
+            for name, (order, scratch) in MERGED_TABLES.items()
+        },
     }
 
 
-# The merged entity tables (sql/build/<name>.sql) and their order.
-MERGED_TABLES = {"entity_merged": "entity_key"}
+# The merged entity tables (sql/build/<name>.sql): their order, and whether they are a
+# stage of the build ("scratch": written to its scratch database, not the release's), so
+# that no one statement needs the memory of all of them (5 GB was not enough).
+MERGED_TABLES = {
+    "merged_identifiers": ("entity_key", True),
+    "merged_annotations": ("entity_key", True),
+    "entity_merged": ("entity_key", False),
+}
 
 
 def build_sql(name: str) -> str:
