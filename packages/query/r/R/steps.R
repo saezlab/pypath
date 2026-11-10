@@ -7,6 +7,28 @@
 .repeat_re <- "^--\\s*repeat:\\s*(\\w+)\\s*=\\s*(.+?)\\s+next\\s+(.+?)\\s+until\\s+(\\w+)\\s+max\\s+(\\d+)\\s*$"
 .placeholder_re <- "\\{\\{\\s*(#?)([A-Za-z_][A-Za-z0-9_:]*)(\\[[^]]*\\])?(\\*?)\\s*\\}\\}"
 .step_types <- c("VARCHAR", "INTEGER", "BIGINT", "DOUBLE", "BOOLEAN", "JSON")
+.include_re <- "\\{\\{\\s*include:(\\w+)\\s+(\\w+)\\s*\\}\\}"
+
+.fragment <- function(name, dir = file.path(.sql_dir(), "fragments")) {
+  path <- file.path(dir, paste0(name, ".sql"))
+  if (!file.exists(path)) stop("Unknown fragment: ", name)
+  paste(readLines(path, warn = FALSE), collapse = "\n")
+}
+
+# The SQL with its fragments included (each reading the table given).
+.expand_fragments <- function(sql, fragments = .fragment) {
+  for (i in 1:8) {
+    m <- regexpr(.include_re, sql, perl = TRUE)
+    if (m < 0) return(sql)
+    starts <- attr(m, "capture.start"); lengths <- attr(m, "capture.length")
+    name <- substr(sql, starts[1], starts[1] + lengths[1] - 1)
+    table <- substr(sql, starts[2], starts[2] + lengths[2] - 1)
+    text <- gsub("{{input}}", table, trimws(fragments(name)), fixed = TRUE)
+    sql <- paste0(substr(sql, 1, m - 1), "(", text, ")", substring(sql, m + attr(m, "match.length")))
+  }
+  if (grepl(.include_re, sql, perl = TRUE)) stop("Fragments include each other too deeply")
+  sql
+}
 
 .match <- function(pattern, text) {
   m <- regmatches(text, regexec(pattern, text, perl = TRUE))[[1]]
@@ -139,7 +161,8 @@
   values
 }
 
-.run_query <- function(con, query, params = list(), output = "table", cache = NULL, scope = NULL) {
+.run_query <- function(con, query, params = list(), output = "table", cache = NULL, scope = NULL,
+                       fragments = .fragment) {
   if (is.character(query)) query <- .load_query(query)
   if (is.null(query$outputs[[output]])) stop(query$name, " has no ", output, " output")
   env <- new.env(parent = emptyenv())
@@ -176,6 +199,7 @@
     paste0("(SELECT * FROM (VALUES ", paste(values, collapse = ", "), ") AS v(", paste(cols, collapse = ", "), "))")
   }
   render <- function(sql) {
+    sql <- .expand_fragments(sql, fragments)
     out <- ""
     repeat {
       m <- regexpr(.placeholder_re, sql, perl = TRUE)

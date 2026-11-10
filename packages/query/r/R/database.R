@@ -42,6 +42,19 @@
   if (is.null(params)) DBI::dbExecute(con, sql) else DBI::dbExecute(con, sql, params = params)
 }
 
+# The release's taxon names (common name, else scientific name), empty without its
+# taxonomy reference.
+.taxonomy <- function(con, path = NULL) {
+  if (!is.null(path) && file.exists(path)) {
+    name <- "coalesce(nullif(common_name, ''), nullif(scientific_name, ''))"
+    .exec(con, sprintf(paste0(
+      "CREATE TABLE op_taxonomy AS SELECT DISTINCT taxon_id::VARCHAR AS taxon, %s AS name ",
+      "FROM read_parquet(%s) WHERE %s IS NOT NULL ORDER BY taxon"), name, .quote(path), name))
+  } else {
+    .exec(con, "CREATE TABLE op_taxonomy (taxon VARCHAR, name VARCHAR)")
+  }
+}
+
 .describe <- function(con, root, records, release) {
   .exec(con, sprintf(paste0(
     "CREATE OR REPLACE TABLE database_info AS SELECT %s::VARCHAR AS data_dir, true AS materialized, ",
@@ -140,7 +153,7 @@
   records[order(vapply(records, function(r) r$resource_id, ""))]
 }
 
-.rebuild <- function(root, records, memory_limit, release = NULL) {
+.rebuild <- function(root, records, memory_limit, release = NULL, taxonomy = NULL) {
   staging_dir <- tempfile(".database-", tmpdir = root)
   dir.create(staging_dir)
   on.exit(unlink(staging_dir, recursive = TRUE), add = TRUE)
@@ -179,6 +192,7 @@
   }
   .derived(con, present)
   for (record in ordered) .resource_schema(con, record)
+  .taxonomy(con, taxonomy)
   .describe(con, root, records, release)
   .query_layer_write(con)
   .exec(con, "USE memory")

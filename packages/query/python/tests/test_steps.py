@@ -31,6 +31,10 @@ def query(name):
     return steps.parse((QUERIES / f"{name}.sql").read_text(), name)
 
 
+def fragments(name):
+    return (QUERIES / "fragments" / f"{name}.sql").read_text()
+
+
 @pytest.fixture
 def db(tmp_path):
     connection = database(tmp_path / "toy.duckdb")
@@ -95,6 +99,12 @@ def test_rows_tables_and_invalid_input(db):
         steps.run(db, pairs, {"mode": 3})
 
 
+def test_fragments_are_included(db):
+    assert json.loads(steps.run(db, query("shouted"), {"limit": 2}, output="json", fragments=fragments)) == [
+        "ALPHA!", "BETA!"
+    ]
+
+
 def test_cached_steps_are_computed_once(db):
     text = """-- query: cached
 -- param: n INTEGER = 2
@@ -148,7 +158,7 @@ def test_r_runner_answers_like_python(tmp_path):
     database(tmp_path / "toy.duckdb").close()
     cases = [
         (name, example)
-        for name in ("lookup", "grow", "pairs")
+        for name in ("lookup", "grow", "pairs", "shouted")
         for example in query(name).examples
     ]
     (tmp_path / "cases.json").write_text(json.dumps([[name, example] for name, example in cases]))
@@ -161,7 +171,7 @@ def test_r_runner_answers_like_python(tmp_path):
     db = duckdb.connect(str(tmp_path / "toy.duckdb"), read_only=True)
     for (name, example), answer in zip(cases, answers):
         try:
-            expected = json.loads(steps.run(db, query(name), example, output="json"))
+            expected = json.loads(steps.run(db, query(name), example, output="json", fragments=fragments))
         except steps.QueryError as exc:
             expected = {"error": str(exc)}
         assert answer == expected, (name, example)

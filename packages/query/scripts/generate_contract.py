@@ -174,8 +174,8 @@ INDEXES = [
     ["entity_evidence_eid", "entity_evidence", "_eid"],
     ["entity_annotation_eid", "entity_annotation", "_eid"],
 ]
-# Changes when the tables, derived tables or indexes a database holds change.
-DATABASE_FORMAT = 9
+# Changes when the tables, derived tables or indexes a database holds change. 10: op_taxonomy.
+DATABASE_FORMAT = 10
 
 
 def biolink_names() -> list[list[str]]:
@@ -222,7 +222,7 @@ def contract() -> dict:
         "database_format": DATABASE_FORMAT,
         "derived_tables": derived_tables(),
         "indexes": INDEXES,
-        "macro_files": ["relations.sql", "search.sql", "entity.sql"],
+        "macro_files": ["relations.sql", "shape.sql", "search.sql"],
         "relation_export_limit": RELATION_EXPORT_LIMIT,
         "biolink_names": biolink_names(),
     }

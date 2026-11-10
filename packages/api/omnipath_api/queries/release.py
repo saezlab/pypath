@@ -41,6 +41,7 @@ from omnipath_core.measurements import QUANTITY_STRUCT
 from omnipath_core.schema import PUBLISHED_TABLES, RELATION_QUALIFIERS, SERVING_TABLES
 from omnipath_core.versioning import RESOURCE_FILES
 from omnipath_client.contracts import CONTRACT
+from omnipath_client import steps
 from omnipath_client.steps import apply_settings
 
 from omnipath_api.queries.services.resources import ResourcesQueries
@@ -229,6 +230,8 @@ class ReleaseQueries(
         self._relationship_cache = QueryCache(max_entries=128, max_bytes=32 * 1024**2)
         self._example_cache = QueryCache(max_entries=16, max_bytes=1024**2)
         self._catalog_cache = QueryCache(max_entries=8, max_bytes=64 * 1024**2)
+        # Answers of the step-file queries, by release, query and parameters.
+        self._query_cache = QueryCache(max_entries=512, max_bytes=128 * 1024**2)
         self._query_pool = QueryPool(
             self._open_query_connection,
             lambda: self._db_generation,
@@ -379,6 +382,42 @@ class ReleaseQueries(
                 self._taxonomy_scope.reset(taxonomy_token)
             self._release_scope.reset(token)
             self._served_scope.reset(served_token)
+
+    # Step-file queries ------------------------------------------------------------
+
+    def run_query(
+        self,
+        name: str,
+        params: dict[str, Any] | None = None,
+        resources: list[str] | None = None,
+        *,
+        output: str = "json",
+    ):
+        """A step-file query (``omnipath_client/sql/queries/<name>.sql``, the same the
+        clients run) on the served release: JSON text (None for no answer) for
+        ``output="json"``, an Arrow table for ``"table"``. The selected resources, less
+        those the query policy disables, are its ``resources`` parameter."""
+        served = self._served()
+        query = steps.load(name)
+        params = dict(params or {})
+        if "resources" in query.params:
+            infos = self._selected_resource_infos(resources)
+            selected = sorted({info["resource"] for info in infos})
+            # NULL selects every resource; a name no resource has selects none.
+            params["resources"] = None if len(infos) == len(self.resources) else selected or [""]
+
+        def compute():
+            connection = self._db
+            connection.execute(f"USE {served.alias}")
+            try:
+                return steps.run(connection, query, params, output=output)
+            except steps.QueryError as exc:
+                raise ValueError(str(exc)) from None
+
+        if output != "json":
+            return compute()
+        key = json.dumps([served.identity, name, params], sort_keys=True, default=str)
+        return self._query_cache.get(key, compute)
 
     # Connections -----------------------------------------------------------------
 

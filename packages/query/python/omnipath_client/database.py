@@ -197,11 +197,36 @@ def _derived(db, present: set[str]) -> None:
             db.execute(f"CREATE INDEX {name} ON {table}({column})")
 
 
+def _taxonomy(db, path: Path | None) -> None:
+    """The release's taxon names (common name, else scientific name), empty without its
+    taxonomy reference."""
+    if path is not None and Path(path).is_file():
+        db.execute(
+            f"""CREATE TABLE op_taxonomy AS SELECT DISTINCT taxon_id::VARCHAR AS taxon,
+                coalesce(nullif(common_name, ''), nullif(scientific_name, '')) AS name
+            FROM read_parquet({_literal(str(path))})
+            WHERE coalesce(nullif(common_name, ''), nullif(scientific_name, '')) IS NOT NULL
+            ORDER BY taxon"""
+        )
+    else:
+        db.execute("CREATE TABLE op_taxonomy (taxon VARCHAR, name VARCHAR)")
+
+
+def taxonomy_reference(root: Path, manifest: dict[str, Any]) -> Path | None:
+    """A release's taxonomy reference file under ``root``, if the release names one."""
+    reference = (manifest.get("references") or {}).get("taxonomy")
+    if not reference:
+        return None
+    path = Path(root) / "references" / "taxonomy" / reference["version"] / "taxonomy.parquet"
+    return path if path.is_file() else None
+
+
 def write_database(
     target: str | Path,
     sources: list[Source],
     *,
     info: dict[str, Any] | None = None,
+    taxonomy: str | Path | None = None,
     payloads: bool = True,
     memory_limit: str = "2GB",
     threads: int | None = None,
@@ -258,6 +283,7 @@ def write_database(
             _derived(db, set(present))
             for source in ordered:
                 _resource_schema(db, source, payloads)
+            _taxonomy(db, taxonomy)
             _describe(db, ordered, payloads, info)
             _query_layer(db)
             db.execute("USE memory")
@@ -318,6 +344,7 @@ def build_release_database(
         target,
         release_sources(root, manifest["resources"]),
         info={"release": release, "built_by": "build_release_database"},
+        taxonomy=taxonomy_reference(root, manifest),
         payloads=False,
         memory_limit=memory_limit,
         threads=threads,

@@ -45,8 +45,8 @@ answers <- function(dir) {
       jsonlite::toJSON(rows, dataframe = "rows", na = "null", null = "null", digits = NA)
     }),
     entity = lapply(questions$entity, function(key) {
-      row <- op_sql(con, sprintf("SELECT details FROM op_entity('%s')", key))
-      if (nrow(row)) row$details[[1]] else "null"
+      text <- omnipath.client:::.run_query(con, "entity_details", list(entity_key = key), output = "json")
+      if (is.null(text) || is.na(text)) "null" else text
     }),
     query_layer = op_sql(con, "SELECT query_layer FROM database_info")$query_layer
   )

@@ -222,7 +222,7 @@ op_relations <- function(con, entities = NULL, limit = 100000, ..., lazy = FALSE
 #'
 #' The entity by its exact key (as [op_search()] returns it), with its identifiers,
 #' annotations, structural relationships, relation count and associations: the
-#' record the API and the Python client return. The macro `op_entity`.
+#' record the API and the Python client return. The query `entity_details`.
 #'
 #' @param con A connection from [op_connect()].
 #' @param entity_key An entity key.
@@ -232,7 +232,7 @@ op_relations <- function(con, entities = NULL, limit = 100000, ..., lazy = FALSE
 #' @export
 op_entity <- function(con, entity_key, simplify = TRUE) {
   if (.is_api(con)) return(.api_entity(con, entity_key, simplify))
-  row <- DBI::dbGetQuery(con, sprintf("SELECT details FROM op_entity(%s)", .literal(as.character(entity_key))))
-  if (!nrow(row)) return(NULL)
-  jsonlite::fromJSON(row$details[[1]], simplifyVector = simplify)
+  text <- .run_query(con, "entity_details", list(entity_key = as.character(entity_key)), output = "json")
+  if (is.null(text) || is.na(text)) return(NULL)
+  jsonlite::fromJSON(text, simplifyVector = simplify)
 }

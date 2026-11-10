@@ -16,6 +16,7 @@ from .database import DATABASE, in_sync, synchronize
 from .errors import ClientError
 from .installation import data_directory, read_installation
 from .remote import ApiClient
+from . import steps
 from .steps import apply_settings
 
 RELATION_EXPORT_LIMIT: int = CONTRACT["relation_export_limit"]
@@ -233,11 +234,19 @@ class Client:
     def entity(self, entity_key: str) -> dict[str, Any] | None:
         """One entity by its exact key (as ``search`` returns it), with its identifiers,
         annotations and relationship summary as the explorer's detail page shows them;
-        None when no installed resource has it. The macro ``op_entity``."""
-        row = self.connection.execute(
-            "SELECT details FROM op_entity(?)", [str(entity_key)]
-        ).fetchone()
-        return json.loads(row[0]) if row else None
+        None when no installed resource has it. The query ``entity_details``."""
+        text = self.query("entity_details", entity_key=str(entity_key), output="json")
+        return json.loads(text) if text else None
+
+    def query(self, name: str, *, output: str = "table", **params: Any):
+        """A query by name (``omnipath_client.steps.names()``): the same queries, with the
+        same answers, as the API's; a relation for ``output="table"``, JSON text for
+        ``"json"``."""
+        try:
+            result = steps.run(self.connection, name, params, output=output)
+        except steps.QueryError as exc:
+            raise ValueError(str(exc)) from None
+        return result if output == "json" else self.connection.from_arrow(result)
 
     def close(self) -> None:
         if not self._closed:

@@ -12,7 +12,8 @@ answers <- vapply(cases, function(case) {
   query <- .parse_query(text, case[[1]])
   params <- if (length(case[[2]])) case[[2]] else list()
   tryCatch(
-    .run_query(con, query, params, output = "json"),
+    .run_query(con, query, params, output = "json",
+      fragments = function(name) .fragment(name, dir = file.path(args[[3]], "fragments"))),
     omnipath_query_error = function(e) as.character(jsonlite::toJSON(list(error = conditionMessage(e)), auto_unbox = TRUE))
   )
 }, "")

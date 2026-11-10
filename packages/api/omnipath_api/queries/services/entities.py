@@ -618,9 +618,8 @@ class EntitiesQueries:
     ) -> dict[str, Any] | None:
         # Details are addressed solely by the exact entity key. Identifier and
         # alias discovery belongs to search, never to single-entity hydration.
-        from omnipath_api.queries.entity_details import details
-
-        return details(self, public_id, resources)
+        text = self.run_query("entity_details", {"entity_key": str(public_id)}, resources)
+        return json.loads(text) if text else None
 
     def resolve_identifiers(
         self, identifiers: list[str], resources: list[str] | None = None

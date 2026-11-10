@@ -148,7 +148,7 @@
    "_eid"
   ]
  },
- "database_format": 9,
+ "database_format": 10,
  "derived_tables": {
   "relation_key_lookup": {
    "select": "SELECT try_cast('0x' || substr(relation_key, 1, 15) AS BIGINT) AS key_prefix, _rid FROM relation",
@@ -206,8 +206,8 @@
  ],
  "macro_files": [
   "relations.sql",
-  "search.sql",
-  "entity.sql"
+  "shape.sql",
+  "search.sql"
  ],
  "relation_export_limit": 100000,
  "biolink_names": [

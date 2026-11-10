@@ -21,8 +21,11 @@ File format::
 Placeholders: ``{{name}}`` a literal (a list is ``[...]``), ``{{name*}}`` a list's items
 for ``IN (...)`` (``NULL`` when empty), ``{{#name}}`` a list's length,
 ``{{name[offset:count]}}`` a slice spread like ``*`` (offset and count are params or
-numbers), and ``{{table:name}}`` a rows step as a table (``VALUES``). A table step is
-``__name`` in later SQL. ``error('invalid: ...')`` in SQL raises ``ValueError``.
+numbers), ``{{table:name}}`` a rows step as a table (``VALUES``), and
+``{{include:fragment table}}`` the SQL of ``sql/fragments/<fragment>.sql`` reading
+``table`` (its ``{{input}}``): pieces several queries share, such as the entity
+summaries. A table step is ``__name`` in later SQL. ``error('invalid: ...')`` in SQL
+raises ``ValueError``.
 """
 
 from __future__ import annotations
@@ -42,6 +45,27 @@ _STEP = re.compile(
 )
 _REPEAT = re.compile(r"--\s*repeat:\s*(\w+)\s*=\s*(.+?)\s+next\s+(.+?)\s+until\s+(\w+)\s+max\s+(\d+)\s*$", re.I)
 _TYPES = {"VARCHAR", "INTEGER", "BIGINT", "DOUBLE", "BOOLEAN", "JSON"}
+_INCLUDE = re.compile(r"\{\{\s*include:(\w+)\s+(\w+)\s*\}\}")
+
+
+@lru_cache(maxsize=None)
+def fragment(name: str) -> str:
+    path = files("omnipath_client").joinpath("sql", "fragments", f"{name}.sql")
+    if not path.is_file():
+        raise KeyError(f"Unknown fragment: {name}")
+    return path.read_text()
+
+
+def expand(sql: str, fragments: Callable[[str], str] = fragment) -> str:
+    """The SQL with its fragments included (each reading the table given)."""
+    for _ in range(8):
+        expanded = _INCLUDE.sub(
+            lambda m: "(" + fragments(m[1]).strip().replace("{{input}}", m[2]) + ")", sql
+        )
+        if expanded == sql:
+            return sql
+        sql = expanded
+    raise RecursionError("Fragments include each other too deeply")
 
 
 class QueryError(ValueError):
@@ -231,14 +255,17 @@ def bind(query: Query, params: dict[str, Any]) -> dict[str, Any]:
 class Run:
     """One execution of a query on one connection."""
 
-    def __init__(self, con, query: Query, values: dict[str, Any], cache, scope):
+    def __init__(self, con, query: Query, values: dict[str, Any], cache, scope, fragments=fragment):
         self.con, self.query, self.cache, self.scope = con, query, cache, scope
+        self.fragments = fragments
         self.values = values  # params, list and value steps, loop variables
         self.types = {name: p.type for name, p in query.params.items()}
         self.rows: dict[str, tuple[list[str], list[tuple]]] = {}
         self.tables: list[str] = []
 
     def render(self, sql: str) -> str:
+        sql = expand(sql, self.fragments)
+
         def replace(m):
             count, name, slice_, spread = m[1], m[2], m[3], m[4]
             if name.startswith("table:"):
@@ -356,6 +383,7 @@ def run(
     output: str = "table",
     cache: Callable[[tuple, Callable[[], Any]], Any] | None = None,
     scope: Any = None,
+    fragments: Callable[[str], str] = fragment,
 ):
     """Run a query: an Arrow table for ``output="table"``, a JSON string (or None) for
     ``output="json"``.
@@ -366,7 +394,7 @@ def run(
     query = load(name) if isinstance(name, str) else name
     if output not in query.outputs:
         raise ValueError(f"{query.name} has no {output} output")
-    run_ = Run(con, query, bind(query, params or {}), cache, scope)
+    run_ = Run(con, query, bind(query, params or {}), cache, scope, fragments)
     try:
         run_.steps(query.steps)
         target = query.outputs[output]
