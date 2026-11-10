@@ -262,23 +262,7 @@ class FacetsQueries:
         return self._label_taxonomy_facets(typed + sources)
 
     def get_entity_filter_options(self, resources: list[str] | None = None) -> dict[str, Any]:
-        if not self._selected_resource_infos(resources):
-            return {"entity_types": [], "sources": [], "taxonomy_ids": []}
-        read_expr = self._table("entity", resources)
-        types = [
-            r[0]
-            for r in self._db.execute(
-                f"SELECT DISTINCT entity_type FROM {read_expr} WHERE entity_type IS NOT NULL ORDER BY 1"
-            ).fetchall()
-        ]
-        taxons = [
-            str(r[0])
-            for r in self._db.execute(
-                f"SELECT DISTINCT taxon FROM {read_expr} WHERE taxon IS NOT NULL ORDER BY 1"
-            ).fetchall()
-        ]
-        sources = sorted({info["resource"] for info in self._selected_resource_infos(resources)})
-        return {"entity_types": types, "sources": sources, "taxonomy_ids": taxons}
+        return json.loads(self.run_query("entity_filter_options", {}, resources))
 
     def get_relation_filter_options(self, resources: list[str] | None = None) -> dict[str, Any]:
         facets = self.get_scoped_relation_facets({}, resources=resources)
