@@ -3,7 +3,6 @@
   import ExplorerWorkspace from '$lib/components/workspace/ExplorerWorkspace.svelte';
   import WorkspacePanel from '$lib/components/workspace/WorkspacePanel.svelte';
   import { untrack } from 'svelte';
-  import { page as currentPage } from '$app/state';
   import { Filter, X } from '@lucide/svelte';
   import { Badge } from '$lib/components/ui/badge/index.js';
   import { Button } from '$lib/components/ui/button/index.js';
@@ -115,17 +114,12 @@
 
   const preferences = getUiPreferences();
   const queryKey = $derived(
-    JSON.stringify([
-      currentPage.data.selectedRelease,
-      query.trim(),
-      entitySearchFilters,
-      preferences.groupResults,
-    ]),
+    JSON.stringify([query.trim(), entitySearchFilters, preferences.groupResults]),
   );
   // A text search shows the relations of its top hit: the entity (or group) the entity
   // search finds first, not of everything that matches the text.
   $effect(() => {
-    const [, q, searchFilters, grouped] = JSON.parse(queryKey);
+    const [q, searchFilters, grouped] = JSON.parse(queryKey);
     if (!q) {
       queryEntityIds = [];
       topHit = null;
@@ -164,7 +158,6 @@
   let searchGeneration = 0;
   const searchKey = $derived(
     JSON.stringify([
-      currentPage.data.selectedRelease,
       effectiveFilters,
       query.trim(),
       queryEntityIdsLoading,
@@ -174,7 +167,7 @@
   );
   $effect(() => {
     const current = ++searchGeneration;
-    const [, f, q, resolvingQueryEntities, matchCount, resolutionError] = JSON.parse(searchKey);
+    const [f, q, resolvingQueryEntities, matchCount, resolutionError] = JSON.parse(searchKey);
     const queryHasNoEntityMatches = !!q && !resolvingQueryEntities && matchCount === 0;
     const controller = new AbortController();
 

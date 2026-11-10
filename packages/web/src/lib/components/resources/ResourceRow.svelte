@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { releaseUrl } from '$lib/api/release';
   import { Download, Telescope } from '@lucide/svelte';
   import { Button } from '$lib/components/ui/button/index.js';
   import * as Table from '$lib/components/ui/table/index.js';
@@ -100,7 +99,7 @@
         variant="outline"
         size="sm"
         class="h-8 gap-1.5 px-2"
-        href={releaseUrl(`/explore?source=${encodeURIComponent(resource.resource_id)}`)}
+        href={`/explore?source=${encodeURIComponent(resource.resource_id)}`}
         aria-label={`Explore the entities of ${resource.resource_name}`}
         title="Explore its entities"
         onclick={stop}
@@ -109,7 +108,7 @@
       <Button
         variant="outline"
         size="icon-sm"
-        href={releaseUrl(`/api/resources/${encodeURIComponent(resource.resource_id)}/download`)}
+        href={`/api/resources/${encodeURIComponent(resource.resource_id)}/download`}
         download={`${resource.resource_id}.zip`}
         aria-label={`Download ${resource.resource_name} ZIP`}
         title="Download resource ZIP"

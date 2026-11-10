@@ -16,12 +16,10 @@ export interface ResourcesSummary {
   totalBytes: number;
 }
 
-export async function listResources(release = 'latest'): Promise<ResourceRecord[]> {
+export async function listResources(): Promise<ResourceRecord[]> {
   try {
     const base = API_SERVICE_URL.endsWith('/') ? API_SERVICE_URL : `${API_SERVICE_URL}/`;
-    const res = await fetch(
-      new URL(`resources?shape=svelte&release=${encodeURIComponent(release)}`, base),
-    );
+    const res = await fetch(new URL('resources?shape=svelte', base));
     if (!res.ok) throw new Error(`Resource catalog returned HTTP ${res.status}`);
     const data = (await res.json()) as components['schemas']['ResourcesResponse'];
     return (data.resources || []).map(resourceFromWire);

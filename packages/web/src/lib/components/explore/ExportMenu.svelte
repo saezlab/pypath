@@ -2,7 +2,7 @@
   import { Download, FileDown, Terminal } from '@lucide/svelte';
   import { toast } from 'svelte-sonner';
   import { page } from '$app/state';
-  import { releaseFetch } from '$lib/api/release';
+  import { apiFetch } from '$lib/api/fetch';
   import {
     DropdownMenu,
     DropdownMenuContent,
@@ -33,14 +33,13 @@
   } = $props();
 
   let downloading = $state(false);
-  const release = $derived(page.data.selectedRelease || 'latest');
   const filename = $derived(`omnipath_${name}.parquet`);
 
   async function download() {
     if (downloading) return;
     downloading = true;
     try {
-      const response = await releaseFetch(`/app-api${endpoint}`, {
+      const response = await apiFetch(`/app-api${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -61,7 +60,7 @@
 
   async function copyCommand() {
     const json = JSON.stringify(body).replaceAll("'", "'\\''");
-    const url = `${page.url.origin}/api${endpoint}?release=${encodeURIComponent(release)}`;
+    const url = `${page.url.origin}/api${endpoint}`;
     const command = `curl -fsSL -X POST '${url}' -H 'Content-Type: application/json' -d '${json}' -o ${filename}`;
     try {
       await navigator.clipboard.writeText(command);

@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import { workspaceWidth } from '$lib/stores/workspace-width.svelte';
   import { page } from '$app/state';
-  import { releaseUrl } from '$lib/api/release';
   import { mode, setMode } from 'mode-watcher';
   import { Check, Info, Menu, Moon, Settings2, Sun } from '@lucide/svelte';
   import {
@@ -44,13 +43,6 @@
   function isPathActive(url: string) {
     return page.url.pathname === url || page.url.pathname.startsWith(`${url}/`);
   }
-
-  function selectRelease(version: string) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('release', version);
-    // A fresh page also discards query caches and details from the previous release.
-    window.location.assign(url);
-  }
 </script>
 
 <a
@@ -64,7 +56,7 @@
   <div class="flex h-12 items-center gap-6">
     <div class="flex min-w-0 items-center gap-2 justify-self-start">
       <a
-        href={releaseUrl('/explore')}
+        href="/explore"
         class="flex shrink-0 items-center gap-2 justify-self-start rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         aria-label="OmniPath home"
       >
@@ -76,7 +68,7 @@
     <nav aria-label="Primary" class="hidden h-full min-w-0 items-center gap-1 lg:flex">
       {#each navigationItems.filter((item) => !item.external) as item (item.title)}
         <a
-          href={item.external ? item.url : releaseUrl(item.url)}
+          href={item.url}
           target={item.external ? '_blank' : undefined}
           rel={item.external ? 'noopener noreferrer' : undefined}
           aria-current={isPathActive(item.url) ? 'page' : undefined}
@@ -105,26 +97,6 @@
         class="hidden h-8 items-center gap-1 rounded-md px-2 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:inline-flex"
         >Documentation ↗</a
       >
-      <label for="release-select" class="hidden text-xs text-muted-foreground/70 sm:inline"
-        >Release</label
-      >
-      <select
-        id="release-select"
-        aria-label="OmniPath release"
-        class="max-w-32 cursor-pointer rounded-md border border-transparent bg-transparent px-1.5 py-1 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        value={page.data.selectedRelease || 'latest'}
-        disabled={page.data.releasesUnavailable}
-        onchange={(event) => selectRelease(event.currentTarget.value)}
-      >
-        {#if page.data.releasesUnavailable}
-          <option value={page.data.selectedRelease || 'latest'}>Versions unavailable</option>
-        {:else}
-          <option value="latest">Latest</option>
-          {#each page.data.releases || [] as release}
-            <option value={release.version}>{release.version}</option>
-          {/each}
-        {/if}
-      </select>
       <DropdownMenu>
         <DropdownMenuTrigger
           class="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
@@ -139,7 +111,7 @@
             <DropdownMenuItem>
               {#snippet child({ props })}
                 <a
-                  href={item.external ? item.url : releaseUrl(item.url)}
+                  href={item.url}
                   target={item.external ? '_blank' : undefined}
                   rel={item.external ? 'noopener noreferrer' : undefined}
                   aria-current={isPathActive(item.url) ? 'page' : undefined}

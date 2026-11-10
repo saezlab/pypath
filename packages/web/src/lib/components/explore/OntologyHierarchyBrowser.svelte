@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { WireOntologyChildren } from '$lib/api/contracts';
-  import { releaseFetch } from '$lib/api/release';
+  import { apiFetch } from '$lib/api/fetch';
 
   import { AlertCircle, Check, Link, Loader2, Plus } from '@lucide/svelte';
   import { Badge } from '$lib/components/ui/badge/index.js';
@@ -39,7 +39,7 @@
   );
 
   async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
-    const res = await releaseFetch(url, init);
+    const res = await apiFetch(url, init);
     if (!res.ok) {
       const text = await res.text().catch(() => '');
       throw new Error(text || `Request failed with status ${res.status}`);

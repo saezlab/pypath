@@ -36,7 +36,7 @@ test('external redirects are rejected before credentials or bodies can leave the
   const response = await proxyRequest(request, new URL(request.url), base, async (input, init) => {
     calls.push(String(input));
     const headers = new Headers(init?.headers);
-    assert.equal(headers.get('cookie'), 'omnipath_release=latest');
+    assert.equal(headers.get('cookie'), null); // no browser cookie reaches the API
     assert.equal(headers.get('x-admin-secret'), null);
     assert.equal(headers.get('authorization'), 'Bearer secret');
     assert.equal(init?.redirect, 'manual');

@@ -26,7 +26,6 @@
   } from '$lib/api/client';
 
   import { createPagedQuery, type PageState } from '$lib/features/explorer/paged-query';
-  import { page as currentPage } from '$app/state';
   import { untrack } from 'svelte';
 
   import type { SearchFilters } from '$lib/types/search';
@@ -86,7 +85,6 @@
     const tIds = selectedAnnotationIds || [];
 
     const controller = new AbortController();
-    void currentPage.data.selectedRelease;
     loadingOntologies = true;
     fetchScopedOntologyIdCounts(
       {
@@ -110,10 +108,9 @@
     return () => controller.abort();
   });
 
-  // Snapshot the complete query, including release, for every initial/page request.
+  // Snapshot the complete query for every initial/page request.
   const requestKey = $derived(
     JSON.stringify([
-      currentPage.data.selectedRelease,
       query,
       selectedOntologyIds,
       isScoped,
@@ -123,7 +120,7 @@
     ]),
   );
   $effect(() => {
-    const [, q, ontologyIds, scoped, scope, entityPks, termIds] = JSON.parse(requestKey);
+    const [q, ontologyIds, scoped, scope, entityPks, termIds] = JSON.parse(requestKey);
     untrack(() => {
       void paging.reset((offset, signal) =>
         scoped

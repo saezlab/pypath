@@ -2,7 +2,6 @@
   import WorkspacePanel from '$lib/components/workspace/WorkspacePanel.svelte';
 
   import { untrack } from 'svelte';
-  import { page as currentPage } from '$app/state';
   import { formatTaxonomy } from '$lib/utils/taxonomy';
   import { Button } from '$lib/components/ui/button/index.js';
   import TopicSourcePicker from '$lib/components/explore/TopicSourcePicker.svelte';
@@ -80,7 +79,6 @@
   // group's own filters do not narrow it, so its other values stay listed.
   const scopeKey = $derived(
     JSON.stringify([
-      currentPage.data.selectedRelease,
       {
         entityIds: [...(scopedEntityIds || []), ...(queryEntityIds || [])],
         endpointMode: scopeEndpointMode,
@@ -111,7 +109,7 @@
   );
   $effect(() => {
     const [key, panelFilters, visibleLimit, search] = JSON.parse(requestKey);
-    const [, scope] = JSON.parse(key);
+    const [scope] = JSON.parse(key);
     const chosen = JSON.parse(panelFilters);
     const controller = new AbortController();
 

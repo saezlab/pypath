@@ -1,32 +1,8 @@
-import { error } from '@sveltejs/kit';
-import { API_SERVICE_URL } from '$lib/server/api-config';
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ url, cookies }) => {
-  const saved = url.searchParams.get('release') || cookies.get('omnipath_release');
-  const requested = saved === 'working' ? 'latest' : saved;
-  let catalog: {
-    default: string;
-    releases: Array<{ version: string; resources: Record<string, string> }>;
-  };
-  try {
-    const base = API_SERVICE_URL.endsWith('/') ? API_SERVICE_URL : `${API_SERVICE_URL}/`;
-    const response = await fetch(new URL('releases', base));
-    if (!response.ok) throw new Error('Release catalog unavailable');
-    catalog = await response.json();
-  } catch {
-    return { releases: [], selectedRelease: requested || 'latest', releasesUnavailable: true };
-  }
-  const selectedRelease = requested || catalog.default;
-  if (
-    selectedRelease !== 'latest' &&
-    !catalog.releases.some((release) => release.version === selectedRelease)
-  ) {
-    error(404, `Unknown OmniPath release: ${selectedRelease}`);
-  }
-  cookies.set('omnipath_release', selectedRelease, { path: '/', httpOnly: false, sameSite: 'lax' });
-  // Every page carries this: the release picker needs the versions only, not each
-  // release's resource manifests (130 KB).
-  const releases = catalog.releases.map(({ version }) => ({ version }));
-  return { releases, selectedRelease, releasesUnavailable: false };
+// One release is served (the newest); a choice remembered from when the explorer offered
+// several would pin a release the API no longer serves.
+export const load: LayoutServerLoad = async ({ cookies }) => {
+  if (cookies.get('omnipath_release')) cookies.delete('omnipath_release', { path: '/' });
+  return {};
 };

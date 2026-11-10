@@ -5,7 +5,6 @@
   import ExplorerWorkspace from '$lib/components/workspace/ExplorerWorkspace.svelte';
   import WorkspacePanel from '$lib/components/workspace/WorkspacePanel.svelte';
   import { untrack } from 'svelte';
-  import { page as currentPage } from '$app/state';
   import { formatTaxonomy } from '$lib/utils/taxonomy';
   import { Filter, X } from '@lucide/svelte';
   import { Badge } from '$lib/components/ui/badge/index.js';
@@ -111,7 +110,6 @@
   // Counts reflect the current scope AND query AND all OTHER active filters (cross-facet filtering).
   const facetKey = $derived(
     JSON.stringify([
-      currentPage.data.selectedRelease,
       {
         entityIds: selectedEntityPks?.length ? selectedEntityPks : undefined,
         annotationTermIds: selectedAnnotationIds?.length ? selectedAnnotationIds : undefined,
@@ -124,7 +122,7 @@
     ]),
   );
   $effect(() => {
-    const [, scope] = JSON.parse(facetKey);
+    const [scope] = JSON.parse(facetKey);
     const controller = new AbortController();
     let cancelled = false;
     facetCountsLoading = true;
@@ -181,17 +179,9 @@
         Array.isArray(value) ? value.length > 0 : value != null && value !== '',
       ),
   );
-  const searchKey = $derived(
-    JSON.stringify([
-      currentPage.data.selectedRelease,
-      query,
-      effectiveFilters,
-      groupResults,
-      showExamples,
-    ]),
-  );
+  const searchKey = $derived(JSON.stringify([query, effectiveFilters, groupResults, showExamples]));
   $effect(() => {
-    const [, q, f, grouped, examples] = JSON.parse(searchKey);
+    const [q, f, grouped, examples] = JSON.parse(searchKey);
     if (grouped && !examples) return; // EntityGroups searches on its own
     const controller = new AbortController();
     const current = ++searchGeneration;

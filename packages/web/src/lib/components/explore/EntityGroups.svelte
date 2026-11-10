@@ -3,8 +3,7 @@
   import { entityFromWire } from '$lib/api/adapters';
   import type { WireEntity } from '$lib/api/contracts';
   import { untrack, type Snippet } from 'svelte';
-  import { page } from '$app/state';
-  import { releaseFetch } from '$lib/api/release';
+  import { apiFetch } from '$lib/api/fetch';
   import { Button } from '$lib/components/ui/button/index.js';
   import type { SearchFilters } from '$lib/types/search';
   import type { EntityWithIdentifiers } from '$lib/types/entities';
@@ -35,9 +34,7 @@
   let nextCursor = $state<string | null>(null);
   let error = $state('');
   let generation = 0;
-  const requestKey = $derived(
-    JSON.stringify([query, filters, strategy, page.data.selectedRelease]),
-  );
+  const requestKey = $derived(JSON.stringify([query, filters, strategy]));
   let controller: AbortController | undefined;
 
   async function request(
@@ -46,7 +43,7 @@
     f = filters,
     selectedStrategy = strategy,
   ) {
-    const response = await releaseFetch('/app-api/entities/groups', {
+    const response = await apiFetch('/app-api/entities/groups', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller?.signal,

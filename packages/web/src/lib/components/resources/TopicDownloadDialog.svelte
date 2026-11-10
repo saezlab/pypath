@@ -1,7 +1,6 @@
 <script lang="ts">
   // Download every resource of one or more topics, as a ZIP of Parquet files or
   // through the Python client (which installs them into a local DuckDB database).
-  import { page } from '$app/state';
   import { Check, Copy, Download } from '@lucide/svelte';
   import {
     Dialog,
@@ -28,7 +27,6 @@
   );
   const bytes = $derived(members.reduce((sum, r) => sum + (r.total_size_bytes || 0), 0));
   const label = $derived(topics.map((topic) => topic.label).join(' or '));
-  const release = $derived(page.data.selectedRelease || 'latest');
   const python = $derived(
     `import omnipath_client\n\nomnipath_client.init(topic=${
       topics.length === 1 ? `"${topics[0]?.id}"` : `[${topics.map((t) => `"${t.id}"`).join(', ')}]`
@@ -50,7 +48,7 @@
     busy = true;
     error = '';
     try {
-      const res = await fetch(`/api/resources/download?release=${encodeURIComponent(release)}`, {
+      const res = await fetch('/api/resources/download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resource_ids: members.map((r) => r.resource_id) }),
@@ -75,7 +73,7 @@
     <DialogHeader>
       <DialogTitle>Download {label}</DialogTitle>
       <DialogDescription>
-        {members.length} resources · {formatBytes(bytes)} of Parquet tables · release {release}
+        {members.length} resources · {formatBytes(bytes)} of Parquet tables
       </DialogDescription>
     </DialogHeader>
 

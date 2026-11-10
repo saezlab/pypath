@@ -15,7 +15,6 @@ const REQUEST_HEADERS = [
   'content-type',
   'authorization',
   'x-admin-secret',
-  'x-omnipath-release',
   'range',
   'if-range',
   'if-none-match',
@@ -53,11 +52,6 @@ export async function proxyRequest(
   const headers = new Headers();
   for (const name of REQUEST_HEADERS)
     if (incoming.has(name)) headers.set(name, incoming.get(name)!);
-  const cookies = (incoming.get('cookie') || '')
-    .split(';')
-    .map((cookie) => cookie.trim())
-    .filter((cookie) => /^omnipath_release=/.test(cookie));
-  if (cookies.length) headers.set('cookie', cookies.join('; '));
   headers.set('accept-encoding', 'identity');
   let method = request.method;
   let payload = method === 'GET' || method === 'HEAD' ? undefined : await request.arrayBuffer();

@@ -15,7 +15,7 @@
     isUnresolvedEntity,
   } from '$lib/domain/display';
   import { getEntityTypeEmoji, getEntityTypeStyle } from '$lib/utils/entity-types';
-  import { releaseFetch } from '$lib/api/release';
+  import { apiFetch } from '$lib/api/fetch';
   import { formatNumber } from '$lib/utils/format';
   import { formatTaxonomy } from '$lib/utils/taxonomy';
   import type { EntityWithIdentifiers as EntityResult } from '$lib/types/entities';
@@ -33,7 +33,7 @@
       const keys = [...(result.groupMemberKeys || [])];
       let cursor = result.groupMemberCursor;
       while (cursor) {
-        const response = await releaseFetch('/app-api/entities/groups', {
+        const response = await apiFetch('/app-api/entities/groups', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

@@ -3,23 +3,16 @@
 
   type ResourceTopic = components['schemas']['ResourceTopic'];
 
-  // The topic map of a release (each topic with its resources, a few KB), loaded once per
-  // page session: every Sources panel (Entities, Relations, the mobile filter sheet) shares
-  // it. A failed load is retried next time.
-  const topicMaps = new Map<string, Promise<ResourceTopic[]>>();
-  export function releaseTopics(
-    release: string,
-    load: () => Promise<ResourceTopic[]>,
-  ): Promise<ResourceTopic[]> {
-    let topics = topicMaps.get(release);
-    if (!topics) {
-      topics = load().catch((error) => {
-        topicMaps.delete(release);
-        throw error;
-      });
-      topicMaps.set(release, topics);
-    }
-    return topics;
+  // The topic map (each topic with its resources, a few KB), loaded once per page session:
+  // every Sources panel (Entities, Relations, the mobile filter sheet) shares it. A failed
+  // load is retried next time.
+  let topicMap: Promise<ResourceTopic[]> | null = null;
+  export function loadTopics(load: () => Promise<ResourceTopic[]>): Promise<ResourceTopic[]> {
+    topicMap ??= load().catch((error) => {
+      topicMap = null;
+      throw error;
+    });
+    return topicMap;
   }
 </script>
 
@@ -27,8 +20,7 @@
   // Topic cards in the Sources filter of Explore. A card selects every source of
   // its topic that the current results have; clicking it again removes them. A card whose
   // sources are only partly selected shows how many.
-  import { page } from '$app/state';
-  import { releaseFetch } from '$lib/api/release';
+  import { apiFetch } from '$lib/api/fetch';
   import { topicIcon } from '$lib/resources/topics';
 
   let {
@@ -45,8 +37,8 @@
   let topicMap = $state<ResourceTopic[]>([]);
   $effect(() => {
     let cancelled = false;
-    releaseTopics(page.data.selectedRelease || 'latest', async () => {
-      const res = await releaseFetch('/app-api/resources/topics');
+    loadTopics(async () => {
+      const res = await apiFetch('/app-api/resources/topics');
       if (!res.ok) throw new Error(`Resource topics returned HTTP ${res.status}`);
       return ((await res.json()) as components['schemas']['ResourceTopicsResponse']).topics ?? [];
     })

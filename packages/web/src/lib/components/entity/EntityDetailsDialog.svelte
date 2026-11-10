@@ -4,7 +4,6 @@
   import { entityFromWire } from '$lib/api/adapters';
   import { fetchEntitiesByPublicIds, fetchRelationsSearch } from '$lib/api/client';
   import { untrack } from 'svelte';
-  import { page } from '$app/state';
   import { formatTaxonomy } from '$lib/utils/taxonomy';
   import { measurementPresentation } from '$lib/utils/measurements';
   import {
@@ -15,7 +14,7 @@
     isNarrativeAnnotation,
     ontologyTermHref,
   } from '$lib/utils/annotation-presentation';
-  import { releaseFetch } from '$lib/api/release';
+  import { apiFetch } from '$lib/api/fetch';
   import { groupPublications, isPublicationTerm } from '$lib/utils/publications';
   import { getEntityTypeEmoji, getEntityTypeStyle } from '$lib/utils/entity-types';
   import { formatNumber } from '$lib/utils/format';
@@ -129,7 +128,6 @@
     JSON.stringify([
       open,
       entity ? getEntityPublicId(entity) : null,
-      page.data.selectedRelease,
       entity?.groupQuery,
       entity?.groupFilters,
       detailAttempt,
@@ -227,7 +225,7 @@
       ...(next ? { detail_field: next.field } : {}),
     };
     const response = fallback.groupMemberKeys
-      ? await releaseFetch('/app-api/entities/groups', {
+      ? await apiFetch('/app-api/entities/groups', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           signal,
@@ -241,7 +239,7 @@
             ...detail,
           }),
         })
-      : await releaseFetch(
+      : await apiFetch(
           `/app-api/entities/${encodeURIComponent(publicId)}?${new URLSearchParams({
             includeRelationships: 'false',
             ...Object.fromEntries(Object.entries(detail).map(([k, v]) => [k, String(v)])),
@@ -350,7 +348,7 @@
     const memberKeys = current.groupMemberKeys ?? [];
     let context: MolecularContextLike | null = null;
     if (isGeneLike(current)) {
-      const response = await releaseFetch(
+      const response = await apiFetch(
         `/app-api/entities/${encodeURIComponent(scopeEntity.entityPk)}/molecular-context?view=reference&limit=1`,
         { signal },
       );

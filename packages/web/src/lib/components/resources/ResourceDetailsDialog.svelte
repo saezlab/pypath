@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { releaseFetch, releaseUrl } from '$lib/api/release';
+  import { apiFetch } from '$lib/api/fetch';
   import { Download, ExternalLink } from '@lucide/svelte';
   import {
     Dialog,
@@ -35,7 +35,7 @@
     if (!open || !id || resource?.files?.length || loaded?.id === id) return;
     const controller = new AbortController();
     filesError = false;
-    releaseFetch(`/app-api/resources/${encodeURIComponent(id)}/files`, {
+    apiFetch(`/app-api/resources/${encodeURIComponent(id)}/files`, {
       signal: controller.signal,
     })
       .then((response) => {
@@ -82,7 +82,7 @@
   function fileHref(id: string, file: ResourceFile): string {
     return (
       safeUrl(file.url) ??
-      releaseUrl(`/api/resources/${encodeURIComponent(id)}/files/${encodeURIComponent(file.name)}`)
+      `/api/resources/${encodeURIComponent(id)}/files/${encodeURIComponent(file.name)}`
     );
   }
   function fileLabel(file: ResourceFile): string {
@@ -109,13 +109,13 @@
         <div class="flex flex-wrap gap-2 pt-2">
           <Button
             size="sm"
-            href={releaseUrl(`/api/resources/${encodeURIComponent(resource.resource_id)}/download`)}
+            href={`/api/resources/${encodeURIComponent(resource.resource_id)}/download`}
             download={`${resource.resource_id}.zip`}><Download class="size-4" />Download ZIP</Button
           >
           <Button
             size="sm"
             variant="outline"
-            href={releaseUrl(`/explore?source=${encodeURIComponent(resource.resource_id)}`)}
+            href={`/explore?source=${encodeURIComponent(resource.resource_id)}`}
             >Explore its entities</Button
           >
         </div>

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import { page } from '$app/state';
   import { Alert, AlertDescription } from '$lib/components/ui/alert/index.js';
   import { Button } from '$lib/components/ui/button/index.js';
   import RelationsTable from '$lib/components/interactions/RelationsTable.svelte';
@@ -39,10 +38,10 @@
       })),
   );
   const scope = $derived(scopes.find((item) => item.id === scopeId) ?? scopes[0]);
-  const searchKey = $derived(JSON.stringify([page.data.selectedRelease, scope?.filters ?? null]));
+  const searchKey = $derived(JSON.stringify([scope?.filters ?? null]));
 
   $effect(() => {
-    const [, filters] = JSON.parse(searchKey);
+    const [filters] = JSON.parse(searchKey);
     rows = [];
     hasMore = false;
     error = null;

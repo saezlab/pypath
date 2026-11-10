@@ -1,4 +1,4 @@
-import { releaseFetch } from '$lib/api/release';
+import { apiFetch } from '$lib/api/fetch';
 import type { SearchFilters } from '$lib/types/search';
 import type { InteractionDetailsData } from '$lib/types/interactions';
 import type { components } from './types.generated';
@@ -40,7 +40,7 @@ export type SelectionScopeRequest = Partial<
 export async function fetchSelectionScope(
   params: SelectionScopeRequest,
 ): Promise<SelectionScopeResponse> {
-  const res = await releaseFetch('/app-api/selection/scope', {
+  const res = await apiFetch('/app-api/selection/scope', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),
@@ -51,7 +51,7 @@ export async function fetchSelectionScope(
 
 /** Landing examples: entities, and the group cards the grouped view shows instead. */
 export async function fetchEntityExamples(signal?: AbortSignal) {
-  const response = await releaseFetch('/app-api/entities/examples', { signal });
+  const response = await apiFetch('/app-api/entities/examples', { signal });
   if (!response.ok) throw new Error('Failed to load examples');
   const body = (await response.json()) as WireEntitySearch & {
     groups?: Array<{ entity: Pick<WireEntity, 'entityPk'> & Partial<WireEntity> }>;
@@ -87,7 +87,7 @@ export async function fetchTopHit(
         }
       : null;
   }
-  const response = await releaseFetch('/app-api/entities/groups', {
+  const response = await apiFetch('/app-api/entities/groups', {
     method: 'POST',
     signal,
     headers: { 'Content-Type': 'application/json' },
@@ -129,7 +129,7 @@ export async function fetchEntitiesSearch(
       (params.filters.annotation_term_ids?.length ?? 0) > 10);
 
   if (hasLargeFilters) {
-    const res = await releaseFetch('/app-api/entities/search', {
+    const res = await apiFetch('/app-api/entities/search', {
       method: 'POST',
       signal,
       headers: { 'Content-Type': 'application/json' },
@@ -152,13 +152,13 @@ export async function fetchEntitiesSearch(
     url.searchParams.set('filters', JSON.stringify(params.filters));
   }
 
-  const res = await releaseFetch(url, { signal });
+  const res = await apiFetch(url, { signal });
   if (!res.ok) throw new Error('Failed to fetch entities');
   return entitySearchFromWire((await res.json()) as WireEntitySearch);
 }
 
 export async function fetchEntityFilterOptions() {
-  const res = await releaseFetch('/app-api/entities/filter-options');
+  const res = await apiFetch('/app-api/entities/filter-options');
   if (!res.ok) throw new Error('Failed to fetch entity filter options');
   return res.json() as Promise<EntityFilterOptions>;
 }
@@ -171,7 +171,7 @@ export async function fetchRelationsSearch(
   },
   signal?: AbortSignal,
 ) {
-  const res = await releaseFetch('/app-api/relations/search', {
+  const res = await apiFetch('/app-api/relations/search', {
     method: 'POST',
     signal,
     headers: { 'Content-Type': 'application/json' },
@@ -182,7 +182,7 @@ export async function fetchRelationsSearch(
 }
 
 export async function fetchRelationFilterOptions() {
-  const res = await releaseFetch('/app-api/relations/filter-options');
+  const res = await apiFetch('/app-api/relations/filter-options');
   if (!res.ok) throw new Error('Failed to fetch relation filter options');
   return res.json() as Promise<RelationFilterOptions>;
 }
@@ -192,7 +192,7 @@ export async function fetchRelationEvidence(relationPk: string | number, filters
     filters && Object.keys(filters).length
       ? `?filters=${encodeURIComponent(JSON.stringify(filters))}`
       : '';
-  const res = await releaseFetch(
+  const res = await apiFetch(
     `/app-api/relations/${encodeURIComponent(String(relationPk))}/evidence${query}`,
   );
   if (!res.ok) throw new Error('Failed to fetch relation evidence');
@@ -200,7 +200,7 @@ export async function fetchRelationEvidence(relationPk: string | number, filters
 }
 
 export async function fetchEntitiesByPublicIds(publicIds: string[]) {
-  const res = await releaseFetch('/app-api/entities/by-public-ids', {
+  const res = await apiFetch('/app-api/entities/by-public-ids', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ public_ids: publicIds }),
@@ -211,7 +211,7 @@ export async function fetchEntitiesByPublicIds(publicIds: string[]) {
 }
 
 export async function fetchEntitiesByPks(pks: Array<string | number>) {
-  const res = await releaseFetch('/app-api/entities/by-pks', {
+  const res = await apiFetch('/app-api/entities/by-pks', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ pks }),
@@ -238,7 +238,7 @@ export async function fetchOntologySearch(
   if (params.prefixes?.length) url.searchParams.set('prefixes', params.prefixes.join(','));
   if (params.ontologyIds?.length) url.searchParams.set('ontologyIds', params.ontologyIds.join(','));
 
-  const res = await releaseFetch(url, { signal });
+  const res = await apiFetch(url, { signal });
   if (!res.ok) throw new Error('Failed to fetch ontology terms');
   return ((await res.json()) as WireOntologyTerm[]).map(ontologyTermFromWire);
 }
@@ -256,7 +256,7 @@ export async function fetchScopedOntologySearch(
   },
   signal?: AbortSignal,
 ) {
-  const res = await releaseFetch('/app-api/ontology/scoped-search', {
+  const res = await apiFetch('/app-api/ontology/scoped-search', {
     method: 'POST',
     signal,
     headers: { 'Content-Type': 'application/json' },
@@ -276,7 +276,7 @@ export async function fetchScopedOntologySearch(
 }
 
 export async function fetchOntologyPrefixes() {
-  const res = await releaseFetch('/app-api/ontology/prefixes');
+  const res = await apiFetch('/app-api/ontology/prefixes');
   if (!res.ok) throw new Error('Failed to fetch ontology prefixes');
   return res.json() as Promise<{ prefixes: string[] }>;
 }
@@ -286,7 +286,7 @@ export async function fetchScopedOntologyPrefixCounts(params: {
   annotationTermIds?: string[];
   query?: string;
 }) {
-  const res = await releaseFetch('/app-api/ontology/prefix-counts', {
+  const res = await apiFetch('/app-api/ontology/prefix-counts', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),
@@ -304,7 +304,7 @@ export async function fetchScopedOntologyIdCounts(
   },
   signal?: AbortSignal,
 ) {
-  const res = await releaseFetch('/app-api/ontology/ontology-id-counts', {
+  const res = await apiFetch('/app-api/ontology/ontology-id-counts', {
     method: 'POST',
     signal,
     headers: { 'Content-Type': 'application/json' },
@@ -315,7 +315,7 @@ export async function fetchScopedOntologyIdCounts(
 }
 
 export async function fetchTerms(termIds: string[]) {
-  const res = await releaseFetch('/app-api/terms', {
+  const res = await apiFetch('/app-api/terms', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ term_ids: termIds }),
@@ -336,7 +336,7 @@ export async function fetchScopedEntityFacetCounts(
   },
   signal?: AbortSignal,
 ) {
-  const res = await releaseFetch('/app-api/entities/scoped-facets', {
+  const res = await apiFetch('/app-api/entities/scoped-facets', {
     method: 'POST',
     signal,
     headers: { 'Content-Type': 'application/json' },
@@ -367,7 +367,7 @@ export async function fetchScopedRelationFacetOptions(
   },
   signal?: AbortSignal,
 ) {
-  const res = await releaseFetch('/app-api/relations/scoped-facets', {
+  const res = await apiFetch('/app-api/relations/scoped-facets', {
     method: 'POST',
     signal,
     headers: { 'Content-Type': 'application/json' },
@@ -380,7 +380,7 @@ export async function fetchScopedRelationFacetOptions(
 // Statistics transport aliases come from generated OpenAPI schemas.
 
 async function fetchStats<T>(path: string): Promise<T> {
-  const res = await releaseFetch(`/api/stats/${path}`);
+  const res = await apiFetch(`/api/stats/${path}`);
   if (!res.ok) throw new Error(`Failed to fetch stats/${path}`);
   return res.json() as Promise<T>;
 }
