@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 import logging
 import time
 from typing import Any
@@ -398,6 +400,12 @@ class RelationsQueries:
         }
 
     def get_relation_by_pk(
+        self, relation_pk: str, resources: list[str] | None = None
+    ) -> dict[str, Any] | None:
+        text = self.run_query("relation", {"relation_key": str(relation_pk)}, resources)
+        return json.loads(text) if text else None
+
+    def _old_get_relation_by_pk(
         self, relation_pk: str, resources: list[str] | None = None
     ) -> dict[str, Any] | None:
         found = self._relations_by_keys([relation_pk], resources)[:1]

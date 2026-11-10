@@ -23,7 +23,9 @@
     starts <- attr(m, "capture.start"); lengths <- attr(m, "capture.length")
     name <- substr(sql, starts[1], starts[1] + lengths[1] - 1)
     table <- substr(sql, starts[2], starts[2] + lengths[2] - 1)
-    text <- gsub("{{input}}", table, trimws(fragments(name)), fixed = TRUE)
+    lines <- strsplit(fragments(name), "\n", fixed = TRUE)[[1]]
+    lines <- lines[!startsWith(trimws(lines), "--")]
+    text <- gsub("{{input}}", table, trimws(paste(lines, collapse = "\n")), fixed = TRUE)
     sql <- paste0(substr(sql, 1, m - 1), "(", text, ")", substring(sql, m + attr(m, "match.length")))
   }
   if (grepl(.include_re, sql, perl = TRUE)) stop("Fragments include each other too deeply")
@@ -35,8 +37,29 @@
   if (length(m) == 0) NULL else m
 }
 
+# The text with each `-- steps: name` line replaced by the steps of that fragment.
+.include_steps <- function(text, fragments = .fragment) {
+  for (i in 1:8) {
+    lines <- strsplit(text, "\n", fixed = TRUE)[[1]]
+    hits <- grepl("^\\s*--\\s*steps:\\s*\\w+\\s*$", lines, perl = TRUE)
+    if (!any(hits)) return(text)
+    out <- character()
+    for (j in seq_along(lines)) {
+      if (hits[[j]]) {
+        name <- sub("^\\s*--\\s*steps:\\s*(\\w+)\\s*$", "\\1", lines[[j]], perl = TRUE)
+        out <- c(out, strsplit(fragments(name), "\n", fixed = TRUE)[[1]])
+      } else {
+        out <- c(out, lines[[j]])
+      }
+    }
+    text <- paste(out, collapse = "\n")
+  }
+  stop("Step fragments include each other too deeply")
+}
+
 # A step file's header and steps.
-.parse_query <- function(text, name = "query") {
+.parse_query <- function(text, name = "query", fragments = .fragment) {
+  text <- .include_steps(text, fragments)
   lines <- strsplit(text, "\n", fixed = TRUE)[[1]]
   query <- list(name = name, params = list(), outputs = list(), examples = list(), steps = list())
   stack <- list(list())   # open step lists; the last is where steps go
@@ -90,7 +113,7 @@
       }
       next
     }
-    current$sql <- paste0(current$sql, line, "\n")
+    if (!startsWith(stripped, "--")) current$sql <- paste0(current$sql, line, "\n")
   }
   close()
   if (length(loops) > 0) stop(name, ": '-- repeat' without '-- end'")

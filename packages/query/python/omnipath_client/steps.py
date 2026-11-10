@@ -14,6 +14,7 @@ File format::
     -- example: {"name": value}
     -- step: name AS table|list|value|rows [when <SQL expression>] [cache]
     <SQL>
+    -- steps: fragment                       (the steps of sql/fragments/<fragment>.sql)
     -- repeat: var = <SQL> next <SQL> until <value step> max N
     <steps>
     -- end
@@ -56,11 +57,15 @@ def fragment(name: str) -> str:
     return path.read_text()
 
 
+def _uncommented(text: str) -> str:
+    return "\n".join(line for line in text.splitlines() if not line.strip().startswith("--")).strip()
+
+
 def expand(sql: str, fragments: Callable[[str], str] = fragment) -> str:
     """The SQL with its fragments included (each reading the table given)."""
     for _ in range(8):
         expanded = _INCLUDE.sub(
-            lambda m: "(" + fragments(m[1]).strip().replace("{{input}}", m[2]) + ")", sql
+            lambda m: "(" + _uncommented(fragments(m[1])).replace("{{input}}", m[2]) + ")", sql
         )
         if expanded == sql:
             return sql
@@ -112,8 +117,28 @@ class Query:
     budget_ms: int | None = None
 
 
-def parse(text: str, name: str = "query") -> Query:
+def include_steps(text: str, fragments: Callable[[str], str] = None) -> str:
+    """The text with each ``-- steps: name`` line replaced by the steps of the fragment
+    ``name``: step sequences several queries share."""
+    fragments = fragments or fragment
+    for _ in range(8):
+        lines, changed = [], False
+        for line in text.splitlines():
+            m = re.match(r"\s*--\s*steps:\s*(\w+)\s*$", line)
+            if m:
+                lines.extend(fragments(m[1]).splitlines())
+                changed = True
+            else:
+                lines.append(line)
+        text = "\n".join(lines) + "\n"
+        if not changed:
+            return text
+    raise RecursionError("Step fragments include each other too deeply")
+
+
+def parse(text: str, name: str = "query", fragments: Callable[[str], str] = None) -> Query:
     """A step file's header and steps."""
+    text = include_steps(text, fragments)
     params: dict[str, Param] = {}
     outputs: dict[str, str] = {}
     examples: list[dict[str, Any]] = []
@@ -162,7 +187,8 @@ def parse(text: str, name: str = "query") -> Query:
             elif m := re.match(r"--\s*budget_ms:\s*(\d+)", stripped):
                 budget = int(m[1])
             continue
-        current.sql += line + "\n"
+        if not stripped.startswith("--"):  # comments are not part of the SQL
+            current.sql += line + "\n"
     close()
     if len(stack) != 1:
         raise SyntaxError(f"{name}: '-- repeat' without '-- end'")

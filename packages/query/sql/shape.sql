@@ -69,3 +69,31 @@ CREATE OR REPLACE MACRO op_quantity(numeric_value, unit, unit_prefix, binary_rel
         source_field := source_field,
         comparator := comparator) END
 );
+
+-- A relation's qualifier columns as relation-scope annotations, in the order of
+-- RELATION_QUALIFIERS (what the API shapes a relation from when its annotations are
+-- not read).
+CREATE OR REPLACE MACRO op_qualifier_annotations(r) AS (
+    flatten([
+        list_transform(coalesce(r.object_aspect_qualifier, []), lambda v:
+            struct_pack(term := 'object_aspect_qualifier', value := v, scope := 'relation')),
+        list_transform(coalesce(r.object_direction_qualifier, []), lambda v:
+            struct_pack(term := 'object_direction_qualifier', value := v, scope := 'relation')),
+        list_transform(coalesce(r.causal_mechanism_qualifier, []), lambda v:
+            struct_pack(term := 'causal_mechanism_qualifier', value := v, scope := 'relation'))
+    ])
+);
+
+-- Annotations of one scope (subject, object, relation: the default) as the API lists
+-- them (split_compiled_annotations): term and value (NULL when empty), and the
+-- quantity only when there is one. A list of JSON values.
+CREATE OR REPLACE MACRO op_scoped_annotations(anns, scope_) AS (
+    list_transform(
+        list_filter(coalesce(anns, []), lambda a: trim(coalesce(a.term, '')) <> ''
+            AND CASE lower(coalesce(a.scope, 'relation'))
+                WHEN 'subject' THEN 'subject' WHEN 'object' THEN 'object' ELSE 'relation' END = scope_),
+        lambda a: CASE WHEN a.quantity IS NULL
+            THEN to_json(struct_pack(term := trim(a.term), value := nullif(a.value, '')))
+            ELSE to_json(struct_pack(term := trim(a.term), value := nullif(a.value, ''), quantity := a.quantity))
+        END)
+);
