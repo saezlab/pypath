@@ -304,7 +304,9 @@
                   </Table.Head>
                 {/each}
                 <Table.Head class="hidden w-44 xl:table-cell">Topic</Table.Head>
-                <Table.Head class="w-14"><span class="sr-only">Download</span></Table.Head>
+                <Table.Head class="w-24 sm:w-36"
+                  ><span class="sr-only">Explore and download</span></Table.Head
+                >
               </Table.Row>
             </Table.Header>
             <Table.Body>
