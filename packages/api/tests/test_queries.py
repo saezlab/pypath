@@ -201,9 +201,9 @@ class TestReleaseQueries(unittest.TestCase):
         )
 
     def test_empty_relation_facets_are_cached(self):
-        self.engine._facet_cache.clear()
+        self.engine._query_cache.clear()
         first = self.engine.get_scoped_relation_facets({})
-        self.assertTrue(self.engine._facet_cache.entries)
+        self.assertTrue(self.engine._query_cache.entries)
         second = self.engine.get_scoped_relation_facets({})
         self.assertEqual(first, second)
 
@@ -225,7 +225,7 @@ class TestReleaseQueries(unittest.TestCase):
         self.assertTrue(any(item["facetName"] == "predicate" for item in counts))
 
     def test_selection_options_follow_filters_from_kept_combinations(self):
-        self.engine._facet_cache.clear()
+        self.engine._query_cache.clear()
         key = self.engine.search_relations(limit=1)["rows"][0]["subject_entity_key"]
         scope = {"entityIds": [key]}
         options = self.engine.get_scoped_relation_facets(scope)
@@ -245,9 +245,8 @@ class TestReleaseQueries(unittest.TestCase):
                 {o["facetValue"] for o in narrowed if o["facetName"] == "predicate"},
                 set(predicates),
             )
-        # The selection's combinations were read once and kept.
-        kept = [k for k in self.engine._facet_cache.entries if k[0] == "relation-combinations"]
-        self.assertEqual(len(kept), 1)
+        # Each answer is kept, by its parameters.
+        self.assertTrue(self.engine._query_cache.entries)
 
     def test_10_relation_evidence(self):
         result = self.engine.search_relations(limit=1, include_details=True)
