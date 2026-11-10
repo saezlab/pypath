@@ -184,8 +184,31 @@
   values
 }
 
+# Define the macros the queries share (sql/shape.sql) on the connection as temporary
+# macros, once per version of them: each connection gets the code's own, whatever its
+# database stores.
+.prepare_macros <- function(con) {
+  if (is.null(.state$shared_macros)) {
+    text <- paste(readLines(file.path(.sql_dir(), "shape.sql"), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+    hash <- DBI::dbGetQuery(con, "SELECT sha256(?) AS h", params = list(text))$h
+    .state$shared_macros <- list(
+      marker = paste0("op_layer_", substr(hash, 1, 12)),
+      sql = gsub("CREATE OR REPLACE MACRO", "CREATE OR REPLACE TEMP MACRO", text, fixed = TRUE)
+    )
+  }
+  macros <- .state$shared_macros
+  found <- tryCatch({ DBI::dbGetQuery(con, sprintf("SELECT %s() AS n", macros$marker)); TRUE },
+    error = function(e) FALSE)
+  if (!found) {
+    DBI::dbExecute(con, macros$sql)
+    DBI::dbExecute(con, sprintf("CREATE OR REPLACE TEMP MACRO %s() AS 1", macros$marker))
+  }
+  invisible(con)
+}
+
 .run_query <- function(con, query, params = list(), output = "table", cache = NULL, scope = NULL,
-                       fragments = .fragment) {
+                       fragments = .fragment, macros = TRUE) {
+  if (isTRUE(macros)) .prepare_macros(con)
   if (is.character(query)) query <- .load_query(query)
   if (is.null(query$outputs[[output]])) stop(query$name, " has no ", output, " output")
   env <- new.env(parent = emptyenv())

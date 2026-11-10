@@ -27,6 +27,11 @@ def database(path):
     return duckdb.connect(str(path), read_only=True)
 
 
+def run(*args, **kwargs):
+    """The runner without the shared macros: the toy database has no release tables."""
+    return steps.run(*args, macros=False, **kwargs)
+
+
 def query(name):
     return steps.parse((QUERIES / f"{name}.sql").read_text(), name)
 
@@ -44,16 +49,16 @@ def db(tmp_path):
 
 def test_lists_index_reads_slices_and_outputs(db):
     lookup = query("lookup")
-    assert json.loads(steps.run(db, lookup, {"keys": ["b", "a", "zz"]}, output="json")) == {
+    assert json.loads(run(db, lookup, {"keys": ["b", "a", "zz"]}, output="json")) == {
         "items": [{"key": "a", "label": "Alpha"}, {"key": "b", "label": "Beta"}],
         "total": 2,
     }
-    page = steps.run(db, lookup, {"keys": ["a", "b", "c"], "offset": 1, "limit": 2})
+    page = run(db, lookup, {"keys": ["a", "b", "c"], "offset": 1, "limit": 2})
     assert page.to_pylist() == [{"key": "b", "label": "Beta"}, {"key": "c", "label": "Gamma"}]
     # An empty list matches nothing; the skipped step keeps its columns.
-    assert json.loads(steps.run(db, lookup, {"keys": []}, output="json")) == {"items": [], "total": 0}
+    assert json.loads(run(db, lookup, {"keys": []}, output="json")) == {"items": [], "total": 0}
     # One value stands for a list of one.
-    assert steps.run(db, lookup, {"keys": "c"}).to_pylist() == [{"key": "c", "label": "Gamma"}]
+    assert run(db, lookup, {"keys": "c"}).to_pylist() == [{"key": "c", "label": "Gamma"}]
     # No temporary table is left behind.
     assert db.execute("SELECT count(*) FROM duckdb_tables() WHERE temporary").fetchone() == (0,)
 
@@ -74,33 +79,33 @@ def test_the_index_read_uses_the_index(tmp_path):
 
 
 def test_repeat_grows_until_done(db):
-    assert json.loads(steps.run(db, query("grow"), {"target": 5}, output="json")) == {
+    assert json.loads(run(db, query("grow"), {"target": 5}, output="json")) == {
         "n": 8, "found": 6, "enough": True
     }
     # At most max rounds.
-    assert json.loads(steps.run(db, query("grow"), {"target": 100}, output="json")) == {
+    assert json.loads(run(db, query("grow"), {"target": 100}, output="json")) == {
         "n": 8, "found": 6, "enough": False
     }
 
 
 def test_rows_tables_and_invalid_input(db):
     pairs = query("pairs")
-    assert json.loads(steps.run(db, pairs, {"labels": ["Alpha", "Gamma"]}, output="json")) == {
+    assert json.loads(run(db, pairs, {"labels": ["Alpha", "Gamma"]}, output="json")) == {
         "matched": ["a", "c"], "mode": "any"
     }
-    assert json.loads(steps.run(db, pairs, {"labels": ["Alpha"], "mode": "strict"}, output="json")) == {
+    assert json.loads(run(db, pairs, {"labels": ["Alpha"], "mode": "strict"}, output="json")) == {
         "matched": [], "mode": "strict"
     }
     with pytest.raises(steps.QueryError, match="mode must be any or strict"):
-        steps.run(db, pairs, {"labels": ["Alpha"], "mode": "other"})
+        run(db, pairs, {"labels": ["Alpha"], "mode": "other"})
     with pytest.raises(TypeError, match="unknown parameter"):
-        steps.run(db, pairs, {"label": "x"})
+        run(db, pairs, {"label": "x"})
     with pytest.raises(TypeError, match="mode must be VARCHAR"):
-        steps.run(db, pairs, {"mode": 3})
+        run(db, pairs, {"mode": 3})
 
 
 def test_fragments_are_included(db):
-    assert json.loads(steps.run(db, query("shouted"), {"limit": 2}, output="json", fragments=fragments)) == [
+    assert json.loads(run(db, query("shouted"), {"limit": 2}, output="json", fragments=fragments)) == [
         "ALPHA!", "BETA!"
     ]
 
@@ -124,9 +129,9 @@ SELECT key FROM item WHERE _eid IN ({{ids*}}) ORDER BY key
 
     cached = steps.parse(text)
     for _ in range(2):
-        assert steps.run(db, cached, {"n": 2}, cache=cache, scope="v1").to_pylist() == [{"key": "a"}, {"key": "b"}]
+        assert run(db, cached, {"n": 2}, cache=cache, scope="v1").to_pylist() == [{"key": "a"}, {"key": "b"}]
     assert computed == ["ids", "rows"]
-    steps.run(db, cached, {"n": 3}, cache=cache, scope="v1")
+    run(db, cached, {"n": 3}, cache=cache, scope="v1")
     assert computed == ["ids", "rows", "ids", "rows"]
 
 
@@ -162,16 +167,16 @@ def test_r_runner_answers_like_python(tmp_path):
         for example in query(name).examples
     ]
     (tmp_path / "cases.json").write_text(json.dumps([[name, example] for name, example in cases]))
-    run = subprocess.run(
+    process = subprocess.run(
         ["Rscript", str(R_RUNNER), str(R_CLIENT), str(tmp_path / "toy.duckdb"), str(QUERIES), str(tmp_path / "cases.json")],
         capture_output=True, text=True, env=_r_env(),
     )
-    assert run.returncode == 0, run.stderr[-3000:]
-    answers = [json.loads(text) for text in json.loads(run.stdout[run.stdout.index("[") :])]
+    assert process.returncode == 0, process.stderr[-3000:]
+    answers = [json.loads(text) for text in json.loads(process.stdout[process.stdout.index("[") :])]
     db = duckdb.connect(str(tmp_path / "toy.duckdb"), read_only=True)
     for (name, example), answer in zip(cases, answers):
         try:
-            expected = json.loads(steps.run(db, query(name), example, output="json", fragments=fragments))
+            expected = json.loads(run(db, query(name), example, output="json", fragments=fragments))
         except steps.QueryError as exc:
             expected = {"error": str(exc)}
         assert answer == expected, (name, example)

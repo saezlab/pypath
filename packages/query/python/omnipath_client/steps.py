@@ -410,6 +410,27 @@ class Run:
                 pass
 
 
+@lru_cache(maxsize=None)
+def _shared_macros() -> tuple[str, str]:
+    """(marker, SQL) of the macros the queries share (sql/shape.sql) as temporary
+    macros: each connection gets the code's own, whatever its database stores."""
+    import hashlib
+
+    text = files("omnipath_client").joinpath("sql", "shape.sql").read_text()
+    marker = "op_layer_" + hashlib.sha256(text.encode()).hexdigest()[:12]
+    return marker, re.sub(r"CREATE OR REPLACE MACRO", "CREATE OR REPLACE TEMP MACRO", text)
+
+
+def prepare(con: duckdb.DuckDBPyConnection) -> None:
+    """Define the shared macros on the connection, once per version of them."""
+    marker, sql = _shared_macros()
+    try:
+        con.execute(f"SELECT {marker}()")  # defined: a trivial statement
+    except duckdb.CatalogException:
+        con.execute(sql)
+        con.execute(f"CREATE OR REPLACE TEMP MACRO {marker}() AS 1")
+
+
 def apply_settings(con: duckdb.DuckDBPyConnection) -> None:
     """The contract's settings, which every connection that runs queries uses."""
     from .contracts import CONTRACT
@@ -428,17 +449,21 @@ def run(
     scope: Any = None,
     fragments: Callable[[str], str] = fragment,
     trace: list | None = None,
+    macros: bool = True,
 ):
     """Run a query: an Arrow table for ``output="table"``, a JSON string (or None) for
     ``output="json"``.
 
     ``cache(key, compute)`` keeps the results of steps marked ``cache``; ``scope`` (the
     database's identity) is part of their keys. ``trace``, a list, gets (step, seconds)
-    for each step run.
+    for each step run. ``macros=False`` leaves out the shared macros (a database without
+    the release tables).
     """
     query = load(name) if isinstance(name, str) else name
     if output not in query.outputs:
         raise ValueError(f"{query.name} has no {output} output")
+    if macros:
+        prepare(con)
     run_ = Run(con, query, bind(query, params or {}), cache, scope, fragments)
     run_.trace = trace
     try:
