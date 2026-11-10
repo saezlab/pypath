@@ -127,7 +127,24 @@ class EntitiesQueries:
         # Details are addressed solely by the exact entity key. Identifier and
         # alias discovery belongs to search, never to single-entity hydration.
         text = self.run_query("entity_details", {"entity_key": str(public_id)}, resources)
-        return json.loads(text) if text else None
+        if not text:
+            return None
+        details = json.loads(text)
+        # The page holds the first page of relationships (entity_relationships with
+        # its defaults): a client asking for it next reads nothing again.
+        rows, total = details["relationships"], details["relationshipsTotal"]
+        first = dict(
+            relationships=rows,
+            relationshipsTotal=total,
+            nextCursor=str(len(rows)) if 0 < len(rows) < total else None,
+        )
+        self.remember_answer(
+            "entity_relationships",
+            {"entity_keys": [str(public_id)], "limit": 50, "offset": 0},
+            resources,
+            json.dumps(first, ensure_ascii=False, separators=(",", ":")),
+        )
+        return details
 
     def resolve_identifiers(
         self, identifiers: list[str], resources: list[str] | None = None

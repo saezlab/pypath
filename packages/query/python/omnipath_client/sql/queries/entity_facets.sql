@@ -66,9 +66,12 @@ SELECT {{typed_scope}}
 -- steps: entity_matches
 
 -- step: typed_counts AS table
-SELECT CASE WHEN GROUPING(entity_type) = 0 THEN 'entity_type' ELSE 'taxonomy_id' END AS facet,
-    coalesce(entity_type, taxon)::VARCHAR AS value, count(*) AS n
-FROM {{include:entity_match_rows m}} GROUP BY GROUPING SETS ((entity_type), (taxon))
+-- without a source filter the same rows give the source counts: one scan for all three
+SELECT CASE WHEN GROUPING(entity_type) = 0 THEN 'entity_type'
+        WHEN GROUPING(taxon) = 0 THEN 'taxonomy_id' ELSE 'source' END AS facet,
+    coalesce(entity_type, taxon, _resource)::VARCHAR AS value, count(*) AS n
+FROM {{include:entity_match_rows m}}
+GROUP BY GROUPING SETS ((entity_type), (taxon), (_resource))
 
 -- step: key_scope AS value
 SELECT {{selected}}
@@ -83,11 +86,18 @@ SELECT {{selected}}
 
 -- steps: entity_matches
 
+-- step: filtered_source_counts AS table when NOT op_unset({{sources}})
+SELECT m._resource AS value, count(*) AS n
+FROM {{include:entity_match_rows m}} m GROUP BY m._resource
+
 -- step: source_counts AS table
-SELECT r.resource_id AS value, count(m._eid) AS n
-FROM resources r LEFT JOIN {{include:entity_match_rows m}} m ON m._resource = r.resource_id
+SELECT r.resource_id AS value, coalesce(c.n, 0) AS n
+FROM resources r LEFT JOIN (
+    SELECT value, n FROM __filtered_source_counts WHERE NOT op_unset({{sources}})
+    UNION ALL
+    SELECT value, n FROM __typed_counts WHERE facet = 'source' AND op_unset({{sources}})) c
+    ON c.value = r.resource_id
 WHERE op_unset({{resources}}) OR list_contains({{resources}}, r.resource_id)
-GROUP BY r.resource_id
 
 -- step: typed_any AS value
 -- a selection without any resource of the release has no options
@@ -96,7 +106,7 @@ SELECT op_unset({{typed_scope}}) OR (SELECT count(*) FROM resources WHERE list_c
 -- step: response AS value when {{typed_any}}
 WITH typed AS (
     SELECT facet, value, n, row_number() OVER (ORDER BY n DESC, facet, value) AS position
-    FROM __typed_counts WHERE value IS NOT NULL AND value <> ''
+    FROM __typed_counts WHERE facet <> 'source' AND value IS NOT NULL AND value <> ''
 ), shown AS (
     SELECT * FROM typed WHERE position <= greatest(coalesce({{facet_limit}}, 50) * 2, 20)
 ), items AS (

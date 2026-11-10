@@ -208,9 +208,11 @@ def entity_relationships(
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
 ):
-    if not _call(request, "get_entity_core", entity_id):
+    page = _call(request, "get_entity_relationships", entity_id, limit=limit, offset=offset)
+    # Only an empty page can be an unknown entity's.
+    if not page["relationshipsTotal"] and not _call(request, "get_entity_core", entity_id):
         raise HTTPException(status_code=404, detail="Entity not found")
-    return _call(request, "get_entity_relationships", entity_id, limit=limit, offset=offset)
+    return page
 
 
 @router.get("/entities/{entity_id}/evidence", tags=["entities"])

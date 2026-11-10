@@ -193,3 +193,31 @@ def test_attributes_beyond_descriptions_are_grouped_by_term():
         ("description", "3"), ("has_role", "1"), ("has_role", "4"),
         ("in_taxon", "0"), ("in_taxon", "2"),
     ]  # fmt: skip
+
+
+def test_entity_pages_hold_the_first_relationships_page(tmp_path, monkeypatch):
+    from omnipath_client import steps
+
+    for count in (3, 60):
+        root = tmp_path / str(count)
+        resource(root, "1", "First")
+        write_resource(
+            root / "resources/other/1",
+            nested_rows(root / "resources/test/1/entity.parquet"),
+            [
+                dict(relation_key=f"m{i:02}", subject_entity_key="a", object_entity_key="b",
+                     predicate="has_member", category="association", sources=["other"],
+                     evidence_count=1)
+                for i in range(count)
+            ],
+        )  # fmt: skip
+        engine = served_queries(root)
+        with engine.release_scope():
+            computed = engine.get_entity_relationships("a")
+            engine._query_cache.clear()
+            engine.get_entity_details("a")
+            run = steps.run
+            monkeypatch.setattr(steps, "run", lambda *a, **k: (_ for _ in ()).throw(AssertionError("computed")))
+            assert engine.get_entity_relationships("a") == computed
+            monkeypatch.setattr(steps, "run", run)
+        assert (computed["nextCursor"] is None) == (count + 3 <= 50)

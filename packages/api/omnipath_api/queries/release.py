@@ -356,12 +356,7 @@ class ReleaseQueries(
         those the query policy disables, are its ``resources`` parameter."""
         served = self._served()
         query = steps.load(name)
-        params = dict(params or {})
-        if "resources" in query.params:
-            infos = self._selected_resource_infos(resources)
-            selected = sorted({info["resource"] for info in infos})
-            # NULL selects every resource; a name no resource has selects none.
-            params["resources"] = None if len(infos) == len(self.resources) else selected or [""]
+        params = self._query_params(query, params, resources)
 
         def compute():
             connection = self._db
@@ -376,8 +371,29 @@ class ReleaseQueries(
 
         if output != "json":
             return compute()
-        key = json.dumps([served.identity, name, params], sort_keys=True, default=str)
-        return self._query_cache.get(key, compute)
+        return self._query_cache.get(self._answer_key(name, params), compute)
+
+    def _query_params(self, query, params, resources) -> dict[str, Any]:
+        """The parameters with the selected resources, less those the query policy
+        disables, as ``resources``."""
+        params = dict(params or {})
+        if "resources" in query.params:
+            infos = self._selected_resource_infos(resources)
+            selected = sorted({info["resource"] for info in infos})
+            # NULL selects every resource; a name no resource has selects none.
+            params["resources"] = None if len(infos) == len(self.resources) else selected or [""]
+        return params
+
+    def _answer_key(self, name: str, params: dict[str, Any]) -> str:
+        return json.dumps([self._served().identity, name, params], sort_keys=True, default=str)
+
+    def remember_answer(
+        self, name: str, params: dict[str, Any], resources: list[str] | None, text: str
+    ) -> None:
+        """Cache a query's JSON answer that another query's answer holds (the first
+        relationships page of an entity page, say), so asking for it reads nothing."""
+        params = self._query_params(steps.load(name), params, resources)
+        self._query_cache.get(self._answer_key(name, params), lambda: text)
 
     # Connections -----------------------------------------------------------------
 
