@@ -34,7 +34,7 @@ from urllib.parse import urlsplit
 import duckdb
 
 from omnipath_api.queries.store.inventory import ReleaseStore
-from omnipath_api.queries.store.query_cache import QueryCache
+from omnipath_api.queries.store.query_cache import QueryCache, StepCache
 from omnipath_api.queries.store.query_pool import QueryPool
 from omnipath_api.queries.store.connection import get_connection, sql_literal
 from omnipath_core.measurements import QUANTITY_STRUCT
@@ -232,6 +232,8 @@ class ReleaseQueries(
         self._catalog_cache = QueryCache(max_entries=8, max_bytes=64 * 1024**2)
         # Answers of the step-file queries, by release, query and parameters.
         self._query_cache = QueryCache(max_entries=512, max_bytes=128 * 1024**2)
+        # Results of the steps marked "cache" (a release's ontology terms, say).
+        self._step_cache = StepCache()
         self._query_pool = QueryPool(
             self._open_query_connection,
             lambda: self._db_generation,
@@ -410,7 +412,10 @@ class ReleaseQueries(
             connection = self._db
             connection.execute(f"USE {served.alias}")
             try:
-                return steps.run(connection, query, params, output=output)
+                return steps.run(
+                    connection, query, params, output=output,
+                    cache=self._step_cache.get, scope=[served.identity, served.built_at],
+                )
             except steps.QueryError as exc:
                 raise ValueError(str(exc)) from None
 
@@ -486,6 +491,8 @@ class ReleaseQueries(
         self._db_generation += 1
         self._facet_cache.clear()
         self._order_cache.clear()
+        self._query_cache.clear()
+        self._step_cache.clear()
         conn = getattr(self._db_local, "conn", None)
         if conn is not None:
             try:

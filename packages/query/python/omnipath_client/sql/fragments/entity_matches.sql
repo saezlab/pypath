@@ -1,7 +1,9 @@
--- Steps: the entity rows a search matches in its first phase with matches (all, key,
--- prefix, contains: the phases value), in the resources {{match_scope}}, passing the
--- entity filters (type_names, taxonomy_ids, reference_entity_keys and the entity key
--- list match_keys, NULL for none): the table __matches. Every hit, not a page.
+-- Steps: what a search matches in its first phase with matches (all, key, prefix,
+-- contains: the phases value), in the resources {{match_scope}}, passing the entity
+-- filters (type_names, taxonomy_ids, reference_entity_keys and the entity key list
+-- match_keys, NULL for none): the value match_phase and, for prefixes, the matching rows
+-- (__match_prefix). The entity_match_rows fragment reads every matching row (all
+-- hits, not a page) without copying them.
 
 -- step: match_hits AS table when list_contains({{phases}}, 'prefix')
 SELECT DISTINCT _eid, namespace FROM (
@@ -17,7 +19,7 @@ SELECT DISTINCT _eid, namespace FROM (
         AND (op_unset({{match_scope}}) OR list_contains({{match_scope}}, _resource)))
 
 -- step: match_prefix AS table when list_contains({{phases}}, 'prefix')
-SELECT DISTINCT e.* FROM entity e JOIN __match_hits h USING (_eid)
+SELECT DISTINCT e.* FROM entity_by_key e JOIN __match_hits h USING (_eid)
 WHERE (h.namespace IS NULL OR h.namespace = lower(coalesce(e.namespace, '')))
     AND op_entity_ok(e, {{match_scope}}, {{type_names}}, {{taxonomy_ids}}, {{reference_entity_keys}}, {{match_keys}})
 
@@ -27,14 +29,3 @@ SELECT CASE
     WHEN list_contains({{phases}}, 'contains') THEN 'contains'
     ELSE {{phases}}[1]
 END
-
--- step: matches AS table
-SELECT * FROM __match_prefix WHERE {{match_phase}} = 'prefix'
-UNION ALL BY NAME
-SELECT * FROM entity
-WHERE {{match_phase}} <> 'prefix'
-    AND op_entity_ok(entity, {{match_scope}}, {{type_names}}, {{taxonomy_ids}}, {{reference_entity_keys}}, {{match_keys}})
-    AND CASE {{match_phase}}
-        WHEN 'key' THEN entity_key = {{q}}
-        WHEN 'contains' THEN contains(lower(label), {{ql}})
-        ELSE true END

@@ -68,7 +68,7 @@ SELECT {{typed_scope}}
 -- step: typed_counts AS table
 SELECT CASE WHEN GROUPING(entity_type) = 0 THEN 'entity_type' ELSE 'taxonomy_id' END AS facet,
     coalesce(entity_type, taxon)::VARCHAR AS value, count(*) AS n
-FROM __matches GROUP BY GROUPING SETS ((entity_type), (taxon))
+FROM {{include:entity_match_rows m}} GROUP BY GROUPING SETS ((entity_type), (taxon))
 
 -- step: key_scope AS value
 SELECT {{selected}}
@@ -85,7 +85,7 @@ SELECT {{selected}}
 
 -- step: source_counts AS table
 SELECT r.resource_id AS value, count(m._eid) AS n
-FROM resources r LEFT JOIN __matches m ON m._resource = r.resource_id
+FROM resources r LEFT JOIN {{include:entity_match_rows m}} m ON m._resource = r.resource_id
 WHERE op_unset({{resources}}) OR list_contains({{resources}}, r.resource_id)
 GROUP BY r.resource_id
 

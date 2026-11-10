@@ -52,9 +52,9 @@ FROM relation_facet
 WHERE NOT ({{keyed}} OR {{forms}}) AND (op_unset({{scope}}) OR list_contains({{scope}}, _resource))
     AND ({{is_directed}} IS NULL OR is_directed = {{is_directed}}) AND ({{sign}} IS NULL OR sign = {{sign}})
 
--- step: facet_items AS table
-WITH c AS (
-    SELECT *,
+-- step: facet_rows AS table
+-- each combination with whether each filter group's filters keep it
+SELECT *,
         (op_unset({{relation_categories}}) OR list_contains({{relation_categories}}, category))
             AND (op_unset({{predicate_names}}) OR list_contains({{predicate_names}}, predicate)) AS g_type,
         op_unset({{type_names}})
@@ -76,7 +76,9 @@ WITH c AS (
         ({{is_directed}} IS NULL OR is_directed = {{is_directed}})
             AND (coalesce({{min_evidence_count}}, 0) <= 1 OR evidence_count >= {{min_evidence_count}}) AS g_rest
     FROM __combinations
-), values_ AS (
+
+-- step: facet_items AS table
+WITH c AS (SELECT * FROM __facet_rows), values_ AS (
     SELECT 'category' AS facet, category AS value, NULL::VARCHAR AS category_, relation_count
     FROM c WHERE g_rest AND g_part AND g_source AND g_taxon AND g_sign AND g_q1 AND g_q2 AND g_q3
     UNION ALL
@@ -108,10 +110,12 @@ WITH c AS (
     SELECT 'causal_mechanism_qualifier', unnest(list_distinct(causal_mechanism_qualifier)), NULL, relation_count
     FROM c WHERE g_rest AND g_type AND g_part AND g_source AND g_taxon AND g_sign AND g_q1 AND g_q2
 )
-SELECT *, row_number() OVER (ORDER BY n DESC, facet, value, coalesce(category, '')) AS position FROM (
-    SELECT v.facet, v.value, v.category_ AS category, sum(v.relation_count) AS n,
-        CASE WHEN v.facet = 'taxonomy_id' THEN any_value(t.name) END AS label
-    FROM values_ v LEFT JOIN op_taxonomy t ON v.facet = 'taxonomy_id' AND t.taxon = v.value
-    WHERE v.value IS NOT NULL AND v.value <> ''
-    GROUP BY v.facet, v.value, v.category_)
+, counted AS (
+    SELECT facet, value, category_ AS category, sum(relation_count) AS n
+    FROM values_ WHERE value IS NOT NULL AND value <> ''
+    GROUP BY facet, value, category_
+)
+-- taxa by name, joined on the counted values (an equality, not a loop over every row)
+SELECT c.*, t.name AS label, row_number() OVER (ORDER BY c.n DESC, c.facet, c.value, coalesce(c.category, '')) AS position
+FROM counted c LEFT JOIN op_taxonomy t ON t.taxon = CASE WHEN c.facet = 'taxonomy_id' THEN c.value END
 ORDER BY position

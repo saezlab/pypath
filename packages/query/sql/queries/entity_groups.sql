@@ -126,7 +126,7 @@ SELECT {{scope}}
 WITH copies AS (
     SELECT entity_key, list_contains((SELECT list(entity_type) FROM op_chemical_types), entity_type) AS chemical,
         group_connectivity, reference_entity_key, relation_count
-    FROM __matches
+    FROM {{include:entity_match_rows m}}
 )
 SELECT entity_key,
     CASE WHEN {{strategy}} IN ('auto', 'chemical_connectivity') AND bool_or(coalesce(chemical, false))
@@ -176,11 +176,29 @@ SELECT p.group_key, k.entity_key FROM __page_groups p JOIN __keys k
 -- step: member_keys AS list
 SELECT DISTINCT entity_key FROM __members ORDER BY entity_key
 
+-- step: listed_ids AS list
+-- the copies a group's entity_group rows list (in scope), for the groups on the page
+SELECT DISTINCT g._eid FROM entity_group g
+JOIN __page_groups p ON (p.connectivity IS NOT NULL AND g.kind = 'connectivity' AND g.group_key = p.connectivity)
+    OR (p.reference_entity_key IS NOT NULL AND g.kind = 'reference' AND g.group_key = p.reference_entity_key)
+WHERE g.group_key IN (SELECT coalesce(connectivity, reference_entity_key) FROM __page_groups)
+    AND (op_unset({{scope}}) OR list_contains({{scope}}, g._resource))
+ORDER BY 1
+
+-- step: singleton_keys AS list
+SELECT DISTINCT m.entity_key FROM __members m JOIN __page_groups p USING (group_key)
+WHERE p.connectivity IS NULL AND p.reference_entity_key IS NULL ORDER BY 1
+
 -- step: member_copies AS table
--- every copy in scope of the members (not only those the search matched)
+-- the members' copies in scope: those their groups list, and every copy of a single
+-- entity (not only those the search matched)
 SELECT * EXCLUDE (key_rank, _resource_version), _resource || '/' || _resource_version AS resource
-FROM entity_by_key
-WHERE entity_key IN ({{member_keys*}}) AND (op_unset({{scope}}) OR list_contains({{scope}}, _resource))
+FROM (
+    SELECT e.* FROM entity e WHERE _eid IN ({{listed_ids*}})
+    UNION ALL BY NAME
+    SELECT * FROM entity_by_key
+    WHERE entity_key IN ({{singleton_keys*}}) AND (op_unset({{scope}}) OR list_contains({{scope}}, _resource)))
+WHERE list_contains({{member_keys}}, entity_key)
 
 -- step: copy_ids AS list when {{include_details}}
 SELECT _eid FROM __member_copies ORDER BY _eid
