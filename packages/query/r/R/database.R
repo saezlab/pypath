@@ -112,19 +112,22 @@
   .exec(con, sprintf("UPDATE database_info SET query_layer = %s", .quote(.query_layer())))
 }
 
-# The derived tables (each sorted) and the indexes, once the tables are written.
+# Where a resource table is written: the database (""), the scratch database `work`
+# for a table a derived table replaces (its space is never part of the database), or
+# nowhere (NULL) for one replaced without being read.
+.written_to <- function(table) {
+  derived <- .contract()$derived_tables[[table]]
+  if (is.null(derived) || !isTRUE(derived$replaces)) return("")
+  if (grepl(paste0("\\b", table, "\\b"), derived$select, perl = TRUE)) "work." else NULL
+}
+
+# The derived tables (each sorted) and the indexes, once the tables are written. A
+# table that replaces a written one reads it from `work` (on the search path).
 .derived <- function(con, present) {
   derived <- .contract()$derived_tables
   for (name in names(derived)) {
-    # A derived table that replaces a written one takes its name when complete.
-    replaces <- isTRUE(derived[[name]]$replaces)
-    target <- if (replaces) paste0(name, "__derived") else name
-    .exec(con, sprintf("CREATE TABLE %s AS SELECT * FROM (%s) ORDER BY %s",
-      target, derived[[name]]$select, derived[[name]]$order))
-    if (replaces) {
-      .exec(con, sprintf("DROP TABLE %s", name))
-      .exec(con, sprintf("ALTER TABLE %s RENAME TO %s", target, name))
-    }
+    .exec(con, sprintf("CREATE TABLE omnipath.main.%s AS SELECT * FROM (%s) ORDER BY %s",
+      name, derived[[name]]$select, derived[[name]]$order))
   }
   for (index in .contract()$indexes) {
     if (index[[2]] %in% present) {
@@ -150,7 +153,9 @@
   .exec(con, sprintf(
     "ATTACH %s AS omnipath (STORAGE_VERSION %s)", .quote(staging), .quote(.contract()$storage_version)
   ))
+  .exec(con, sprintf("ATTACH %s AS work", .quote(file.path(staging_dir, "work.duckdb"))))
   .exec(con, "USE omnipath")
+  .exec(con, "SET search_path = 'omnipath.main,work.main'")
   .configure(con, root, memory_limit)
   ordered <- .sorted_records(records)
   index <- stats::setNames(as.list(seq_along(ordered) - 1L), vapply(ordered, function(r) r$resource_id, ""))
@@ -160,14 +165,16 @@
   }
   present <- Filter(function(t) any(vapply(ordered, function(r) t %in% .record_tables(r), TRUE)), c(.tables(), .serving()))
   for (table in present) {
+    where <- .written_to(table)
+    if (is.null(where)) next
     having <- Filter(function(r) table %in% .record_tables(r), ordered)
     # The columns of every resource (union by name), then each resource's rows in its
     # file's order, so rows follow their global ids.
     union <- paste(vapply(having, function(r) .source(root, r, table, index[[r$resource_id]]), ""),
       collapse = " UNION ALL BY NAME ")
-    .exec(con, sprintf("CREATE TABLE %s AS SELECT * FROM (%s) LIMIT 0", table, union))
+    .exec(con, sprintf("CREATE TABLE %s%s AS SELECT * FROM (%s) LIMIT 0", where, table, union))
     for (record in having) {
-      .exec(con, sprintf("INSERT INTO %s BY NAME %s", table, .source(root, record, table, index[[record$resource_id]])))
+      .exec(con, sprintf("INSERT INTO %s%s BY NAME %s", where, table, .source(root, record, table, index[[record$resource_id]])))
     }
   }
   .derived(con, present)
@@ -175,6 +182,7 @@
   .describe(con, root, records, release)
   .query_layer_write(con)
   .exec(con, "USE memory")
+  .exec(con, "DETACH work")
   .exec(con, "DETACH omnipath")
   DBI::dbDisconnect(con, shutdown = TRUE)
   closed <- TRUE

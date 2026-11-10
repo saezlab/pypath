@@ -170,17 +170,28 @@ def _query_layer(db) -> None:
     db.execute("UPDATE database_info SET query_layer = ?", [QUERY_LAYER])
 
 
+# Derived tables that replace a written table of the same name: {name: its select}.
+REPLACED = {
+    name: query["select"] for name, query in CONTRACT["derived_tables"].items() if query.get("replaces")
+}
+
+
+def _written_to(table: str) -> str | None:
+    """Where a resource table is written: the database, the scratch database ``work`` for
+    a table a derived table replaces (its space is never part of the database), or
+    nowhere (None) for one replaced without being read."""
+    if table not in REPLACED:
+        return ""
+    return "work." if re.search(rf"\b{table}\b", REPLACED[table]) else None
+
+
 def _derived(db, present: set[str]) -> None:
-    """The derived tables (each sorted) and the indexes, once the tables are written."""
+    """The derived tables (each sorted) and the indexes, once the tables are written. A
+    table that replaces a written one reads it from ``work`` (on the search path)."""
     for name, query in CONTRACT["derived_tables"].items():
-        # A derived table that replaces a written one takes its name when complete.
-        target = f"{name}__derived" if query.get("replaces") else name
         db.execute(
-            f"CREATE TABLE {target} AS SELECT * FROM ({query['select']}) ORDER BY {query['order']}"
+            f"CREATE TABLE omnipath.main.{name} AS SELECT * FROM ({query['select']}) ORDER BY {query['order']}"
         )
-        if query.get("replaces"):
-            db.execute(f"DROP TABLE {name}")
-            db.execute(f"ALTER TABLE {target} RENAME TO {name}")
     for name, table, column in CONTRACT["indexes"]:
         if table in present:
             db.execute(f"CREATE INDEX {name} ON {table}({column})")
@@ -218,7 +229,9 @@ def write_database(
                 f"ATTACH {_literal(str(staging))} AS omnipath "
                 f"(STORAGE_VERSION {_literal(CONTRACT['storage_version'])})"
             )
+            db.execute(f"ATTACH {_literal(str(staging_dir / 'work.duckdb'))} AS work")
             db.execute("USE omnipath")
+            db.execute("SET search_path = 'omnipath.main,work.main'")
             db.execute("SET memory_limit = ?", [memory_limit])
             db.execute("SET temp_directory = ?", [str(temporary)])
             if threads is not None:
@@ -230,14 +243,17 @@ def write_database(
                 db.execute("INSERT INTO op_resource_index VALUES (?, ?)", [name, i])
             present = [t for t in TABLES + SERVING if any(t in s.tables(payloads) for s in ordered)]
             for table in present:
+                where = _written_to(table)
+                if where is None:
+                    continue
                 having = [s for s in ordered if table in s.tables(payloads)]
                 say(f"Writing {table} ({len(having)} resources)")
                 # The columns of every resource (union by name), then each resource's
                 # rows in its file's order, so rows follow their global ids.
                 union = " UNION ALL BY NAME ".join(s.select(table, index[s.resource_id]) for s in having)
-                db.execute(f"CREATE TABLE {table} AS SELECT * FROM ({union}) LIMIT 0")
+                db.execute(f"CREATE TABLE {where}{table} AS SELECT * FROM ({union}) LIMIT 0")
                 for source in having:
-                    db.execute(f"INSERT INTO {table} BY NAME " + source.select(table, index[source.resource_id]))
+                    db.execute(f"INSERT INTO {where}{table} BY NAME " + source.select(table, index[source.resource_id]))
             say("Writing the derived tables and indexes")
             _derived(db, set(present))
             for source in ordered:
@@ -245,6 +261,7 @@ def write_database(
             _describe(db, ordered, payloads, info)
             _query_layer(db)
             db.execute("USE memory")
+            db.execute("DETACH work")
             db.execute("DETACH omnipath")
         finally:
             db.close()

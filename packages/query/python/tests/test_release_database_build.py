@@ -62,6 +62,8 @@ def test_release_database_holds_every_resource_with_global_ids(tmp_path):
             "relation_rid", "relation_evidence_rid", "entity_eid", "entity_evidence_eid", "entity_annotation_eid"
         }
         assert db.execute("SELECT count(*) FROM signor.relation").fetchone() == (1,)
+        # The tables the derived ones replace were written elsewhere: no space left over.
+        assert db.execute("SELECT free_blocks FROM pragma_database_size()").fetchone() == (0,)
 
 
 def test_release_database_refuses_incomplete_resources(tmp_path):
