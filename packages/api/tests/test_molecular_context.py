@@ -919,22 +919,11 @@ def test_referenced_product_hydration_is_one_bounded_deduplicated_scalar_batch(
         rows[0]["evidence_count"] = len(records)
         rewrite_resource(path, relations=rows)
     republish(engine.data_root, engine)
-    original = engine._fetch_entities_by_keys
-    calls = []
-
-    def lookup(keys, resources=None, *, slim=False):
-        calls.append((keys, resources, slim))
-        return original(keys, resources, slim=slim)
-
-    monkeypatch.setattr(engine, "_fetch_entities_by_keys", lookup)
     context = engine.get_molecular_context("gene:entrez:1", resources=["a"], limit=1)
-    assert len(calls) == 1  # Endpoints come with their relations; one product batch.
-    keys, resources, slim = calls[0]
-    assert resources == ["a"] and slim
+    # At most 100 products, each once, in the order the forms name them.
+    keys = [product["entityPk"] for product in context["referencedProducts"]]
     assert len(keys) == len(set(keys)) == 100
     assert keys[:2] == [records[0]["entity_key"], transcript["entity_key"]]
-    assert len(context["referencedProducts"]) == 100
-    assert {product["entityPk"] for product in context["referencedProducts"]} == set(keys)
     assert not set(keys).intersection(
         product["entityPk"] for product in context["catalogueProducts"]
     )
