@@ -41,6 +41,7 @@ from omnipath_core.measurements import QUANTITY_STRUCT
 from omnipath_core.schema import PUBLISHED_TABLES, RELATION_QUALIFIERS, SERVING_TABLES
 from omnipath_core.versioning import RESOURCE_FILES
 from omnipath_client.contracts import CONTRACT
+from omnipath_client.steps import apply_settings
 
 from omnipath_api.queries.services.resources import ResourcesQueries
 from omnipath_api.queries.services.relations import RelationsQueries
@@ -61,7 +62,7 @@ _QUANTITY = [field.name for field in QUANTITY_STRUCT]
 GLOBAL_IDS: dict[str, tuple[str, str]] = {t: tuple(c) for t, c in CONTRACT["global_ids"].items()}
 # Up to this many ids go into the SQL as literals (and through the indexes); more are a
 # join, which scans.
-LITERAL_LIMIT = 100_000
+LITERAL_LIMIT = int(CONTRACT["settings"].get("index_scan_max_count", 100_000))
 _HELPERS = ("_resource", "_resource_version", "_rid", "_eid")
 # Tables the database also holds sorted across every resource:
 # {table: (its sorted copy, the columns it is sorted by)}. Reads by those columns (and
@@ -386,15 +387,9 @@ class ReleaseQueries(
         try:
             Path(self._temp_directory).mkdir(parents=True, exist_ok=True)
             connection.execute("SET temp_directory = ?", [self._temp_directory])
-            # Lists of up to LITERAL_LIMIT ids read through the indexes.
-            connection.execute(f"SET index_scan_max_count = {LITERAL_LIMIT}")
-            connection.execute("SET index_scan_percentage = 0.5")
-            # A query reading one table twice (two lookups on entity_term, say) would
-            # have its table materialized whole, once, before any filter: 13 s instead
-            # of 0.3 s for a gene's entity keys in a full release.
-            connection.execute("SET disabled_optimizers = 'common_subplan'")
-            for name, value in CONTRACT["settings"].items():
-                connection.execute(f"SET {name} = {int(value)}")
+            # The settings every query connection uses (the index reads, no
+            # materializing of whole tables): the same as the clients'.
+            apply_settings(connection)
             for served in self._state.releases.values():
                 connection.execute(
                     f"ATTACH {sql_literal(str(served.path))} AS {served.alias} (READ_ONLY)"

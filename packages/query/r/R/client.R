@@ -52,7 +52,7 @@ op_connect <- function(data_dir = NULL, mode = NULL, api_url = NULL, release = "
   DBI::dbExecute(con, sprintf("SET memory_limit = %s", .quote(memory_limit)))
   if (!is.null(threads)) DBI::dbExecute(con, sprintf("SET threads = %d", as.integer(threads)))
   for (name in names(.contract()$settings)) {
-    DBI::dbExecute(con, sprintf("SET %s = %d", name, as.integer(.contract()$settings[[name]])))
+    DBI::dbExecute(con, sprintf("SET %s = %s", name, .scalar_literal(.contract()$settings[[name]])))
   }
   con
 }

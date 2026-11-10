@@ -207,8 +207,16 @@ def contract() -> dict:
         # Databases are written in the storage format of the oldest supported DuckDB, so
         # clients on different DuckDB versions can share a data directory.
         "storage_version": "v1.5.0",
-        # Every connection that runs the macros sets these.
-        "settings": {"dynamic_or_filter_threshold": 20000},
+        # Every connection that runs the queries sets these (API and clients alike):
+        # literal id lists of up to 100,000 ids read through the indexes, and no
+        # materializing of a whole table read twice in one statement (13 s instead of
+        # 0.3 s for a gene's entity keys in a full release).
+        "settings": {
+            "dynamic_or_filter_threshold": 20000,
+            "index_scan_max_count": 100000,
+            "index_scan_percentage": 0.5,
+            "disabled_optimizers": "common_subplan",
+        },
         "lookups": LOOKUPS,
         "global_ids": GLOBAL_IDS,
         "database_format": DATABASE_FORMAT,
@@ -228,17 +236,18 @@ def main(check: bool = False) -> int:
         stale.append(target)
         if not check:
             target.write_text(text)
+    sources = sorted(p.relative_to(SQL) for p in SQL.rglob("*") if p.is_file())
     for copies in COPIES:
-        for source in sorted(SQL.iterdir()):
-            copy = copies / source.name
+        for relative in sources:
+            source, copy = SQL / relative, copies / relative
             if not copy.is_file() or copy.read_bytes() != source.read_bytes():
                 stale.append(copy)
                 if not check:
-                    copies.mkdir(parents=True, exist_ok=True)
+                    copy.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copyfile(source, copy)
         if copies.is_dir():
-            for extra in copies.iterdir():
-                if not (SQL / extra.name).is_file():
+            for extra in sorted(p for p in copies.rglob("*") if p.is_file()):
+                if extra.relative_to(copies) not in sources:
                     stale.append(extra)
                     if not check:
                         extra.unlink()

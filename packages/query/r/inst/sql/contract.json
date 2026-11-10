@@ -44,7 +44,10 @@
  "parquet_row_group_size": 8192,
  "storage_version": "v1.5.0",
  "settings": {
-  "dynamic_or_filter_threshold": 20000
+  "dynamic_or_filter_threshold": 20000,
+  "index_scan_max_count": 100000,
+  "index_scan_percentage": 0.5,
+  "disabled_optimizers": "common_subplan"
  },
  "lookups": [
   [

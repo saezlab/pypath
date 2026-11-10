@@ -16,6 +16,7 @@ from .database import DATABASE, in_sync, synchronize
 from .errors import ClientError
 from .installation import data_directory, read_installation
 from .remote import ApiClient
+from .steps import apply_settings
 
 RELATION_EXPORT_LIMIT: int = CONTRACT["relation_export_limit"]
 # Macro parameters that take one value; every other filter takes a list, and one value
@@ -108,8 +109,7 @@ class Client:
             connection.execute("SET memory_limit = ?", [memory_limit])
             if threads is not None:
                 connection.execute("SET threads = ?", [threads])
-            for name, value in CONTRACT["settings"].items():
-                connection.execute(f"SET {name} = {int(value)}")
+            apply_settings(connection)
         except duckdb.Error:
             connection.close()
             raise
