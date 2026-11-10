@@ -19,18 +19,13 @@ QUALIFY position > {{rel_offset}} AND position <= {{rel_offset}} + {{rel_limit}}
 -- step: rel_ids AS list
 SELECT _rid FROM __rel_page ORDER BY _rid
 
--- step: rel_rows AS table
+-- step: endpoint_relations AS table
 SELECT * FROM relation WHERE _rid IN ({{rel_ids*}})
 
 -- step: rel_annotation_rows AS table
 SELECT * FROM relation_annotation WHERE _rid IN ({{rel_ids*}})
 
--- step: endpoint_keys AS list
-SELECT DISTINCT k FROM (SELECT subject_entity_key AS k FROM __rel_rows UNION SELECT object_entity_key FROM __rel_rows)
-WHERE k IS NOT NULL ORDER BY k
-
--- step: endpoint_rows AS table
-SELECT * FROM entity_by_key WHERE entity_key IN ({{endpoint_keys*}})
+-- steps: endpoint_rows
 
 -- step: rel_items AS table
 WITH annotations AS (
@@ -41,7 +36,7 @@ WITH annotations AS (
     FROM __rel_annotation_rows GROUP BY ALL
 ), relations AS (
     SELECT r.*, p.position, coalesce(a.annotations, []) AS annotations
-    FROM __rel_rows r JOIN __rel_page p USING (_rid) LEFT JOIN annotations a USING (_rid)
+    FROM __endpoint_relations r JOIN __rel_page p USING (_rid) LEFT JOIN annotations a USING (_rid)
 ), items AS (
     SELECT * FROM {{include:relation_items relations}}
 )

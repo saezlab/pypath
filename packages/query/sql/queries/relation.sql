@@ -14,18 +14,13 @@ SELECT {{relation_key}}
 -- step: first_id AS list
 SELECT _rid FROM __found ORDER BY resource, relation_id LIMIT 1
 
--- step: rows AS table
+-- step: endpoint_relations AS table
 SELECT *, 1 AS position FROM relation WHERE _rid IN ({{first_id*}})
 
--- step: endpoint_keys AS list
-SELECT DISTINCT k FROM (SELECT subject_entity_key AS k FROM __rows UNION SELECT object_entity_key FROM __rows)
-WHERE k IS NOT NULL ORDER BY k
-
--- step: endpoint_rows AS table
-SELECT * FROM entity_by_key WHERE entity_key IN ({{endpoint_keys*}})
+-- steps: endpoint_rows
 
 -- step: items AS table
-WITH relations AS (SELECT *, op_qualifier_annotations(r) AS annotations FROM __rows r)
+WITH relations AS (SELECT *, op_qualifier_annotations(r) AS annotations FROM __endpoint_relations r)
 SELECT * FROM {{include:relation_items relations}}
 
 -- step: response AS value
