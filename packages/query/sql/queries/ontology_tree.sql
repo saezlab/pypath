@@ -136,7 +136,7 @@ SELECT CASE
     WHEN (SELECT count(*) FROM __tree_edges) = 0 AND (SELECT count(*) FROM __seed_children) = 0
         THEN to_json(struct_pack(root := NULL::JSON))
     WHEN (SELECT count(*) FROM __built WHERE len(path) = 1) = 1
-        THEN to_json(struct_pack(root := (SELECT node FROM __built WHERE len(path) = 1)))
+        THEN to_json(struct_pack(root := (SELECT node FROM __built WHERE len(path) = 1 LIMIT 1)))
     ELSE to_json(struct_pack(root := struct_pack(id := 'root', name := 'Available ancestry (display root)',
         children := (SELECT list(node ORDER BY name, key) FROM __built WHERE len(path) = 1), distance := 1)))
 END
