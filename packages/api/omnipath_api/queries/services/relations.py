@@ -363,18 +363,29 @@ class RelationsQueries:
         }
 
     def search_relations_api(self, filters=None, resources=None, limit=20, offset=0):
+        """A page of matching relations with both endpoints: the query relation_page,
+        which the clients run too."""
+        from omnipath_api.queries.services.export import relation_params
+
+        started = time.perf_counter()
+        params = {**relation_params(filters), "limit": int(limit), "offset": int(offset)}
+        result = json.loads(self.run_query("relation_page", params, resources))
+        result["elapsed_ms"] = round((time.perf_counter() - started) * 1000, 2)
+        return result
+
+    def _old_search_relations_api(self, filters=None, resources=None, limit=20, offset=0):
         started = time.perf_counter()
         payload = dict(filters=filters or {}, limit=limit, offset=offset)
         result = self._cached_facets(
             "relation-page",
             payload,
             resources,
-            lambda p, r: self._search_relations_api_uncached(resources=r, **p),
+            lambda p, r: self._old_search_relations_api_uncached(resources=r, **p),
         )
         result["elapsed_ms"] = round((time.perf_counter() - started) * 1000, 2)
         return result
 
-    def _search_relations_api_uncached(
+    def _old_search_relations_api_uncached(
         self,
         filters: dict[str, Any] | None = None,
         resources: list[str] | None = None,

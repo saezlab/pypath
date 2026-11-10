@@ -293,7 +293,9 @@ class Run:
         self.rows: dict[str, tuple[list[str], list[tuple]]] = {}
         self.tables: list[str] = []
 
-    def render(self, sql: str) -> str:
+    def render(self, sql: str, empty: bool = False) -> str:
+        """The SQL with its placeholders filled in; ``empty`` (a skipped step) spreads
+        every list as empty, so that its SQL stays short."""
         sql = expand(sql, self.fragments)
 
         def replace(m):
@@ -309,7 +311,7 @@ class Run:
                 start, length = (self._number(x) for x in slice_[1:-1].split(":"))
                 value, spread = (value or [])[start : start + length], "*"
             if spread:
-                items = list(value or [])
+                items = [] if empty else list(value or [])
                 # Empty: a subquery without rows, which DuckDB answers without reading the
                 # table (it reads every row group for IN (NULL)).
                 return ", ".join(literal(v) for v in items) if items else "SELECT NULL WHERE false"
@@ -363,7 +365,7 @@ class Run:
 
     def _step(self, step: Step) -> None:
         skip = step.when is not None and not self.scalar(step.when)
-        sql = self.render(step.sql)
+        sql = self.render(step.sql, empty=skip)
         if skip:
             sql = f"SELECT * FROM ({sql}) WHERE false"
         if step.kind == "table":

@@ -244,7 +244,8 @@
     }, "")
     paste0("(SELECT * FROM (VALUES ", paste(values, collapse = ", "), ") AS v(", paste(cols, collapse = ", "), "))")
   }
-  render <- function(sql) {
+  # empty (a skipped step): every list spreads as empty, so that its SQL stays short
+  render <- function(sql, empty = FALSE) {
     sql <- .expand_fragments(sql, fragments)
     out <- ""
     repeat {
@@ -269,7 +270,7 @@
             spread <- "*"
           }
           if (nzchar(spread)) {
-            items <- if (is.null(value)) list() else as.list(value)
+            items <- if (is.null(value) || empty) list() else as.list(value)
             # empty: a subquery without rows, which DuckDB answers without reading the table
             if (length(items) == 0) "SELECT NULL WHERE false" else paste(vapply(items, .scalar_literal, ""), collapse = ", ")
           } else {
@@ -292,7 +293,7 @@
   }
   run_step <- function(step) {
     skip <- !is.null(step$when) && !isTRUE(scalar(step$when))
-    sql <- render(step$sql)
+    sql <- render(step$sql, empty = skip)
     if (skip) sql <- paste0("SELECT * FROM (", sql, ") WHERE false")
     if (step$kind == "table") {
       target <- paste0("__", step$name)
