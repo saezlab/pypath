@@ -118,6 +118,15 @@
     table <- sub("^CREATE OR REPLACE MACRO op_(\\w+)_(at|with)\\(.*$", "\\1", statement)
     if (table %in% present) .exec(con, statement)
   }
+  # The rule tables the macros read (display names, entity groups).
+  for (table in names(.contract()$query_tables)) {
+    spec <- .contract()$query_tables[[table]]
+    .exec(con, sprintf("CREATE OR REPLACE TABLE %s (%s)", table, paste(unlist(spec$columns), collapse = ", ")))
+    if (length(spec$rows)) {
+      values <- vapply(spec$rows, function(row) paste0("(", paste(vapply(row, .scalar_literal, ""), collapse = ", "), ")"), "")
+      .exec(con, sprintf("INSERT INTO %s VALUES %s", table, paste(values, collapse = ", ")))
+    }
+  }
   for (name in unlist(.contract()$macro_files)) {
     sql <- paste(readLines(file.path(.sql_dir(), name), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
     .exec(con, sql)

@@ -165,9 +165,21 @@ def _query_layer(db) -> None:
         table = re.match(r"CREATE OR REPLACE MACRO op_(\w+)_(at|with)\(", statement).group(1)
         if table in present:
             db.execute(statement)
+    # The rule tables the macros read (display names, entity groups).
+    for table, spec in CONTRACT.get("query_tables", {}).items():
+        db.execute(f"CREATE OR REPLACE TABLE {table} ({', '.join(spec['columns'])})")
+        if spec["rows"]:
+            db.execute(
+                f"INSERT INTO {table} VALUES "
+                + ", ".join("(" + ", ".join(_value_literal(v) for v in row) + ")" for row in spec["rows"])
+            )
     for name in CONTRACT["macro_files"]:
         db.execute(_SQL.joinpath(name).read_text())
     db.execute("UPDATE database_info SET query_layer = ?", [QUERY_LAYER])
+
+
+def _value_literal(value) -> str:
+    return str(int(value)) if isinstance(value, int) and not isinstance(value, bool) else _literal(str(value))
 
 
 # Derived tables that replace a written table of the same name: {name: its select}.

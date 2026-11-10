@@ -39,6 +39,6 @@ SELECT * FROM {{include:entity_summary __main}}
 -- step: entity_json AS value when (SELECT count(*) FROM __copies) > 0
 -- the summary with the evidence count, merged as JSON: DuckDB 2.0 drops the name of
 -- struct_insert's field inside a macro
-SELECT json_merge_patch(to_json(s.summary),
+SELECT op_json_patch(to_json(s.summary),
     to_json(struct_pack(molecularEvidenceTotal := (SELECT evidence_total FROM __main))))
 FROM __main_summary s

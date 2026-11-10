@@ -190,7 +190,9 @@
 .prepare_macros <- function(con) {
   if (is.null(.state$shared_macros)) {
     text <- paste(readLines(file.path(.sql_dir(), "shape.sql"), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
-    hash <- DBI::dbGetQuery(con, "SELECT sha256(?) AS h", params = list(text))$h
+    tables <- jsonlite::read_json(file.path(.sql_dir(), "contract.json"))$query_tables
+    hash <- DBI::dbGetQuery(con, "SELECT sha256(?) AS h", params = list(paste0(text,
+      as.character(jsonlite::toJSON(tables, auto_unbox = TRUE)))))$h
     .state$shared_macros <- list(
       marker = paste0("op_layer_", substr(hash, 1, 12)),
       sql = gsub("CREATE OR REPLACE MACRO", "CREATE OR REPLACE TEMP MACRO", text, fixed = TRUE)
@@ -200,6 +202,14 @@
   found <- tryCatch({ DBI::dbGetQuery(con, sprintf("SELECT %s() AS n", macros$marker)); TRUE },
     error = function(e) FALSE)
   if (!found) {
+    for (table in names(.contract()$query_tables)) {
+      spec <- .contract()$query_tables[[table]]
+      DBI::dbExecute(con, sprintf("CREATE OR REPLACE TEMP TABLE %s (%s)", table, paste(unlist(spec$columns), collapse = ", ")))
+      if (length(spec$rows)) {
+        values <- vapply(spec$rows, function(row) paste0("(", paste(vapply(row, .scalar_literal, ""), collapse = ", "), ")"), "")
+        DBI::dbExecute(con, sprintf("INSERT INTO %s VALUES %s", table, paste(values, collapse = ", ")))
+      }
+    }
     DBI::dbExecute(con, macros$sql)
     DBI::dbExecute(con, sprintf("CREATE OR REPLACE TEMP MACRO %s() AS 1", macros$marker))
   }

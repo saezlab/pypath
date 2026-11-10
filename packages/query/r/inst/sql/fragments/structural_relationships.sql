@@ -40,5 +40,5 @@ WITH annotations AS (
 ), items AS (
     SELECT * FROM {{include:relation_items relations}}
 )
-SELECT i.position, json_merge_patch(to_json(i.item), to_json(struct_pack(annotations := r.annotations))) AS item
+SELECT i.position, op_json_patch(to_json(i.item), to_json(struct_pack(annotations := r.annotations))) AS item
 FROM items i JOIN relations r USING (position)

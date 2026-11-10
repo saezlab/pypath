@@ -138,3 +138,21 @@ CREATE OR REPLACE MACRO op_scoped_annotations(anns, scope_) AS (
             ELSE to_json(struct_pack(term := trim(a.term), value := nullif(a.value, ''), quantity := a.quantity))
         END)
 );
+
+-- A name's rank for display, least first (omnipath_core.display_names.name_rank): the
+-- penalties of the rules it matches and of its length, then its length, then itself.
+CREATE OR REPLACE MACRO op_name_rank(name_) AS (
+    struct_pack(
+        score := coalesce((SELECT sum(penalty) FROM op_name_rules WHERE regexp_matches(trim(name_), pattern)), 0)
+            + 25 * (length(trim(name_)) > 80)::INTEGER + 8 * (length(trim(name_)) > 40)::INTEGER
+            + 4 * (length(trim(name_)) < 4)::INTEGER,
+        length := length(trim(name_)),
+        name := trim(name_))
+);
+
+-- A JSON object with the fields of another set over it, nulls included (Python's
+-- dict.update; json_merge_patch would drop the fields set to null).
+CREATE OR REPLACE MACRO op_json_patch(obj, patch) AS (
+    to_json(map_concat(json_transform(obj::JSON, '"MAP(VARCHAR, JSON)"'),
+        json_transform(patch::JSON, '"MAP(VARCHAR, JSON)"')))
+);

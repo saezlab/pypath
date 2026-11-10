@@ -191,6 +191,27 @@ def biolink_names() -> list[list[str]]:
     return [list(row) for row in sorted(rows)]
 
 
+def query_tables() -> dict:
+    """The rules of display names and entity groups (omnipath_core) as tables."""
+    from omnipath_core.display_names import NAME_NAMESPACES, NAME_RULES
+    from omnipath_api.queries.services.groups import chemical_types
+
+    return {
+        "op_name_rules": {
+            "columns": ["pattern VARCHAR", "penalty INTEGER"],
+            "rows": [[pattern, penalty] for pattern, penalty in NAME_RULES],
+        },
+        "op_name_namespaces": {
+            "columns": ["namespace VARCHAR"],
+            "rows": [[name] for name in NAME_NAMESPACES],
+        },
+        "op_chemical_types": {
+            "columns": ["entity_type VARCHAR"],
+            "rows": [[name] for name in chemical_types()],
+        },
+    }
+
+
 def contract() -> dict:
     queries = serving_queries("{relation}", "{entity}", "{entity_identifier}")
     return {
@@ -225,6 +246,9 @@ def contract() -> dict:
         "macro_files": ["shape.sql"],
         "relation_export_limit": RELATION_EXPORT_LIMIT,
         "biolink_names": biolink_names(),
+        # Tables of rules the queries read, created on each connection from here (so
+        # they match the code, whatever the database): {table: {columns, rows}}.
+        "query_tables": query_tables(),
     }
 
 

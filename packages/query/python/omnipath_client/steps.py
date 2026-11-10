@@ -418,8 +418,11 @@ def _shared_macros() -> tuple[str, str]:
     macros: each connection gets the code's own, whatever its database stores."""
     import hashlib
 
+    from .contracts import CONTRACT
+
     text = files("omnipath_client").joinpath("sql", "shape.sql").read_text()
-    marker = "op_layer_" + hashlib.sha256(text.encode()).hexdigest()[:12]
+    tables = json.dumps(CONTRACT.get("query_tables", {}), sort_keys=True)
+    marker = "op_layer_" + hashlib.sha256((text + tables).encode()).hexdigest()[:12]
     return marker, re.sub(r"CREATE OR REPLACE MACRO", "CREATE OR REPLACE TEMP MACRO", text)
 
 
@@ -429,6 +432,13 @@ def prepare(con: duckdb.DuckDBPyConnection) -> None:
     try:
         con.execute(f"SELECT {marker}()")  # defined: a trivial statement
     except duckdb.CatalogException:
+        from .contracts import CONTRACT
+
+        for table, spec in CONTRACT.get("query_tables", {}).items():
+            con.execute(f"CREATE OR REPLACE TEMP TABLE {table} ({', '.join(spec['columns'])})")
+            if spec["rows"]:
+                values = ", ".join("(" + ", ".join(literal(v) for v in row) + ")" for row in spec["rows"])
+                con.execute(f"INSERT INTO {table} VALUES {values}")
         con.execute(sql)
         con.execute(f"CREATE OR REPLACE TEMP MACRO {marker}() AS 1")
 

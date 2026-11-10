@@ -8404,5 +8404,97 @@
    "xenologous_to",
    "xenologous_to"
   ]
- ]
+ ],
+ "query_tables": {
+  "op_name_rules": {
+   "columns": [
+    "pattern VARCHAR",
+    "penalty INTEGER"
+   ],
+   "rows": [
+    [
+     "(?i)^https?://",
+     100
+    ],
+    [
+     "(?i)^(MLS|SMR|cid_|ZINC|SID_|CID_|InChI=)",
+     100
+    ],
+    [
+     "^[A-Z0-9._-]{1,3}$",
+     10
+    ],
+    [
+     "^[A-Z][0-9A-Z]{3,}$",
+     8
+    ],
+    [
+     "^[A-Z][a-z]",
+     -3
+    ]
+   ]
+  },
+  "op_name_namespaces": {
+   "columns": [
+    "namespace VARCHAR"
+   ],
+   "rows": [
+    [
+     "name"
+    ],
+    [
+     "om:0202"
+    ],
+    [
+     "entry_name"
+    ],
+    [
+     "entry name"
+    ]
+   ]
+  },
+  "op_chemical_types": {
+   "columns": [
+    "entity_type VARCHAR"
+   ],
+   "rows": [
+    [
+     "chemical_entity"
+    ],
+    [
+     "molecular_entity"
+    ],
+    [
+     "chemical_mixture"
+    ],
+    [
+     "environmental_food_contaminant"
+    ],
+    [
+     "food_additive"
+    ],
+    [
+     "molecular_mixture"
+    ],
+    [
+     "complex_molecular_mixture"
+    ],
+    [
+     "processed_material"
+    ],
+    [
+     "food"
+    ],
+    [
+     "drug"
+    ],
+    [
+     "small_molecule"
+    ],
+    [
+     "nucleic_acid_entity"
+    ]
+   ]
+  }
+ }
 }

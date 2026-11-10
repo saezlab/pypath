@@ -13,7 +13,8 @@ WITH merged AS (
         min(position) AS position,
         arg_max(struct_pack(namespace := namespace, identifier := identifier, label := label,
             entity_type := entity_type, taxon := taxon, has_hierarchy := has_hierarchy,
-            parent_count := parent_count, child_count := child_count), struct_pack(
+            parent_count := parent_count, child_count := child_count,
+            group_connectivity := group_connectivity), struct_pack(
             a := coalesce(len(annotations), annotation_count, 0),
             i := coalesce(len(identifiers), identifier_count, 0),
             g := regexp_full_match(coalesce(label, ''), '[A-Z][A-Z0-9-]{1,14}')::INTEGER,
@@ -42,7 +43,8 @@ WITH merged AS (
         entity_key AS pk, best.namespace AS raw_namespace, best.identifier AS raw_identifier,
         best.label AS raw_label, best.entity_type AS raw_type, best.taxon AS taxon,
         best.has_hierarchy AS has_hierarchy, best.parent_count AS parent_count,
-        best.child_count AS child_count, relation_count, gene_reference_keys,
+        best.child_count AS child_count, best.group_connectivity AS group_connectivity,
+        relation_count, gene_reference_keys,
         CASE
             WHEN list_contains(coalesce(reference_keys, []),
                     coalesce(best.namespace, 'None') || ':' || coalesce(best.identifier, 'None'))
