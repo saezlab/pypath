@@ -63,6 +63,19 @@ def _version_key(version: str) -> tuple[int, ...]:
     return tuple(map(int, version.split(".")))
 
 
+_SIZE = re.compile(r"\s*(\d+(?:\.\d+)?)\s*([KMGT]?)(i?)B?\s*", re.I)
+
+
+def _scaled(size: str, factor: int) -> str:
+    """A DuckDB memory size times ``factor`` (``3500MB`` times 3 is ``10500MB``)."""
+    match = _SIZE.fullmatch(size)
+    if match is None:
+        raise ValueError(f"Not a memory size: {size!r}")
+    number, unit, binary = match.groups()
+    unit = unit.upper()
+    return f"{float(number) * factor:g}{unit}{'i' if binary else ''}B"
+
+
 class ReleaseNotServed(LookupError):
     """A published release whose database is not (or no longer) served."""
 
@@ -147,8 +160,9 @@ class ReleaseQueries(
         memory_limit: str = "1GB",
         threads: int = 2,
     ) -> None:
-        """``memory_limit`` and ``threads`` apply to each query connection unless the
-        OMNIPATH_DUCKDB_MEMORY_LIMIT and OMNIPATH_DUCKDB_THREADS variables set them;
+        """``memory_limit`` and ``threads`` are per query (OMNIPATH_DUCKDB_MEMORY_LIMIT and
+        OMNIPATH_DUCKDB_THREADS override them): the one DuckDB database every query runs in
+        gets them times the number of concurrent queries (OMNIPATH_QUERY_CONCURRENCY).
         OMNIPATH_DUCKDB_TEMP_DIRECTORY names a writable directory for spills."""
         self.data_root = Path(data_root).resolve()
         self._memory_limit, self._threads = memory_limit, threads
@@ -181,6 +195,10 @@ class ReleaseQueries(
             "served_scope", default=None
         )
         self._db_local = threading.local()
+        # The DuckDB database the queries run in (one cache and thread pool for all of
+        # them), with its generation; each query gets a cursor on it.
+        self._database: tuple[int, duckdb.DuckDBPyConnection] | None = None
+        self._database_lock = threading.Lock()
         self._connections = []
         self._connections_lock = threading.Lock()
         self._db_generation = 0
@@ -397,18 +415,42 @@ class ReleaseQueries(
 
     # Connections -----------------------------------------------------------------
 
-    def _open_query_connection(self) -> duckdb.DuckDBPyConnection:
-        connection = get_connection(memory_limit=self._memory_limit, threads=self._threads)
+    def _open_database(self) -> duckdb.DuckDBPyConnection:
+        """The database the queries share, with the served releases attached: one buffer
+        cache and one thread pool, sized for the concurrent queries. (A database per
+        query kept three copies of the same blocks, each in a third of the memory.)"""
+        size = self._query_pool.size
+        memory = _scaled(os.getenv("OMNIPATH_DUCKDB_MEMORY_LIMIT", self._memory_limit), size)
+        threads = int(os.getenv("OMNIPATH_DUCKDB_THREADS", str(self._threads))) * size
+        database = get_connection(memory_limit=memory, threads=threads)
         try:
             Path(self._temp_directory).mkdir(parents=True, exist_ok=True)
-            connection.execute("SET temp_directory = ?", [self._temp_directory])
-            # The settings every query connection uses (the index reads, no
-            # materializing of whole tables): the same as the clients'.
-            apply_settings(connection)
+            database.execute("SET temp_directory = ?", [self._temp_directory])
             for served in self._state.releases.values():
-                connection.execute(
+                database.execute(
                     f"ATTACH {sql_literal(str(served.path))} AS {served.alias} (READ_ONLY)"
                 )
+        except Exception:
+            database.close()
+            raise
+        return database
+
+    def _open_query_connection(self) -> duckdb.DuckDBPyConnection:
+        """A connection (cursor) on the shared database, opened anew when the served
+        releases change; cursors of the previous one keep it until they are discarded."""
+        with self._database_lock:
+            generation = self._db_generation
+            if self._database is None or self._database[0] != generation:
+                previous = self._database
+                self._database = (generation, self._open_database())
+                if previous is not None:
+                    previous[1].close()
+            connection = self._database[1].cursor()
+        try:
+            # The settings every query connection uses (the index reads, no
+            # materializing of whole tables): the same as the clients'.
+            connection.execute("SET arrow_large_buffer_size=true")
+            apply_settings(connection)
         except Exception:
             connection.close()
             raise
@@ -476,6 +518,10 @@ class ReleaseQueries(
         self._query_pool.close()
         for connection in tuple(self._connections):
             self._close_direct_connection(connection)
+        with self._database_lock:
+            if self._database is not None:
+                self._database[1].close()
+                self._database = None
 
     # Resources of the release ----------------------------------------------------
 
