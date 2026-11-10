@@ -304,7 +304,8 @@ def test_sql_on_native_tables(service, monkeypatch):
                 "SELECT count(*) = (SELECT count(*) FROM relation) FROM relation_key_lookup"
             ).fetchone() == (True,)
             assert sorted(r[0] for r in db.sql("SELECT index_name FROM duckdb_indexes()").fetchall()) == [
-                "entity_annotation_eid", "entity_eid", "entity_evidence_eid", "relation_evidence_rid", "relation_rid"
+                "entity_annotation_eid", "entity_eid", "entity_evidence_eid", "entity_merged_key",
+                "relation_evidence_rid", "relation_rid",
             ]
     # A new version and a new resource: the database is written anew.
     service.publish("alpha", "2.0")
@@ -649,16 +650,17 @@ def test_init_downloads_the_release_taxon_names(service):
         assert db.entity(tp53)["entity"]["taxonomyName"] == "human"
     downloads = [r for r in service.requests if r.url.path == "/api/references/taxonomy"]
     assert len(downloads) == 1
-    # The same names are not downloaded again; new ones replace them in the database
-    # without writing it anew.
+    # The same names are not downloaded or written again; new ones write the database
+    # anew, since the merged entities' summaries name taxa.
+    written = (service.data / "omnipath.duckdb").stat().st_ino
     service.init("alpha")
     assert len([r for r in service.requests if r.url.path == "/api/references/taxonomy"]) == 1
-    written = (service.data / "omnipath.duckdb").stat().st_ino
+    assert (service.data / "omnipath.duckdb").stat().st_ino == written
     write_taxonomy(service.taxonomy, "people")
     service.init("alpha")
     with connect(service.data) as db:
         assert db.entity(tp53)["entity"]["taxonomyName"] == "people"
-    assert (service.data / "omnipath.duckdb").stat().st_ino == written
+        assert db.search("TP53").fetchone() is not None
     assert len(list((service.data / "references/taxonomy").iterdir())) == 1
 
 

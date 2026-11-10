@@ -160,7 +160,30 @@ def derived_tables() -> dict:
                 FROM edges""",
             "order": "term_key",
         },
+        # Entities merged once, at build, instead of on every request: one row per entity
+        # with its summary precomputed and its merged identifier and annotation lists
+        # (sql/build/).
+        # A request read an entity's copies by long key lists, which scan the tables, and
+        # merged them (TP53's 64 copies: about 600 ms of CPU).
+        **{name: {"select": build_sql(name), "order": order} for name, order in MERGED_TABLES.items()},
     }
+
+
+# The merged entity tables (sql/build/<name>.sql) and their order.
+MERGED_TABLES = {"entity_merged": "entity_key"}
+
+
+def build_sql(name: str) -> str:
+    """A build statement with the fragments it includes (the queries' own merge and
+    summary SQL), as the builders run it."""
+    from omnipath_client import steps
+
+    return steps.expand(
+        (SQL / "build" / f"{name}.sql").read_text(),
+        lambda fragment: (SQL / "fragments" / f"{fragment}.sql").read_text(),
+    )
+
+
 # ART indexes: rows by a list of global ids (DuckDB uses an index only for ids written into
 # the SQL as a literal list). Measured on a full release: 7,582 relations in 0.3 s instead
 # of 5.6 s; 50 entities from across the release in 0.06-0.09 s instead of 0.4 s (a list
@@ -168,14 +191,18 @@ def derived_tables() -> dict:
 # annotations 2-4 times faster. Together the entity indexes take 0.66 GB. Not on
 # entity_identifier (about 2 GB for 106 million rows) or entity_key.
 INDEXES = [
+    # The merged entities by key: search pages, relation endpoints and groups read dozens
+    # to hundreds of keys at a time.
+    ["entity_merged_key", "entity_merged", "entity_key"],
     ["relation_rid", "relation", "_rid"],
     ["relation_evidence_rid", "relation_evidence", "_rid"],
     ["entity_eid", "entity", "_eid"],
     ["entity_evidence_eid", "entity_evidence", "_eid"],
     ["entity_annotation_eid", "entity_annotation", "_eid"],
 ]
-# Changes when the tables, derived tables or indexes a database holds change. 10: op_taxonomy.
-DATABASE_FORMAT = 10
+# Changes when the tables, derived tables or indexes a database holds change. 10: op_taxonomy;
+# 11: merged entities.
+DATABASE_FORMAT = 11
 
 
 def biolink_names() -> list[list[str]]:

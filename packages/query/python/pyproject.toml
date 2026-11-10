@@ -27,7 +27,7 @@ where = ["."]
 include = ["omnipath_client*"]
 
 [tool.setuptools.package-data]
-omnipath_client = ["py.typed", "sql/*.sql", "sql/queries/*.sql", "sql/fragments/*.sql", "sql/contract.json"]
+omnipath_client = ["py.typed", "sql/*.sql", "sql/queries/*.sql", "sql/fragments/*.sql", "sql/build/*.sql", "sql/contract.json"]
 
 [tool.uv.sources]
 omnipath-api = { workspace = true }

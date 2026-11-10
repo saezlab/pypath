@@ -264,8 +264,9 @@ def test_auto_api_hydration_concrete_strategies_and_relationships(mixed_engine):
                 "detail_limit": 100,
             },
         ).json()["groups"][0]["entity"]
-        assert scoped["sources"] == ["a"] and len(scoped["entityAttributes"]) == 4
-        assert all(a["source"] == "a" for a in scoped["entityAttributes"])
+        # A source filter selects the groups; each shows its entity's full merged record.
+        assert scoped["sources"] == ["a", "b"] and len(scoped["entityAttributes"]) == 5
+        assert {a["source"] for a in scoped["entityAttributes"]} == {"a", "b"}
         by_key = {g["entity"]["entityPk"]: g for g in groups}
         for group in (by_key[chemical["entityPk"]], by_key["gene:entrez:1"]):
             entity = group["entity"]

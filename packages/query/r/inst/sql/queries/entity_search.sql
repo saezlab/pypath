@@ -146,10 +146,10 @@ SELECT NOT list_contains({{phases}}, 'prefix')
 SELECT entity_key FROM __ranked ORDER BY entity_key
 
 -- step: candidate_copies AS table
--- the candidates' selected copies, for their relation counts
-SELECT entity_key, relation_count FROM entity_by_key
+-- the candidates' merged rows that pass the filters, for their relation counts
+SELECT entity_key, relation_count FROM entity_merged
 WHERE entity_key IN ({{candidates*}})
-    AND op_entity_ok(entity_by_key, {{scope}}, {{type_names}}, {{taxonomy_ids}}, {{reference_entity_keys}}, {{keys_filter}})
+    AND op_merged_ok(entity_merged, {{scope}}, {{type_names}}, {{taxonomy_ids}}, {{reference_entity_keys}}, {{keys_filter}})
 
 -- step: prefix_page AS table
 SELECT r.entity_key,
@@ -159,14 +159,6 @@ JOIN (SELECT entity_key, sum(coalesce(relation_count, 0)) AS relations FROM __ca
     USING (entity_key)
 QUALIFY position <= {{count_}}
 
--- step: page_keys AS list
-SELECT entity_key FROM __prefix_page ORDER BY entity_key
-
--- step: page_copies AS table
-SELECT * FROM entity_by_key
-WHERE entity_key IN ({{page_keys*}})
-    AND op_entity_ok(entity_by_key, {{scope}}, {{type_names}}, {{taxonomy_ids}}, {{reference_entity_keys}}, {{keys_filter}})
-
 -- step: phase AS value
 SELECT CASE
     WHEN list_contains({{phases}}, 'prefix') AND (SELECT count(*) FROM __prefix_page) > 0 THEN 'prefix'
@@ -174,9 +166,9 @@ SELECT CASE
     ELSE {{phases}}[1]
 END
 
--- step: scan_rows AS table when {{phase}} <> 'prefix'
+-- step: scan_page AS table when {{phase}} <> 'prefix'
 WITH matched AS (
-    SELECT * FROM entity_by_key
+    SELECT entity_key, label, relation_count FROM entity_by_key
     WHERE op_entity_ok(entity_by_key, {{scope}}, {{type_names}}, {{taxonomy_ids}}, {{reference_entity_keys}}, {{keys_filter}})
         AND CASE {{phase}}
             WHEN 'key' THEN entity_key = {{q}}
@@ -192,26 +184,21 @@ WITH matched AS (
           FROM matched GROUP BY entity_key)
     QUALIFY position <= {{count_}}
 )
-SELECT m.*, p.position FROM matched m JOIN page p USING (entity_key)
+SELECT entity_key, position FROM page
 
--- step: page_rows AS table
-SELECT c.*, p.position FROM __page_copies c JOIN __prefix_page p USING (entity_key)
-WHERE {{phase}} = 'prefix'
-UNION ALL BY NAME
-SELECT * FROM __scan_rows
+-- step: page AS table
+SELECT entity_key, position FROM __prefix_page WHERE {{phase}} = 'prefix'
+UNION ALL
+SELECT entity_key, position FROM __scan_page
+
+-- step: page_keys AS list
+SELECT entity_key FROM __page ORDER BY entity_key
 
 -- step: summaries AS table
-WITH nested AS (
-    SELECT * EXCLUDE (key_rank, _resource_version), _resource || '/' || _resource_version AS resource,
-        NULL::STRUCT(ns VARCHAR, id VARCHAR, is_canonical BOOLEAN, source VARCHAR)[] AS identifiers,
-        NULL::STRUCT(term VARCHAR, "value" VARCHAR, quantity STRUCT(has_numeric_value DOUBLE,
-            has_unit VARCHAR, has_unit_prefix VARCHAR, has_binary_relation VARCHAR,
-            source_field VARCHAR, comparator VARCHAR), "source" VARCHAR, dataset VARCHAR)[] AS annotations
-    FROM __page_rows
-), merged AS (
-    SELECT * FROM {{include:merged_entity nested}}
-)
-SELECT * FROM {{include:entity_summary merged}}
+-- the page's entities as merged at build
+SELECT p.position, m.summary
+FROM __page p JOIN (SELECT entity_key, summary FROM entity_merged WHERE entity_key IN ({{page_keys*}})) m
+    USING (entity_key)
 
 -- step: rows AS table
 SELECT summary.entityPk AS entity_key, summary.label AS label, summary.entityType AS entity_type,

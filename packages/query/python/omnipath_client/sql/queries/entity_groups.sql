@@ -189,9 +189,10 @@ ORDER BY 1
 SELECT DISTINCT m.entity_key FROM __members m JOIN __page_groups p USING (group_key)
 WHERE p.connectivity IS NULL AND p.reference_entity_key IS NULL ORDER BY 1
 
--- step: member_copies AS table
--- the members' copies in scope: those their groups list, and every copy of a single
--- entity (not only those the search matched)
+-- step: member_copies AS table when {{include_details}}
+-- the members' copies in scope, for structure group cards with details (one entity
+-- merged from all their members' copies): those their groups list, and every copy of a
+-- single entity (not only those the search matched)
 SELECT * EXCLUDE (key_rank, _resource_version), _resource || '/' || _resource_version AS resource
 FROM (
     SELECT e.* FROM entity e WHERE _eid IN ({{listed_ids*}})
@@ -209,29 +210,22 @@ SELECT * FROM entity_identifier WHERE _eid IN ({{copy_ids*}})
 -- step: annotation_rows AS table
 SELECT * FROM entity_annotation WHERE _eid IN ({{copy_ids*}})
 
+-- step: member_merged AS table
+-- the members as merged at build (when a copy is in scope)
+SELECT * FROM entity_merged
+WHERE entity_key IN ({{member_keys*}}) AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
+
 -- step: member_summaries AS table
-WITH copy_identifiers AS (
-    SELECT _eid, list(struct_pack(ns := ns, id := id, is_canonical := is_canonical, source := source)
-        ORDER BY ordinal) AS identifiers
-    FROM __identifier_rows GROUP BY ALL
-), copy_annotations AS (
-    SELECT _eid, list(struct_pack(term := term, value := value,
-        quantity := op_quantity(quantity_has_numeric_value, quantity_has_unit, quantity_has_unit_prefix,
-            quantity_has_binary_relation, quantity_source_field, quantity_comparator),
-        source := source, dataset := dataset) ORDER BY ordinal) AS annotations
-    FROM __annotation_rows GROUP BY ALL
-), nested AS (
-    SELECT c.*, 0 AS position,
-        CASE WHEN {{include_details}} THEN coalesce(i.identifiers, []) END AS identifiers,
-        CASE WHEN {{include_details}} THEN coalesce(a.annotations, []) END AS annotations
-    FROM __member_copies c LEFT JOIN copy_identifiers i USING (_eid) LEFT JOIN copy_annotations a USING (_eid)
-), merged AS (
-    SELECT * FROM {{include:merged_entity nested}}
-), shaped AS (
-    SELECT * FROM {{include:entity_summary merged}}
+-- the stored summaries, or with details built with the identifier and annotation lists
+WITH placed AS (SELECT *, 0 AS position FROM __member_merged WHERE {{include_details}}),
+listed AS (SELECT * FROM {{include:merged_rows placed}}),
+summaries AS (
+    SELECT summary FROM __member_merged WHERE NOT {{include_details}}
+    UNION ALL
+    SELECT summary FROM {{include:entity_summary listed}}
 )
-SELECT s.summary, m.pk AS entity_key, m.relation_count, m.raw_type AS entity_type, m.taxon, m.raw_label AS label
-FROM shaped s JOIN merged m ON s.summary.entityPk = m.pk
+SELECT s.summary, m.entity_key, m.relation_count, m.entity_type, m.taxon, m.label
+FROM summaries s JOIN __member_merged m ON m.entity_key = s.summary.entityPk
 
 -- step: chemical_bases AS table when {{include_details}}
 -- with details, a structure group's card merges all its members' copies (as one entity

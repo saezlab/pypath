@@ -59,7 +59,8 @@ def test_release_database_holds_every_resource_with_global_ids(tmp_path):
             "SELECT _rid FROM relation_key_lookup WHERE key_prefix = ?", [int(fixture_key("relation")[:15], 16)]
         ).fetchall() == [((1 << 32) + 0,)]
         assert {r[0] for r in db.execute("SELECT index_name FROM duckdb_indexes()").fetchall()} == {
-            "relation_rid", "relation_evidence_rid", "entity_eid", "entity_evidence_eid", "entity_annotation_eid"
+            "relation_rid", "relation_evidence_rid", "entity_eid", "entity_evidence_eid", "entity_annotation_eid",
+            "entity_merged_key",
         }
         assert db.execute("SELECT count(*) FROM signor.relation").fetchone() == (1,)
         # The tables the derived ones replace were written elsewhere: no space left over.

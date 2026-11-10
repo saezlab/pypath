@@ -135,7 +135,8 @@ def test_group_cards_merge_all_members_and_sort_before_pagination(tmp_path):
     scoped = engine.search_entity_groups(filters={"sources": ["one"]}, include_details=True)[
         "groups"
     ][0]["entity"]
-    assert len(scoped["entityAttributes"]) == 7
+    # A source filter selects the groups; each shows its entity's full merged record.
+    assert len(scoped["entityAttributes"]) == 8
     assert scoped["groupResources"] == ["one"]
 
 

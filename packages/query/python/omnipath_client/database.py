@@ -33,6 +33,7 @@ from typing import Any
 
 import duckdb
 
+from . import steps
 from .contracts import CONTRACT, SERVING, TABLES, Installation, ResourceRecord
 
 DATABASE = "omnipath.duckdb"
@@ -147,8 +148,8 @@ def native_lookups() -> list[str]:
     return statements
 
 
-def _query_layer(db) -> None:
-    """Biolink names, the lookups and the macros; tables before what reads them."""
+def _names(db) -> None:
+    """The Biolink names (op_names), which the shared macros read."""
     db.execute("CREATE OR REPLACE TABLE op_names (kind VARCHAR, alias VARCHAR, name VARCHAR)")
     db.execute(
         "INSERT INTO op_names VALUES "
@@ -156,6 +157,11 @@ def _query_layer(db) -> None:
             f"({_literal(k)}, {_literal(a)}, {_literal(n)})" for k, a, n in CONTRACT["biolink_names"]
         )
     )
+
+
+def _query_layer(db) -> None:
+    """Biolink names, the lookups and the macros; tables before what reads them."""
+    _names(db)
     present = {
         row[0]
         for row in db.execute(
@@ -207,7 +213,7 @@ def _derived(db, present: set[str]) -> None:
             f"CREATE TABLE omnipath.main.{name} AS SELECT * FROM ({query['select']}) ORDER BY {query['order']}"
         )
     for name, table, column in CONTRACT["indexes"]:
-        if table in present:
+        if table in present or table in CONTRACT["derived_tables"]:
             db.execute(f"CREATE INDEX {name} ON {table}({column})")
 
 
@@ -300,10 +306,13 @@ def write_database(
                 for source in having:
                     db.execute(f"INSERT INTO {where}{table} BY NAME " + source.select(table, index[source.resource_id]))
             say("Writing the derived tables and indexes")
+            # The merged entities' summaries name taxa and use the shared macros.
+            _taxonomy(db, taxonomy)
+            _names(db)
+            steps.prepare(db)
             _derived(db, set(present))
             for source in ordered:
                 _resource_schema(db, source, payloads)
-            _taxonomy(db, taxonomy)
             _describe(db, ordered, payloads, info)
             _query_layer(db)
             db.execute("USE memory")
@@ -433,16 +442,15 @@ def in_sync(root: Path, installation: Installation) -> bool:
 def synchronize(root: Path, installation: Installation, memory_limit: str = "2GB") -> None:
     """Bring the database in line with the installation; nothing when it already is.
 
-    Changed resources mean a new database, written completely. When only the query
-    layer or the taxon names differ, they alone are rewritten.
+    Changed resources or taxon names (the merged entities' summaries name taxa) mean a
+    new database, written completely. When only the query layer differs, it alone is
+    rewritten.
     """
     info = _info(root)
     taxonomy = installation.get("taxonomy")
-    if _tables_in_sync(info, installation):
+    if _tables_in_sync(info, installation) and info[3] == taxonomy:
         if info[0] != QUERY_LAYER:
             _layer_only(root)
-        if info[3] != taxonomy:
-            _taxonomy_only(root, taxonomy)
         return
     temporary = root / ".duckdb-tmp"
     try:
@@ -462,19 +470,6 @@ def synchronize(root: Path, installation: Installation, memory_limit: str = "2GB
     finally:
         if temporary.is_dir() and not any(temporary.iterdir()):
             temporary.rmdir()
-
-
-def _taxonomy_only(root: Path, version: str | None) -> None:
-    """Write the taxon names of an otherwise current database."""
-    db = duckdb.connect(str(root / DATABASE))
-    try:
-        db.execute("BEGIN")
-        _taxonomy(db, taxonomy_file(root, version) if version else None)
-        db.execute("ALTER TABLE database_info ADD COLUMN IF NOT EXISTS taxonomy VARCHAR")
-        db.execute("UPDATE database_info SET taxonomy = ?", [version])
-        db.execute("COMMIT")
-    finally:
-        db.close()
 
 
 def _layer_only(root: Path) -> None:

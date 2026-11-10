@@ -109,11 +109,16 @@
   }, "")
 }
 
-.query_layer_write <- function(con) {
+# The Biolink names (op_names), which the shared macros read.
+.names_write <- function(con) {
   .exec(con, "CREATE OR REPLACE TABLE op_names (kind VARCHAR, alias VARCHAR, name VARCHAR)")
   names <- .contract()$biolink_names
   values <- vapply(names, function(n) sprintf("(%s, %s, %s)", .quote(n[[1]]), .quote(n[[2]]), .quote(n[[3]])), "")
   .exec(con, paste0("INSERT INTO op_names VALUES ", paste(values, collapse = ", ")))
+}
+
+.query_layer_write <- function(con) {
+  .names_write(con)
   present <- DBI::dbGetQuery(con, "SELECT table_name AS n FROM duckdb_tables() WHERE schema_name = 'main' AND database_name = current_database()")$n
   for (statement in .native_lookups()) {
     table <- sub("^CREATE OR REPLACE MACRO op_(\\w+)_(at|with)\\(.*$", "\\1", statement)
@@ -153,7 +158,7 @@
       name, derived[[name]]$select, derived[[name]]$order))
   }
   for (index in .contract()$indexes) {
-    if (index[[2]] %in% present) {
+    if (index[[2]] %in% present || index[[2]] %in% names(.contract()$derived_tables)) {
       .exec(con, sprintf("CREATE INDEX %s ON %s(%s)", index[[1]], index[[2]], index[[3]]))
     }
   }
@@ -201,9 +206,12 @@
       .exec(con, sprintf("INSERT INTO %s%s BY NAME %s", where, table, .source(root, record, table, index[[record$resource_id]])))
     }
   }
+  # The merged entities' summaries name taxa and use the shared macros.
+  .taxonomy(con, if (is.null(taxonomy)) NULL else .taxonomy_file(root, taxonomy))
+  .names_write(con)
+  .prepare_macros(con)
   .derived(con, present)
   for (record in ordered) .resource_schema(con, record)
-  .taxonomy(con, if (is.null(taxonomy)) NULL else .taxonomy_file(root, taxonomy))
   .describe(con, root, records, release, taxonomy)
   .query_layer_write(con)
   .exec(con, "USE memory")
@@ -250,18 +258,6 @@
     identical(info$taxonomy, installation$taxonomy)
 }
 
-# The taxon names of an otherwise current database.
-.taxonomy_only <- function(root, version) {
-  con <- DBI::dbConnect(duckdb::duckdb(), dbdir = file.path(root, .database_file))
-  on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
-  DBI::dbBegin(con)
-  .taxonomy(con, if (is.null(version)) NULL else .taxonomy_file(root, version))
-  .exec(con, "ALTER TABLE database_info ADD COLUMN IF NOT EXISTS taxonomy VARCHAR")
-  .exec(con, sprintf("UPDATE database_info SET taxonomy = %s", if (is.null(version)) "NULL" else .quote(version)))
-  DBI::dbCommit(con)
-  invisible(TRUE)
-}
-
 .layer_only <- function(root) {
   con <- DBI::dbConnect(duckdb::duckdb(), dbdir = file.path(root, .database_file))
   on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
@@ -271,13 +267,13 @@
   invisible(TRUE)
 }
 
-# Changed resources mean a new database, written completely; when only the query
-# layer (another client version wrote it) or the taxon names differ, they alone.
+# Changed resources or taxon names (the merged entities' summaries name taxa) mean a new
+# database, written completely; when only the query layer differs (another client
+# version wrote it), it alone.
 .synchronize <- function(root, installation, memory_limit = "2GB") {
   info <- .info(root)
-  if (.tables_in_sync(info, installation)) {
+  if (.tables_in_sync(info, installation) && identical(info$taxonomy, installation$taxonomy)) {
     if (!identical(info$query_layer, .query_layer())) .layer_only(root)
-    if (!identical(info$taxonomy, installation$taxonomy)) .taxonomy_only(root, installation$taxonomy)
     return(invisible(FALSE))
   }
   on.exit({

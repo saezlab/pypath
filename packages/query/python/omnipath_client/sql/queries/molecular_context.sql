@@ -148,38 +148,20 @@ ORDER BY 1
 SELECT * EXCLUDE (_resource_version), _resource || '/' || _resource_version AS resource FROM entity
 WHERE _eid IN ({{product_ids*}})
 
--- step: product_copy_ids AS list
-SELECT _eid FROM __product_copies WHERE namespace <> 'entrez' ORDER BY 1
-
--- step: product_identifier_rows AS table
-SELECT * FROM entity_identifier WHERE _eid IN ({{product_copy_ids*}})
-
--- step: product_annotation_rows AS table
-SELECT * FROM entity_annotation WHERE _eid IN ({{product_copy_ids*}})
+-- step: product_keys AS list
+SELECT DISTINCT entity_key FROM __product_copies WHERE namespace <> 'entrez' ORDER BY 1
 
 -- step: products AS table
-WITH copy_identifiers AS (
-    SELECT _eid, list(struct_pack(ns := ns, id := id, is_canonical := is_canonical, source := source)
-        ORDER BY ordinal) AS identifiers
-    FROM __product_identifier_rows GROUP BY ALL
-), copy_annotations AS (
-    SELECT _eid, list(struct_pack(term := term, value := value,
-        quantity := op_quantity(quantity_has_numeric_value, quantity_has_unit, quantity_has_unit_prefix,
-            quantity_has_binary_relation, quantity_source_field, quantity_comparator),
-        source := source, dataset := dataset) ORDER BY ordinal) AS annotations
-    FROM __product_annotation_rows GROUP BY ALL
-), nested AS (
-    -- a key's place: its first copy's, by resource and id
-    SELECT c.*, min(struct_pack(r := c.resource, i := c.entity_id)) OVER (PARTITION BY c.entity_key) AS first_copy,
-        coalesce(i.identifiers, []) AS identifiers, coalesce(a.annotations, []) AS annotations
-    FROM __product_copies c LEFT JOIN copy_identifiers i USING (_eid) LEFT JOIN copy_annotations a USING (_eid)
-    WHERE c.namespace <> 'entrez'
-), placed AS (
-    SELECT * EXCLUDE (first_copy), dense_rank() OVER (ORDER BY first_copy) AS position FROM nested
-), merged AS (
-    SELECT * FROM {{include:merged_entity placed}}
+-- the products as merged at build, each in its first copy's place (by resource and id)
+WITH placed AS (
+    SELECT m.*, p.position
+    FROM (SELECT * FROM entity_merged WHERE entity_key IN ({{product_keys*}})) m
+    JOIN (SELECT entity_key, dense_rank() OVER (ORDER BY min(struct_pack(r := resource, i := entity_id))) AS position
+          FROM __product_copies WHERE namespace <> 'entrez' GROUP BY entity_key) p USING (entity_key)
+), listed AS (
+    SELECT * FROM {{include:merged_rows placed}}
 )
-SELECT * FROM {{include:entity_summary merged}}
+SELECT * FROM {{include:entity_summary listed}}
 
 -- step: standalone_ids AS list
 -- the entity rows whose evidence is standalone: the gene's reference members, or the
@@ -242,25 +224,13 @@ SELECT k FROM (
     GROUP BY k)
 ORDER BY o LIMIT 100
 
--- step: referenced_copies AS table
-SELECT * EXCLUDE (key_rank, _resource_version), _resource || '/' || _resource_version AS resource
-FROM entity_by_key
-WHERE entity_key IN ({{referenced_keys*}}) AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
-
 -- step: referenced AS table
-WITH ordered AS (
-    SELECT unnest({{referenced_keys}}::VARCHAR[]) AS entity_key, generate_subscripts({{referenced_keys}}::VARCHAR[], 1) AS position
-), nested AS (
-    SELECT c.*, o.position,
-        NULL::STRUCT(ns VARCHAR, id VARCHAR, is_canonical BOOLEAN, source VARCHAR)[] AS identifiers,
-        NULL::STRUCT(term VARCHAR, "value" VARCHAR, quantity STRUCT(has_numeric_value DOUBLE,
-            has_unit VARCHAR, has_unit_prefix VARCHAR, has_binary_relation VARCHAR,
-            source_field VARCHAR, comparator VARCHAR), "source" VARCHAR, dataset VARCHAR)[] AS annotations
-    FROM __referenced_copies c JOIN ordered o USING (entity_key)
-), merged AS (
-    SELECT * FROM {{include:merged_entity nested}}
-)
-SELECT * FROM {{include:entity_summary merged}}
+-- the referenced products' stored summaries, in the order of the keys
+SELECT o.position, m.summary
+FROM (SELECT entity_key, summary FROM entity_merged
+      WHERE entity_key IN ({{referenced_keys*}}) AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))) m
+JOIN (SELECT unnest({{referenced_keys}}::VARCHAR[]) AS entity_key,
+        generate_subscripts({{referenced_keys}}::VARCHAR[], 1) AS position) o USING (entity_key)
 
 -- step: response AS value when {{found}}
 WITH forms AS (

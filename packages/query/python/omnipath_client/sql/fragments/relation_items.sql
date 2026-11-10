@@ -1,8 +1,9 @@
 -- Relations as the API lists them (_relation_items): the relation summary and both
 -- endpoints' entity summaries. Reads {{input}}: one row per relation with its relation
 -- columns, _resource, position and annotations (those op_relation_json reads); and
--- __endpoint_rows, the endpoints' entity rows (entity_by_key) read by key. Gives
--- position and item.
+-- __endpoint_rows, the endpoints' merged entities (entity_key, summary). An endpoint
+-- without an entity row is summarized from the relation's own columns. Gives position
+-- and item.
 WITH ends AS (
     SELECT side AS item, r.position,
         CASE side WHEN 'subject' THEN r.subject_entity_key ELSE r.object_entity_key END AS key,
@@ -13,16 +14,22 @@ WITH ends AS (
         r._resource, r.taxon AS relation_taxon
     FROM {{input}} r, (VALUES ('subject'), ('object')) AS sides(side)
 ), joined AS (
-    SELECT p.*, e.entity_key AS e_entity_key, e.namespace AS e_namespace, e.identifier AS e_identifier,
-        e.label AS e_label, e.entity_type AS e_entity_type, e.taxon AS e_taxon,
-        e.has_hierarchy AS e_has_hierarchy, e.parent_count AS e_parent_count,
-        e.child_count AS e_child_count, e.relation_count AS e_relation_count,
-        e.gene_reference_keys AS e_gene_reference_keys, e.reference_entity_key AS e_reference_entity_key
-    FROM ends p LEFT JOIN __endpoint_rows e ON e._resource = p._resource AND e.entity_key = p.key
-), endpoint_rows AS (
-    SELECT * FROM {{include:endpoint_entity joined}}
+    SELECT p.*, e.entity_key AS e_entity_key, e.summary AS e_summary
+    FROM ends p LEFT JOIN __endpoint_rows e ON e.entity_key = p.key
+), unknown AS (
+    SELECT item, position, key, side_type, side_label, side_reference, relation_taxon,
+        NULL::VARCHAR AS e_entity_key, NULL::VARCHAR AS e_namespace, NULL::VARCHAR AS e_identifier,
+        NULL::VARCHAR AS e_label, NULL::VARCHAR AS e_entity_type, NULL::VARCHAR AS e_taxon,
+        NULL::BOOLEAN AS e_has_hierarchy, NULL::INTEGER AS e_parent_count, NULL::INTEGER AS e_child_count,
+        NULL::BIGINT AS e_relation_count, NULL::VARCHAR[] AS e_gene_reference_keys,
+        NULL::VARCHAR AS e_reference_entity_key
+    FROM joined WHERE e_entity_key IS NULL
+), unknown_rows AS (
+    SELECT * FROM {{include:endpoint_entity unknown}}
 ), shaped AS (
-    SELECT * FROM {{include:entity_summary endpoint_rows}}
+    SELECT item, position, e_summary AS summary FROM joined WHERE e_entity_key IS NOT NULL
+    UNION ALL
+    SELECT item, position, summary FROM {{include:entity_summary unknown_rows}}
 )
 SELECT r.position, struct_pack(
     relation := op_relation_json(r, r.annotations),

@@ -42,6 +42,16 @@ CREATE OR REPLACE MACRO op_entity_ok(e, scope, type_names, taxa, references_, ke
     AND (keys IS NULL OR list_contains(keys, e.entity_key))
 );
 
+-- A merged entity (entity_merged) passes the filters when some copy has each value: a
+-- resource of scope, a type, a taxon, a reference key (and its key among keys).
+CREATE OR REPLACE MACRO op_merged_ok(e, scope, type_names, taxa, references_, keys) AS (
+    (op_unset(scope) OR list_has_any(e.resources, scope))
+    AND (op_unset(type_names) OR list_has_any(e.copy_types, type_names))
+    AND (op_unset(taxa) OR list_has_any(e.copy_taxa, taxa))
+    AND (op_unset(references_) OR list_has_any(e.copy_reference_keys, references_))
+    AND (keys IS NULL OR list_contains(keys, e.entity_key))
+);
+
 -- Values in first-seen order without repeats (positions are 1-based).
 CREATE OR REPLACE MACRO op_ordered_distinct(xs) AS (
     list_transform(
