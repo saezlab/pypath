@@ -29,6 +29,20 @@ class FacetsQueries:
         filters: dict[str, Any] | None = None,
         resources: list[str] | None = None,
     ) -> dict[str, Any]:
+        """The matching relations counted by category, predicate and sign: the query
+        relation_counts."""
+        from omnipath_api.queries.services.export import relation_params
+
+        started = time.perf_counter()
+        result = json.loads(self.run_query("relation_counts", relation_params(filters), resources))
+        result["elapsed_ms"] = round((time.perf_counter() - started) * 1000, 2)
+        return result
+
+    def _old_get_facets(
+        self,
+        filters: dict[str, Any] | None = None,
+        resources: list[str] | None = None,
+    ) -> dict[str, Any]:
         """Compute aggregated facet counts in a single vectorized pass."""
         t0 = time.perf_counter()
         selection, params = self._relation_selection(filters, resources)

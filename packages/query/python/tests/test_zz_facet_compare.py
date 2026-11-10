@@ -53,3 +53,15 @@ def test_old_and_new_entity_facets(service):
             old = api._old_get_scoped_entity_facets(dict(payload), None)
             new = api.get_scoped_entity_facets(dict(payload), None)
         assert norm(new) == norm(old), payload
+
+
+def test_old_and_new_counts(service):
+    service.init(["alpha", "beta", "gamma"], include_evidence=True)
+    serve_newest(service.data, memory_limit="1GB", threads=1)
+    api = ReleaseQueries(service.data)
+    for filters in [{}, {"entity_ids": ["TP53"]}, {"sources": ["alpha"]}, {"predicates": ["biolink:interacts_with"]},
+                    {"entity_ids": ["TP53"], "scope_entity_ids": ["caffeine"]}, {"signs": [1]}]:
+        with api.query_scope():
+            old = api._old_get_facets(filters); new = api.get_facets(filters)
+        old.pop("elapsed_ms"); new.pop("elapsed_ms")
+        assert norm(new) == norm(old), filters

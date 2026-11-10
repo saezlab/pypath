@@ -632,6 +632,19 @@ class EntitiesQueries:
         values = [str(v).strip() for v in pks if str(v).strip()]
         if not values:
             return {"entities": []}
+        text = self.run_query("entities_by_keys", {"tokens": values, "slim": bool(slim)}, resources)
+        return json.loads(text)
+
+    def _old_get_entities_by_pks(
+        self,
+        pks: list[str],
+        resources: list[str] | None = None,
+        *,
+        slim: bool = False,
+    ) -> dict[str, Any]:
+        values = [str(v).strip() for v in pks if str(v).strip()]
+        if not values:
+            return {"entities": []}
         keys = self.resolve_entity_keys(values, resources)
         rows = self._fetch_entities_by_keys(keys, resources, slim=slim)
         return {"entities": [self._to_entity_summary(row) for row in rows]}
