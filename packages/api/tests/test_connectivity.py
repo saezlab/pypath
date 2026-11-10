@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from omnipath_api.queries.parquet import ParquetQueries
+from served import republish, served_queries
 from omnipath_api.server import create_app
 from omnipath_core.fixtures import write_resource
 
@@ -54,7 +54,7 @@ def test_connectivity_groups_scope_pagination_and_missing_keys(tmp_path):
         "three",
         [chemical("g", "conflict", ns="pubchem", ref="inchikey:" + a, label="Conflict chemical")],
     )
-    engine = ParquetQueries(data_root=tmp_path)
+    engine = served_queries(data_root=tmp_path)
     result = engine.search_connectivity_groups(limit=1, member_limit=1)
     group = result["groups"][0]
     assert group["connectivity"] == "AAAAAAAAAAAAAA"
@@ -100,7 +100,7 @@ def test_grouping_uses_the_same_text_match_scope_as_entity_search(tmp_path):
             chemical("b", "AAAAAAAAAAAAAA-CCCCCCCCCC-D", label="Other needle"),
         ],
     )
-    engine = ParquetQueries(data_root=tmp_path)
+    engine = served_queries(data_root=tmp_path)
     result = engine.search_entity_groups(query="Needle")
     assert result["groups"][0]["member_count"] == 1
     assert result["groups"][0]["members"][0]["entityPk"] == "a"
@@ -117,7 +117,7 @@ def test_group_cards_merge_all_members_and_sort_before_pagination(tmp_path):
         rows[-1], annotations=[dict(term="description", value="Other source", source="two")]
     )
     write_source(tmp_path, "two", [extra])
-    engine = ParquetQueries(data_root=tmp_path)
+    engine = served_queries(data_root=tmp_path)
     first = engine.search_entity_groups(limit=1, member_limit=1, include_details=True)
     group = first["groups"][0]
     assert group["member_count"] == 7
@@ -148,7 +148,7 @@ def test_group_cards_skip_hydration_until_opened(tmp_path, monkeypatch):
         for i in range(8)
     ]
     write_source(tmp_path, "one", rows)
-    engine = ParquetQueries(data_root=tmp_path)
+    engine = served_queries(data_root=tmp_path)
     queries = []
     original = engine._fetch_dicts
 
@@ -195,7 +195,7 @@ def test_group_cards_skip_hydration_until_opened(tmp_path, monkeypatch):
 
 def test_group_cache_reuses_results_and_invalidates_on_source_change(tmp_path, monkeypatch):
     write_source(tmp_path, "one", [chemical("a", "AAAAAAAAAAAAAA-BBBBBBBBBB-C")])
-    engine = ParquetQueries(data_root=tmp_path)
+    engine = served_queries(data_root=tmp_path)
     first = engine.search_entity_groups()
     with monkeypatch.context() as patch:
         patch.setattr(
@@ -213,6 +213,7 @@ def test_group_cache_reuses_results_and_invalidates_on_source_change(tmp_path, m
             chemical("b", "AAAAAAAAAAAAAA-CCCCCCCCCC-D"),
         ],
     )
+    republish(tmp_path)
     assert engine.search_entity_groups()["groups"][0]["member_count"] == 2
 
 
@@ -223,7 +224,7 @@ def test_group_detail_collections_are_paged(tmp_path):
     ]
     row["identifiers"] += [dict(ns="name", id=f"Name {i}") for i in range(45)]
     write_source(tmp_path, "one", [row])
-    client = TestClient(create_app(queries=ParquetQueries(data_root=tmp_path)))
+    client = TestClient(create_app(queries=served_queries(data_root=tmp_path)))
     values = []
     offset = 0
     while True:
@@ -261,7 +262,7 @@ def test_group_relationships_resolve_members_beyond_preview(tmp_path):
             )
         ],
     )
-    client = TestClient(create_app(queries=ParquetQueries(data_root=tmp_path)))
+    client = TestClient(create_app(queries=served_queries(data_root=tmp_path)))
     response = client.post(
         "/entities/group-relationships", json={"group_key": "connectivity:AAAAAAAAAAAAAA"}
     )
@@ -277,7 +278,7 @@ def test_group_name_is_the_preferred_member_label_on_every_page(tmp_path):
         dict(ns="name", id=f"Long descriptive chemical name {i}") for i in range(40)
     ]
     write_source(tmp_path, "one", [first, second])
-    engine = ParquetQueries(data_root=tmp_path)
+    engine = served_queries(data_root=tmp_path)
     group = engine.search_entity_groups(member_limit=1)["groups"][0]
     assert group["entity"]["displayName"] == "L-Alanine"
     # The members' canonical identifiers and labels.

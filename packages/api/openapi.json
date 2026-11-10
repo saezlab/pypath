@@ -1476,6 +1476,80 @@
         "title": "ErrorResponse",
         "type": "object"
       },
+      "EvidenceSite": {
+        "additionalProperties": true,
+        "description": "A modification of the subject's or object's molecular form.",
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "end_position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Position"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "residue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Residue"
+          },
+          "side": {
+            "enum": [
+              "subject",
+              "object"
+            ],
+            "title": "Side",
+            "type": "string"
+          },
+          "term": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Term"
+          }
+        },
+        "required": [
+          "side"
+        ],
+        "title": "EvidenceSite",
+        "type": "object"
+      },
       "ExportRequest": {
         "additionalProperties": true,
         "description": "A relation slice, defined by filters (entity and group keys included).",
@@ -2412,6 +2486,98 @@
           }
         },
         "title": "RelationEvidenceResponse",
+        "type": "object"
+      },
+      "RelationEvidenceSummary": {
+        "additionalProperties": true,
+        "description": "What one evidence source states for a relation: its sites and PubMed ids.",
+        "properties": {
+          "pmids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Pmids",
+            "type": "array"
+          },
+          "sites": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceSite"
+            },
+            "title": "Sites",
+            "type": "array"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source"
+        ],
+        "title": "RelationEvidenceSummary",
+        "type": "object"
+      },
+      "RelationEvidenceSummaryRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "filters": {
+            "$ref": "#/components/schemas/SearchFilters",
+            "description": "Molecular form filters keep only the matching occurrences, as for GET /relations/{relation_pk}/evidence."
+          },
+          "relation_pks": {
+            "description": "Up to 1,000 relation pks.",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "title": "Relation Pks",
+            "type": "array"
+          },
+          "resources": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resources"
+          }
+        },
+        "title": "RelationEvidenceSummaryRequest",
+        "type": "object"
+      },
+      "RelationEvidenceSummaryResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "elapsed_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elapsed Ms"
+          },
+          "evidence": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/RelationEvidenceSummary"
+              },
+              "type": "array"
+            },
+            "description": "Each requested relation pk: per evidence source, the sites and PubMed ids of GET /relations/{relation_pk}/evidence ([] for an unknown pk).",
+            "title": "Evidence",
+            "type": "object"
+          }
+        },
+        "title": "RelationEvidenceSummaryResponse",
         "type": "object"
       },
       "RelationFilterOptions": {
@@ -6323,6 +6489,58 @@
         "summary": "Ontology Tree",
         "tags": [
           "ontology"
+        ]
+      }
+    },
+    "/relations/evidence": {
+      "post": {
+        "description": "The sites and PubMed ids per evidence source of up to 1,000 relations at once:\nthe summary of GET /relations/{relation_pk}/evidence for each.",
+        "operationId": "relation_evidence_summaries_relations_evidence_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RelationEvidenceSummaryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelationEvidenceSummaryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Relation Evidence Summaries",
+        "tags": [
+          "relations"
         ]
       }
     },

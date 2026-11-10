@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from copy import deepcopy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -22,10 +23,11 @@ from .contracts import (
     ResourceRecord,
     validate_catalog,
     validate_installation,
+    validate_references,
     validate_resource,
 )
 from .contracts import validate_url as _url
-from .database import DATABASE, in_sync, synchronize
+from .database import DATABASE, in_sync, synchronize, taxonomy_file
 from .errors import ClientError
 from .serving import write_serving_tables
 
@@ -73,10 +75,16 @@ def _get(http: httpx.Client, api_url: str, path: str, **params: Any) -> Any:
 
 
 def _catalog(http: httpx.Client, api_url: str, release: str) -> dict[str, ResourceRecord]:
+    return _catalog_and_references(http, api_url, release)[0]
+
+
+def _catalog_and_references(
+    http: httpx.Client, api_url: str, release: str
+) -> tuple[dict[str, ResourceRecord], dict[str, Any]]:
     response = _get(http, api_url, "resources", shape="svelte", release=release)
     if not isinstance(response, dict):
         raise ClientError("Expected a catalog object")
-    return validate_catalog(response.get("resources"))
+    return validate_catalog(response.get("resources")), validate_references(response.get("references"))
 
 
 def _as_list(value: str | Sequence[str]) -> list[str]:
@@ -242,6 +250,40 @@ def _install(http, db, root: Path, record: ResourceRecord) -> bool:
     return downloaded
 
 
+def _install_taxonomy(
+    http: httpx.Client, api_url: str, release: str, root: Path, reference: dict[str, Any] | None
+) -> str | None:
+    """The release's taxon names in ``references/taxonomy/<version>/`` (downloaded when
+    missing; other versions are removed). Returns the version, None when the release has
+    none."""
+    parent = root / "references" / "taxonomy"
+    version = reference["version"] if reference else None
+    if version is not None:
+        target = taxonomy_file(root, version)
+        if not (target.is_file() and target.stat().st_size == reference["size_bytes"]):
+            target.parent.mkdir(parents=True, exist_ok=True)
+            fd, staging = tempfile.mkstemp(dir=target.parent, prefix=".download-")
+            os.close(fd)
+            try:
+                artifact = dict(
+                    name="taxonomy.parquet",
+                    size_bytes=reference["size_bytes"],
+                    url=f"{api_url}/references/taxonomy?release={quote(release, safe='')}",
+                )
+                _fetch(http, artifact, Path(staging))
+                with open(staging, "rb") as stream:
+                    if hashlib.file_digest(stream, "sha256").hexdigest() != version:
+                        raise ClientError("The taxonomy changed during init; run init again")
+                os.replace(staging, target)
+            finally:
+                Path(staging).unlink(missing_ok=True)
+    if parent.is_dir():
+        for other in parent.iterdir():
+            if other.is_dir() and other.name != version:
+                shutil.rmtree(other)
+    return version
+
+
 def init(
     resources: str | Sequence[str] | None = None,
     *,
@@ -252,7 +294,6 @@ def init(
     release: str = "latest",
     data_dir: str | Path | None = None,
     include_evidence: bool = False,
-    materialize: bool | None = None,
     api_url: str | None = None,
     timeout: float = 30,
     memory_limit: str = "2GB",
@@ -268,11 +309,10 @@ def init(
     complete; an interrupted init keeps the resources it finished. Raw evidence
     payloads are downloaded only with ``include_evidence``, and then kept on updates.
 
-    Ends by writing the directory's DuckDB database (``omnipath.duckdb``): native
-    tables copied from the downloaded files (the default for a new directory), or with
-    ``materialize=False`` views over the files, which need almost no disk but make the
-    prebuilt queries slower the more resources are installed. The choice is kept on
-    later runs unless given again. Returns the data directory.
+    Ends by writing the directory's DuckDB database (``omnipath.duckdb``): the same
+    database the hosted API serves a release from, with native tables copied from the
+    downloaded files (about twice their size in addition). Any change to the installed
+    resources writes it anew. Returns the data directory.
     """
     if not isinstance(release, str) or not release.strip():
         raise ValueError("release must not be empty")
@@ -283,7 +323,7 @@ def init(
     db = duckdb.connect()
     try:
         db.execute("SET memory_limit = ?", [memory_limit])
-        catalog = _catalog(http, api_url, release)
+        catalog, references = _catalog_and_references(http, api_url, release)
         chosen = select(
             catalog,
             resources,
@@ -297,9 +337,8 @@ def init(
         installation = read_installation(root) or Installation(
             format=1, api_url=api_url, release=release, materialize=True, resources=[]
         )
-        if materialize is None:
-            materialize = installation["materialize"]
         installed = {record["resource_id"]: record for record in installation["resources"]}
+        taxonomy = _install_taxonomy(http, api_url, release, root, references.get("taxonomy"))
         wanted = {record["resource_id"] for record in chosen}
         # Installed resources follow the release too: one directory, one release.
         targets = [r for name, r in catalog.items() if name in wanted or name in installed]
@@ -322,17 +361,19 @@ def init(
                     format=1,
                     api_url=api_url,
                     release=release,
-                    materialize=materialize,
+                    materialize=True,
                     resources=list(installed.values()),
+                    taxonomy=taxonomy,
                 )
                 _write_installation(root, installation)
         finally:
             # The database describes what is installed, also after a failure midway.
             if installation["resources"]:
-                installation["materialize"] = materialize
+                installation["materialize"] = True
+                installation["taxonomy"] = taxonomy
                 _write_installation(root, installation)
                 if not in_sync(root, installation):
-                    say("Writing the database" + (" (native tables)" if materialize else ""))
+                    say("Writing the database")
                     synchronize(root, installation, memory_limit)
         say(f"{len(installed)} resources installed in {root}")
         say(f"Database: {root / DATABASE}")

@@ -1,7 +1,9 @@
 # The DuckDB database of an installation, as the Python client writes it
-# (omnipath_client/database.py): views over the Parquet files or native tables with
-# global ids, a schema per resource, `resources`, `database_info`, and the query
-# layer (Biolink names, the installation's lookup macros and sql/*.sql).
+# (omnipath_client/database.py), which is also the database the hosted API serves a
+# release from: native tables with global ids, the derived tables and indexes the
+# contract names, a schema per resource, `resources`, `database_info`, and the query
+# layer (Biolink names, the lookup macros and sql/*.sql). It is always written
+# completely and put in place when done.
 
 .database_file <- "omnipath.duckdb"
 
@@ -40,10 +42,27 @@
   if (is.null(params)) DBI::dbExecute(con, sql) else DBI::dbExecute(con, sql, params = params)
 }
 
-.describe <- function(con, root, materialized, records) {
-  .exec(con, sprintf(
-    "CREATE OR REPLACE TABLE database_info AS SELECT %s::VARCHAR AS data_dir, %s::BOOLEAN AS materialized, %s::VARCHAR AS query_layer",
-    .quote(root), if (materialized) "true" else "false", .quote(.query_layer())
+# The release's taxon names (common name, else scientific name), empty without its
+# taxonomy reference.
+.taxonomy <- function(con, path = NULL) {
+  if (!is.null(path) && file.exists(path)) {
+    name <- "coalesce(nullif(common_name, ''), nullif(scientific_name, ''))"
+    .exec(con, sprintf(paste0(
+      "CREATE OR REPLACE TABLE op_taxonomy AS SELECT DISTINCT taxon_id::VARCHAR AS taxon, %s AS name ",
+      "FROM read_parquet(%s) WHERE %s IS NOT NULL ORDER BY taxon"), name, .quote(path), name))
+  } else {
+    .exec(con, "CREATE OR REPLACE TABLE op_taxonomy (taxon VARCHAR, name VARCHAR)")
+  }
+}
+
+.describe <- function(con, root, records, release, taxonomy = NULL) {
+  .exec(con, sprintf(paste0(
+    "CREATE OR REPLACE TABLE database_info AS SELECT %s::VARCHAR AS data_dir, true AS materialized, ",
+    "%s::VARCHAR AS query_layer, %s::VARCHAR AS release, %d::INTEGER AS database_format, ",
+    "%s::TIMESTAMPTZ AS built_at, 'init'::VARCHAR AS built_by, %s::VARCHAR AS taxonomy"),
+    .quote(root), .quote(.query_layer()), if (is.null(release)) "NULL" else .quote(release),
+    as.integer(.contract()$database_format), .quote(format(Sys.time(), "%Y-%m-%dT%H:%M:%S+00:00", tz = "UTC")),
+    if (is.null(taxonomy)) "NULL" else .quote(taxonomy)
   ))
   .exec(con, "CREATE OR REPLACE TABLE resources (resource_id VARCHAR, version VARCHAR, has_evidence BOOLEAN)")
   rows <- .state_rows(records)
@@ -55,53 +74,20 @@
   }
 }
 
-.resource_schema <- function(con, root, record, materialized) {
+.resource_schema <- function(con, record) {
   schema <- .name(record$resource_id)
   .exec(con, sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema))
   for (table in .record_tables(record)) {
-    source <- if (materialized) {
-      sprintf("SELECT * FROM main.%s WHERE _resource = %s", table, .quote(record$resource_id))
-    } else {
-      .source(root, record, table)
-    }
-    .exec(con, sprintf("CREATE OR REPLACE VIEW %s.%s AS %s", schema, table, source))
+    .exec(con, sprintf(
+      "CREATE OR REPLACE VIEW %s.%s AS SELECT * FROM main.%s WHERE _resource = %s",
+      schema, table, table, .quote(record$resource_id)
+    ))
   }
 }
 
 .configure <- function(con, root, memory_limit) {
   .exec(con, sprintf("SET memory_limit = %s", .quote(memory_limit)))
   .exec(con, sprintf("SET temp_directory = %s", .quote(file.path(root, ".duckdb-tmp"))))
-}
-
-.lookup_parts <- function(kind, column) {
-  # The argument is evaluated once, into `wanted` (see database.py).
-  if (kind == "at") {
-    list(
-      parameter = "pairs",
-      wanted = "SELECT p.r AS r, p.v AS v FROM (SELECT unnest(pairs) AS p)",
-      condition = sprintf("%s IN (SELECT v FROM wanted WHERE r = '{r}')", column)
-    )
-  } else {
-    list(
-      parameter = "vals",
-      wanted = "SELECT unnest(vals) AS v",
-      condition = sprintf("%s IN (SELECT v FROM wanted)", column)
-    )
-  }
-}
-
-.view_lookups <- function(resources) {
-  vapply(.contract()$lookups, function(lookup) {
-    table <- lookup[[1]]; column <- lookup[[2]]; kind <- lookup[[3]]
-    parts <- .lookup_parts(kind, column)
-    branches <- vapply(sort(resources), function(r) {
-      sprintf("SELECT * FROM %s.%s WHERE %s", .name(r), table, gsub("{r}", r, parts$condition, fixed = TRUE))
-    }, "")
-    sprintf(
-      "CREATE OR REPLACE MACRO op_%s_%s(%s) AS TABLE WITH wanted AS MATERIALIZED (%s) %s",
-      table, kind, parts$parameter, parts$wanted, paste(branches, collapse = " UNION ALL BY NAME ")
-    )
-  }, "")
 }
 
 .native_lookups <- function() {
@@ -123,20 +109,24 @@
   }, "")
 }
 
-.query_layer_write <- function(con, records, materialized) {
+.query_layer_write <- function(con) {
   .exec(con, "CREATE OR REPLACE TABLE op_names (kind VARCHAR, alias VARCHAR, name VARCHAR)")
   names <- .contract()$biolink_names
   values <- vapply(names, function(n) sprintf("(%s, %s, %s)", .quote(n[[1]]), .quote(n[[2]]), .quote(n[[3]])), "")
   .exec(con, paste0("INSERT INTO op_names VALUES ", paste(values, collapse = ", ")))
-  present <- c(
-    DBI::dbGetQuery(con, "SELECT table_name AS n FROM duckdb_tables() WHERE schema_name = 'main' AND database_name = current_database()")$n,
-    DBI::dbGetQuery(con, "SELECT view_name AS n FROM duckdb_views() WHERE schema_name = 'main' AND database_name = current_database()")$n
-  )
-  resources <- vapply(records, function(r) r$resource_id, "")
-  statements <- if (materialized) .native_lookups() else .view_lookups(resources)
-  for (statement in statements) {
+  present <- DBI::dbGetQuery(con, "SELECT table_name AS n FROM duckdb_tables() WHERE schema_name = 'main' AND database_name = current_database()")$n
+  for (statement in .native_lookups()) {
     table <- sub("^CREATE OR REPLACE MACRO op_(\\w+)_(at|with)\\(.*$", "\\1", statement)
     if (table %in% present) .exec(con, statement)
+  }
+  # The rule tables the macros read (display names, entity groups).
+  for (table in names(.contract()$query_tables)) {
+    spec <- .contract()$query_tables[[table]]
+    .exec(con, sprintf("CREATE OR REPLACE TABLE %s (%s)", table, paste(unlist(spec$columns), collapse = ", ")))
+    if (length(spec$rows)) {
+      values <- vapply(spec$rows, function(row) paste0("(", paste(vapply(row, .scalar_literal, ""), collapse = ", "), ")"), "")
+      .exec(con, sprintf("INSERT INTO %s VALUES %s", table, paste(values, collapse = ", ")))
+    }
   }
   for (name in unlist(.contract()$macro_files)) {
     sql <- paste(readLines(file.path(.sql_dir(), name), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
@@ -145,23 +135,27 @@
   .exec(con, sprintf("UPDATE database_info SET query_layer = %s", .quote(.query_layer())))
 }
 
-.resource_index <- function(records, existing) {
-  wanted <- vapply(records, function(r) r$resource_id, "")
-  index <- existing[names(existing) %in% wanted]
-  following <- if (length(existing)) max(unlist(existing)) + 1 else 0
-  for (name in sort(wanted)) {
-    if (is.null(index[[name]])) {
-      index[[name]] <- following
-      following <- following + 1
-    }
-  }
-  index
+# Where a resource table is written: the database (""), the scratch database `work`
+# for a table a derived table replaces (its space is never part of the database), or
+# nowhere (NULL) for one replaced without being read.
+.written_to <- function(table) {
+  derived <- .contract()$derived_tables[[table]]
+  if (is.null(derived) || !isTRUE(derived$replaces)) return("")
+  if (grepl(paste0("\\b", table, "\\b"), derived$select, perl = TRUE)) "work." else NULL
 }
 
-.write_index <- function(con, index) {
-  .exec(con, "CREATE OR REPLACE TABLE op_resource_index (_resource VARCHAR, idx BIGINT)")
-  for (name in sort(names(index))) {
-    .exec(con, sprintf("INSERT INTO op_resource_index VALUES (%s, %d)", .quote(name), as.integer(index[[name]])))
+# The derived tables (each sorted) and the indexes, once the tables are written. A
+# table that replaces a written one reads it from `work` (on the search path).
+.derived <- function(con, present) {
+  derived <- .contract()$derived_tables
+  for (name in names(derived)) {
+    .exec(con, sprintf("CREATE TABLE omnipath.main.%s AS SELECT * FROM (%s) ORDER BY %s",
+      name, derived[[name]]$select, derived[[name]]$order))
+  }
+  for (index in .contract()$indexes) {
+    if (index[[2]] %in% present) {
+      .exec(con, sprintf("CREATE INDEX %s ON %s(%s)", index[[1]], index[[2]], index[[3]]))
+    }
   }
 }
 
@@ -169,7 +163,8 @@
   records[order(vapply(records, function(r) r$resource_id, ""))]
 }
 
-.rebuild <- function(root, records, materialized, memory_limit) {
+.rebuild <- function(root, records, memory_limit, release = NULL, taxonomy = NULL) {
+  # taxonomy: the version of the installed taxon names (references/taxonomy/<version>/)
   staging_dir <- tempfile(".database-", tmpdir = root)
   dir.create(staging_dir)
   on.exit(unlink(staging_dir, recursive = TRUE), add = TRUE)
@@ -182,35 +177,37 @@
   .exec(con, sprintf(
     "ATTACH %s AS omnipath (STORAGE_VERSION %s)", .quote(staging), .quote(.contract()$storage_version)
   ))
+  .exec(con, sprintf("ATTACH %s AS work", .quote(file.path(staging_dir, "work.duckdb"))))
   .exec(con, "USE omnipath")
+  .exec(con, "SET search_path = 'omnipath.main,work.main'")
   .configure(con, root, memory_limit)
   ordered <- .sorted_records(records)
+  index <- stats::setNames(as.list(seq_along(ordered) - 1L), vapply(ordered, function(r) r$resource_id, ""))
+  .exec(con, "CREATE TABLE op_resource_index (_resource VARCHAR, idx BIGINT)")
+  for (name in names(index)) {
+    .exec(con, sprintf("INSERT INTO op_resource_index VALUES (%s, %d)", .quote(name), as.integer(index[[name]])))
+  }
   present <- Filter(function(t) any(vapply(ordered, function(r) t %in% .record_tables(r), TRUE)), c(.tables(), .serving()))
-  if (materialized) {
-    index <- .resource_index(ordered, list())
-    .write_index(con, index)
-    for (table in present) {
-      having <- Filter(function(r) table %in% .record_tables(r), ordered)
-      union <- paste(vapply(having, function(r) .source(root, r, table, index[[r$resource_id]]), ""),
-        collapse = " UNION ALL BY NAME ")
-      .exec(con, sprintf("CREATE TABLE %s AS SELECT * FROM (%s) LIMIT 0", table, union))
-      for (record in having) {
-        .exec(con, sprintf("INSERT INTO %s BY NAME %s", table, .source(root, record, table, index[[record$resource_id]])))
-      }
+  for (table in present) {
+    where <- .written_to(table)
+    if (is.null(where)) next
+    having <- Filter(function(r) table %in% .record_tables(r), ordered)
+    # The columns of every resource (union by name), then each resource's rows in its
+    # file's order, so rows follow their global ids.
+    union <- paste(vapply(having, function(r) .source(root, r, table, index[[r$resource_id]]), ""),
+      collapse = " UNION ALL BY NAME ")
+    .exec(con, sprintf("CREATE TABLE %s%s AS SELECT * FROM (%s) LIMIT 0", where, table, union))
+    for (record in having) {
+      .exec(con, sprintf("INSERT INTO %s%s BY NAME %s", where, table, .source(root, record, table, index[[record$resource_id]])))
     }
   }
-  for (record in ordered) .resource_schema(con, root, record, materialized)
-  if (!materialized) {
-    for (table in present) {
-      having <- Filter(function(r) table %in% .record_tables(r), ordered)
-      union <- paste(vapply(having, function(r) sprintf("SELECT * FROM %s.%s", .name(r$resource_id), table), ""),
-        collapse = " UNION ALL BY NAME ")
-      .exec(con, sprintf("CREATE VIEW %s AS %s", table, union))
-    }
-  }
-  .describe(con, root, materialized, records)
-  .query_layer_write(con, records, materialized)
+  .derived(con, present)
+  for (record in ordered) .resource_schema(con, record)
+  .taxonomy(con, if (is.null(taxonomy)) NULL else .taxonomy_file(root, taxonomy))
+  .describe(con, root, records, release, taxonomy)
+  .query_layer_write(con)
   .exec(con, "USE memory")
+  .exec(con, "DETACH work")
   .exec(con, "DETACH omnipath")
   DBI::dbDisconnect(con, shutdown = TRUE)
   closed <- TRUE
@@ -218,57 +215,6 @@
   if (file.exists(target)) unlink(target)
   if (!file.rename(staging, target)) .fail("Could not put the database in place: ", target)
   invisible(TRUE)
-}
-
-.update <- function(root, records, memory_limit) {
-  path <- file.path(root, .database_file)
-  con <- tryCatch(DBI::dbConnect(duckdb::duckdb(), dbdir = path), error = function(e) NULL)
-  if (is.null(con)) return(FALSE)
-  on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
-  tryCatch({
-    .configure(con, root, memory_limit)
-    if (!isTRUE(DBI::dbGetQuery(con, "SELECT materialized FROM database_info")$materialized)) return(FALSE)
-    current <- DBI::dbGetQuery(con, "SELECT * FROM resources")
-    wanted <- .state_rows(records)
-    key <- function(d) paste(d$resource_id, d$version, d$has_evidence, sep = "\r")
-    stale <- sort(unique(c(
-      current$resource_id[!key(current) %in% key(wanted)],
-      wanted$resource_id[!key(wanted) %in% key(current)]
-    )))
-    by_name <- stats::setNames(records, vapply(records, function(r) r$resource_id, ""))
-    existing <- DBI::dbGetQuery(con, "SELECT table_name AS n FROM duckdb_tables() WHERE schema_name = 'main'")$n
-    rows <- DBI::dbGetQuery(con, "SELECT * FROM op_resource_index")
-    index <- .resource_index(records, stats::setNames(as.list(rows$idx), rows$`_resource`))
-    DBI::dbBegin(con)
-    committed <- FALSE
-    on.exit(if (!committed) try(DBI::dbRollback(con), silent = TRUE), add = TRUE, after = FALSE)
-    .write_index(con, index)
-    for (table in c(.tables(), .serving())) {
-      fresh <- Filter(function(r) table %in% .record_tables(r), by_name[intersect(stale, names(by_name))])
-      if (!(table %in% existing)) {
-        if (length(fresh)) return(FALSE)
-        next
-      }
-      if (length(stale)) {
-        .exec(con, sprintf("DELETE FROM %s WHERE _resource IN (%s)", table, paste(.quote(stale), collapse = ", ")))
-      }
-      for (record in fresh) {
-        .exec(con, sprintf("INSERT INTO %s BY NAME %s", table, .source(root, record, table, index[[record$resource_id]])))
-      }
-    }
-    for (name in stale) {
-      if (!is.null(by_name[[name]])) {
-        .resource_schema(con, root, by_name[[name]], TRUE)
-      } else {
-        .exec(con, sprintf("DROP SCHEMA IF EXISTS %s CASCADE", .name(name)))
-      }
-    }
-    .describe(con, root, TRUE, records)
-    .query_layer_write(con, records, TRUE)
-    DBI::dbCommit(con)
-    committed <- TRUE
-    TRUE
-  }, error = function(e) FALSE)
 }
 
 .info <- function(root) {
@@ -279,61 +225,65 @@
   on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
   tryCatch({
     columns <- DBI::dbGetQuery(con, "DESCRIBE database_info")$column_name
-    layer <- if ("query_layer" %in% columns) "query_layer" else "NULL::VARCHAR AS query_layer"
-    info <- DBI::dbGetQuery(con, sprintf("SELECT data_dir, materialized, %s FROM database_info", layer))
+    if (!("database_format" %in% columns)) return(NULL)
+    taxonomy <- if ("taxonomy" %in% columns) "taxonomy" else "NULL::VARCHAR AS taxonomy"
+    info <- DBI::dbGetQuery(con, sprintf("SELECT query_layer, database_format, %s FROM database_info", taxonomy))
     state <- DBI::dbGetQuery(con, "SELECT * FROM resources ORDER BY ALL")
-    list(data_dir = info$data_dir, materialized = info$materialized, query_layer = info$query_layer, state = state)
+    list(query_layer = info$query_layer, database_format = info$database_format, state = state,
+      taxonomy = if (is.na(info$taxonomy)) NULL else info$taxonomy)
   }, error = function(e) NULL)
 }
 
-.tables_in_sync <- function(info, root, installation) {
+.tables_in_sync <- function(info, installation) {
   if (is.null(info)) return(FALSE)
   wanted <- .state_rows(installation$resources)
   same_state <- nrow(info$state) == nrow(wanted) &&
     all(info$state$resource_id == wanted$resource_id) &&
     all(info$state$version == wanted$version) &&
     all(info$state$has_evidence == wanted$has_evidence)
-  isTRUE(info$materialized == installation$materialize) &&
-    (isTRUE(info$materialized) || identical(info$data_dir, root)) &&
-    same_state
+  isTRUE(info$database_format == .contract()$database_format) && same_state
 }
 
 .in_sync <- function(root, installation) {
   info <- .info(root)
-  .tables_in_sync(info, root, installation) && identical(info$query_layer, .query_layer())
+  .tables_in_sync(info, installation) && identical(info$query_layer, .query_layer()) &&
+    identical(info$taxonomy, installation$taxonomy)
 }
 
-.layer_only <- function(root, installation) {
+# The taxon names of an otherwise current database.
+.taxonomy_only <- function(root, version) {
   con <- DBI::dbConnect(duckdb::duckdb(), dbdir = file.path(root, .database_file))
   on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
-  tryCatch({
-    tables <- DBI::dbGetQuery(con, "SELECT table_name AS n FROM duckdb_tables() WHERE schema_name = 'main'")$n
-    if (installation$materialize && !("op_resource_index" %in% tables)) return(FALSE)
-    if (!("query_layer" %in% DBI::dbGetQuery(con, "DESCRIBE database_info")$column_name)) {
-      .exec(con, "ALTER TABLE database_info ADD COLUMN query_layer VARCHAR")
-    }
-    DBI::dbBegin(con)
-    .query_layer_write(con, installation$resources, installation$materialize)
-    DBI::dbCommit(con)
-    TRUE
-  }, error = function(e) {
-    try(DBI::dbRollback(con), silent = TRUE)
-    FALSE
-  })
+  DBI::dbBegin(con)
+  .taxonomy(con, if (is.null(version)) NULL else .taxonomy_file(root, version))
+  .exec(con, "ALTER TABLE database_info ADD COLUMN IF NOT EXISTS taxonomy VARCHAR")
+  .exec(con, sprintf("UPDATE database_info SET taxonomy = %s", if (is.null(version)) "NULL" else .quote(version)))
+  DBI::dbCommit(con)
+  invisible(TRUE)
 }
 
+.layer_only <- function(root) {
+  con <- DBI::dbConnect(duckdb::duckdb(), dbdir = file.path(root, .database_file))
+  on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
+  DBI::dbBegin(con)
+  .query_layer_write(con)
+  DBI::dbCommit(con)
+  invisible(TRUE)
+}
+
+# Changed resources mean a new database, written completely; when only the query
+# layer (another client version wrote it) or the taxon names differ, they alone.
 .synchronize <- function(root, installation, memory_limit = "2GB") {
   info <- .info(root)
-  in_sync <- .tables_in_sync(info, root, installation)
-  if (in_sync && identical(info$query_layer, .query_layer())) return(invisible(FALSE))
+  if (.tables_in_sync(info, installation)) {
+    if (!identical(info$query_layer, .query_layer())) .layer_only(root)
+    if (!identical(info$taxonomy, installation$taxonomy)) .taxonomy_only(root, installation$taxonomy)
+    return(invisible(FALSE))
+  }
   on.exit({
     temporary <- file.path(root, ".duckdb-tmp")
     if (dir.exists(temporary) && !length(list.files(temporary, all.files = TRUE, no.. = TRUE))) unlink(temporary, recursive = TRUE)
   }, add = TRUE)
-  if (in_sync && .layer_only(root, installation)) return(invisible(TRUE))
-  records <- installation$resources
-  if (!(isTRUE(installation$materialize) && .update(root, records, memory_limit))) {
-    .rebuild(root, records, isTRUE(installation$materialize), memory_limit)
-  }
+  .rebuild(root, installation$resources, memory_limit, installation$release, installation$taxonomy)
   invisible(TRUE)
 }

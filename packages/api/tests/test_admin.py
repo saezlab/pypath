@@ -15,7 +15,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 from fastapi.testclient import TestClient
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 from omnipath_api.server import create_app
 from omnipath_api.jobs.worker import run_worker
 
@@ -165,7 +165,7 @@ class TestAdminAPI(unittest.TestCase):
         self.client = self._client(self.ops)
 
     def _client(self, ops, *, start_worker=True):
-        engine = ParquetQueries(data_root=self.data_root)
+        engine = served_queries(data_root=self.data_root)
         client = TestClient(create_app(queries=engine, admin_ops=ops))
         client.headers["x-admin-secret"] = "test-secret"
         self.addCleanup(engine.close)
@@ -361,7 +361,7 @@ class TestAdminAPI(unittest.TestCase):
         os.environ.pop("OMNIPATH_ADMIN_PASSWORD", None)
         os.environ["OMNIPATH_ADMIN_SECRET"] = "s3cret"
         try:
-            engine = ParquetQueries(data_root=self.data_root)
+            engine = served_queries(data_root=self.data_root)
             client = TestClient(create_app(queries=engine, admin_ops=self.ops))
             denied = client.get("/admin/status")
             self.assertEqual(denied.status_code, 401)
@@ -383,7 +383,7 @@ class TestAdminAPI(unittest.TestCase):
         os.environ.pop("OMNIPATH_ADMIN_SECRET", None)
         os.environ["OMNIPATH_ADMIN_PASSWORD"] = "hunter2"
         try:
-            engine = ParquetQueries(data_root=self.data_root)
+            engine = served_queries(data_root=self.data_root)
             client = TestClient(create_app(queries=engine, admin_ops=self.ops))
             self.assertEqual(client.get("/admin/status").status_code, 401)
             self.assertEqual(

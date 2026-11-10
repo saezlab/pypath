@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from omnipath_api.queries.parquet import ParquetQueries
+from served import republish, served_queries
 from omnipath_api.server import create_app
 from omnipath_api.queries.store.inventory import ReleaseStore
 from omnipath_core.fixtures import nested_rows, rewrite_resource, write_resource
@@ -33,30 +33,29 @@ def resource(root, version, label):
 
 
 def test_lazy_core_does_not_query_relations_and_reuses_cache(tmp_path, monkeypatch):
+    from omnipath_client import steps
+
     resource(tmp_path, "1", "First")
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     client = TestClient(create_app(queries=engine))
-    table = engine._table
+    run, queries = steps.run, []
 
-    def entity_tables_only(name, *args):
-        assert not name.startswith("relation"), "relation scan"
-        return table(name, *args)
+    def recorded(connection, query, *args, **kwargs):
+        queries.append(query.name)
+        return run(connection, query, *args, **kwargs)
 
-    monkeypatch.setattr(engine, "_table", entity_tables_only)
+    monkeypatch.setattr(steps, "run", recorded)
     first = client.get("/entities/a?includeRelationships=false")
     assert first.status_code == 200 and first.json()["entity"]["label"] == "First"
-    monkeypatch.setattr(
-        engine,
-        "_fetch_entities_by_keys",
-        lambda *a, **kw: (_ for _ in ()).throw(AssertionError("uncached entity")),
-    )
+    assert queries == ["entity_core"]
     assert client.get("/entities/a?includeRelationships=false").json() == first.json()
+    assert queries == ["entity_core"]
 
 
 def test_relationship_pagination_cache_and_release_isolation(tmp_path, monkeypatch):
     resource(tmp_path, "1", "First")
     ReleaseStore(tmp_path).publish(dict(schema_version=1, version="1", resources={"test": "1"}))
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     client = TestClient(create_app(queries=engine))
     first = client.get("/entities/a/relationships?limit=2").json()
     assert first["relationshipsTotal"] == 3 and first["nextCursor"] == "2"
@@ -73,6 +72,7 @@ def test_relationship_pagination_cache_and_release_isolation(tmp_path, monkeypat
         )
         assert client.get("/entities/a/relationships?limit=2").json() == first
     resource(tmp_path, "2", "Second")
+    republish(tmp_path)
     assert (
         client.get("/entities/a?includeRelationships=false").json()["entity"]["label"] == "Second"
     )
@@ -88,7 +88,7 @@ def test_relationship_pagination_cache_and_release_isolation(tmp_path, monkeypat
 
 def test_group_relationships_include_both_endpoints_once_and_paginate(tmp_path):
     resource(tmp_path, "1", "First")
-    client = TestClient(create_app(queries=ParquetQueries(tmp_path)))
+    client = TestClient(create_app(queries=served_queries(tmp_path)))
     body = {"member_keys": ["a", "b", "a"], "limit": 2}
     response = client.post("/entities/group-relationships", json=body)
     assert response.status_code == 200
@@ -113,7 +113,7 @@ def test_normal_entity_details_default_to_bounded_pages(tmp_path):
         dict(term="description", value=f"Note {i}", source="test") for i in range(45)
     ]
     rewrite_resource(path, entities=rows)
-    client = TestClient(create_app(queries=ParquetQueries(tmp_path)))
+    client = TestClient(create_app(queries=served_queries(tmp_path)))
     first = client.get("/entities/a?includeRelationships=false").json()["entity"]
     assert len(first["entityAttributes"]) == 20
     assert first["entityAttributesTotal"] == 45
@@ -138,11 +138,11 @@ def test_relationships_and_counts_span_resources(tmp_path):
             for i in range(2)
         ],
     )  # fmt: skip
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
 
     def read():
-        engine._detail_cache.clear()
-        engine._relationship_cache.clear()
+        engine._query_cache.clear()
+        engine._step_cache.clear()
         pages = [engine.get_entity_relationships("a", limit=2, offset=o) for o in (0, 2, 4)]
         return engine.get_entity_details("a"), pages
 
@@ -157,7 +157,7 @@ def test_relationships_and_counts_span_resources(tmp_path):
 
 
 def test_descriptions_lead_the_first_attribute_page():
-    from omnipath_api.queries.entity_details import page_details
+    from omnipath_api.routers.paging import page_details
 
     entity = dict(
         entityAttributes=[dict(term="in_taxon", value=str(i)) for i in range(30)]
@@ -169,7 +169,7 @@ def test_descriptions_lead_the_first_attribute_page():
 
 
 def test_one_collection_pages_on_its_own():
-    from omnipath_api.queries.entity_details import page_details
+    from omnipath_api.routers.paging import page_details
 
     entity = dict(
         entityPk="a",
@@ -185,7 +185,7 @@ def test_one_collection_pages_on_its_own():
 
 
 def test_attributes_beyond_descriptions_are_grouped_by_term():
-    from omnipath_api.queries.entity_details import page_details
+    from omnipath_api.routers.paging import page_details
 
     terms = ["in_taxon", "has_role", "in_taxon", "description", "has_role"]
     entity = dict(entityAttributes=[dict(term=t, value=str(i)) for i, t in enumerate(terms)])
@@ -193,3 +193,31 @@ def test_attributes_beyond_descriptions_are_grouped_by_term():
         ("description", "3"), ("has_role", "1"), ("has_role", "4"),
         ("in_taxon", "0"), ("in_taxon", "2"),
     ]  # fmt: skip
+
+
+def test_entity_pages_hold_the_first_relationships_page(tmp_path, monkeypatch):
+    from omnipath_client import steps
+
+    for count in (3, 60):
+        root = tmp_path / str(count)
+        resource(root, "1", "First")
+        write_resource(
+            root / "resources/other/1",
+            nested_rows(root / "resources/test/1/entity.parquet"),
+            [
+                dict(relation_key=f"m{i:02}", subject_entity_key="a", object_entity_key="b",
+                     predicate="has_member", category="association", sources=["other"],
+                     evidence_count=1)
+                for i in range(count)
+            ],
+        )  # fmt: skip
+        engine = served_queries(root)
+        with engine.release_scope():
+            computed = engine.get_entity_relationships("a")
+            engine._query_cache.clear()
+            engine.get_entity_details("a")
+            run = steps.run
+            monkeypatch.setattr(steps, "run", lambda *a, **k: (_ for _ in ()).throw(AssertionError("computed")))
+            assert engine.get_entity_relationships("a") == computed
+            monkeypatch.setattr(steps, "run", run)
+        assert (computed["nextCursor"] is None) == (count + 3 <= 50)

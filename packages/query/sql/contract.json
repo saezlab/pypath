@@ -44,7 +44,10 @@
  "parquet_row_group_size": 8192,
  "storage_version": "v1.5.0",
  "settings": {
-  "dynamic_or_filter_threshold": 20000
+  "dynamic_or_filter_threshold": 20000,
+  "index_scan_max_count": 100000,
+  "index_scan_percentage": 0.5,
+  "disabled_optimizers": "common_subplan"
  },
  "lookups": [
   [
@@ -74,6 +77,11 @@
   ],
   [
    "entity_annotation",
+   "entity_id",
+   "at"
+  ],
+  [
+   "entity_evidence",
    "entity_id",
    "at"
   ],
@@ -127,6 +135,10 @@
    "entity_id",
    "_eid"
   ],
+  "entity_evidence": [
+   "entity_id",
+   "_eid"
+  ],
   "entity_term": [
    "entity_id",
    "_eid"
@@ -136,10 +148,64 @@
    "_eid"
   ]
  },
+ "database_format": 10,
+ "derived_tables": {
+  "relation_key_lookup": {
+   "select": "SELECT try_cast('0x' || substr(relation_key, 1, 15) AS BIGINT) AS key_prefix, _rid FROM relation",
+   "order": "key_prefix"
+  },
+  "entity_by_key": {
+   "select": "SELECT *, dense_rank() OVER (ORDER BY entity_key)::INTEGER AS key_rank FROM entity",
+   "order": "entity_key, _resource, entity_id"
+  },
+  "entity_term": {
+   "select": "SELECT t.*, e.key_rank FROM entity_term t JOIN entity_by_key e USING (_eid)",
+   "order": "term, _resource, entity_id",
+   "replaces": true
+  },
+  "relation_endpoint": {
+   "select": "SELECT * FROM (\n                SELECT unnest([subject_entity_key, subject_reference_entity_key,\n                        object_entity_key, object_reference_entity_key]) AS key,\n                    unnest(['entity', 'reference', 'entity', 'reference']) AS key_kind,\n                    unnest(['subject', 'subject', 'object', 'object']) AS side,\n                    relation_id, _resource, _resource_version, _rid, _resource || '/' || _resource_version AS resource,\n                    row_number() OVER (ORDER BY category, predicate, subject_label, object_label,\n                        _resource || '/' || _resource_version, relation_id)::INTEGER AS page_rank,\n                    category, predicate, subject_type, object_type, taxon, sign, is_directed, sources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\n                FROM relation) WHERE key IS NOT NULL",
+   "order": "key, key_kind, page_rank",
+   "replaces": true
+  },
+  "ontology_edge": {
+   "select": "SELECT\n                CASE WHEN predicate IN ('has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'superclass_of') THEN object_entity_key ELSE subject_entity_key END AS child_key,\n                CASE WHEN predicate IN ('has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'superclass_of') THEN object_label ELSE subject_label END AS child_label,\n                predicate,\n                CASE WHEN predicate IN ('has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'superclass_of') THEN subject_entity_key ELSE object_entity_key END AS parent_key,\n                CASE WHEN predicate IN ('has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'superclass_of') THEN subject_label ELSE object_label END AS parent_label,\n                _resource || '/' || _resource_version AS resource\n                FROM relation WHERE statement_kind = 'ontology' AND predicate IN ('food_component_of', 'has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'is_a', 'is_active_ingredient_of', 'is_excipient_of', 'nutrient_of', 'part_of', 'plasma_membrane_part_of', 'subclass_of', 'superclass_of', 'variant_part_of')",
+   "order": "child_key, parent_key"
+  },
+  "term_entity": {
+   "select": "WITH terms AS (SELECT DISTINCT entity_key FROM entity WHERE entity_type = 'ontology_class'),\n                edges AS (\n                    SELECT object_entity_key AS term_key, subject_entity_key AS entity_key, relation_key, _resource || '/' || _resource_version AS resource\n                    FROM relation WHERE object_entity_key IN (SELECT entity_key FROM terms)\n                    UNION ALL SELECT subject_entity_key, object_entity_key, relation_key, _resource || '/' || _resource_version AS resource\n                    FROM relation WHERE subject_entity_key IN (SELECT entity_key FROM terms))\n                SELECT term_key, entity_key, resource,\n                    dense_rank() OVER (ORDER BY entity_key)::INTEGER AS entity_n,\n                    dense_rank() OVER (ORDER BY relation_key)::INTEGER AS relation_n\n                FROM edges",
+   "order": "term_key"
+  }
+ },
+ "indexes": [
+  [
+   "relation_rid",
+   "relation",
+   "_rid"
+  ],
+  [
+   "relation_evidence_rid",
+   "relation_evidence",
+   "_rid"
+  ],
+  [
+   "entity_eid",
+   "entity",
+   "_eid"
+  ],
+  [
+   "entity_evidence_eid",
+   "entity_evidence",
+   "_eid"
+  ],
+  [
+   "entity_annotation_eid",
+   "entity_annotation",
+   "_eid"
+  ]
+ ],
  "macro_files": [
-  "relations.sql",
-  "search.sql",
-  "entity.sql"
+  "shape.sql"
  ],
  "relation_export_limit": 100000,
  "biolink_names": [
@@ -8338,5 +8404,97 @@
    "xenologous_to",
    "xenologous_to"
   ]
- ]
+ ],
+ "query_tables": {
+  "op_name_rules": {
+   "columns": [
+    "pattern VARCHAR",
+    "penalty INTEGER"
+   ],
+   "rows": [
+    [
+     "(?i)^https?://",
+     100
+    ],
+    [
+     "(?i)^(MLS|SMR|cid_|ZINC|SID_|CID_|InChI=)",
+     100
+    ],
+    [
+     "^[A-Z0-9._-]{1,3}$",
+     10
+    ],
+    [
+     "^[A-Z][0-9A-Z]{3,}$",
+     8
+    ],
+    [
+     "^[A-Z][a-z]",
+     -3
+    ]
+   ]
+  },
+  "op_name_namespaces": {
+   "columns": [
+    "namespace VARCHAR"
+   ],
+   "rows": [
+    [
+     "name"
+    ],
+    [
+     "om:0202"
+    ],
+    [
+     "entry_name"
+    ],
+    [
+     "entry name"
+    ]
+   ]
+  },
+  "op_chemical_types": {
+   "columns": [
+    "entity_type VARCHAR"
+   ],
+   "rows": [
+    [
+     "chemical_entity"
+    ],
+    [
+     "molecular_entity"
+    ],
+    [
+     "chemical_mixture"
+    ],
+    [
+     "environmental_food_contaminant"
+    ],
+    [
+     "food_additive"
+    ],
+    [
+     "molecular_mixture"
+    ],
+    [
+     "complex_molecular_mixture"
+    ],
+    [
+     "processed_material"
+    ],
+    [
+     "food"
+    ],
+    [
+     "drug"
+    ],
+    [
+     "small_molecule"
+    ],
+    [
+     "nucleic_acid_entity"
+    ]
+   ]
+  }
+ }
 }

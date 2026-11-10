@@ -6,6 +6,8 @@ from fastapi.responses import Response
 from omnipath_api.models import (
     FacetOption,
     RelationEvidenceResponse,
+    RelationEvidenceSummaryRequest,
+    RelationEvidenceSummaryResponse,
     RelationFilterOptions,
     RelationPayloadsResponse,
     RelationSearchRequest,
@@ -55,6 +57,27 @@ def scoped_relation_facets(
     """The relation filter options the selection and the other groups' filters leave."""
     body = _dump(payload)
     return _call(request, "get_scoped_relation_facets", body, resources=body.get("resources"))
+
+
+@router.post(
+    "/relations/evidence",
+    response_model=RelationEvidenceSummaryResponse,
+    tags=["relations"],
+)
+def relation_evidence_summaries(
+    request: Request, response: Response, payload: RelationEvidenceSummaryRequest
+) -> dict[str, Any]:
+    """The sites and PubMed ids per evidence source of up to 1,000 relations at once:
+    the summary of GET /relations/{relation_pk}/evidence for each."""
+    body = _dump(payload)
+    result = _call(
+        request,
+        "get_relation_evidence_summaries",
+        body["relation_pks"],
+        resources=body.get("resources"),
+        filters=body.get("filters") or {},
+    )
+    return _timed(response, result)
 
 
 @router.get(

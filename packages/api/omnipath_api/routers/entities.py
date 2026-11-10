@@ -20,7 +20,14 @@ from omnipath_api.models import (
     ScopedEntityFacetsRequest,
 )
 from fastapi import APIRouter
-from omnipath_api.routers.common import _call, _cursor_dict, _dump, _parse_json_param, _timed
+from omnipath_api.routers.common import (
+    EngineJSONResponse,
+    _call,
+    _cursor_dict,
+    _dump,
+    _parse_json_param,
+    _timed,
+)
 
 router = APIRouter()
 
@@ -72,26 +79,15 @@ def search_entities_post(
     filters = body.get("filters") or {}
     if body.get("entity_types"):
         filters = {**filters, "entity_types": body.get("entity_types")}
-    if body.get("shape") == "web":
-        result = _call(
-            request,
-            "search_entities",
-            query=query,
-            resources=body.get("resources"),
-            entity_types=body.get("entity_types"),
-            taxon=body.get("taxon"),
-            limit=body.get("limit", 20),
-        )
-    else:
-        result = _call(
-            request,
-            "search_entities_api",
-            query=query,
-            filters=filters,
-            resources=body.get("resources"),
-            limit=body.get("limit", 20),
-            cursor=_cursor_dict(body.get("cursor")),
-        )
+    result = _call(
+        request,
+        "search_entities_api",
+        query=query,
+        filters=filters,
+        resources=body.get("resources"),
+        limit=body.get("limit", 20),
+        cursor=_cursor_dict(body.get("cursor")),
+    )
     return _timed(response, result)
 
 
@@ -212,9 +208,11 @@ def entity_relationships(
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
 ):
-    if not _call(request, "get_entity_core", entity_id):
+    page = _call(request, "get_entity_relationships", entity_id, limit=limit, offset=offset)
+    # Only an empty page can be an unknown entity's.
+    if not page["relationshipsTotal"] and not _call(request, "get_entity_core", entity_id):
         raise HTTPException(status_code=404, detail="Entity not found")
-    return _call(request, "get_entity_relationships", entity_id, limit=limit, offset=offset)
+    return page
 
 
 @router.get("/entities/{entity_id}/evidence", tags=["entities"])
@@ -239,17 +237,22 @@ def get_entity(
     detail_limit: int = Query(20, ge=1, le=500),
     detail_offset: int = Query(0, ge=0),
     detail_field: DetailField | None = None,
+    paged: bool = True,
 ) -> dict[str, Any]:
     """Fetch one entity by its exact entity key. No identifier or text fallback.
 
-    ``detail_field`` pages one collection (identifiers or attributes) on its own.
+    ``detail_field`` pages one collection (identifiers or attributes) on its own;
+    ``paged=false`` returns every collection whole, as the clients' ``entity()`` does.
     """
     result = _call(
         request, "get_entity_details" if includeRelationships else "get_entity_core", entity_id
     )
     if not result:
         raise HTTPException(status_code=404, detail="Entity not found")
-    from omnipath_api.queries.entity_details import page_details
+    if not paged:
+        # As the engine answers, not through the paged response model.
+        return EngineJSONResponse(result)
+    from omnipath_api.routers.paging import page_details
 
     result["entity"] = page_details(result["entity"], detail_limit, detail_offset, detail_field)
     return result

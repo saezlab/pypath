@@ -1,10 +1,10 @@
 # omnipath.client (R)
 
-Install OmniPath resources on your machine and get a DuckDB database of them. Query
-it with any SQL, or ask the questions the OmniPath website answers and get the same
-answers: the website's search, relation export and entity details are SQL macros in
-the database. Nothing is queried over the network; the API is contacted only while
-installing.
+Ask the questions the OmniPath website answers and get the same answers: its search,
+relation export and entity details. By default the hosted API answers them (API mode,
+nothing is downloaded). In local mode, OmniPath resources are installed on your
+machine into the DuckDB database the API serves a release from; it answers the same
+questions and takes any SQL.
 
 This is the R counterpart of the Python package `omnipath_client`
 (`packages/query/python`). Both read and write the same data directory and run the same SQL,
@@ -14,13 +14,17 @@ Neither needs Python, the API or its queries to query.
 ```r
 library(omnipath.client)
 
-op_init(topic = "signaling")                        # once: download and write the database
+api <- op_connect()                                    # API mode
+op_search(api, "TP53")
+op_disconnect(api)
 
-con <- op_connect()
+op_init(topic = "signaling")                           # local mode: download, write the database
+con <- op_connect(op_data_directory())
 op_sql(con, "SELECT * FROM signor.relation LIMIT 5")  # your SQL
 op_search(con, "TP53")                                 # the website's search
 op_relations(con, "TP53", sources = "signor")          # the website's relation export
 op_entity(con, op_search(con, "TP53")$entity_key[1])   # one entity's details
+op_query(con, "ontology_tree", term_id = "GO:0006915", output = "json")  # any query by name
 op_disconnect(con)
 ```
 
@@ -57,18 +61,22 @@ The data directory is the same as the Python client's: the directory given
 (`~/Library/Application Support/omnipath` on macOS, `~/.local/share/omnipath` on
 Linux, `%LOCALAPPDATA%\omnipath\omnipath` on Windows). `op_data_directory()` returns it.
 
-The database is written with **native DuckDB tables** by default (about twice the
-files' size in addition); `materialize = FALSE` writes views over the files instead
-(small, but the prebuilt queries slow down with many resources). It is written in
-DuckDB 1.5's storage format, so clients with an older DuckDB than R's can read it.
+The database holds **native DuckDB tables** (about twice the files' size in addition),
+the same database the API serves a release from, and any change to the installed
+resources writes it anew. It is written in DuckDB 1.5's storage format, so clients
+with an older DuckDB than R's can read it.
+
+`op_connect()` is in API mode unless it gets a data directory (or
+`OMNIPATH_DATA_DIR` is set, or `mode = "local"`); in API mode `release` and `api_url`
+choose the release and the API, and `op_sql()` needs local mode.
 
 ## SQL
 
-`op_connect()` returns a read-only DBI connection, so everything DBI and dplyr offer
-works on it:
+In local mode `op_connect()` returns a read-only DBI connection, so everything DBI and
+dplyr offer works on it:
 
 ```r
-con <- op_connect()
+con <- op_connect(op_data_directory())
 op_sql(con, "SELECT label, _resource FROM entity WHERE identifier = ?", list("P04637"))
 DBI::dbGetQuery(con, "SELECT predicate, count(*) FROM relation GROUP BY 1")
 dplyr::tbl(con, "relation") |> dplyr::filter(sign == -1) |> dplyr::count(predicate)
@@ -85,6 +93,7 @@ op_search(con, "gluc", entity_types = "chemical_entity", limit = 50)
 op_relations(con, "gene:entrez:7157", predicates = "affects", taxonomy_ids = "9606")
 op_relations(con, protein_entity_keys = key, isoform_identifiers = "uniprot:P04637-2")
 op_entity(con, key, simplify = FALSE)   # the API's JSON as nested lists
+op_query(con, "relation_page", entities = key, limit = 20L)
 ```
 
 - `op_search()` and `op_relations()` return data frames; `lazy = TRUE` returns a
@@ -93,12 +102,13 @@ op_entity(con, key, simplify = FALSE)   # the API's JSON as nested lists
 - Filters are the explorer's, by the same names as in Python; a character vector is a
   list of values. Unknown filters and Biolink names are errors naming them; a source
   that is not installed is an error listing the installed ones.
-- The answers are the Python client's and the hosted API's; see the Python client's
+- `op_query()` runs any of the shared queries by name (the files in `inst/sql/queries`:
+  entity and relation pages, facets, grouped search, ontology, molecular context,
+  statistics, ...) with their parameters; `output = "json"` returns the API's JSON.
+  In API mode the API runs it.
+- The answers are the Python client's and the hosted API's: the three clients run the
+  same SQL files (`packages/query/README.md` describes them). See the Python client's
   README for the differences from the hosted API.
-
-From SQL, the macros are `op_search(query, ...)`, `op_relations(entities := [...], ...)`
-and `op_entity(key)`. A connection that runs them sets
-`SET dynamic_or_filter_threshold = 20000` first, as `op_connect()` does.
 
 ## Validation
 

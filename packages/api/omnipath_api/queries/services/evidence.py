@@ -1,79 +1,47 @@
-"""Evidence query service, including domain SQL and result shaping."""
+"""Relation evidence from the step files; raw source payloads from their files."""
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
+import time
 from typing import Any
-
-
-from omnipath_api.queries.annotations import (
-    split_compiled_annotations,
-)
-
 
 logger = logging.getLogger(__name__)
 
+# Relations one evidence summary request may name (the query checks it too).
+EVIDENCE_SUMMARY_LIMIT = 1000
+
+
+def _form_params(filters):
+    """The molecular form filters of a request, as the evidence queries take them."""
+    from omnipath_api.queries.filters import normalize_filters
+
+    filters = normalize_filters(filters)
+    return {
+        "protein_entity_keys": filters.get("protein_entity_keys") or None,
+        "transcript_entity_keys": filters.get("transcript_entity_keys") or None,
+        "isoform_identifiers": filters.get("isoform_identifiers") or None,
+        "molecular_endpoint_mode": filters.get("molecular_endpoint_mode") or "any",
+    }
+
 
 class EvidenceQueries:
-    """Evidence queries over ParquetQueries' storage and shaping contract."""
+    """A relation's evidence, evidence summaries of many, raw payloads."""
 
     def get_relation_evidence(self, relation_pk, resources=None, filters=None):
-        from omnipath_api.queries.molecular import matching_evidence, has_form_filters
-        from omnipath_api.queries.filters import normalize_filters
-        import hashlib
-
-        rows = self._fetch_dicts(
-            f"SELECT resource, relation_id FROM {self._table('relation', resources)} "
-            "WHERE relation_key = ? ORDER BY resource",
-            [relation_pk],
+        text = self.run_query(
+            "relation_evidence", {"relation_key": str(relation_pk), **_form_params(filters)}, resources
         )
-        self._children("relation_annotation", rows, "annotations")
-        self._children("relation_evidence", rows, "evidence")
-        filters = normalize_filters(filters)
-        out, annotations = [], []
-        for row in rows:
-            compiled = split_compiled_annotations(row.get("annotations") or [])
-            annotations.extend(compiled["relation"])
-            items = row.get("evidence") or []
-            for index, record in enumerate(items):
-                if has_form_filters(filters) and not matching_evidence([record], filters):
-                    continue
-                item_annotations = record.get("annotations")
-                parts = (
-                    split_compiled_annotations(item_annotations)
-                    if item_annotations is not None
-                    else compiled
-                )
-                identity = json.dumps(
-                    [
-                        row["resource"],
-                        row["relation_id"],
-                        record.get("source"),
-                        record.get("dataset"),
-                        record.get("row_id"),
-                        index,
-                    ]
-                )
-                out.append(
-                    {
-                        "relationPk": relation_pk,
-                        "relationEvidencePk": relation_pk
-                        + ":"
-                        + hashlib.sha256(identity.encode()).hexdigest(),
-                        "source": record.get("source") or "unknown",
-                        "dataset": record.get("dataset"),
-                        "rowId": record.get("row_id"),
-                        "upstreamId": record.get("upstream_id"),
-                        "subjectMolecularForm": record.get("subject_molecular_form"),
-                        "objectMolecularForm": record.get("object_molecular_form"),
-                        "subjectAttributes": parts["subject"],
-                        "objectAttributes": parts["object"],
-                        "recordAttributes": parts["relation"],
-                        "evidence": parts["relation"],
-                    }
-                )
-        return {"evidence": out, "annotations": annotations}
+        return json.loads(text)
+
+    def get_relation_evidence_summaries(self, relation_pks, resources=None, filters=None):
+        started = time.perf_counter()
+        keys = [str(k) for k in dict.fromkeys(relation_pks or [])]
+        text = self.run_query(
+            "relation_evidence_batch", {"relation_keys": keys, **_form_params(filters)}, resources
+        )
+        return {**json.loads(text), "elapsed_ms": round((time.perf_counter() - started) * 1000, 2)}
 
     def get_relation_payloads(
         self, relation_pk: str, resources: list[str] | None = None

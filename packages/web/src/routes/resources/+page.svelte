@@ -29,8 +29,7 @@
   let inputRef = $state<HTMLInputElement | null>(null);
   let draftQuery = $state('');
   let showFilters = $state(false);
-  let detailsResource = $state<ResourceRecord | null>(null);
-  let detailsOpen = $state(false);
+  let tableRef = $state<HTMLDivElement | null>(null);
   let downloadTopics = $state<ResourceTag[]>([]);
   let downloadOpen = $state(false);
   const query = $derived(page.url.searchParams.get('q') || '');
@@ -44,6 +43,41 @@
   const sampleLimit = $derived(
     data.resources.find((resource) => resource.sample_build && resource.max_records)?.max_records,
   );
+  // The open details dialog is the URL's `resource`, so a reload or a shared link shows it.
+  const detailsId = $derived(page.url.searchParams.get('resource'));
+  const detailsResource = $derived(
+    detailsId
+      ? (data.resources.find((resource) => resource.resource_id === detailsId) ?? null)
+      : null,
+  );
+  // The last resource shown stays in the dialog while it closes.
+  let lastDetails = $state<ResourceRecord | null>(null);
+  $effect(() => {
+    if (detailsResource) lastDetails = detailsResource;
+  });
+  // Whether this page opened the dialog (its history entry is the one before): closing
+  // goes back to it, so the back button does not reopen the dialog.
+  let openedHere = false;
+  $effect(() => {
+    if (!detailsId) openedHere = false; // closed by the back button, say
+  });
+  function openDetails(resource: ResourceRecord) {
+    const url = new URL(page.url);
+    url.searchParams.set('resource', resource.resource_id);
+    openedHere = true;
+    void goto(url, { keepFocus: true, noScroll: true });
+  }
+  function closeDetails() {
+    if (!detailsId) return;
+    if (openedHere) {
+      openedHere = false;
+      history.back();
+      return;
+    }
+    const url = new URL(page.url);
+    url.searchParams.delete('resource');
+    void goto(url, { keepFocus: true, noScroll: true, replaceState: true });
+  }
   const tags = $derived(resourceTags(data.resources));
   const filtered = $derived(
     sortResources(filterResources(data.resources, query, selectedTags, licenses), sort, order),
@@ -83,7 +117,23 @@
   }
   function navigate(url: URL) {
     url.searchParams.delete('tab');
+    // Another search, filter or order starts at the first page.
+    url.searchParams.delete('p');
     void goto(url, { keepFocus: true, noScroll: true });
+  }
+  // The table shows a page of the matching resources at a time; search, filters, counts
+  // and topics still cover all of them.
+  const PAGE_SIZE = 50;
+  const pageCount = $derived(Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)));
+  const pageNumber = $derived(
+    Math.min(pageCount, Math.max(1, Math.floor(Number(page.url.searchParams.get('p'))) || 1)),
+  );
+  const pageRows = $derived(filtered.slice((pageNumber - 1) * PAGE_SIZE, pageNumber * PAGE_SIZE));
+  function setPage(next: number) {
+    const url = new URL(page.url);
+    if (next <= 1) url.searchParams.delete('p');
+    else url.searchParams.set('p', String(next));
+    void goto(url, { keepFocus: true, noScroll: true }).then(() => tableRef?.scrollTo({ top: 0 }));
   }
   function setParam(key: string, value: string) {
     const url = new URL(page.url);
@@ -222,7 +272,7 @@
         </span>
       </header>
       {#if filtered.length}
-        <div class="resource-table lg:min-h-0 lg:flex-1">
+        <div class="resource-table lg:min-h-0 lg:flex-1" bind:this={tableRef}>
           <Table.Root class="table-fixed">
             <Table.Header class="sticky top-0 z-10 bg-background">
               <Table.Row class="hover:bg-transparent">
@@ -254,18 +304,17 @@
                   </Table.Head>
                 {/each}
                 <Table.Head class="hidden w-44 xl:table-cell">Topic</Table.Head>
-                <Table.Head class="w-14"><span class="sr-only">Download</span></Table.Head>
+                <Table.Head class="w-24 sm:w-36"
+                  ><span class="sr-only">Explore and download</span></Table.Head
+                >
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {#each filtered as resource (resource.resource_id)}<ResourceRow
+              {#each pageRows as resource (resource.resource_id)}<ResourceRow
                   {resource}
                   {selectedTags}
                   onTagClick={(id) => toggle('tag', id)}
-                  onOpen={(next) => {
-                    detailsResource = next;
-                    detailsOpen = true;
-                  }}
+                  onOpen={openDetails}
                 />{/each}
             </Table.Body>
           </Table.Root>
@@ -279,6 +328,31 @@
           <span>{number.format(totals.entities)} entities</span>
           <span>{number.format(totals.relations)} relations</span>
           <span>{formatBytes(totals.bytes)} total size</span>
+          {#if pageCount > 1}
+            <nav class="ml-auto flex items-center gap-2" aria-label="Resource pages">
+              <span
+                >{(pageNumber - 1) * PAGE_SIZE + 1}–{Math.min(
+                  pageNumber * PAGE_SIZE,
+                  filtered.length,
+                )}
+                of {filtered.length}</span
+              >
+              <Button
+                variant="outline"
+                size="sm"
+                class="h-6 px-2 text-xs"
+                disabled={pageNumber <= 1}
+                onclick={() => setPage(pageNumber - 1)}>Previous</Button
+              >
+              <Button
+                variant="outline"
+                size="sm"
+                class="h-6 px-2 text-xs"
+                disabled={pageNumber >= pageCount}
+                onclick={() => setPage(pageNumber + 1)}>Next</Button
+              >
+            </nav>
+          {/if}
         </footer>
       {:else}
         <div class="flex flex-col items-center gap-2 px-4 py-16 text-center">
@@ -369,8 +443,8 @@
 <TopicDownloadDialog bind:open={downloadOpen} topics={downloadTopics} resources={data.resources} />
 
 <ResourceDetailsDialog
-  bind:open={detailsOpen}
-  resource={detailsResource}
+  bind:open={() => !!detailsResource, (value) => !value && closeDetails()}
+  resource={detailsResource ?? lastDetails}
   {selectedTags}
   onTagClick={(id) => toggle('tag', id)}
 />

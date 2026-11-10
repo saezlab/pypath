@@ -2615,6 +2615,22 @@
     },
     "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/slc.py"
   },
+  "slc": {
+    "display_name": "SLC",
+    "description": "Human solute carriers and the ChEBI-mapped substrates and ions they transport.",
+    "tags": [
+      "molecular_transport",
+      "literature_curated"
+    ],
+    "website": "https://opendata.cemm.at/gsflab/slcontology/",
+    "license": "Creative Commons Attribution 4.0 International license",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "license_use": {
+      "academic": "allowed",
+      "commercial": "allowed"
+    },
+    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/slc.py"
+  },
   "slctables": {
     "display_name": "SLC tables",
     "description": "Solute carrier proteins, transporter families and reference annotations.",

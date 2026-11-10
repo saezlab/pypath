@@ -25,7 +25,8 @@ import time
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from omnipath_api.queries import ParquetQueries
+from omnipath_api.queries import ReleaseQueries
+from omnipath_api.release_database import serve_newest
 import omnipath_client as op
 
 THREADS = int(os.environ.get("OP_THREADS", "0")) or None
@@ -215,7 +216,10 @@ def compare_entity(client, api) -> int:
 def main(data_dir: str, parts: list[str]) -> int:
     root = Path(data_dir).resolve()
     client = op.connect(root, threads=THREADS)
-    api = ParquetQueries(root, memory_limit="2GB", threads=THREADS or os.cpu_count() or 2)
+    # The API serves a release from its database: publish the installed resources as one.
+    if not (Path(root) / "serving").is_dir():
+        serve_newest(root, memory_limit="4GB", threads=THREADS or None)
+    api = ReleaseQueries(root, memory_limit="2GB", threads=THREADS or os.cpu_count() or 2)
     failures = 0
     try:
         for part in parts or ["relations", "search", "entity"]:

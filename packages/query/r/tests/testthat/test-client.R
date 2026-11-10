@@ -49,6 +49,29 @@ test_that("init is incremental and follows the release", {
   expect_equal(op_sql(con, "SELECT count(*) AS n FROM alpha.evidence_payloads")$n, 1)
 })
 
+test_that("init downloads the release's taxon names", {
+  service <- local_service()
+  service$init("alpha")
+  con <- service$connect()
+  expect_equal(op_sql(con, "SELECT count(*) AS n FROM op_taxonomy")$n, 0)
+  op_disconnect(con)
+  service$taxonomy <- write_taxonomy(file.path(withr::local_tempdir(), "taxonomy.parquet"), "human")
+  service$init("alpha")
+  con <- service$connect()
+  key <- op_search(con, "TP53")$entity_key[1]
+  expect_equal(op_entity(con, key, simplify = FALSE)$entity$taxonomyName, "human")
+  op_disconnect(con)
+  expect_equal(sum(service$downloads == "taxonomy"), 1)
+  # The same names are not downloaded again; new ones replace them in the database.
+  service$init("alpha")
+  expect_equal(sum(service$downloads == "taxonomy"), 1)
+  write_taxonomy(service$taxonomy, "people")
+  service$init("alpha")
+  con <- local_connection(service)
+  expect_equal(op_entity(con, key, simplify = FALSE)$entity$taxonomyName, "people")
+  expect_length(list.dirs(file.path(service$data, "references/taxonomy"), recursive = FALSE), 1)
+})
+
 test_that("derived serving tables match the build", {
   service <- local_service()
   service$init("alpha")
@@ -80,23 +103,20 @@ queries <- function(con) {
   )
 }
 
-test_that("SQL on views and native tables gives the same answers", {
+test_that("SQL on native tables, the derived tables and a database written anew", {
   service <- local_service()
-  service$init(c("alpha", "beta"), materialize = FALSE)
+  service$init(c("alpha", "beta"))
   con <- service$connect()
-  views <- queries(con)
-  expect_equal(nrow(views$entities), 6)
-  expect_equal(views$quoted$identifier, c("quote", "quote"))
-  expect_equal(views$additive$n, 3)
-  expect_equal(op_sql(con, "SELECT DISTINCT table_type FROM information_schema.tables WHERE table_name = 'entity'")$table_type, "VIEW")
+  tables <- queries(con)
+  expect_equal(nrow(tables$entities), 6)
+  expect_equal(tables$quoted$identifier, c("quote", "quote"))
+  expect_equal(tables$additive$n, 3)
+  expect_equal(op_sql(con, "SELECT table_type FROM information_schema.tables WHERE table_name = 'entity' AND table_schema = 'main'")$table_type, "BASE TABLE")
+  expect_true(op_sql(con, "SELECT count(*) = (SELECT count(*) FROM relation) AS same FROM relation_key_lookup")$same)
+  expect_equal(sort(op_sql(con, "SELECT index_name FROM duckdb_indexes()")$index_name), c("entity_annotation_eid", "entity_eid", "entity_evidence_eid", "relation_evidence_rid", "relation_rid"))
   expect_error(op_sql(con, "CREATE TABLE mine AS SELECT 1"))
   op_disconnect(con)
-  service$init(c("alpha", "beta"), materialize = TRUE)
-  con <- service$connect()
-  expect_equal(queries(con), views)
-  expect_equal(op_sql(con, "SELECT table_type FROM information_schema.tables WHERE table_name = 'entity' AND table_schema = 'main'")$table_type, "BASE TABLE")
-  op_disconnect(con)
-  # A new version and a new resource replace only their rows.
+  # A new version and a new resource: the database is written anew.
   service$catalog <- 2
   service$init("gamma")
   con <- local_connection(service)
@@ -140,8 +160,9 @@ test_that("prebuilt queries answer like the explorer", {
   details <- op_entity(con, found$entity_key)
   expect_equal(details$entity$label, "TP53")
   expect_null(op_entity(con, "TP53"))
-  # The macros are SQL in the database.
-  expect_equal(op_sql(con, "SELECT count(*) AS n FROM op_relations(entities := ['TP53'])")$n, 4)
+  # The queries by name, the same the API runs.
+  expect_equal(nrow(op_query(con, "relations", entities = "TP53")), 4)
+  expect_equal(jsonlite::fromJSON(op_query(con, "resolve_keys", tokens = "TP53", output = "json")), found$entity_key)
 })
 
 test_that("missing data and damaged files are errors", {

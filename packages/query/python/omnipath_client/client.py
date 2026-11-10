@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,9 @@ from .contracts import CONTRACT, SERVING, ResourceRecord
 from .database import DATABASE, in_sync, synchronize
 from .errors import ClientError
 from .installation import data_directory, read_installation
+from .remote import ApiClient
+from . import steps
+from .steps import apply_settings
 
 RELATION_EXPORT_LIMIT: int = CONTRACT["relation_export_limit"]
 # Macro parameters that take one value; every other filter takes a list, and one value
@@ -106,8 +110,7 @@ class Client:
             connection.execute("SET memory_limit = ?", [memory_limit])
             if threads is not None:
                 connection.execute("SET threads = ?", [threads])
-            for name, value in CONTRACT["settings"].items():
-                connection.execute(f"SET {name} = {int(value)}")
+            apply_settings(connection)
         except duckdb.Error:
             connection.close()
             raise
@@ -117,6 +120,10 @@ class Client:
     def release(self) -> str:
         """The release of the last ``init()``."""
         return self._release
+
+    @property
+    def mode(self) -> str:
+        return "local"
 
     def _ensure_open(self) -> None:
         if self._closed:
@@ -153,13 +160,17 @@ class Client:
         )
 
     def _filters(self, macro: str, internal: set[str], filters: dict[str, Any]) -> dict[str, Any]:
-        """The filters by name, checked against the macro's parameters."""
+        """The filters by name, checked against the query's (or macro's) parameters."""
         if macro not in self._parameters:
-            row = self.connection.execute(
-                "SELECT parameters FROM duckdb_functions() WHERE function_name = ? LIMIT 1",
-                [macro],
-            ).fetchone()
-            self._parameters[macro] = sorted(set(row[0]) - internal) if row else []
+            if macro in steps.names():
+                names = set(steps.load(macro).params) - {"resources"}
+            else:
+                row = self.connection.execute(
+                    "SELECT parameters FROM duckdb_functions() WHERE function_name = ? LIMIT 1",
+                    [macro],
+                ).fetchone()
+                names = set(row[0]) if row else set()
+            self._parameters[macro] = sorted(names - internal)
         available = self._parameters[macro]
         unknown = set(filters) - set(available)
         if unknown:
@@ -180,7 +191,8 @@ class Client:
                         f"SELECT list(name) FROM op_biolink({_literal(kind)}, {_literal(values[name])})"
                     ).fetchall()
                 except duckdb.InvalidInputException as exc:
-                    raise ValueError(str(exc).removeprefix("Invalid Input Error: ")) from None
+                    message = str(exc).removeprefix("Invalid Input Error: ")
+                    raise ValueError(message.removeprefix("invalid: ")) from None
         return values
 
     def _call(self, macro: str, positional: list[Any], named: dict[str, Any]) -> duckdb.DuckDBPyRelation:
@@ -193,9 +205,10 @@ class Client:
         """Entities matching a name or identifier, merged across resources and ranked
         as in the explorer's search. ``filters`` are the explorer's: ``sources``,
         ``entity_types``, ``taxonomy_ids``, ``reference_entity_keys`` and
-        ``entity_ids``. The macro ``op_search``."""
-        named = self._filters("op_search", {"query", "max_results"}, filters)
-        return self._call("op_search", [query], {**named, "max_results": int(limit)})
+        ``entity_ids``. The query ``entity_search``."""
+        internal = {"query", "limit", "cursor_phase", "cursor_offset", "cursor_key"}
+        named = self._filters("entity_search", internal, filters)
+        return self.query("entity_search", query=query, limit=int(limit), **named)
 
     def relations(
         self,
@@ -212,26 +225,34 @@ class Client:
         as ``sources``, ``predicates``, ``taxonomy_ids``, ``signs``,
         ``reference_entity_keys``, ``protein_entity_keys`` and ``isoform_identifiers``.
         At most 100,000 relations; larger selections are SQL on ``relation``. The
-        macro ``op_relations``."""
+        query ``relations``."""
         if not 1 <= limit <= RELATION_EXPORT_LIMIT:
             raise ValueError(f"limit must be between 1 and {RELATION_EXPORT_LIMIT}")
         if "entity_ids" in filters:
             if entities is not None:
                 raise TypeError("Give entities once: positionally or as entity_ids")
             entities = filters.pop("entity_ids")
-        named = self._filters("op_relations", {"entities", "max_relations"}, filters)
+        named = self._filters("relations", {"entities", "max_relations"}, filters)
         if entities is not None:
             named["entities"] = _value("entities", entities)
-        return self._call("op_relations", [], {**named, "max_relations": int(limit)})
+        return self.query("relations", **named, max_relations=int(limit))
 
     def entity(self, entity_key: str) -> dict[str, Any] | None:
         """One entity by its exact key (as ``search`` returns it), with its identifiers,
         annotations and relationship summary as the explorer's detail page shows them;
-        None when no installed resource has it. The macro ``op_entity``."""
-        row = self.connection.execute(
-            "SELECT details FROM op_entity(?)", [str(entity_key)]
-        ).fetchone()
-        return json.loads(row[0]) if row else None
+        None when no installed resource has it. The query ``entity_details``."""
+        text = self.query("entity_details", entity_key=str(entity_key), output="json")
+        return json.loads(text) if text else None
+
+    def query(self, name: str, *, output: str = "table", **params: Any):
+        """A query by name (``omnipath_client.steps.names()``): the same queries, with the
+        same answers, as the API's; a relation for ``output="table"``, JSON text for
+        ``"json"``."""
+        try:
+            result = steps.run(self.connection, name, params, output=output)
+        except steps.QueryError as exc:
+            raise ValueError(str(exc)) from None
+        return result if output == "json" else self.connection.from_arrow(result)
 
     def close(self) -> None:
         if not self._closed:
@@ -249,9 +270,33 @@ class Client:
 def connect(
     data_dir: str | Path | None = None,
     *,
+    mode: str | None = None,
+    api_url: str | None = None,
+    release: str = "latest",
     memory_limit: str = "2GB",
     threads: int | None = None,
-) -> Client:
-    """Open the data directory's database: the directory given, else OMNIPATH_DATA_DIR,
-    else the per-user default."""
+    timeout: float = 120,
+    http_client: Any = None,
+) -> Client | ApiClient:
+    """A client in one of two modes, with the same ``search``, ``relations`` and
+    ``entity``.
+
+    - ``"api"`` (the default without ``data_dir`` and OMNIPATH_DATA_DIR): the hosted
+      API answers, for ``release``; nothing is downloaded.
+    - ``"local"`` (the default with ``data_dir`` or OMNIPATH_DATA_DIR): the database of
+      a local installation (``init()``): the directory given, else OMNIPATH_DATA_DIR,
+      else the per-user default. It also runs ``sql()``.
+    """
+    if mode is None:
+        local = data_dir is not None or os.environ.get("OMNIPATH_DATA_DIR")
+        mode = "local" if local else "api"
+    if mode == "api":
+        if data_dir is not None:
+            raise ValueError("API mode reads no data directory; use mode='local'")
+        return ApiClient(
+            api_url, release=release, timeout=timeout, memory_limit=memory_limit,
+            threads=threads, http_client=http_client,
+        )
+    if mode != "local":
+        raise ValueError("mode must be 'api' or 'local'")
     return Client(data_dir, memory_limit=memory_limit, threads=threads)

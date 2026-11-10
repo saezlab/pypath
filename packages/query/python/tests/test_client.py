@@ -2,6 +2,7 @@
 written by the core fixtures and real DuckDB; the prebuilt queries are compared with
 the API's queries (omnipath_api.queries) on the same files."""
 
+import hashlib
 import json
 
 import duckdb
@@ -14,7 +15,8 @@ from omnipath_client import ClientError, available, connect, init
 from omnipath_client.installation import DEFAULT_API_URL
 from omnipath_core.fixtures import fixture_key as key, write_resource
 from omnipath_core.schema import PUBLISHED_TABLES, SERVING_TABLES
-from omnipath_api.queries import ParquetQueries
+from omnipath_api.queries import ReleaseQueries
+from omnipath_api.release_database import serve_newest
 
 TAGS = {
     "alpha": [("topic", "signaling"), ("molecule", "proteins")],
@@ -70,6 +72,7 @@ class Service:
     def __init__(self, root):
         self.root, self.requests, self.versions = root, [], {}
         self.truncated, self.without_url = set(), set()
+        self.taxonomy = None  # the release's taxon names (a Parquet file), when it has them
         for name in TAGS:
             self.publish(name, "1.0")
 
@@ -116,7 +119,15 @@ class Service:
             data = (self.root / name / version / file).read_bytes()
             return httpx.Response(200, content=data[:10] if url in self.truncated else data)
         if path == "/api/resources":
-            return httpx.Response(200, json={"resources": [self.record(n) for n in self.versions]})
+            references = {}
+            if self.taxonomy is not None:
+                data = self.taxonomy.read_bytes()
+                version = hashlib.sha256(data).hexdigest()
+                references["taxonomy"] = dict(version=version, size_bytes=len(data))
+            resources = [self.record(n) for n in self.versions]
+            return httpx.Response(200, json={"resources": resources, "references": references})
+        if path == "/api/references/taxonomy":
+            return httpx.Response(200, content=self.taxonomy.read_bytes())
         if path.startswith("/api/resources/"):
             return httpx.Response(200, json=self.record(path.split("/")[3], evidence=True))
         raise AssertionError(f"Unexpected request: {request.url}")
@@ -256,8 +267,8 @@ def queries(db):
     )
 
 
-def test_sql_on_views_and_native_tables(service, monkeypatch):
-    service.init(["alpha", "beta"], materialize=False)
+def test_sql_on_native_tables(service, monkeypatch):
+    service.init(["alpha", "beta"])
     database = service.data / "omnipath.duckdb"
 
     def forbidden(*args, **kwargs):
@@ -268,39 +279,38 @@ def test_sql_on_views_and_native_tables(service, monkeypatch):
         patched.setattr(httpx.Client, "stream", forbidden)
         with connect(service.data) as db:
             assert db.path == database
-            views = queries(db)
-            assert ("alpha", "relation") in views["tables"]
-            assert ("main", "entity_term") in views["tables"]
-            assert ("main", "evidence_payloads") not in views["tables"]
-            assert len(views["entities"]) == 6
-            assert views["quoted"] == [("quote",), ("quote",)]
-            assert views["additive"] == (3,)
-            assert views["one"] == (2,)
-            assert views["joined"] == [("TP53", "alpha"), ("TP53", "beta")]
-            assert views["endpoints"] == (2,) and views["terms"] == (1,)
+            tables = queries(db)
+            assert ("alpha", "relation") in tables["tables"]
+            assert ("main", "entity_term") in tables["tables"]
+            assert ("main", "evidence_payloads") not in tables["tables"]
+            assert len(tables["entities"]) == 6
+            assert tables["quoted"] == [("quote",), ("quote",)]
+            assert tables["additive"] == (3,)
+            assert tables["one"] == (2,)
+            assert tables["joined"] == [("TP53", "alpha"), ("TP53", "beta")]
+            assert tables["endpoints"] == (2,) and tables["terms"] == (1,)
             # The database is read-only; temporary tables are the session's own.
             with pytest.raises(duckdb.Error):
                 db.sql("CREATE TABLE mine AS SELECT 1")
             db.connection.execute("CREATE TEMP TABLE mine AS SELECT label FROM alpha.entity")
             assert db.sql("SELECT count(*) FROM mine").fetchone() == (3,)
             types = db.sql(
-                "SELECT DISTINCT table_type FROM information_schema.tables WHERE table_name = 'entity'"
+                "SELECT table_type FROM information_schema.tables "
+                "WHERE table_name = 'entity' AND table_schema = 'main'"
             ).fetchall()
-            assert types == [("VIEW",)]
-    # The same answers from native tables; the choice is kept by later runs.
-    service.init(["alpha", "beta"], materialize=True)
-    with connect(service.data) as db:
-        assert queries(db) == views
-        types = db.sql(
-            "SELECT table_type FROM information_schema.tables "
-            "WHERE table_name = 'entity' AND table_schema = 'main'"
-        ).fetchall()
-        assert types == [("BASE TABLE",)]
-    # A new version and a new resource replace only their rows, in place.
+            assert types == [("BASE TABLE",)]
+            # The database format's own tables and indexes.
+            assert db.sql(
+                "SELECT count(*) = (SELECT count(*) FROM relation) FROM relation_key_lookup"
+            ).fetchone() == (True,)
+            assert sorted(r[0] for r in db.sql("SELECT index_name FROM duckdb_indexes()").fetchall()) == [
+                "entity_annotation_eid", "entity_eid", "entity_evidence_eid", "relation_evidence_rid", "relation_rid"
+            ]
+    # A new version and a new resource: the database is written anew.
     service.publish("alpha", "2.0")
     before = database.stat().st_ino
     service.init("gamma")
-    assert database.stat().st_ino == before
+    assert database.stat().st_ino != before
     with connect(service.data) as db:
         assert db.sql(
             "SELECT _resource, _resource_version, count(*) FROM entity GROUP BY ALL ORDER BY ALL"
@@ -311,19 +321,16 @@ def test_sql_on_views_and_native_tables(service, monkeypatch):
             ("beta", "1.0", False),
             ("gamma", "1.0", False),
         ]
-    # Raw evidence has no table yet: the database is written anew for it.
+    # Raw evidence for one resource.
     service.init("gamma", include_evidence=True)
-    assert database.stat().st_ino != before
     with connect(service.data) as db:
         assert db.sql("SELECT _resource FROM evidence_payloads").fetchall() == [("gamma",)]
         assert db.sql("SELECT count(*) FROM entity").fetchone() == (9,)
         assert json.loads((service.data / "installed.json").read_text())["materialize"] is True
-    service.init(materialize=False)
-    with connect(service.data) as db:
-        assert db.sql("SELECT count(*) FROM entity").fetchone() == (9,)
-        assert db.sql(
-            "SELECT DISTINCT table_type FROM information_schema.tables WHERE table_name = 'entity'"
-        ).fetchall() == [("VIEW",)]
+    # Nothing changed: the database stays.
+    before = database.stat().st_ino
+    service.init()
+    assert database.stat().st_ino == before
 
 
 def test_prebuilt_queries_answer_like_the_api(service):
@@ -378,8 +385,8 @@ def test_prebuilt_queries_answer_like_the_api(service):
         details = db.entity(key("P04637"))
         assert details["entity"]["label"] == "TP53"
         assert db.entity("TP53") is None
-        # The macros are SQL in the database, for any DuckDB client.
-        assert db.sql("SELECT count(*) FROM op_relations(entities := ['TP53'])").fetchone() == (4,)
+        # The queries by name.
+        assert db.query("relations", entities=["TP53"]).count("*").fetchone() == (4,)
         assert db.sql(
             "SELECT count(*) FROM evidence_payloads WHERE relation_key = ?", [key("r1")]
         ).fetchone() == (2,)
@@ -529,11 +536,12 @@ def canonical(table):
     return sorted(rows)
 
 
-@pytest.mark.parametrize("materialize", [True, False])
-def test_prebuilt_queries_match_the_engine(service, materialize):
-    """The macros give the API's answers, in both database modes."""
-    service.init(["alpha", "beta", "gamma"], include_evidence=True, materialize=materialize)
-    api = ParquetQueries(service.data)
+def test_prebuilt_queries_match_the_engine(service):
+    """The macros give the API's answers."""
+    service.init(["alpha", "beta", "gamma"], include_evidence=True)
+    # The API's engine over a release of the same files.
+    serve_newest(service.data, memory_limit="1GB", threads=1)
+    api = ReleaseQueries(service.data)
     try:
         with connect(service.data) as db:
             for filters in [
@@ -572,12 +580,94 @@ def test_prebuilt_queries_match_the_engine(service, materialize):
         api.close()
 
 
+def test_api_mode_answers_like_local_mode(service):
+    """The hosted API (here in-process over the same files) gives the local answers."""
+    from fastapi.testclient import TestClient
+    from omnipath_api.server import create_app
+
+    service.init(["alpha", "beta", "gamma"], include_evidence=True)
+    serve_newest(service.data, memory_limit="1GB", threads=1)
+    engine = ReleaseQueries(service.data)
+    try:
+        with TestClient(create_app(queries=engine)) as http, connect(service.data) as local, connect(
+            mode="api", api_url="http://testserver", http_client=http
+        ) as remote:
+            assert (local.mode, remote.mode) == ("local", "api")
+            for filters in [
+                {"entity_ids": ["TP53"]},
+                {"entity_ids": ["TP53"], "sources": ["alpha"]},
+                {"entity_ids": ["TP53"], "gene_mode": "source"},
+                {"entity_ids": ["gene:entrez:7157"]},
+                {"reference_entity_keys": ["entrez:7157"]},
+                {"predicates": ["biolink:interacts_with"]},
+                {"sources": ["beta"]},
+                {},
+            ]:
+                rest = dict(filters)
+                entities = rest.pop("entity_ids", None)
+                want = local.relations(entities, **rest).to_arrow_table()
+                got = remote.relations(entities, **rest).to_arrow_table()
+                assert got.schema.names == want.schema.names, filters
+                assert canonical(got) == canonical(want), filters
+            for query, filters in [("TP53", {}), ("tp", {}), ("caffeine", {}), ("", {}),
+                                   ("TP53", {"sources": ["beta"]}), ("TP53", {"entity_types": ["protein"]})]:
+                assert remote.search(query, **filters).fetchall() == local.search(query, **filters).fetchall()
+            for ident in ("P04637", "CHEBI:27732", "quote"):
+                assert remote.entity(key(ident)) == local.entity(key(ident)), ident
+            assert remote.entity("0" * 64) is None
+            with pytest.raises(TypeError, match="Unknown filters"):
+                remote.relations("TP53", no_such_filter=1)
+            with pytest.raises(ClientError, match="local installation"):
+                remote.sql("SELECT 1")
+            assert {r["resource_id"] for r in remote.resources()} == {"alpha", "beta", "gamma"}
+    finally:
+        engine.close()
+
+
+def write_taxonomy(path, name):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pq.write_table(
+        pa.table(dict(
+            taxon_id=["9606", "10090"],
+            current_taxon_id=["9606", "10090"],
+            scientific_name=["Homo sapiens", "Mus musculus"],
+            common_name=[name, "house mouse"],
+        )),
+        path,
+    )
+    return path
+
+
+def test_init_downloads_the_release_taxon_names(service):
+    service.init("alpha")
+    with connect(service.data) as db:
+        assert db.sql("SELECT count(*) FROM op_taxonomy").fetchone()[0] == 0
+    service.taxonomy = write_taxonomy(service.root / "taxonomy.parquet", "human")
+    service.init("alpha")
+    tp53 = key("P04637")
+    with connect(service.data) as db:
+        assert db.entity(tp53)["entity"]["taxonomyName"] == "human"
+    downloads = [r for r in service.requests if r.url.path == "/api/references/taxonomy"]
+    assert len(downloads) == 1
+    # The same names are not downloaded again; new ones replace them in the database
+    # without writing it anew.
+    service.init("alpha")
+    assert len([r for r in service.requests if r.url.path == "/api/references/taxonomy"]) == 1
+    written = (service.data / "omnipath.duckdb").stat().st_ino
+    write_taxonomy(service.taxonomy, "people")
+    service.init("alpha")
+    with connect(service.data) as db:
+        assert db.entity(tp53)["entity"]["taxonomyName"] == "people"
+    assert (service.data / "omnipath.duckdb").stat().st_ino == written
+    assert len(list((service.data / "references/taxonomy").iterdir())) == 1
+
+
 def test_query_layer_of_another_client_version_is_rewritten(service):
     service.init("alpha")
     database = service.data / "omnipath.duckdb"
     with duckdb.connect(str(database)) as db:
         db.execute("UPDATE database_info SET query_layer = 'older'")
-        db.execute("DROP MACRO TABLE op_search")
+        db.execute("DROP MACRO op_entity_ok")
     before = database.stat().st_ino
     with connect(service.data) as db:
         assert db.search("TP53").count("*").fetchone() == (1,)

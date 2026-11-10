@@ -1,6 +1,6 @@
 <script lang="ts">
   import { releaseUrl } from '$lib/api/release';
-  import { Download } from '@lucide/svelte';
+  import { Download, Telescope } from '@lucide/svelte';
   import { Button } from '$lib/components/ui/button/index.js';
   import * as Table from '$lib/components/ui/table/index.js';
   import { truncateTitle } from '$lib/actions/truncate-title';
@@ -46,11 +46,16 @@
     <div class="flex min-w-0 items-center gap-3">
       <ResourceDonut {resource} />
       <div class="min-w-0">
-        <a
-          class="block truncate font-semibold text-foreground hover:underline"
-          href={releaseUrl(`/explore?source=${encodeURIComponent(resource.resource_id)}`)}
-          onclick={stop}
-          use:truncateTitle={resource.resource_name}>{resource.resource_name}</a
+        <!-- The row opens the details; the name is its button, for the keyboard. Explore
+             is its own labelled button, so no part of the row leaves the page unexpectedly. -->
+        <button
+          type="button"
+          class="block max-w-full truncate text-left font-semibold text-foreground hover:underline"
+          onclick={(event) => {
+            stop(event);
+            onOpen(resource);
+          }}
+          use:truncateTitle={resource.resource_name}>{resource.resource_name}</button
         >
         <p class="truncate text-xs text-muted-foreground" use:truncateTitle={description}>
           {description}
@@ -91,6 +96,16 @@
   </Table.Cell>
   <Table.Cell class="pr-3">
     <div class="flex items-center justify-end gap-1">
+      <Button
+        variant="outline"
+        size="sm"
+        class="h-8 gap-1.5 px-2"
+        href={releaseUrl(`/explore?source=${encodeURIComponent(resource.resource_id)}`)}
+        aria-label={`Explore the entities of ${resource.resource_name}`}
+        title="Explore its entities"
+        onclick={stop}
+        ><Telescope class="size-4" /><span class="hidden sm:inline">Explore</span></Button
+      >
       <Button
         variant="outline"
         size="icon-sm"

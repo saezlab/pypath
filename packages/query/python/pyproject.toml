@@ -16,7 +16,7 @@ dependencies = [
 
 [project.optional-dependencies]
 pandas = ["pandas>=2"]
-# The tests compare the macros with the API's queries and build fixtures with core.
+# The tests compare the answers with the API's and build fixtures with core.
 test = ["pytest>=8", "omnipath-core>=0.1.0,<0.2.0", "omnipath-api>=0.1.0,<0.2.0"]
 
 [project.scripts]
@@ -27,7 +27,7 @@ where = ["."]
 include = ["omnipath_client*"]
 
 [tool.setuptools.package-data]
-omnipath_client = ["py.typed", "sql/*.sql", "sql/contract.json"]
+omnipath_client = ["py.typed", "sql/*.sql", "sql/queries/*.sql", "sql/fragments/*.sql", "sql/contract.json"]
 
 [tool.uv.sources]
 omnipath-api = { workspace = true }

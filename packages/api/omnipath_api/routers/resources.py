@@ -2,7 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 from fastapi import HTTPException, Query, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 
 from omnipath_api.models import (
     ResourceDownloadRequest,
@@ -36,16 +36,36 @@ def list_resources(
     """List indexed resources. `shape=svelte` returns the explorer catalog."""
     svelte_shape = request.url.path.rstrip("/").endswith("/catalog") or shape == "svelte"
     if svelte_shape:
-        resources = _call(request, "list_resource_catalog")
-    else:
-        resources = _call(request, "list_resources")
-    return {"resources": resources}
+        return {
+            "resources": _call(request, "list_resource_catalog"),
+            "references": _call(request, "list_references"),
+        }
+    return {"resources": _call(request, "list_resources")}
 
 
 @router.get("/resources/topics", response_model=ResourceTopicsResponse, tags=["resources"])
 def list_resource_topics(request: Request) -> dict[str, Any]:
     """The biological topics of the release, each with the resources that have it."""
     return {"topics": _call(request, "list_resource_topics")}
+
+
+@router.get("/references/taxonomy", tags=["resources"], response_model=None)
+def download_taxonomy(request: Request) -> Response:
+    """The release's taxon names (Parquet: taxon_id, current_taxon_id, scientific_name, common_name), which
+    the clients' init downloads. Its ETag is the file's SHA-256."""
+    found = _call(request, "get_taxonomy_reference")
+    if found is None:
+        raise HTTPException(status_code=404, detail="The release has no taxonomy reference")
+    path, version = found
+    etag = f'"{version}"'
+    if request.headers.get("if-none-match") == etag:
+        return Response(status_code=304, headers={"ETag": etag})
+    return FileResponse(
+        path,
+        media_type="application/vnd.apache.parquet",
+        filename="taxonomy.parquet",
+        headers={"ETag": etag},
+    )
 
 
 @router.post("/resources/download", tags=["resources"], response_model=None)

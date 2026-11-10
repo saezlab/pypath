@@ -11,7 +11,7 @@ import pyarrow.parquet as pq
 import pytest
 from fastapi.testclient import TestClient
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import republish, served_queries
 from omnipath_api.releases import ReleaseStore
 from omnipath_api.server import create_app
 from omnipath_core.versioning import RESOURCE_FILES
@@ -62,7 +62,7 @@ def setup(tmp_path, monkeypatch):
             {"schema_version": 1, "version": version, "resources": {"signor": resource_version}}
         )
     assert (tmp_path / "releases/2026.09.json").stat().st_mode & 0o777 == 0o644
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     with TestClient(create_app(queries=engine)) as client:
         client.headers["x-admin-secret"] = "test-release-password"
         yield store, engine, client, old, new
@@ -76,14 +76,11 @@ def test_pins_queries_and_default_independent_of_mtime(setup):
         assert engine.search_relations()["rows"][0]["subject_label"] == "new"
         with pytest.raises(ValueError):
             engine.search_relations(resources=["signor/1.0.0"])
-    # Legacy default files cannot override Latest.
+    # Legacy default files cannot override Latest: the newest published release.
     (store.root / "default_release.json").write_text('{"version": "2026.08"}')
     for suffix in ("", "&release=latest", "&release=working"):
         rows = client.get("/resources?shape=svelte" + suffix).json()["resources"]
-        assert {item["resource_id"]: item["version"] for item in rows} == {
-            "signor": "2.0.0",
-            "extra": "1.0.0",
-        }
+        assert {item["resource_id"]: item["version"] for item in rows} == {"signor": "2.0.0"}
     assert client.get("/releases").json()["default"] == "latest"
 
 
@@ -128,10 +125,10 @@ def test_static_urls_pin_selected_resource_version(setup, monkeypatch):
 def test_static_hosting_optional_and_configurable(tmp_path, monkeypatch):
     write_resource(tmp_path, "signor", "1", "test")
     monkeypatch.delenv("OMNIPATH_PUBLIC_DATA_URL", raising=False)
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     assert "url" not in engine.list_resource_files("signor")["files"][0]
     monkeypatch.setenv("OMNIPATH_PUBLIC_DATA_URL", "https://data.example.org/artifacts/")
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     assert (
         engine.list_resource_files("signor")["files"][0]["url"]
         == "https://data.example.org/artifacts/resources/signor/1/entity.parquet"
@@ -143,12 +140,13 @@ def test_static_hosting_optional_and_configurable(tmp_path, monkeypatch):
         "https://host/#fragment",
     ]:
         with pytest.raises(ValueError, match="OMNIPATH_PUBLIC_DATA_URL"):
-            ParquetQueries(tmp_path, public_data_url=invalid)
+            served_queries(tmp_path, public_data_url=invalid)
 
 
 def test_latest_numeric_order_and_new_resources(setup):
     store, engine, client, _, _ = setup
-    # A later-written lower version must not win; numeric ordering beats lexical ordering.
+    # Publishing the newest resources: numeric ordering beats lexical ordering and file
+    # times, versions that are not numbers and incomplete versions are left out.
     write_resource(store.root, "extra", "1.10.0", "ten")
     write_resource(store.root, "extra", "1.9.0", "nine")
     legacy = write_resource(store.root, "extra", "abcdef123456", "legacy")
@@ -158,6 +156,10 @@ def test_latest_numeric_order_and_new_resources(setup):
     pending = write_resource(store.root, "signor", "3.0.0", "pending")
     table = pending / "relation_evidence.parquet"
     table.rename(pending / "relation_evidence.partial")
+    # Not served before a release pins them.
+    rows = client.get("/resources?shape=svelte").json()["resources"]
+    assert {item["resource_id"]: item["version"] for item in rows} == {"signor": "2.0.0"}
+    republish(store.root)
     rows = client.get("/resources?shape=svelte").json()["resources"]
     assert {item["resource_id"]: item["version"] for item in rows} == {
         "signor": "2.0.0",
@@ -165,6 +167,7 @@ def test_latest_numeric_order_and_new_resources(setup):
         "new_source": "1",
     }
     (pending / "relation_evidence.partial").rename(table)
+    republish(store.root)
     with engine.release_scope("latest"):
         assert engine.resolve_resource_info("signor")["version"] == "3.0.0"
     with engine.release_scope("2026.09"):
@@ -186,6 +189,21 @@ def test_downloads_and_parallel_request_isolation(setup):
     assert client.get("/resources/extra/download?release=2026.09").status_code == 404
     assert client.get("/resources?release=missing").status_code == 404
     assert client.get("/resources?release=../../escape").status_code == 400
+
+
+class store_scope:
+    """The engine of a test client, in one release's scope."""
+
+    def __init__(self, client, release):
+        self.engine, self.release = client.app.state.queries, release
+
+    def __enter__(self):
+        self.scope = self.engine.release_scope(self.release)
+        self.scope.__enter__()
+        return self.engine
+
+    def __exit__(self, *exc):
+        return self.scope.__exit__(*exc)
 
 
 def _zip_names(client, url, **kwargs):
@@ -234,8 +252,11 @@ def test_invalid_releases_and_pinned_deletion(setup):
     assert "pinned" in response.text
     assert old.exists()
     (old / "relation.parquet").unlink()
-    response = client.get("/resources?release=2026.08")
-    assert response.status_code == 400  # Never fall back to the newer resource.
+    # The release stays pinned to its version (never the newer one); its file is gone.
+    with store_scope(client, "2026.08") as engine:
+        assert engine.resolve_resource_info("signor")["version"] == "1.0.0"
+    response = client.get("/resources/signor/files/relation.parquet?release=2026.08")
+    assert response.status_code == 404
 
 
 def test_admin_publish_and_explicit_build_version(setup):

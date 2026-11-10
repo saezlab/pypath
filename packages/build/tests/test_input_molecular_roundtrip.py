@@ -7,7 +7,8 @@ from types import SimpleNamespace
 
 
 from library_fixture import build_fixture_library
-from omnipath_api.queries.parquet import ParquetQueries
+from omnipath_api.queries.release import ReleaseQueries
+from omnipath_api.release_database import serve_newest
 from omnipath_build.silver import SilverExtractor
 from omnipath_build.writer import ParquetWriter
 from tables_fixture import read_tables
@@ -159,7 +160,8 @@ def test_molecular_inputs_roundtrip_without_combinatorial_entities(tmp_path):
         "uniprot",
         "chembl_representative_sequence_sha256",
     }
-    engine = ParquetQueries(tmp_path)
+    serve_newest(tmp_path, memory_limit="1GB", threads=1)
+    engine = ReleaseQueries(tmp_path)
     try:
         served = engine.get_entity_core(anchor["entity_key"])["entity"]
         assert served["molecularEvidenceTotal"] == 7

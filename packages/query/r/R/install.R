@@ -55,9 +55,13 @@
 # The catalog ------------------------------------------------------------------
 
 .catalog <- function(api_url, release, timeout) {
+  .catalog_and_references(api_url, release, timeout)$catalog
+}
+
+.catalog_and_references <- function(api_url, release, timeout) {
   response <- .fetch_json(paste0(api_url, "/resources"), list(shape = "svelte", release = release), timeout)
   if (!is.list(response) || is.null(names(response))) .fail("Expected a catalog object")
-  .validate_catalog(response$resources)
+  list(catalog = .validate_catalog(response$resources), references = .validate_references(response$references))
 }
 
 .record_tags <- function(record, dimension) {
@@ -193,6 +197,36 @@ op_available <- function(release = "latest", api_url = NULL, timeout = 30) {
   downloaded
 }
 
+.taxonomy_file <- function(root, version) {
+  file.path(root, "references", "taxonomy", version, "taxonomy.parquet")
+}
+
+# The release's taxon names in references/taxonomy/<version>/ (downloaded when missing;
+# other versions are removed): the version, NULL when the release has none.
+.install_taxonomy <- function(con, api_url, release, root, reference, timeout) {
+  parent <- file.path(root, "references", "taxonomy")
+  version <- reference$version
+  if (!is.null(version)) {
+    target <- .taxonomy_file(root, version)
+    if (!(file.exists(target) && file.size(target) == reference$size_bytes)) {
+      dir.create(dirname(target), recursive = TRUE, showWarnings = FALSE)
+      staging <- tempfile(".download-", tmpdir = dirname(target))
+      on.exit(unlink(staging), add = TRUE)
+      .fetch_artifact(list(
+        name = "taxonomy.parquet", size_bytes = reference$size_bytes,
+        url = paste0(api_url, "/references/taxonomy?release=", utils::URLencode(release, reserved = TRUE))
+      ), staging, timeout)
+      digest <- DBI::dbGetQuery(con, sprintf("SELECT sha256(content) AS h FROM read_blob(%s)", .quote(staging)))$h
+      if (!identical(digest, version)) .fail("The taxonomy changed during init; run init again")
+      if (!file.rename(staging, target)) .fail("Could not put the taxonomy in place")
+    }
+  }
+  for (other in list.dirs(parent, recursive = FALSE)) {
+    if (!identical(basename(other), version)) unlink(other, recursive = TRUE)
+  }
+  version
+}
+
 #' Install resources and write the database
 #'
 #' Downloads resources into the data directory and prepares them for querying.
@@ -203,18 +237,16 @@ op_available <- function(release = "latest", api_url = NULL, timeout = 30) {
 #' versions, so running it again updates the directory. Only missing or new versions
 #' are downloaded; an interrupted run keeps the resources it finished.
 #'
-#' Ends by writing the directory's DuckDB database (`omnipath.duckdb`): native tables
-#' (the default for a new directory) or, with `materialize = FALSE`, views over the
-#' files. The choice is kept on later runs unless given again. The Python client
-#' `omnipath_client` reads and writes the same directory.
+#' Ends by writing the directory's DuckDB database (`omnipath.duckdb`): the same
+#' database the hosted API serves a release from, with native tables copied from the
+#' downloaded files. Any change to the installed resources writes it anew. The Python
+#' client `omnipath_client` reads and writes the same directory.
 #'
 #' @param resources Resource names, or `NULL`.
 #' @param topic,content,molecule,knowledge_origin Tags to select by.
 #' @param release A release, or "latest".
 #' @param data_dir The data directory; see [op_data_directory()].
 #' @param include_evidence Also download raw evidence payloads (kept on updates).
-#' @param materialize Native tables (`TRUE`) or views (`FALSE`); `NULL` keeps the
-#'   directory's choice.
 #' @param api_url The API; by default `OMNIPATH_API_URL` or the development deployment.
 #' @param timeout Seconds without data before a download fails.
 #' @param memory_limit DuckDB's memory limit while writing.
@@ -223,7 +255,7 @@ op_available <- function(release = "latest", api_url = NULL, timeout = 30) {
 #' @export
 op_init <- function(resources = NULL, topic = NULL, content = NULL, molecule = NULL,
                     knowledge_origin = NULL, release = "latest", data_dir = NULL,
-                    include_evidence = FALSE, materialize = NULL, api_url = NULL,
+                    include_evidence = FALSE, api_url = NULL,
                     timeout = 30, memory_limit = "2GB", progress = TRUE) {
   if (!is.character(release) || length(release) != 1 || !nzchar(trimws(release))) {
     stop("release must not be empty", call. = FALSE)
@@ -231,7 +263,8 @@ op_init <- function(resources = NULL, topic = NULL, content = NULL, molecule = N
   api_url <- .api_url(api_url)
   root <- op_data_directory(data_dir)
   say <- function(...) if (isTRUE(progress)) message(...)
-  catalog <- .catalog(api_url, release, timeout)
+  listed <- .catalog_and_references(api_url, release, timeout)
+  catalog <- listed$catalog
   chosen <- .select(catalog, resources, list(
     topic = topic, content = content, molecule = molecule, knowledge_origin = knowledge_origin
   ))
@@ -243,17 +276,18 @@ op_init <- function(resources = NULL, topic = NULL, content = NULL, molecule = N
   installation <- .read_installation(root) %||% list(
     format = 1L, api_url = api_url, release = release, materialize = TRUE, resources = list()
   )
-  materialize <- materialize %||% installation$materialize
   installed <- stats::setNames(installation$resources, vapply(installation$resources, function(r) r$resource_id, ""))
+  taxonomy <- .install_taxonomy(con, api_url, release, root, listed$references$taxonomy, timeout)
   wanted <- names(chosen)
   # Installed resources follow the release too: one directory, one release.
   targets <- catalog[names(catalog) %in% c(wanted, names(installed))]
   finish <- function() {
     if (length(installation$resources)) {
-      installation$materialize <<- materialize
+      installation$materialize <<- TRUE
+      installation$taxonomy <<- taxonomy
       .write_installation(root, installation)
       if (!.in_sync(root, installation)) {
-        say("Writing the database", if (isTRUE(materialize)) " (native tables)" else "")
+        say("Writing the database")
         .synchronize(root, installation, memory_limit)
       }
     }
@@ -276,8 +310,8 @@ op_init <- function(resources = NULL, topic = NULL, content = NULL, molecule = N
         if (downloaded) sprintf("%.0f MB", size) else "up to date"))
       installed[[name]] <- record
       installation <- list(
-        format = 1L, api_url = api_url, release = release, materialize = materialize,
-        resources = unname(installed)
+        format = 1L, api_url = api_url, release = release, materialize = TRUE,
+        resources = unname(installed), taxonomy = taxonomy
       )
       .write_installation(root, installation)
     }

@@ -36,7 +36,9 @@ python -m omnipath_build.cli run --all \
 
 `--sources chembl signor` is equivalent to positional resource names. A single
 `--version` applies to every resource; `--versions` supplies per-resource overrides.
-No global serving release is published. `--max-records` applies **per dataset**.
+No global serving release is published: the API serves a build once a release pins
+it and that release's database is written (`make publish-release`, see
+`deploy/nicesrv.md`). `--max-records` applies **per dataset**.
 Omitting it permits unrestricted resource builds, including their normal parser
 and cache preparation behavior.
 

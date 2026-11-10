@@ -1,36 +1,47 @@
-"""The DuckDB database of an installation: its tables and its query layer.
+"""The DuckDB database of a release: native tables over every resource, written anew.
 
-The tables are views over the installation's Parquet files, or native tables copied
-from them: one table per published and lookup table over every installed resource
-(``entity``, ``relation``, ...), the same tables per resource in a schema named after
-it (``signor.relation``), and ``resources`` listing what the database holds.
+One database format serves the hosted API (one database per published release, written
+on the server by ``build_release_database``) and a local installation (written by
+``init()`` into its data directory). Each published and lookup table of the resources
+becomes one native table (``entity``, ``relation``, ...) with the provenance columns
+``_resource`` and ``_resource_version`` and a global id (``_rid``, ``_eid``: the
+resource's index times 2^32 plus its own id). The same tables per resource are views in
+a schema named after it (``signor.relation``); ``resources`` lists what the database
+holds and ``database_info`` describes it.
 
-The query layer is what ``search``, ``relations`` and ``entity`` run, in SQL any DuckDB
-client can call: the macros of ``sql/*.sql``, Biolink names (``op_names``) and the
-installation's lookup macros, which read rows of one table by id or key. Over views a
-lookup has one branch per resource; native tables carry global ids (``_rid``, ``_eid``:
-the resource's index times 2^32 plus its own id), so a lookup is one filter.
+Rows are read by id through the global ids, written into the SQL as literal lists: then
+DuckDB uses the ART indexes the contract names (``indexes``), and filters a sorted
+column by its zone maps. The database's derived tables (``derived_tables``) hold what is
+read by a key the tables are not sorted by. A database is always written completely and
+put in place when done; nothing is updated in place.
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable
+from datetime import datetime, timezone
 import hashlib
 from importlib.resources import files
+import json
 import os
 from pathlib import Path
 import re
+import shutil
 import tempfile
+import time
+from typing import Any
 
 import duckdb
 
 from .contracts import CONTRACT, SERVING, TABLES, Installation, ResourceRecord
 
 DATABASE = "omnipath.duckdb"
+DATABASE_FORMAT: int = CONTRACT["database_format"]
 _PAYLOADS = "evidence_payloads"
 _SQL = files("omnipath_client").joinpath("sql")
 _GLOBAL_IDS: dict[str, list[str]] = CONTRACT["global_ids"]
-# Changes with the contract or a macro: a database written by another client version
-# gets its query layer written again on connect.
+# Changes with the contract or the query SQL: a database written by another client
+# version gets its query layer written again on connect.
 QUERY_LAYER = hashlib.sha256(
     b"".join(_SQL.joinpath(name).read_bytes() for name in ["contract.json", *CONTRACT["macro_files"]])
 ).hexdigest()[:16]
@@ -44,94 +55,81 @@ def _name(value: str) -> str:
     return '"' + value.replace('"', '""') + '"'
 
 
-def _tables(record: ResourceRecord) -> list[str]:
-    """The tables a resource has: raw evidence only when it was installed."""
-    names = {f["name"] for f in record["files"]}
-    return [t for t in TABLES + SERVING if t != _PAYLOADS or f"{_PAYLOADS}.parquet" in names]
+class Source:
+    """One resource version to write: its record and the directory of its files."""
+
+    def __init__(self, record: ResourceRecord, directory: Path) -> None:
+        self.record = record
+        self.directory = Path(directory)
+        self.resource_id = record["resource_id"]
+        self.version = record["version"]
+
+    def tables(self, payloads: bool = True) -> list[str]:
+        """The tables it has: raw evidence only when it was installed and wanted."""
+        names = {f["name"] for f in self.record["files"]}
+        return [
+            t
+            for t in TABLES + SERVING
+            if t != _PAYLOADS or (payloads and f"{_PAYLOADS}.parquet" in names)
+        ]
+
+    def select(self, table: str, index: int | None = None) -> str:
+        """Its table read from its file, with the provenance columns; with the resource's
+        ``index``, also with the table's global id."""
+        path = self.directory / f"{table}.parquet"
+        extra = ""
+        if index is not None and table in _GLOBAL_IDS:
+            column, global_id = _GLOBAL_IDS[table]
+            extra = f", ({int(index)}::BIGINT << 32) + {column} AS {global_id}"
+        return (
+            f"SELECT *, {_literal(self.resource_id)} AS _resource, "
+            f"{_literal(self.version)} AS _resource_version{extra} "
+            f"FROM read_parquet({_literal(str(path))})"
+        )
 
 
-def _source(root: Path, record: ResourceRecord, table: str, index: int | None = None) -> str:
-    """One resource's table read from its file, with its provenance columns; with the
-    resource's ``index``, also with the table's global id (native tables)."""
-    path = root / "resources" / record["resource_id"] / record["version"] / f"{table}.parquet"
-    extra = ""
-    if index is not None and table in _GLOBAL_IDS:
-        column, global_id = _GLOBAL_IDS[table]
-        extra = f", ({int(index)}::BIGINT << 32) + {column} AS {global_id}"
-    return (
-        f"SELECT *, {_literal(record['resource_id'])} AS _resource, "
-        f"{_literal(record['version'])} AS _resource_version{extra} "
-        f"FROM read_parquet({_literal(str(path))})"
+def _state(sources: Iterable[Source], payloads: bool) -> list[tuple[str, str, bool]]:
+    return sorted(
+        (s.resource_id, s.version, _PAYLOADS in s.tables(payloads)) for s in sources
     )
 
 
-def _state(records: list[ResourceRecord]) -> list[tuple[str, str, bool]]:
-    return sorted((r["resource_id"], r["version"], _PAYLOADS in _tables(r)) for r in records)
-
-
-def _describe(db, root: Path, materialized: bool, records: list[ResourceRecord]) -> None:
+def _describe(db, sources: list[Source], payloads: bool, info: dict[str, Any]) -> None:
     db.execute(
         "CREATE OR REPLACE TABLE database_info AS SELECT ?::VARCHAR AS data_dir, "
-        "?::BOOLEAN AS materialized, ?::VARCHAR AS query_layer",
-        [str(root), materialized, QUERY_LAYER],
+        "true AS materialized, ?::VARCHAR AS query_layer, ?::VARCHAR AS release, "
+        "?::INTEGER AS database_format, ?::TIMESTAMPTZ AS built_at, ?::VARCHAR AS built_by, "
+        "?::VARCHAR AS taxonomy",
+        [
+            info.get("data_dir"),
+            QUERY_LAYER,
+            info.get("release"),
+            DATABASE_FORMAT,
+            info.get("built_at"),
+            info.get("built_by"),
+            info.get("taxonomy"),
+        ],
     )
     db.execute(
         "CREATE OR REPLACE TABLE resources "
         "(resource_id VARCHAR, version VARCHAR, has_evidence BOOLEAN)"
     )
-    for row in _state(records):
+    for row in _state(sources, payloads):
         db.execute("INSERT INTO resources VALUES (?, ?, ?)", row)
 
 
-def _resource_schema(db, root: Path, record: ResourceRecord, materialized: bool) -> None:
-    schema = _name(record["resource_id"])
+def _resource_schema(db, source: Source, payloads: bool) -> None:
+    schema = _name(source.resource_id)
     db.execute(f"CREATE SCHEMA IF NOT EXISTS {schema}")
-    for table in _tables(record):
-        source = (
-            f"SELECT * FROM main.{table} WHERE _resource = {_literal(record['resource_id'])}"
-            if materialized
-            else _source(root, record, table)
+    for table in source.tables(payloads):
+        db.execute(
+            f"CREATE OR REPLACE VIEW {schema}.{table} AS "
+            f"SELECT * FROM main.{table} WHERE _resource = {_literal(source.resource_id)}"
         )
-        db.execute(f"CREATE OR REPLACE VIEW {schema}.{table} AS {source}")
-
-
-def _configure(db, root: Path, memory_limit: str) -> None:
-    db.execute("SET memory_limit = ?", [memory_limit])
-    db.execute("SET temp_directory = ?", [str(root / ".duckdb-tmp")])
-
-
-def view_lookups(resources: list[str]) -> list[str]:
-    """Lookups over the per-resource views: a UNION ALL with one branch per resource,
-    each reading only the row groups that hold the wanted values."""
-    statements = []
-    for table, column, kind in CONTRACT["lookups"]:
-        parameter, wanted, condition = _lookup_parts(kind, column)
-        parts = [
-            f"SELECT * FROM {_name(r)}.{table} WHERE " + condition.replace("{r}", r)
-            for r in sorted(resources)
-        ]
-        statements.append(
-            f"CREATE OR REPLACE MACRO op_{table}_{kind}({parameter}) AS TABLE "
-            f"WITH wanted AS MATERIALIZED ({wanted}) " + " UNION ALL BY NAME ".join(parts)
-        )
-    return statements
-
-
-def _lookup_parts(kind: str, column: str) -> tuple[str, str, str]:
-    # The argument is evaluated once, into ``wanted``: a macro argument appears wherever
-    # its parameter does, and a list read from the views over every resource, repeated
-    # in every resource's branch, takes seconds to plan.
-    if kind == "at":
-        return (
-            "pairs",
-            "SELECT p.r AS r, p.v AS v FROM (SELECT unnest(pairs) AS p)",
-            f"{column} IN (SELECT v FROM wanted WHERE r = '{{r}}')",
-        )
-    return "vals", "SELECT unnest(vals) AS v", f"{column} IN (SELECT v FROM wanted)"
 
 
 def native_lookups() -> list[str]:
-    """Lookups over native tables: one filter on one table, by global id or by key."""
+    """Lookups over the native tables: one filter on one table, by global id or by key."""
     statements = []
     for table, column, kind in CONTRACT["lookups"]:
         global_id = _GLOBAL_IDS[table][1]
@@ -149,7 +147,7 @@ def native_lookups() -> list[str]:
     return statements
 
 
-def _query_layer(db, records: list[ResourceRecord], materialized: bool) -> None:
+def _query_layer(db) -> None:
     """Biolink names, the lookups and the macros; tables before what reads them."""
     db.execute("CREATE OR REPLACE TABLE op_names (kind VARCHAR, alias VARCHAR, name VARCHAR)")
     db.execute(
@@ -159,40 +157,116 @@ def _query_layer(db, records: list[ResourceRecord], materialized: bool) -> None:
         )
     )
     present = {
-        row[0] for row in db.execute("SELECT table_name FROM duckdb_tables() WHERE schema_name = 'main'").fetchall()
-    } | {row[0] for row in db.execute("SELECT view_name FROM duckdb_views() WHERE schema_name = 'main'").fetchall()}
-    lookups = (
-        native_lookups() if materialized else view_lookups([r["resource_id"] for r in records])
-    )
-    for statement in lookups:
+        row[0]
+        for row in db.execute(
+            "SELECT table_name FROM duckdb_tables() WHERE schema_name = 'main' "
+            "AND database_name = current_database()"
+        ).fetchall()
+    }
+    for statement in native_lookups():
         table = re.match(r"CREATE OR REPLACE MACRO op_(\w+)_(at|with)\(", statement).group(1)
         if table in present:
             db.execute(statement)
+    # The rule tables the macros read (display names, entity groups).
+    for table, spec in CONTRACT.get("query_tables", {}).items():
+        db.execute(f"CREATE OR REPLACE TABLE {table} ({', '.join(spec['columns'])})")
+        if spec["rows"]:
+            db.execute(
+                f"INSERT INTO {table} VALUES "
+                + ", ".join("(" + ", ".join(_value_literal(v) for v in row) + ")" for row in spec["rows"])
+            )
     for name in CONTRACT["macro_files"]:
         db.execute(_SQL.joinpath(name).read_text())
     db.execute("UPDATE database_info SET query_layer = ?", [QUERY_LAYER])
 
 
-def _index(records: list[ResourceRecord], existing: dict[str, int]) -> dict[str, int]:
-    """Each resource's index for global ids: kept for installed ones, new ones after."""
-    index = {name: i for name, i in existing.items() if name in {r["resource_id"] for r in records}}
-    following = max(existing.values(), default=-1) + 1
-    for record in sorted(records, key=lambda r: r["resource_id"]):
-        if record["resource_id"] not in index:
-            index[record["resource_id"]] = following
-            following += 1
-    return index
+def _value_literal(value) -> str:
+    return str(int(value)) if isinstance(value, int) and not isinstance(value, bool) else _literal(str(value))
 
 
-def _write_index(db, index: dict[str, int]) -> None:
-    db.execute("CREATE OR REPLACE TABLE op_resource_index (_resource VARCHAR, idx BIGINT)")
-    for name, i in sorted(index.items()):
-        db.execute("INSERT INTO op_resource_index VALUES (?, ?)", [name, i])
+# Derived tables that replace a written table of the same name: {name: its select}.
+REPLACED = {
+    name: query["select"] for name, query in CONTRACT["derived_tables"].items() if query.get("replaces")
+}
 
 
-def _rebuild(root: Path, records: list[ResourceRecord], materialized: bool, memory_limit: str):
-    """Write the database anew and put it in place when complete."""
-    staging = Path(tempfile.mkdtemp(dir=root, prefix=".database-")) / DATABASE
+def _written_to(table: str) -> str | None:
+    """Where a resource table is written: the database, the scratch database ``work`` for
+    a table a derived table replaces (its space is never part of the database), or
+    nowhere (None) for one replaced without being read."""
+    if table not in REPLACED:
+        return ""
+    return "work." if re.search(rf"\b{table}\b", REPLACED[table]) else None
+
+
+def _derived(db, present: set[str]) -> None:
+    """The derived tables (each sorted) and the indexes, once the tables are written. A
+    table that replaces a written one reads it from ``work`` (on the search path)."""
+    for name, query in CONTRACT["derived_tables"].items():
+        db.execute(
+            f"CREATE TABLE omnipath.main.{name} AS SELECT * FROM ({query['select']}) ORDER BY {query['order']}"
+        )
+    for name, table, column in CONTRACT["indexes"]:
+        if table in present:
+            db.execute(f"CREATE INDEX {name} ON {table}({column})")
+
+
+def _taxonomy(db, path: Path | None) -> None:
+    """The release's taxon names (common name, else scientific name), empty without its
+    taxonomy reference."""
+    if path is not None and Path(path).is_file():
+        db.execute(
+            f"""CREATE OR REPLACE TABLE op_taxonomy AS SELECT DISTINCT taxon_id::VARCHAR AS taxon,
+                coalesce(nullif(common_name, ''), nullif(scientific_name, '')) AS name
+            FROM read_parquet({_literal(str(path))})
+            WHERE coalesce(nullif(common_name, ''), nullif(scientific_name, '')) IS NOT NULL
+            ORDER BY taxon"""
+        )
+    else:
+        db.execute("CREATE OR REPLACE TABLE op_taxonomy (taxon VARCHAR, name VARCHAR)")
+
+
+def taxonomy_file(root: Path, version: str) -> Path:
+    """Where a taxonomy reference (named by its SHA-256) is kept, on a server and in a
+    local installation alike."""
+    return Path(root) / "references" / "taxonomy" / version / "taxonomy.parquet"
+
+
+def taxonomy_reference(root: Path, manifest: dict[str, Any]) -> Path | None:
+    """A release's taxonomy reference file under ``root``, if the release names one."""
+    reference = (manifest.get("references") or {}).get("taxonomy")
+    if not reference:
+        return None
+    path = taxonomy_file(root, reference["version"])
+    return path if path.is_file() else None
+
+
+def write_database(
+    target: str | Path,
+    sources: list[Source],
+    *,
+    info: dict[str, Any] | None = None,
+    taxonomy: str | Path | None = None,
+    payloads: bool = True,
+    memory_limit: str = "2GB",
+    threads: int | None = None,
+    temp_directory: str | Path | None = None,
+    progress: Callable[[str], None] | None = None,
+) -> dict[str, Any]:
+    """Write the database of ``sources`` to ``target`` and put it in place when complete.
+
+    Resources are numbered in name order for the global ids, and each table's rows
+    follow them. ``payloads`` includes raw evidence where a resource has it. Returns the
+    target, its size and the seconds taken.
+    """
+    target = Path(target)
+    say = progress or (lambda _message: None)
+    started = time.perf_counter()
+    info = dict(info or {})
+    info.setdefault("built_at", datetime.now(timezone.utc).isoformat())
+    staging_dir = Path(tempfile.mkdtemp(dir=target.parent, prefix=f".{target.name}-"))
+    staging = staging_dir / target.name
+    temporary = Path(temp_directory) if temp_directory else staging_dir / "tmp"
     try:
         db = duckdb.connect()
         try:
@@ -200,98 +274,120 @@ def _rebuild(root: Path, records: list[ResourceRecord], materialized: bool, memo
                 f"ATTACH {_literal(str(staging))} AS omnipath "
                 f"(STORAGE_VERSION {_literal(CONTRACT['storage_version'])})"
             )
+            db.execute(f"ATTACH {_literal(str(staging_dir / 'work.duckdb'))} AS work")
             db.execute("USE omnipath")
-            _configure(db, root, memory_limit)
-            ordered = sorted(records, key=lambda r: r["resource_id"])
-            present = [t for t in TABLES + SERVING if any(t in _tables(r) for r in ordered)]
-            if materialized:
-                index = _index(ordered, {})
-                _write_index(db, index)
-                for table in present:
-                    having = [r for r in ordered if table in _tables(r)]
-                    # The columns of every resource (union by name), then each resource's
-                    # rows in its file's order, so rows follow their global ids.
-                    union = " UNION ALL BY NAME ".join(
-                        _source(root, r, table, index[r["resource_id"]]) for r in having
-                    )
-                    db.execute(f"CREATE TABLE {table} AS SELECT * FROM ({union}) LIMIT 0")
-                    for record in having:
-                        db.execute(
-                            f"INSERT INTO {table} BY NAME "
-                            + _source(root, record, table, index[record["resource_id"]])
-                        )
-            for record in ordered:
-                _resource_schema(db, root, record, materialized)
-            if not materialized:
-                for table in present:
-                    union = " UNION ALL BY NAME ".join(
-                        f"SELECT * FROM {_name(r['resource_id'])}.{table}"
-                        for r in ordered
-                        if table in _tables(r)
-                    )
-                    db.execute(f"CREATE VIEW {table} AS {union}")
-            _describe(db, root, materialized, records)
-            _query_layer(db, records, materialized)
+            db.execute("SET search_path = 'omnipath.main,work.main'")
+            db.execute("SET memory_limit = ?", [memory_limit])
+            db.execute("SET temp_directory = ?", [str(temporary)])
+            if threads is not None:
+                db.execute("SET threads = ?", [int(threads)])
+            ordered = sorted(sources, key=lambda s: s.resource_id)
+            index = {s.resource_id: i for i, s in enumerate(ordered)}
+            db.execute("CREATE TABLE op_resource_index (_resource VARCHAR, idx BIGINT)")
+            for name, i in index.items():
+                db.execute("INSERT INTO op_resource_index VALUES (?, ?)", [name, i])
+            present = [t for t in TABLES + SERVING if any(t in s.tables(payloads) for s in ordered)]
+            for table in present:
+                where = _written_to(table)
+                if where is None:
+                    continue
+                having = [s for s in ordered if table in s.tables(payloads)]
+                say(f"Writing {table} ({len(having)} resources)")
+                # The columns of every resource (union by name), then each resource's
+                # rows in its file's order, so rows follow their global ids.
+                union = " UNION ALL BY NAME ".join(s.select(table, index[s.resource_id]) for s in having)
+                db.execute(f"CREATE TABLE {where}{table} AS SELECT * FROM ({union}) LIMIT 0")
+                for source in having:
+                    db.execute(f"INSERT INTO {where}{table} BY NAME " + source.select(table, index[source.resource_id]))
+            say("Writing the derived tables and indexes")
+            _derived(db, set(present))
+            for source in ordered:
+                _resource_schema(db, source, payloads)
+            _taxonomy(db, taxonomy)
+            _describe(db, ordered, payloads, info)
+            _query_layer(db)
             db.execute("USE memory")
+            db.execute("DETACH work")
             db.execute("DETACH omnipath")
         finally:
             db.close()
-        os.replace(staging, root / DATABASE)
+        os.replace(staging, target)
     finally:
-        for leftover in staging.parent.iterdir():
-            leftover.unlink()
-        staging.parent.rmdir()
+        shutil.rmtree(staging_dir, ignore_errors=True)
+    return {
+        "path": str(target),
+        "size_bytes": target.stat().st_size,
+        "seconds": round(time.perf_counter() - started, 1),
+        "resources": len(sources),
+    }
 
 
-def _update(root: Path, records: list[ResourceRecord], memory_limit: str) -> bool:
-    """Replace the rows of added, changed and removed resources in native tables, in
-    one transaction. False when the database has to be written anew instead."""
-    try:
-        db = duckdb.connect(str(root / DATABASE))
-    except duckdb.Error:
-        return False
-    try:
-        _configure(db, root, memory_limit)
-        if db.execute("SELECT materialized FROM database_info").fetchone() != (True,):
-            return False
-        current = set(db.execute("SELECT * FROM resources").fetchall())
-        stale = sorted({row[0] for row in current ^ set(_state(records))})
-        by_name = {r["resource_id"]: r for r in records}
-        existing = {row[0] for row in db.execute("SHOW TABLES").fetchall()}
-        index = _index(records, dict(db.execute("SELECT * FROM op_resource_index").fetchall()))
-        db.execute("BEGIN")
-        _write_index(db, index)
-        for table in TABLES + SERVING:
-            fresh = [by_name[n] for n in stale if n in by_name and table in _tables(by_name[n])]
-            if table not in existing:
-                if fresh:
-                    return False
-                continue
-            db.execute(f"DELETE FROM {table} WHERE _resource IN (SELECT unnest(?))", [stale])
-            for record in fresh:
-                db.execute(
-                    f"INSERT INTO {table} BY NAME "
-                    + _source(root, record, table, index[record["resource_id"]])
-                )
-        for name in stale:
-            if name in by_name:
-                _resource_schema(db, root, by_name[name], True)
-            else:
-                db.execute(f"DROP SCHEMA IF EXISTS {_name(name)} CASCADE")
-        _describe(db, root, True, records)
-        _query_layer(db, records, True)
-        db.execute("COMMIT")
-        return True
-    except duckdb.Error:
-        # A resource with a new column or type, or a database without global ids: the
-        # tables take their schema anew.
-        return False
-    finally:
-        db.close()
+def release_sources(data_root: str | Path, resources: dict[str, str]) -> list[Source]:
+    """The resource versions of a release manifest, as published under ``data_root``."""
+    root = Path(data_root)
+    sources = []
+    for resource_id, version in sorted(resources.items()):
+        directory = root / "resources" / resource_id / version
+        names = sorted(p.name for p in directory.glob("*.parquet"))
+        missing = [f"{t}.parquet" for t in TABLES + SERVING if t != _PAYLOADS and f"{t}.parquet" not in names]
+        if missing:
+            raise FileNotFoundError(f"{resource_id}/{version} lacks {', '.join(missing)}")
+        record = ResourceRecord(
+            resource_id=resource_id,
+            version=version,
+            files=[
+                {"name": n, "size_bytes": (directory / n).stat().st_size}
+                for n in names
+                if Path(n).stem in TABLES
+            ],
+        )
+        sources.append(Source(record, directory))
+    return sources
+
+
+def build_release_database(
+    data_root: str | Path,
+    release: str,
+    target: str | Path,
+    *,
+    memory_limit: str = "4GB",
+    threads: int | None = None,
+    progress: Callable[[str], None] | None = None,
+) -> dict[str, Any]:
+    """Write the database of a published release (``releases/<release>.json``) from its
+    resources' files under ``data_root``. Raw evidence payloads stay in their files."""
+    root = Path(data_root)
+    manifest = json.loads((root / "releases" / f"{release}.json").read_text())
+    if manifest.get("version") != release:
+        raise ValueError(f"Release file and version disagree: {release}")
+    return write_database(
+        target,
+        release_sources(root, manifest["resources"]),
+        info={
+            "release": release,
+            "built_by": "build_release_database",
+            "taxonomy": ((manifest.get("references") or {}).get("taxonomy") or {}).get("version"),
+        },
+        taxonomy=taxonomy_reference(root, manifest),
+        payloads=False,
+        memory_limit=memory_limit,
+        threads=threads,
+        progress=progress,
+    )
+
+
+# The database of a local installation ----------------------------------------------
+
+
+def _installation_sources(root: Path, records: list[ResourceRecord]) -> list[Source]:
+    return [
+        Source(r, root / "resources" / r["resource_id"] / r["version"]) for r in records
+    ]
 
 
 def _info(root: Path) -> tuple | None:
-    """(data_dir, materialized, query layer, resources) of the database, or None."""
+    """(query layer, database format, resources, taxonomy version) of the database, or
+    None."""
     path = root / DATABASE
     if not path.is_file():
         return None
@@ -301,74 +397,92 @@ def _info(root: Path) -> tuple | None:
         return None
     try:
         columns = {row[0] for row in db.execute("DESCRIBE database_info").fetchall()}
-        layer = "query_layer" if "query_layer" in columns else "NULL"
-        data_dir, materialized, query_layer = db.execute(
-            f"SELECT data_dir, materialized, {layer} FROM database_info"
+        if "database_format" not in columns:
+            return None
+        taxonomy = "taxonomy" if "taxonomy" in columns else "NULL"
+        layer, database_format, version = db.execute(
+            f"SELECT query_layer, database_format, {taxonomy} FROM database_info"
         ).fetchone()
         state = db.execute("SELECT * FROM resources ORDER BY ALL").fetchall()
     except duckdb.Error:
         return None
     finally:
         db.close()
-    return data_dir, materialized, query_layer, state
+    return layer, database_format, state, version
 
 
-def _tables_in_sync(info: tuple | None, root: Path, installation: Installation) -> bool:
+def _tables_in_sync(info: tuple | None, installation: Installation) -> bool:
     if info is None:
         return False
-    data_dir, materialized, _, state = info
-    return (
-        materialized == installation["materialize"]
-        # Views name their files; native tables do not depend on the location.
-        and (materialized or data_dir == str(root))
-        and state == _state(installation["resources"])
-    )
+    _, database_format, state, _ = info
+    sources = _installation_sources(Path("."), installation["resources"])
+    return database_format == DATABASE_FORMAT and state == _state(sources, True)
 
 
 def in_sync(root: Path, installation: Installation) -> bool:
-    """Whether the database describes exactly the installed resources, in the
-    installation's mode, at this location, with this client's query layer."""
+    """Whether the database holds exactly the installed resources and taxon names, in
+    this client's database format and with its query layer."""
     info = _info(root)
-    return _tables_in_sync(info, root, installation) and info[2] == QUERY_LAYER
+    return (
+        _tables_in_sync(info, installation)
+        and info[0] == QUERY_LAYER
+        and info[3] == installation.get("taxonomy")
+    )
 
 
 def synchronize(root: Path, installation: Installation, memory_limit: str = "2GB") -> None:
     """Bring the database in line with the installation; nothing when it already is.
 
-    When only the query layer differs (another client version wrote the database), the
-    query layer alone is written again.
+    Changed resources mean a new database, written completely. When only the query
+    layer or the taxon names differ, they alone are rewritten.
     """
     info = _info(root)
-    if _tables_in_sync(info, root, installation) and info[2] == QUERY_LAYER:
+    taxonomy = installation.get("taxonomy")
+    if _tables_in_sync(info, installation):
+        if info[0] != QUERY_LAYER:
+            _layer_only(root)
+        if info[3] != taxonomy:
+            _taxonomy_only(root, taxonomy)
         return
-    records = installation["resources"]
+    temporary = root / ".duckdb-tmp"
     try:
-        if _tables_in_sync(info, root, installation) and _layer_only(root, installation):
-            return
-        if not (installation["materialize"] and _update(root, records, memory_limit)):
-            _rebuild(root, records, installation["materialize"], memory_limit)
+        write_database(
+            root / DATABASE,
+            _installation_sources(root, installation["resources"]),
+            info={
+                "data_dir": str(root),
+                "release": installation["release"],
+                "built_by": "init",
+                "taxonomy": taxonomy,
+            },
+            taxonomy=taxonomy_file(root, taxonomy) if taxonomy else None,
+            memory_limit=memory_limit,
+            temp_directory=temporary,
+        )
     finally:
-        temporary = root / ".duckdb-tmp"
         if temporary.is_dir() and not any(temporary.iterdir()):
             temporary.rmdir()
 
 
-def _layer_only(root: Path, installation: Installation) -> bool:
-    """Write the query layer of an otherwise current database; False when it cannot be
-    (native tables without global ids, from a client before them)."""
+def _taxonomy_only(root: Path, version: str | None) -> None:
+    """Write the taxon names of an otherwise current database."""
     db = duckdb.connect(str(root / DATABASE))
     try:
-        if installation["materialize"]:
-            tables = {row[0] for row in db.execute("SHOW TABLES").fetchall()}
-            if "op_resource_index" not in tables:
-                return False
-        if "query_layer" not in {row[0] for row in db.execute("DESCRIBE database_info").fetchall()}:
-            db.execute("ALTER TABLE database_info ADD COLUMN query_layer VARCHAR")
         db.execute("BEGIN")
-        _query_layer(db, installation["resources"], installation["materialize"])
+        _taxonomy(db, taxonomy_file(root, version) if version else None)
+        db.execute("ALTER TABLE database_info ADD COLUMN IF NOT EXISTS taxonomy VARCHAR")
+        db.execute("UPDATE database_info SET taxonomy = ?", [version])
         db.execute("COMMIT")
-        return True
-    except duckdb.Error:
-        return False
+    finally:
+        db.close()
+
+
+def _layer_only(root: Path) -> None:
+    """Write the query layer of an otherwise current database."""
+    db = duckdb.connect(str(root / DATABASE))
+    try:
+        db.execute("BEGIN")
+        _query_layer(db)
+        db.execute("COMMIT")
     finally:
         db.close()

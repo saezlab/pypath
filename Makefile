@@ -1,4 +1,4 @@
-.PHONY: help setup setup-python setup-web test test-resources test-utils test-postgres test-subsets test-api check check-web build sample hubs reference publish-release api web dev load-postgres finish-postgres build-subsets serving-build serving-up serving-status serving-logs serving-stop worker-up docs
+.PHONY: help setup setup-python setup-web test test-resources test-utils test-postgres test-subsets test-api check check-web build sample hubs reference publish-release release-db api web dev load-postgres finish-postgres build-subsets serving-build serving-up serving-status serving-logs serving-stop worker-up docs
 
 export PKG_INFRA_CONFIG ?= $(CURDIR)/packages/resources/pkg_infra_quiet.yaml
 SOURCE ?= signor
@@ -103,9 +103,15 @@ reference:
 		uv run --frozen --package omnipath-build omnipath-build build-hub-kv --hub $$hub --hub-index-root "$(HUB_INDEX_ROOT)" $(HUB_KV_ARGS) || exit 1; \
 	done
 	uv run --frozen --package omnipath-build omnipath-build build-identity --hub-index-root "$(HUB_INDEX_ROOT)" --output-dir "$(IDENTITY_DIR)" $(IDENTITY_ARGS)
+# Publishing a release writes its manifest, then the database the API serves it from
+# (serving/<version>.duckdb); the newest RELEASE_DB_KEEP databases are kept.
+RELEASE_DB_KEEP ?= 3
 publish-release:
 	@test -n "$(RELEASE_MANIFEST)" || (echo 'Set RELEASE_MANIFEST to an explicit pinned JSON file'; exit 2)
-	uv run --frozen --package omnipath-api python -m omnipath_api.publish_release "$(RELEASE_MANIFEST)" --data-root "$(DATA_ROOT)"
+	uv run --frozen --package omnipath-api python -m omnipath_api.publish_release "$(RELEASE_MANIFEST)" --data-root "$(DATA_ROOT)" --build-database --keep $(RELEASE_DB_KEEP)
+release-db:
+	@test -n "$(RELEASE)" || (echo 'Set RELEASE to a published release version'; exit 2)
+	uv run --frozen --package omnipath-api omnipath-api build-release-db "$(RELEASE)" --data-root "$(DATA_ROOT)" --keep $(RELEASE_DB_KEEP)
 
 api:
 	uv run --frozen --package omnipath-api omnipath-api --host 127.0.0.1 --port $(API_PORT) --data-root "$(DATA_ROOT)"

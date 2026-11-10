@@ -13,7 +13,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from omnipath_api.admin import AdminService
-from omnipath_api.queries.parquet import ParquetQueries
+from served import republish, serve_releases, served_queries
 from omnipath_api.jobs.runner import Job
 from omnipath_api.jobs.store import JobStore
 from omnipath_api.jobs.worker import run_worker, worker_lock
@@ -25,7 +25,7 @@ from omnipath_core.fixtures import write_resource
 
 @pytest.fixture
 def engine(tmp_path):
-    result = ParquetQueries(write_dataset(tmp_path))
+    result = served_queries(write_dataset(tmp_path))
     yield result
     result.close()
 
@@ -81,7 +81,7 @@ def test_entity_cursor_traverses_complete_sort_order(tmp_path, query, phase):
         )
     ]
     write_resource(directory, rows, [])
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     try:
         expected = engine.search_entities_api(query, limit=100)["entities"]
         cursor = None
@@ -155,7 +155,7 @@ def test_inventory_generation_stays_pinned_through_reload(engine, tmp_path):
 
         shutil.copytree(target.parent / "1", target)
         with ThreadPoolExecutor(1) as pool:
-            pool.submit(engine.reload_resources).result()
+            pool.submit(republish, tmp_path, engine).result()
         assert engine._table_paths("entity") == before
         assert "uniprot/2" not in engine.resources
     assert "uniprot/2" in engine.resources
@@ -182,9 +182,10 @@ def test_request_reuses_snapshot_for_multiple_engine_calls(engine, tmp_path):
     import shutil
 
     shutil.copytree(tmp_path / "resources/uniprot/1", tmp_path / "resources/uniprot/2")
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     assert _call(request, "list_resources") == before
-    assert len(engine.list_resources()) == len(before) + 1
+    keys = {item["key"] for item in engine.list_resources()}
+    assert "uniprot/2" in keys and "uniprot/2" not in {item["key"] for item in before}
 
 
 def test_ontology_scope_ambiguity_and_all_child_pages(tmp_path):
@@ -224,7 +225,7 @@ def test_ontology_scope_ambiguity_and_all_child_pages(tmp_path):
         )
     )
     write_resource(target, rows, relations)
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     try:
         with pytest.raises(ValueError, match="Ambiguous"):
             engine.get_ontology_children("T0")
@@ -316,6 +317,7 @@ def test_queue_readers_tolerate_file_created_before_its_table(tmp_path):
 
 def test_readonly_startup_and_queries_do_not_create_files(tmp_path):
     root = write_dataset(tmp_path)
+    serve_releases(root)  # the server writes the release database; the API only reads it
     before = set(root.rglob("*"))
     with TestClient(create_app(data_root=root, settings=Settings(read_only=True))) as client:
         assert client.get("/entities/search?q=ADA").status_code == 200

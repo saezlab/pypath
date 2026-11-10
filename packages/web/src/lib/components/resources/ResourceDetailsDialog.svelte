@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { releaseUrl } from '$lib/api/release';
+  import { releaseFetch, releaseUrl } from '$lib/api/release';
   import { Download, ExternalLink } from '@lucide/svelte';
   import {
     Dialog,
@@ -26,8 +26,41 @@
   } = $props();
 
   const countFormatter = new Intl.NumberFormat('en-US');
+  // A list's records come without their files (they would make the page heavy): the
+  // dialog loads the files of the resource it shows.
+  let loaded = $state<{ id: string; files: ResourceFile[] } | null>(null);
+  let filesError = $state(false);
+  $effect(() => {
+    const id = resource?.resource_id;
+    if (!open || !id || resource?.files?.length || loaded?.id === id) return;
+    const controller = new AbortController();
+    filesError = false;
+    releaseFetch(`/app-api/resources/${encodeURIComponent(id)}/files`, {
+      signal: controller.signal,
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then((body: { files?: ResourceFile[] }) => {
+        loaded = { id, files: body.files ?? [] };
+      })
+      .catch((error) => {
+        if (!controller.signal.aborted) filesError = true;
+        if (error?.name !== 'AbortError') console.warn('Resource files unavailable', error);
+      });
+    return () => controller.abort();
+  });
   const files = $derived(
-    (resource?.files || []).filter((file) => file.name !== 'evidence_payloads.parquet'),
+    (resource?.files?.length
+      ? resource.files
+      : loaded?.id === resource?.resource_id
+        ? (loaded?.files ?? [])
+        : []
+    ).filter((file) => file.name !== 'evidence_payloads.parquet'),
+  );
+  const filesLoading = $derived(
+    !!resource && !resource.files?.length && loaded?.id !== resource.resource_id && !filesError,
   );
   const totalBytes = $derived(
     resource?.total_size_bytes || files.reduce((sum, file) => sum + (file.size_bytes || 0), 0),
@@ -120,6 +153,10 @@
         </div>
         <div class="min-w-0 space-y-1.5">
           <h3 class="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Files</h3>
+          {#if filesLoading}<p class="text-sm text-muted-foreground">Loading files…</p>{/if}
+          {#if filesError}<p class="text-sm text-muted-foreground">
+              The file list could not be loaded.
+            </p>{/if}
           <ul class="space-y-1 text-sm">
             {#each files as file (file.name)}
               <li class="flex items-center justify-between gap-3">
