@@ -205,9 +205,7 @@
   ]
  ],
  "macro_files": [
-  "relations.sql",
-  "shape.sql",
-  "search.sql"
+  "shape.sql"
  ],
  "relation_export_limit": 100000,
  "biolink_names": [

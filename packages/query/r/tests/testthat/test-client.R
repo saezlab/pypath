@@ -137,8 +137,9 @@ test_that("prebuilt queries answer like the explorer", {
   details <- op_entity(con, found$entity_key)
   expect_equal(details$entity$label, "TP53")
   expect_null(op_entity(con, "TP53"))
-  # The macros are SQL in the database.
-  expect_equal(op_sql(con, "SELECT count(*) AS n FROM op_relations(entities := ['TP53'])")$n, 4)
+  # The queries by name, the same the API runs.
+  expect_equal(nrow(op_query(con, "relations", entities = "TP53")), 4)
+  expect_equal(jsonlite::fromJSON(op_query(con, "resolve_keys", tokens = "TP53", output = "json")), found$entity_key)
 })
 
 test_that("missing data and damaged files are errors", {

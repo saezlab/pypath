@@ -33,7 +33,7 @@ WITH copy_identifiers AS (
         source := source, dataset := dataset) ORDER BY ordinal) AS annotations
     FROM __annotation_rows GROUP BY ALL
 ), nested AS (
-    SELECT c.*, coalesce(i.identifiers, []) AS identifiers, coalesce(a.annotations, []) AS annotations
+    SELECT c.*, 0 AS position, coalesce(i.identifiers, []) AS identifiers, coalesce(a.annotations, []) AS annotations
     FROM __copies c LEFT JOIN copy_identifiers i USING (_eid) LEFT JOIN copy_annotations a USING (_eid)
 )
 SELECT * FROM {{include:merged_entity nested}}

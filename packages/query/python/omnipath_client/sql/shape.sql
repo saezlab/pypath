@@ -1,6 +1,47 @@
 -- Macros the step-file queries share (sql/queries/*.sql): written into every
 -- database's query layer, so the API and both clients shape results the same way.
 
+-- True when a list filter is not given: NULL or empty, as the API's "if values:".
+CREATE OR REPLACE MACRO op_unset(x) AS (x IS NULL OR len(x) = 0);
+
+-- One endpoint's molecular form matches every given identity constraint.
+CREATE OR REPLACE MACRO op_form_ok(form, proteins, transcripts, isoforms) AS (
+    (op_unset(proteins) OR list_contains(proteins, form.protein_entity_key))
+    AND (op_unset(transcripts) OR list_contains(transcripts, form.transcript_entity_key))
+    AND (op_unset(isoforms) OR list_contains(
+        isoforms, form.isoform_identifier.ns || ':' || form.isoform_identifier.id))
+);
+
+-- An evidence row matches the molecular form filters at the endpoints the mode names.
+CREATE OR REPLACE MACRO op_evidence_ok(ev, proteins, transcripts, isoforms, mode) AS (
+    CASE mode
+        WHEN 'source' THEN op_form_ok(ev.subject_molecular_form, proteins, transcripts, isoforms)
+        WHEN 'target' THEN op_form_ok(ev.object_molecular_form, proteins, transcripts, isoforms)
+        WHEN 'both' THEN op_form_ok(ev.subject_molecular_form, proteins, transcripts, isoforms)
+            AND op_form_ok(ev.object_molecular_form, proteins, transcripts, isoforms)
+        ELSE op_form_ok(ev.subject_molecular_form, proteins, transcripts, isoforms)
+            OR op_form_ok(ev.object_molecular_form, proteins, transcripts, isoforms)
+    END
+);
+
+-- Biolink names as stored: predicates and entity types by name, storage name or CURIE.
+-- An unknown name is an error naming it.
+CREATE OR REPLACE MACRO op_biolink(kind_, names) AS TABLE
+SELECT CASE WHEN n.name IS NULL
+    THEN error('invalid: Unknown Biolink ' || kind_ || ': ' || u.v) ELSE n.name END AS name
+FROM unnest(names::VARCHAR[]) AS u(v)
+LEFT JOIN op_names n ON n.kind = kind_ AND n.alias = lower(trim(u.v));
+
+
+-- An entity row passes the search filters: its resource, type, taxon, reference and key.
+CREATE OR REPLACE MACRO op_entity_ok(e, scope, type_names, taxa, references_, keys) AS (
+    (op_unset(scope) OR list_contains(scope, e._resource))
+    AND (op_unset(type_names) OR list_contains(type_names, e.entity_type))
+    AND (op_unset(taxa) OR list_contains(taxa, e.taxon))
+    AND (op_unset(references_) OR list_contains(references_, e.reference_entity_key))
+    AND (keys IS NULL OR list_contains(keys, e.entity_key))
+);
+
 -- Values in first-seen order without repeats (positions are 1-based).
 CREATE OR REPLACE MACRO op_ordered_distinct(xs) AS (
     list_transform(

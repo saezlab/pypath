@@ -23,6 +23,7 @@ import tempfile
 import duckdb
 import httpx
 
+from . import steps
 from .contracts import CONTRACT, validate_catalog, validate_url
 from .errors import ClientError
 
@@ -44,15 +45,13 @@ _answers = itertools.count()
 _SCALARS = {"gene_mode", "molecular_endpoint_mode", "is_directed", "sign", "min_evidence_count"}
 
 
-def _parameters(macro: str) -> list[str]:
-    """The named parameters of one of the shared queries (sql/*.sql): the filters it
-    takes, in both modes."""
-    for name in CONTRACT["macro_files"]:
-        text = files("omnipath_client").joinpath("sql", name).read_text()
-        found = re.search(rf"CREATE OR REPLACE MACRO {macro}\((.*?)\) AS TABLE", text, re.S)
-        if found:
-            return re.findall(r"(\w+)\s*:=", found.group(1))
-    raise ClientError(f"No shared query {macro}")
+def _parameters(query: str) -> list[str]:
+    """The parameters of one of the shared queries (sql/queries/<name>.sql): the filters
+    it takes, in both modes."""
+    try:
+        return sorted(set(steps.load(query).params) - {"resources"})
+    except KeyError:
+        raise ClientError(f"No shared query {query}") from None
 
 
 def _value(name: str, value: Any) -> Any:
@@ -158,7 +157,7 @@ class ApiClient:
     def search(self, query: str, *, limit: int = 20, **filters: Any) -> duckdb.DuckDBPyRelation:
         """Entities matching a name or identifier, merged across resources and ranked
         as in the explorer's search; the filters of the local ``search``."""
-        named = self._filters("op_search", {"query", "max_results"}, filters)
+        named = self._filters("entity_search", {"query", "limit", "cursor_phase", "cursor_offset", "cursor_key"}, filters)
         response = self._request(
             "POST", "/entities/search", json={"query": query, "limit": int(limit), "filters": named}
         )
@@ -201,7 +200,7 @@ class ApiClient:
             if entities is not None:
                 raise TypeError("Give entities once: positionally or as entity_ids")
             entities = filters.pop("entity_ids")
-        named = self._filters("op_relations", {"entities", "max_relations"}, filters)
+        named = self._filters("relations", {"entities", "max_relations"}, filters)
         if entities is not None:
             named["entity_ids"] = _value("entities", entities)
         response = self._request("POST", "/export", json={"filters": named, "limit": int(limit)})

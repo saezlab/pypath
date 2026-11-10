@@ -189,7 +189,7 @@ op_sql <- function(con, query, params = NULL) {
 #' Search entities as the explorer does
 #'
 #' Entities matching a name or identifier, merged across resources and ranked as in
-#' the explorer's search. The macro `op_search`.
+#' the explorer's search. The query `entity_search`.
 #'
 #' @param con A connection from [op_connect()].
 #' @param query A name, identifier, `ns:id` CURIE or entity key.
@@ -201,9 +201,10 @@ op_sql <- function(con, query, params = NULL) {
 #' @export
 op_search <- function(con, query, limit = 20, ..., lazy = FALSE) {
   if (.is_api(con)) return(.api_search(con, query, limit, list(...)))
-  filters <- .filters(con, "op_search", c("query", "max_results"), list(...))
-  filters$max_results <- as.integer(limit)
-  .call(con, "op_search", .literal(query), filters, lazy)
+  filters <- .filters(con, "entity_search", c("query", "limit", "cursor_phase", "cursor_offset", "cursor_key"), list(...))
+  filters$query <- query
+  filters$limit <- as.integer(limit)
+  .lazy_or_frame(con, .run_query(con, "entity_search", filters, output = "table"), lazy)
 }
 
 #' Relations as the explorer exports them
@@ -230,6 +231,23 @@ op_relations <- function(con, entities = NULL, limit = 100000, ..., lazy = FALSE
   if (!is.null(entities)) filters$entities <- as.list(entities)
   filters$max_relations <- as.integer(limit)
   .lazy_or_frame(con, .run_query(con, "relations", filters, output = "table"), lazy)
+}
+
+#' Run one of the shared queries by name
+#'
+#' The queries the API answers with, from the same SQL files: `entity_search`,
+#' `relations`, `entity_details`, `resolve_keys`, `relation`, `relation_evidence`,
+#' `relation_evidence_batch` and the others in the package's `sql/queries`.
+#'
+#' @param con A local connection from [op_connect()].
+#' @param name The query's name.
+#' @param ... Its parameters by name.
+#' @param output `"table"` for a data frame, `"json"` for the API's JSON text.
+#' @return A data frame, or JSON text (`NULL` when the query has no answer).
+#' @export
+op_query <- function(con, name, ..., output = "table") {
+  if (.is_api(con)) stop("op_query() runs on a local installation; connect with mode = \"local\"", call. = FALSE)
+  .run_query(con, name, list(...), output = output)
 }
 
 #' One entity's details as the explorer shows them

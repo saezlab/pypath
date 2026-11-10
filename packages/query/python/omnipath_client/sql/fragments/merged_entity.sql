@@ -1,18 +1,21 @@
--- An entity's resource copies merged into one row, as the API merges them
--- (_merge_entity_row_group): the richest copy's columns, relation counts summed,
+-- Entities' resource copies merged into one row per entity key, as the API merges
+-- them (_merge_entity_row_group): the richest copy's columns, relation counts summed,
 -- identifiers united by (ns, id) and annotations by value. Reads {{input}}: the copies
--- (entity columns and resource) with nested identifiers and annotations lists; gives
--- the columns the entity_summary fragment reads, and evidence_total.
+-- (entity columns, resource and position) with nested identifiers and annotations
+-- lists, or NULL lists to rank copies by their identifier and annotation counts; gives
+-- the columns the entity_summary fragment reads (position the copies' least), and
+-- evidence_total.
 WITH merged AS (
     -- The richest copy's columns, relation counts summed, identifiers united by (ns, id)
     -- and annotations by value when there are several copies.
     SELECT
-        any_value(entity_key) AS entity_key,
+        entity_key,
+        min(position) AS position,
         arg_max(struct_pack(namespace := namespace, identifier := identifier, label := label,
             entity_type := entity_type, taxon := taxon, has_hierarchy := has_hierarchy,
             parent_count := parent_count, child_count := child_count), struct_pack(
-            a := len(annotations),
-            i := len(identifiers),
+            a := coalesce(len(annotations), annotation_count, 0),
+            i := coalesce(len(identifiers), identifier_count, 0),
             g := regexp_full_match(coalesce(label, ''), '[A-Z][A-Z0-9-]{1,14}')::INTEGER,
             n := (coalesce(label, '') <> '' AND coalesce(label, '') <> coalesce(identifier, '')
                 AND NOT regexp_full_match(coalesce(label, ''), '[0-9]+'))::INTEGER,
@@ -32,10 +35,10 @@ WITH merged AS (
         flatten(list(annotations ORDER BY resource, entity_id)) AS all_annotations,
         count(*) AS copies
     FROM {{input}}
-    HAVING count(*) > 0
+    GROUP BY entity_key
 ), main_entity AS (
     SELECT
-        'main' AS item, 0 AS position,
+        'main' AS item, position,
         entity_key AS pk, best.namespace AS raw_namespace, best.identifier AS raw_identifier,
         best.label AS raw_label, best.entity_type AS raw_type, best.taxon AS taxon,
         best.has_hierarchy AS has_hierarchy, best.parent_count AS parent_count,

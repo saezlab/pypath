@@ -375,8 +375,8 @@ def test_prebuilt_queries_answer_like_the_api(service):
         details = db.entity(key("P04637"))
         assert details["entity"]["label"] == "TP53"
         assert db.entity("TP53") is None
-        # The macros are SQL in the database, for any DuckDB client.
-        assert db.sql("SELECT count(*) FROM op_relations(entities := ['TP53'])").fetchone() == (4,)
+        # The queries by name.
+        assert db.query("relations", entities=["TP53"]).count("*").fetchone() == (4,)
         assert db.sql(
             "SELECT count(*) FROM evidence_payloads WHERE relation_key = ?", [key("r1")]
         ).fetchone() == (2,)
@@ -619,7 +619,7 @@ def test_query_layer_of_another_client_version_is_rewritten(service):
     database = service.data / "omnipath.duckdb"
     with duckdb.connect(str(database)) as db:
         db.execute("UPDATE database_info SET query_layer = 'older'")
-        db.execute("DROP MACRO TABLE op_search")
+        db.execute("DROP MACRO op_entity_ok")
     before = database.stat().st_ino
     with connect(service.data) as db:
         assert db.search("TP53").count("*").fetchone() == (1,)

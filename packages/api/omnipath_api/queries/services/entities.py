@@ -528,6 +528,39 @@ class EntitiesQueries:
         limit: int = 20,
         cursor: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+        """A page of matching entities: the query ``entity_search``, which the clients
+        run too."""
+        started = time.perf_counter()
+        filters = normalize_filters(filters)
+        phase = offset = key = None
+        if cursor:
+            cursor = EntitySearchCursor.model_validate(cursor).model_dump()
+            phase, offset, key = cursor["phase"], cursor["offset"], cursor["queryKey"]
+        tokens = list(filters["entity_ids"]) + list(filters["entity_pks"])
+        params = {
+            "query": query or "",
+            "sources": list(filters["sources"]) or None,
+            "entity_types": list(filters["entity_types"]) or None,
+            "taxonomy_ids": [str(t) for t in filters["taxonomy_ids"]] or None,
+            "reference_entity_keys": list(filters["reference_entity_keys"]) or None,
+            "entity_ids": tokens or None,
+            "limit": int(limit),
+            "cursor_phase": phase,
+            "cursor_offset": offset,
+            "cursor_key": key,
+        }
+        result = json.loads(self.run_query("entity_search", params, resources))
+        result["elapsed_ms"] = round((time.perf_counter() - started) * 1000, 2)
+        return result
+
+    def _old_search_entities_api(
+        self,
+        query: str = "",
+        filters: dict[str, Any] | None = None,
+        resources: list[str] | None = None,
+        limit: int = 20,
+        cursor: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         t0 = time.perf_counter()
         filters = normalize_filters(filters)
         scope = resources or filters.get("sources") or None

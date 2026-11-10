@@ -205,9 +205,10 @@ class Client:
         """Entities matching a name or identifier, merged across resources and ranked
         as in the explorer's search. ``filters`` are the explorer's: ``sources``,
         ``entity_types``, ``taxonomy_ids``, ``reference_entity_keys`` and
-        ``entity_ids``. The macro ``op_search``."""
-        named = self._filters("op_search", {"query", "max_results"}, filters)
-        return self._call("op_search", [query], {**named, "max_results": int(limit)})
+        ``entity_ids``. The query ``entity_search``."""
+        internal = {"query", "limit", "cursor_phase", "cursor_offset", "cursor_key"}
+        named = self._filters("entity_search", internal, filters)
+        return self.query("entity_search", query=query, limit=int(limit), **named)
 
     def relations(
         self,

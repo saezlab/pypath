@@ -44,18 +44,11 @@ print.omnipath_api <- function(x, ...) {
   response
 }
 
-# The named parameters of a shared query (sql/*.sql): the filters it takes in both
-# modes.
-.shared_parameters <- function(macro) {
-  for (name in unlist(.contract()$macro_files)) {
-    text <- paste(readLines(file.path(.sql_dir(), name), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
-    found <- regmatches(text, regexec(sprintf("CREATE OR REPLACE MACRO %s\\((.*?)\\) AS TABLE", macro), text))[[1]]
-    if (length(found) == 2) {
-      names <- regmatches(found[[2]], gregexpr("\\w+(?=\\s*:=)", found[[2]], perl = TRUE))[[1]]
-      return(names)
-    }
-  }
-  stop("No shared query ", macro, call. = FALSE)
+# The parameters of a shared query (sql/queries/<name>.sql): the filters it takes in
+# both modes.
+.shared_parameters <- function(query) {
+  if (!file.exists(file.path(.sql_dir(), "queries", paste0(query, ".sql")))) stop("No shared query ", query, call. = FALSE)
+  setdiff(names(.load_query(query)$params), "resources")
 }
 
 .api_filters <- function(macro, internal, filters) {
@@ -79,7 +72,7 @@ print.omnipath_api <- function(x, ...) {
 }
 
 .api_search <- function(con, query, limit, filters) {
-  filters <- .api_filters("op_search", c("query", "max_results"), filters)
+  filters <- .api_filters("entity_search", c("query", "limit", "cursor_phase", "cursor_offset", "cursor_key"), filters)
   body <- list(query = query, limit = as.integer(limit), filters = if (length(filters)) filters else structure(list(), names = character()))
   entities <- httr2::resp_body_json(.api_request(con, "POST", "/entities/search", body = body), simplifyVector = FALSE)$entities
   table <- .api_table(con)
@@ -100,7 +93,7 @@ print.omnipath_api <- function(x, ...) {
 }
 
 .api_relations <- function(con, entities, limit, filters) {
-  filters <- .api_filters("op_relations", c("entities", "max_relations"), filters)
+  filters <- .api_filters("relations", c("entities", "max_relations"), filters)
   if (!is.null(entities)) filters$entity_ids <- as.list(unlist(entities))
   body <- list(filters = if (length(filters)) filters else structure(list(), names = character()), limit = as.integer(limit))
   response <- .api_request(con, "POST", "/export", body = body)

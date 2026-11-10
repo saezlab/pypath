@@ -222,7 +222,7 @@ def contract() -> dict:
         "database_format": DATABASE_FORMAT,
         "derived_tables": derived_tables(),
         "indexes": INDEXES,
-        "macro_files": ["relations.sql", "shape.sql", "search.sql"],
+        "macro_files": ["shape.sql"],
         "relation_export_limit": RELATION_EXPORT_LIMIT,
         "biolink_names": biolink_names(),
     }
