@@ -20,6 +20,7 @@ CONTRACT: dict[str, Any] = json.loads(
 # their entity or relation by ``entity_id`` / ``relation_id``) and the lookup tables
 # derived from them at installation.
 TABLES = tuple(CONTRACT["published_tables"])
+_CHECKSUM = re.compile(r"[0-9a-f]{64}")
 SERVING = tuple(CONTRACT["serving_tables"])
 
 
@@ -44,6 +45,9 @@ class Installation(TypedDict):
     # views were removed may say false; its database is written anew).
     materialize: bool
     resources: list[ResourceRecord]
+    # The installed taxon names (references/taxonomy/<version>/taxonomy.parquet), the
+    # release's; None when the release has none.
+    taxonomy: NotRequired[str | None]
 
 
 def validate_url(value: Any) -> str:
@@ -122,10 +126,31 @@ def validate_installation(value: Any) -> Installation:
     if type(materialize) is not bool:
         raise ClientError("Installation materialize must be true or false")
     catalog = validate_catalog(value.get("resources"))
+    taxonomy = value.get("taxonomy")
+    if taxonomy is not None and not _CHECKSUM.fullmatch(str(taxonomy)):
+        raise ClientError("Installation taxonomy must be a SHA-256 checksum")
     return Installation(
         format=1,
         api_url=api_url,
         release=release,
         materialize=materialize,
         resources=list(catalog.values()),
+        taxonomy=taxonomy,
     )
+
+
+def validate_references(value: Any) -> dict[str, Any]:
+    """The catalog's references: ``taxonomy`` ({version: its SHA-256, size_bytes}) when
+    the release has taxon names."""
+    if value is None:
+        return {}
+    taxonomy = value.get("taxonomy") if isinstance(value, dict) else None
+    if taxonomy is None:
+        return {}
+    if (
+        not isinstance(taxonomy, dict)
+        or not _CHECKSUM.fullmatch(str(taxonomy.get("version")))
+        or type(taxonomy.get("size_bytes")) is not int
+    ):
+        raise ClientError("Invalid taxonomy reference in the catalog")
+    return {"taxonomy": {"version": taxonomy["version"], "size_bytes": taxonomy["size_bytes"]}}

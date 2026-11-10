@@ -278,13 +278,14 @@ WITH member_list AS (
         count(*) AS member_count,
         count(DISTINCT coalesce(taxon, chr(1))) AS taxa,
         -- the label of the most connected well-named member, else the preferred label
-        min(struct_pack(r := -coalesce(relation_count, 0), k := op_name_rank(summary.label), l := summary.label))
-            FILTER (WHERE coalesce(summary.label, '') <> '' AND op_name_rank(summary.label).score < 8) AS best_named,
-        min(op_name_rank(summary.label)) FILTER (WHERE trim(coalesce(summary.label, '')) <> '') AS best_label,
+        min(struct_pack(r := -coalesce(relation_count, 0), k := name_rank, l := summary.label))
+            FILTER (WHERE coalesce(summary.label, '') <> '' AND name_rank.score < 8) AS best_named,
+        min(name_rank) FILTER (WHERE trim(coalesce(summary.label, '')) <> '') AS best_label,
         list(DISTINCT summary.entityType ORDER BY summary.entityType) AS member_types,
         min(entity_key) FILTER (WHERE summary.entityType = 'gene') AS first_gene,
         min(entity_key) AS first_key
-    FROM member_list
+    -- the rank per row: DuckDB 2.0 cannot copy the macro's subquery inside an aggregate
+    FROM (SELECT *, op_name_rank(summary.label) AS name_rank FROM member_list)
     GROUP BY group_key
 ), group_sources AS (
     SELECT group_key, list(DISTINCT s ORDER BY s) AS sources

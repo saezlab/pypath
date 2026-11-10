@@ -55,9 +55,13 @@
 # The catalog ------------------------------------------------------------------
 
 .catalog <- function(api_url, release, timeout) {
+  .catalog_and_references(api_url, release, timeout)$catalog
+}
+
+.catalog_and_references <- function(api_url, release, timeout) {
   response <- .fetch_json(paste0(api_url, "/resources"), list(shape = "svelte", release = release), timeout)
   if (!is.list(response) || is.null(names(response))) .fail("Expected a catalog object")
-  .validate_catalog(response$resources)
+  list(catalog = .validate_catalog(response$resources), references = .validate_references(response$references))
 }
 
 .record_tags <- function(record, dimension) {
@@ -193,6 +197,36 @@ op_available <- function(release = "latest", api_url = NULL, timeout = 30) {
   downloaded
 }
 
+.taxonomy_file <- function(root, version) {
+  file.path(root, "references", "taxonomy", version, "taxonomy.parquet")
+}
+
+# The release's taxon names in references/taxonomy/<version>/ (downloaded when missing;
+# other versions are removed): the version, NULL when the release has none.
+.install_taxonomy <- function(con, api_url, release, root, reference, timeout) {
+  parent <- file.path(root, "references", "taxonomy")
+  version <- reference$version
+  if (!is.null(version)) {
+    target <- .taxonomy_file(root, version)
+    if (!(file.exists(target) && file.size(target) == reference$size_bytes)) {
+      dir.create(dirname(target), recursive = TRUE, showWarnings = FALSE)
+      staging <- tempfile(".download-", tmpdir = dirname(target))
+      on.exit(unlink(staging), add = TRUE)
+      .fetch_artifact(list(
+        name = "taxonomy.parquet", size_bytes = reference$size_bytes,
+        url = paste0(api_url, "/references/taxonomy?release=", utils::URLencode(release, reserved = TRUE))
+      ), staging, timeout)
+      digest <- DBI::dbGetQuery(con, sprintf("SELECT sha256(content) AS h FROM read_blob(%s)", .quote(staging)))$h
+      if (!identical(digest, version)) .fail("The taxonomy changed during init; run init again")
+      if (!file.rename(staging, target)) .fail("Could not put the taxonomy in place")
+    }
+  }
+  for (other in list.dirs(parent, recursive = FALSE)) {
+    if (!identical(basename(other), version)) unlink(other, recursive = TRUE)
+  }
+  version
+}
+
 #' Install resources and write the database
 #'
 #' Downloads resources into the data directory and prepares them for querying.
@@ -229,7 +263,8 @@ op_init <- function(resources = NULL, topic = NULL, content = NULL, molecule = N
   api_url <- .api_url(api_url)
   root <- op_data_directory(data_dir)
   say <- function(...) if (isTRUE(progress)) message(...)
-  catalog <- .catalog(api_url, release, timeout)
+  listed <- .catalog_and_references(api_url, release, timeout)
+  catalog <- listed$catalog
   chosen <- .select(catalog, resources, list(
     topic = topic, content = content, molecule = molecule, knowledge_origin = knowledge_origin
   ))
@@ -242,12 +277,14 @@ op_init <- function(resources = NULL, topic = NULL, content = NULL, molecule = N
     format = 1L, api_url = api_url, release = release, materialize = TRUE, resources = list()
   )
   installed <- stats::setNames(installation$resources, vapply(installation$resources, function(r) r$resource_id, ""))
+  taxonomy <- .install_taxonomy(con, api_url, release, root, listed$references$taxonomy, timeout)
   wanted <- names(chosen)
   # Installed resources follow the release too: one directory, one release.
   targets <- catalog[names(catalog) %in% c(wanted, names(installed))]
   finish <- function() {
     if (length(installation$resources)) {
       installation$materialize <<- TRUE
+      installation$taxonomy <<- taxonomy
       .write_installation(root, installation)
       if (!.in_sync(root, installation)) {
         say("Writing the database")
@@ -274,7 +311,7 @@ op_init <- function(resources = NULL, topic = NULL, content = NULL, molecule = N
       installed[[name]] <- record
       installation <- list(
         format = 1L, api_url = api_url, release = release, materialize = TRUE,
-        resources = unname(installed)
+        resources = unname(installed), taxonomy = taxonomy
       )
       .write_installation(root, installation)
     }

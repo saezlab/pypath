@@ -239,14 +239,14 @@ op_relations <- function(con, entities = NULL, limit = 100000, ..., lazy = FALSE
 #' `relations`, `entity_details`, `resolve_keys`, `relation`, `relation_evidence`,
 #' `relation_evidence_batch` and the others in the package's `sql/queries`.
 #'
-#' @param con A local connection from [op_connect()].
+#' @param con A connection from [op_connect()]: in API mode, the API runs the query.
 #' @param name The query's name.
 #' @param ... Its parameters by name.
 #' @param output `"table"` for a data frame, `"json"` for the API's JSON text.
 #' @return A data frame, or JSON text (`NULL` when the query has no answer).
 #' @export
 op_query <- function(con, name, ..., output = "table") {
-  if (.is_api(con)) stop("op_query() runs on a local installation; connect with mode = \"local\"", call. = FALSE)
+  if (.is_api(con)) return(.api_query(con, name, list(...), output = output))
   .run_query(con, name, list(...), output = output)
 }
 

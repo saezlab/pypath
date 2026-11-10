@@ -49,6 +49,29 @@ test_that("init is incremental and follows the release", {
   expect_equal(op_sql(con, "SELECT count(*) AS n FROM alpha.evidence_payloads")$n, 1)
 })
 
+test_that("init downloads the release's taxon names", {
+  service <- local_service()
+  service$init("alpha")
+  con <- service$connect()
+  expect_equal(op_sql(con, "SELECT count(*) AS n FROM op_taxonomy")$n, 0)
+  op_disconnect(con)
+  service$taxonomy <- write_taxonomy(file.path(withr::local_tempdir(), "taxonomy.parquet"), "human")
+  service$init("alpha")
+  con <- service$connect()
+  key <- op_search(con, "TP53")$entity_key[1]
+  expect_equal(op_entity(con, key, simplify = FALSE)$entity$taxonomyName, "human")
+  op_disconnect(con)
+  expect_equal(sum(service$downloads == "taxonomy"), 1)
+  # The same names are not downloaded again; new ones replace them in the database.
+  service$init("alpha")
+  expect_equal(sum(service$downloads == "taxonomy"), 1)
+  write_taxonomy(service$taxonomy, "people")
+  service$init("alpha")
+  con <- local_connection(service)
+  expect_equal(op_entity(con, key, simplify = FALSE)$entity$taxonomyName, "people")
+  expect_length(list.dirs(file.path(service$data, "references/taxonomy"), recursive = FALSE), 1)
+})
+
 test_that("derived serving tables match the build", {
   service <- local_service()
   service$init("alpha")

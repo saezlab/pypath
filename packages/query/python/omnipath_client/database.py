@@ -98,7 +98,8 @@ def _describe(db, sources: list[Source], payloads: bool, info: dict[str, Any]) -
     db.execute(
         "CREATE OR REPLACE TABLE database_info AS SELECT ?::VARCHAR AS data_dir, "
         "true AS materialized, ?::VARCHAR AS query_layer, ?::VARCHAR AS release, "
-        "?::INTEGER AS database_format, ?::TIMESTAMPTZ AS built_at, ?::VARCHAR AS built_by",
+        "?::INTEGER AS database_format, ?::TIMESTAMPTZ AS built_at, ?::VARCHAR AS built_by, "
+        "?::VARCHAR AS taxonomy",
         [
             info.get("data_dir"),
             QUERY_LAYER,
@@ -106,6 +107,7 @@ def _describe(db, sources: list[Source], payloads: bool, info: dict[str, Any]) -
             DATABASE_FORMAT,
             info.get("built_at"),
             info.get("built_by"),
+            info.get("taxonomy"),
         ],
     )
     db.execute(
@@ -214,14 +216,20 @@ def _taxonomy(db, path: Path | None) -> None:
     taxonomy reference."""
     if path is not None and Path(path).is_file():
         db.execute(
-            f"""CREATE TABLE op_taxonomy AS SELECT DISTINCT taxon_id::VARCHAR AS taxon,
+            f"""CREATE OR REPLACE TABLE op_taxonomy AS SELECT DISTINCT taxon_id::VARCHAR AS taxon,
                 coalesce(nullif(common_name, ''), nullif(scientific_name, '')) AS name
             FROM read_parquet({_literal(str(path))})
             WHERE coalesce(nullif(common_name, ''), nullif(scientific_name, '')) IS NOT NULL
             ORDER BY taxon"""
         )
     else:
-        db.execute("CREATE TABLE op_taxonomy (taxon VARCHAR, name VARCHAR)")
+        db.execute("CREATE OR REPLACE TABLE op_taxonomy (taxon VARCHAR, name VARCHAR)")
+
+
+def taxonomy_file(root: Path, version: str) -> Path:
+    """Where a taxonomy reference (named by its SHA-256) is kept, on a server and in a
+    local installation alike."""
+    return Path(root) / "references" / "taxonomy" / version / "taxonomy.parquet"
 
 
 def taxonomy_reference(root: Path, manifest: dict[str, Any]) -> Path | None:
@@ -229,7 +237,7 @@ def taxonomy_reference(root: Path, manifest: dict[str, Any]) -> Path | None:
     reference = (manifest.get("references") or {}).get("taxonomy")
     if not reference:
         return None
-    path = Path(root) / "references" / "taxonomy" / reference["version"] / "taxonomy.parquet"
+    path = taxonomy_file(root, reference["version"])
     return path if path.is_file() else None
 
 
@@ -355,7 +363,11 @@ def build_release_database(
     return write_database(
         target,
         release_sources(root, manifest["resources"]),
-        info={"release": release, "built_by": "build_release_database"},
+        info={
+            "release": release,
+            "built_by": "build_release_database",
+            "taxonomy": ((manifest.get("references") or {}).get("taxonomy") or {}).get("version"),
+        },
         taxonomy=taxonomy_reference(root, manifest),
         payloads=False,
         memory_limit=memory_limit,
@@ -374,7 +386,8 @@ def _installation_sources(root: Path, records: list[ResourceRecord]) -> list[Sou
 
 
 def _info(root: Path) -> tuple | None:
-    """(query layer, database format, resources) of the database, or None."""
+    """(query layer, database format, resources, taxonomy version) of the database, or
+    None."""
     path = root / DATABASE
     if not path.is_file():
         return None
@@ -386,55 +399,82 @@ def _info(root: Path) -> tuple | None:
         columns = {row[0] for row in db.execute("DESCRIBE database_info").fetchall()}
         if "database_format" not in columns:
             return None
-        layer, database_format = db.execute(
-            "SELECT query_layer, database_format FROM database_info"
+        taxonomy = "taxonomy" if "taxonomy" in columns else "NULL"
+        layer, database_format, version = db.execute(
+            f"SELECT query_layer, database_format, {taxonomy} FROM database_info"
         ).fetchone()
         state = db.execute("SELECT * FROM resources ORDER BY ALL").fetchall()
     except duckdb.Error:
         return None
     finally:
         db.close()
-    return layer, database_format, state
+    return layer, database_format, state, version
 
 
 def _tables_in_sync(info: tuple | None, installation: Installation) -> bool:
     if info is None:
         return False
-    _, database_format, state = info
+    _, database_format, state, _ = info
     sources = _installation_sources(Path("."), installation["resources"])
     return database_format == DATABASE_FORMAT and state == _state(sources, True)
 
 
 def in_sync(root: Path, installation: Installation) -> bool:
-    """Whether the database holds exactly the installed resources, in this client's
-    database format and with its query layer."""
+    """Whether the database holds exactly the installed resources and taxon names, in
+    this client's database format and with its query layer."""
     info = _info(root)
-    return _tables_in_sync(info, installation) and info[0] == QUERY_LAYER
+    return (
+        _tables_in_sync(info, installation)
+        and info[0] == QUERY_LAYER
+        and info[3] == installation.get("taxonomy")
+    )
 
 
 def synchronize(root: Path, installation: Installation, memory_limit: str = "2GB") -> None:
     """Bring the database in line with the installation; nothing when it already is.
 
     Changed resources mean a new database, written completely. When only the query
-    layer differs (another client version wrote the database), it alone is rewritten.
+    layer or the taxon names differ, they alone are rewritten.
     """
     info = _info(root)
+    taxonomy = installation.get("taxonomy")
     if _tables_in_sync(info, installation):
         if info[0] != QUERY_LAYER:
             _layer_only(root)
+        if info[3] != taxonomy:
+            _taxonomy_only(root, taxonomy)
         return
     temporary = root / ".duckdb-tmp"
     try:
         write_database(
             root / DATABASE,
             _installation_sources(root, installation["resources"]),
-            info={"data_dir": str(root), "release": installation["release"], "built_by": "init"},
+            info={
+                "data_dir": str(root),
+                "release": installation["release"],
+                "built_by": "init",
+                "taxonomy": taxonomy,
+            },
+            taxonomy=taxonomy_file(root, taxonomy) if taxonomy else None,
             memory_limit=memory_limit,
             temp_directory=temporary,
         )
     finally:
         if temporary.is_dir() and not any(temporary.iterdir()):
             temporary.rmdir()
+
+
+def _taxonomy_only(root: Path, version: str | None) -> None:
+    """Write the taxon names of an otherwise current database."""
+    db = duckdb.connect(str(root / DATABASE))
+    try:
+        db.execute("BEGIN")
+        _taxonomy(db, taxonomy_file(root, version) if version else None)
+        db.execute("ALTER TABLE database_info ADD COLUMN IF NOT EXISTS taxonomy VARCHAR")
+        db.execute("UPDATE database_info SET taxonomy = ?", [version])
+        db.execute("COMMIT")
+    finally:
+        db.close()
 
 
 def _layer_only(root: Path) -> None:

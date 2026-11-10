@@ -133,6 +133,22 @@ class ResourcesQueries:
             "files": files,
         }
 
+    def get_taxonomy_reference(self) -> tuple[Path, str] | None:
+        """(file, version) of the taxon names of the release in scope, or None."""
+        from omnipath_client.database import taxonomy_reference
+
+        manifest = self._release_scope.get() or {}
+        path = taxonomy_reference(self.data_root, manifest)
+        return (path, manifest["references"]["taxonomy"]["version"]) if path else None
+
+    def list_references(self) -> dict[str, Any]:
+        """The release's reference files, as the catalog lists them."""
+        found = self.get_taxonomy_reference()
+        if found is None:
+            return {}
+        path, version = found
+        return {"taxonomy": {"version": version, "size_bytes": path.stat().st_size}}
+
     def get_resource_file_path(self, resource_id: str, filename: str) -> Path | None:
         if filename not in self.RESOURCE_PARQUET_FILES:
             return None

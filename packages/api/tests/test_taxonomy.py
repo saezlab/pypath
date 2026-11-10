@@ -1,5 +1,6 @@
 """Taxonomy labels are offline, release-pinned and never alter identity/filter IDs."""
 
+import hashlib
 import io
 import tarfile
 
@@ -115,6 +116,21 @@ def test_release_names_entities_facets_and_cached_relations(tmp_path):
         )
         response = client.post("/entities/scoped-facets?release=1", json={})
         assert any(row.get("facetLabel") == "Arabidopsis thaliana" for row in response.json())
+        # The clients' init downloads a release's taxon names, as the catalog lists them.
+        for manifest in manifests:
+            version = manifest["version"]
+            listed = client.get(f"/resources?shape=svelte&release={version}").json()
+            reference = listed["references"]["taxonomy"]
+            assert reference["version"] == manifest["references"]["taxonomy"]["version"]
+            download = client.get(f"/references/taxonomy?release={version}")
+            assert download.status_code == 200
+            assert hashlib.sha256(download.content).hexdigest() == reference["version"]
+            assert len(download.content) == reference["size_bytes"]
+            etag = download.headers["etag"]
+            again = client.get(f"/references/taxonomy?release={version}", headers={"If-None-Match": etag})
+            assert again.status_code == 304
+        assert client.get("/resources?shape=svelte&release=0").json()["references"] == {}
+        assert client.get("/references/taxonomy?release=0").status_code == 404
     reference = manifests[0]["references"]["taxonomy"]["version"]
     (tmp_path / "references/taxonomy" / reference / "taxonomy.parquet").write_bytes(b"corrupt")
     with pytest.raises(ValueError, match="checksum"):

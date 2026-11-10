@@ -327,6 +327,10 @@
       inner <- if (length(column) && !is.null(column[[1]])) base(column[[1]]) else NULL
       if (is.null(inner)) NULL else paste0(inner, "[]")
     } else base(column)
+    # An empty list or NULLs say nothing of their type in R: DuckDB's type, from the plan.
+    if (is.null(type) || (is.logical(column) && all(is.na(column)))) {
+      type <- execute(paste0("DESCRIBE ", sql))$column_type[[1]]
+    }
     if (step$kind == "list" && !is.null(type) && !grepl("\\[\\]$", type)) type <- paste0(type, "[]")
     if (step$kind %in% c("list", "value")) types[step$name] <<- if (is.null(type)) NA_character_ else type
     if (step$kind == "list") {

@@ -468,8 +468,18 @@ class ResourceRecord(APIModel):
     files: list[ResourceFile] = Field(default_factory=list)
 
 
+class ReferenceFile(APIModel):
+    version: str = Field(description="The file's SHA-256, which names it.")
+    size_bytes: int
+
+
 class ResourcesResponse(APIModel):
     resources: list[ResourceRecord] = Field(default_factory=list)
+    references: dict[str, ReferenceFile] | None = Field(
+        default=None,
+        description="The release's reference files (`taxonomy`: its taxon names, "
+        "downloaded from /references/taxonomy); with `shape=svelte`.",
+    )
 
 
 class ResourceTopic(APIModel):

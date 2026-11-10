@@ -48,20 +48,21 @@
   if (!is.null(path) && file.exists(path)) {
     name <- "coalesce(nullif(common_name, ''), nullif(scientific_name, ''))"
     .exec(con, sprintf(paste0(
-      "CREATE TABLE op_taxonomy AS SELECT DISTINCT taxon_id::VARCHAR AS taxon, %s AS name ",
+      "CREATE OR REPLACE TABLE op_taxonomy AS SELECT DISTINCT taxon_id::VARCHAR AS taxon, %s AS name ",
       "FROM read_parquet(%s) WHERE %s IS NOT NULL ORDER BY taxon"), name, .quote(path), name))
   } else {
-    .exec(con, "CREATE TABLE op_taxonomy (taxon VARCHAR, name VARCHAR)")
+    .exec(con, "CREATE OR REPLACE TABLE op_taxonomy (taxon VARCHAR, name VARCHAR)")
   }
 }
 
-.describe <- function(con, root, records, release) {
+.describe <- function(con, root, records, release, taxonomy = NULL) {
   .exec(con, sprintf(paste0(
     "CREATE OR REPLACE TABLE database_info AS SELECT %s::VARCHAR AS data_dir, true AS materialized, ",
     "%s::VARCHAR AS query_layer, %s::VARCHAR AS release, %d::INTEGER AS database_format, ",
-    "%s::TIMESTAMPTZ AS built_at, 'init'::VARCHAR AS built_by"),
+    "%s::TIMESTAMPTZ AS built_at, 'init'::VARCHAR AS built_by, %s::VARCHAR AS taxonomy"),
     .quote(root), .quote(.query_layer()), if (is.null(release)) "NULL" else .quote(release),
-    as.integer(.contract()$database_format), .quote(format(Sys.time(), "%Y-%m-%dT%H:%M:%S+00:00", tz = "UTC"))
+    as.integer(.contract()$database_format), .quote(format(Sys.time(), "%Y-%m-%dT%H:%M:%S+00:00", tz = "UTC")),
+    if (is.null(taxonomy)) "NULL" else .quote(taxonomy)
   ))
   .exec(con, "CREATE OR REPLACE TABLE resources (resource_id VARCHAR, version VARCHAR, has_evidence BOOLEAN)")
   rows <- .state_rows(records)
@@ -163,6 +164,7 @@
 }
 
 .rebuild <- function(root, records, memory_limit, release = NULL, taxonomy = NULL) {
+  # taxonomy: the version of the installed taxon names (references/taxonomy/<version>/)
   staging_dir <- tempfile(".database-", tmpdir = root)
   dir.create(staging_dir)
   on.exit(unlink(staging_dir, recursive = TRUE), add = TRUE)
@@ -201,8 +203,8 @@
   }
   .derived(con, present)
   for (record in ordered) .resource_schema(con, record)
-  .taxonomy(con, taxonomy)
-  .describe(con, root, records, release)
+  .taxonomy(con, if (is.null(taxonomy)) NULL else .taxonomy_file(root, taxonomy))
+  .describe(con, root, records, release, taxonomy)
   .query_layer_write(con)
   .exec(con, "USE memory")
   .exec(con, "DETACH work")
@@ -224,9 +226,11 @@
   tryCatch({
     columns <- DBI::dbGetQuery(con, "DESCRIBE database_info")$column_name
     if (!("database_format" %in% columns)) return(NULL)
-    info <- DBI::dbGetQuery(con, "SELECT query_layer, database_format FROM database_info")
+    taxonomy <- if ("taxonomy" %in% columns) "taxonomy" else "NULL::VARCHAR AS taxonomy"
+    info <- DBI::dbGetQuery(con, sprintf("SELECT query_layer, database_format, %s FROM database_info", taxonomy))
     state <- DBI::dbGetQuery(con, "SELECT * FROM resources ORDER BY ALL")
-    list(query_layer = info$query_layer, database_format = info$database_format, state = state)
+    list(query_layer = info$query_layer, database_format = info$database_format, state = state,
+      taxonomy = if (is.na(info$taxonomy)) NULL else info$taxonomy)
   }, error = function(e) NULL)
 }
 
@@ -242,7 +246,20 @@
 
 .in_sync <- function(root, installation) {
   info <- .info(root)
-  .tables_in_sync(info, installation) && identical(info$query_layer, .query_layer())
+  .tables_in_sync(info, installation) && identical(info$query_layer, .query_layer()) &&
+    identical(info$taxonomy, installation$taxonomy)
+}
+
+# The taxon names of an otherwise current database.
+.taxonomy_only <- function(root, version) {
+  con <- DBI::dbConnect(duckdb::duckdb(), dbdir = file.path(root, .database_file))
+  on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
+  DBI::dbBegin(con)
+  .taxonomy(con, if (is.null(version)) NULL else .taxonomy_file(root, version))
+  .exec(con, "ALTER TABLE database_info ADD COLUMN IF NOT EXISTS taxonomy VARCHAR")
+  .exec(con, sprintf("UPDATE database_info SET taxonomy = %s", if (is.null(version)) "NULL" else .quote(version)))
+  DBI::dbCommit(con)
+  invisible(TRUE)
 }
 
 .layer_only <- function(root) {
@@ -255,17 +272,18 @@
 }
 
 # Changed resources mean a new database, written completely; when only the query
-# layer differs (another client version wrote it), the query layer alone.
+# layer (another client version wrote it) or the taxon names differ, they alone.
 .synchronize <- function(root, installation, memory_limit = "2GB") {
   info <- .info(root)
   if (.tables_in_sync(info, installation)) {
     if (!identical(info$query_layer, .query_layer())) .layer_only(root)
+    if (!identical(info$taxonomy, installation$taxonomy)) .taxonomy_only(root, installation$taxonomy)
     return(invisible(FALSE))
   }
   on.exit({
     temporary <- file.path(root, ".duckdb-tmp")
     if (dir.exists(temporary) && !length(list.files(temporary, all.files = TRUE, no.. = TRUE))) unlink(temporary, recursive = TRUE)
   }, add = TRUE)
-  .rebuild(root, installation$resources, memory_limit, installation$release)
+  .rebuild(root, installation$resources, memory_limit, installation$release, installation$taxonomy)
   invisible(TRUE)
 }
