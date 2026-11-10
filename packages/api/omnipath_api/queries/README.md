@@ -36,14 +36,16 @@ queries.close()
 The databases are snapshots: a resource rebuilt in place, or a new version, is served
 once a release pins it and its database is built.
 
-## Reading rows
+## Queries
 
-Rows are read by id through the global ids (`_rid`, `_eid`: the resource's index times
-2^32 plus its own id), written into the SQL as literal lists, in a MATERIALIZED step of
-their own. DuckDB uses an ART index only then: with any other condition in the same
-`WHERE`, or with ids from a subquery or join, it scans (6–7 s instead of 0.3 s for a
-gene's relations in a full release). Relation keys are looked up in
-`relation_key_lookup`, which is sorted by key.
+Every query is a step file of the clients' package (`packages/query/sql/queries/`,
+described in `packages/query/README.md`): the API, the Python client and the R client
+run the same SQL, and the answers' JSON is written by DuckDB. `ReleaseQueries.run_query`
+runs one on the request's release, with the selected resources (less those the query
+policy disables) as its `resources` parameter, and caches the answers and the steps
+marked `cache`. The services turn a request's fields into a query's parameters; the
+generic route `POST /query/{name}` (`routers/queries.py`) runs any query by name, which
+the clients' API mode uses.
 
 ## Modules
 
@@ -52,11 +54,11 @@ gene's relations in a full release). Relation keys are looked up in
   query connection (a full release needs about 3.5 GB per query with its indexes);
   `OMNIPATH_QUERY_CONCURRENCY` sets how many run at once and
   `OMNIPATH_DUCKDB_TEMP_DIRECTORY` where they spill.
-- **`services`**: domain query services for entities, relations, ontology, evidence,
-  facets, resources, statistics, selection and export.
-- **`filters`**: the filter and cursor contracts the queries accept.
-- **`annotations` / `shape`**: presentation adapters for compiled identifiers,
-  annotations, entities and relations.
+- **`services`**: the routes' requests as step-file parameters (entities, relations,
+  evidence, facets, ontology, selection, statistics, groups, exports), the resource
+  catalog and downloads, and raw evidence payloads (read from the resources' files).
+- **`filters`**: the filter and cursor contracts the requests accept.
+- **`examples`**: the landing page's examples, kept as a file per release.
 
 ## Tests
 

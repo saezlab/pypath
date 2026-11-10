@@ -126,8 +126,6 @@ class TestReleaseQueries(unittest.TestCase):
         self.assertGreater(len(resources), 1)
         for resource in resources:
             filters = {"sources": [resource]}
-            selection, _ = self.engine._relation_selection(filters)
-            self.assertIn(f"_resource IN ('{resource}')", selection)
             scoped = self.engine.search_relations(filters=filters, limit=1000)
             full = self.engine.search_relations(filters=filters, resources=resources, limit=1000)
             def key(rows):
@@ -136,8 +134,8 @@ class TestReleaseQueries(unittest.TestCase):
             self.assertEqual(key(scoped["rows"]), key(full["rows"]))
             self.assertEqual(scoped["total"], full["total"])
             self.assertEqual(
-                self.engine._compute_relation_facets({"sources": [resource]}),
-                self.engine._compute_relation_facets({"sources": [resource]}, resources),
+                self.engine.get_scoped_relation_facets({"sources": [resource]}),
+                self.engine.get_scoped_relation_facets({"sources": [resource]}, resources),
             )
         # A source the release does not have matches nothing.
         self.assertEqual(self.engine.search_relations(filters={"sources": ["nosuch"]})["rows"], [])

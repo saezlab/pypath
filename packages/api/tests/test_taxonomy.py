@@ -121,7 +121,7 @@ def test_release_names_entities_facets_and_cached_relations(tmp_path):
         store.validate_files(manifests[0])
 
 
-def test_latest_lookup_covers_new_taxa_without_changing_pinned_names(tmp_path):
+def test_lookup_names_taxa_from_the_dump(tmp_path):
     from omnipath_core.taxonomy_lookup import prepare, read_lookup
 
     archive = tmp_path / "references/taxonomy/taxdump.tar.gz"
@@ -132,18 +132,3 @@ def test_latest_lookup_covers_new_taxa_without_changing_pinned_names(tmp_path):
     assert names.get("999") == "Arabidopsis thaliana"
     assert names.get("123") is None
     assert prepare(tmp_path) == path
-    # Calls outside a release (nothing is served here) use the moving lookup; a
-    # release names taxa from its own taxonomy reference.
-    engine = served_queries(tmp_path)
-    assert engine._taxonomy_names().get("3702") == "Arabidopsis thaliana"
-    first_version = engine._taxonomy_cache_version()
-    # A pinned scope without a taxonomy snapshot does not inherit moving labels.
-    token = engine._release_scope.set({"version": "old", "resources": {}})
-    try:
-        assert engine._taxonomy_names().get("3702") is None
-    finally:
-        engine._release_scope.reset(token)
-    dump(archive, "Updated name")
-    prepare(tmp_path)
-    assert engine._taxonomy_names().get("3702") == "Updated name"
-    assert engine._taxonomy_cache_version() != first_version

@@ -33,11 +33,11 @@ def test_examples_are_cached_release_specific_and_do_not_replace_search(tmp_path
     # A fresh engine reads the prepared page without selecting or hydrating again.
     cached = served_queries(tmp_path)
     monkeypatch.setattr(
-        cached,
-        "_fetch_entities_by_keys",
+        "omnipath_client.steps.run",
         lambda *a, **kw: (_ for _ in ()).throw(AssertionError("cache miss")),
     )
     assert cached.get_entity_examples() == first
+    monkeypatch.undo()
     write(tmp_path, "2", "Caffeine", "b" * 64, "CHEBI:27732")
     republish(tmp_path)
     assert engine.get_entity_examples()["entities"][0]["label"] == "Caffeine"

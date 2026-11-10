@@ -250,7 +250,7 @@ def get_entity(
     if not paged:
         # As the engine answers, not through the paged response model.
         return EngineJSONResponse(result)
-    from omnipath_api.queries.entity_details import page_details
+    from omnipath_api.routers.paging import page_details
 
     result["entity"] = page_details(result["entity"], detail_limit, detail_offset, detail_field)
     return result

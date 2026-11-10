@@ -33,24 +33,23 @@ def resource(root, version, label):
 
 
 def test_lazy_core_does_not_query_relations_and_reuses_cache(tmp_path, monkeypatch):
+    from omnipath_client import steps
+
     resource(tmp_path, "1", "First")
     engine = served_queries(tmp_path)
     client = TestClient(create_app(queries=engine))
-    table = engine._table
+    run, queries = steps.run, []
 
-    def entity_tables_only(name, *args):
-        assert not name.startswith("relation"), "relation scan"
-        return table(name, *args)
+    def recorded(connection, query, *args, **kwargs):
+        queries.append(query.name)
+        return run(connection, query, *args, **kwargs)
 
-    monkeypatch.setattr(engine, "_table", entity_tables_only)
+    monkeypatch.setattr(steps, "run", recorded)
     first = client.get("/entities/a?includeRelationships=false")
     assert first.status_code == 200 and first.json()["entity"]["label"] == "First"
-    monkeypatch.setattr(
-        engine,
-        "_fetch_entities_by_keys",
-        lambda *a, **kw: (_ for _ in ()).throw(AssertionError("uncached entity")),
-    )
+    assert queries == ["entity_core"]
     assert client.get("/entities/a?includeRelationships=false").json() == first.json()
+    assert queries == ["entity_core"]
 
 
 def test_relationship_pagination_cache_and_release_isolation(tmp_path, monkeypatch):
@@ -142,8 +141,8 @@ def test_relationships_and_counts_span_resources(tmp_path):
     engine = served_queries(tmp_path)
 
     def read():
-        engine._detail_cache.clear()
-        engine._relationship_cache.clear()
+        engine._query_cache.clear()
+        engine._step_cache.clear()
         pages = [engine.get_entity_relationships("a", limit=2, offset=o) for o in (0, 2, 4)]
         return engine.get_entity_details("a"), pages
 
@@ -158,7 +157,7 @@ def test_relationships_and_counts_span_resources(tmp_path):
 
 
 def test_descriptions_lead_the_first_attribute_page():
-    from omnipath_api.queries.entity_details import page_details
+    from omnipath_api.routers.paging import page_details
 
     entity = dict(
         entityAttributes=[dict(term="in_taxon", value=str(i)) for i in range(30)]
@@ -170,7 +169,7 @@ def test_descriptions_lead_the_first_attribute_page():
 
 
 def test_one_collection_pages_on_its_own():
-    from omnipath_api.queries.entity_details import page_details
+    from omnipath_api.routers.paging import page_details
 
     entity = dict(
         entityPk="a",
@@ -186,7 +185,7 @@ def test_one_collection_pages_on_its_own():
 
 
 def test_attributes_beyond_descriptions_are_grouped_by_term():
-    from omnipath_api.queries.entity_details import page_details
+    from omnipath_api.routers.paging import page_details
 
     terms = ["in_taxon", "has_role", "in_taxon", "description", "has_role"]
     entity = dict(entityAttributes=[dict(term=t, value=str(i)) for i, t in enumerate(terms)])

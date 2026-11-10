@@ -37,10 +37,8 @@ from omnipath_api.queries.store.inventory import ReleaseStore
 from omnipath_api.queries.store.query_cache import QueryCache, StepCache
 from omnipath_api.queries.store.query_pool import QueryPool
 from omnipath_api.queries.store.connection import get_connection, sql_literal
-from omnipath_core.measurements import QUANTITY_STRUCT
-from omnipath_core.schema import PUBLISHED_TABLES, RELATION_QUALIFIERS, SERVING_TABLES
+from omnipath_core.schema import PUBLISHED_TABLES, SERVING_TABLES
 from omnipath_core.versioning import RESOURCE_FILES
-from omnipath_client.contracts import CONTRACT
 from omnipath_client import steps
 from omnipath_client.steps import apply_settings
 
@@ -58,33 +56,7 @@ logger = logging.getLogger(__name__)
 
 SERVING_DIR = "serving"
 PAYLOAD_FILE = "evidence_payloads.parquet"
-_QUANTITY = [field.name for field in QUANTITY_STRUCT]
-# {table: (its own id column, the global id column)} of the release databases.
-GLOBAL_IDS: dict[str, tuple[str, str]] = {t: tuple(c) for t, c in CONTRACT["global_ids"].items()}
-# Up to this many ids go into the SQL as literals (and through the indexes); more are a
-# join, which scans.
-LITERAL_LIMIT = int(CONTRACT["settings"].get("index_scan_max_count", 100_000))
-_HELPERS = ("_resource", "_resource_version", "_rid", "_eid")
-# Tables the database also holds sorted across every resource:
-# {table: (its sorted copy, the columns it is sorted by)}. Reads by those columns (and
-# scans) use the copy; reads by global id the table itself, which is in id order.
-SORTED_COPIES = {"entity": ("entity_by_key", ("entity_key", "key_rank"))}
-# The entity columns a relation's endpoint shows (shape_entity_summary).
-ENDPOINT_FIELDS = (
-    "entity_id, entity_key, namespace, identifier, label, entity_type, taxon, has_hierarchy, "
-    "parent_count, child_count, reference_entity_key, gene_reference_keys, relation_count"
-)
-_HEX_KEY = re.compile(r"[0-9a-f]{64}")
 _NUMERIC = re.compile(r"[0-9]+(?:\.[0-9]+)*")
-
-
-def _nest_quantity(row):
-    """A table row's ``quantity_*`` columns as one ``quantity`` struct (None when empty)."""
-    if "quantity_" + _QUANTITY[0] not in row:
-        return row
-    quantity = {name: row.pop("quantity_" + name) for name in _QUANTITY}
-    row["quantity"] = quantity if any(v is not None for v in quantity.values()) else None
-    return row
 
 
 def _version_key(version: str) -> tuple[int, ...]:
@@ -166,11 +138,6 @@ class ReleaseQueries(
     """Queries over the served release databases of a serving root."""
 
     ENGINE = "duckdb-release"
-    _ENTITY_KEY_RE = re.compile(r"^[0-9a-fA-F]{64}$")
-    _ENTITY_SCALAR_COLS = (
-        "entity_key, entity_type, namespace, identifier, taxon, label, "
-        "has_hierarchy, parent_count, child_count, reference_entity_key, gene_reference_keys"
-    )
 
     def __init__(
         self,
@@ -213,9 +180,6 @@ class ReleaseQueries(
         self._served_scope: ContextVar[ServedRelease | None] = ContextVar(
             "served_scope", default=None
         )
-        self._taxonomy_scope: ContextVar[dict[str, str] | None] = ContextVar(
-            "taxonomy_scope", default=None
-        )
         self._db_local = threading.local()
         self._connections = []
         self._connections_lock = threading.Lock()
@@ -223,11 +187,6 @@ class ReleaseQueries(
         self._inventory_lock = threading.Lock()
         self._inventory_fingerprint: tuple | None = None
         self._state = ServedState((), MappingProxyType({}), None)
-        self._facet_cache = QueryCache()
-        # Page order of endpoint selections: a gene's relations are sorted once for all pages.
-        self._order_cache = QueryCache(max_entries=256, max_bytes=64 * 1024**2)
-        self._detail_cache = QueryCache(max_entries=256, max_bytes=32 * 1024**2)
-        self._relationship_cache = QueryCache(max_entries=128, max_bytes=32 * 1024**2)
         self._example_cache = QueryCache(max_entries=16, max_bytes=1024**2)
         self._catalog_cache = QueryCache(max_entries=8, max_bytes=64 * 1024**2)
         # Answers of the step-file queries, by release, query and parameters.
@@ -375,13 +334,9 @@ class ReleaseQueries(
         manifest = self.releases.get(version)
         served_token = self._served_scope.set(served)
         token = self._release_scope.set(manifest)
-        taxonomy_token = None
         try:
-            taxonomy_token = self._taxonomy_scope.set(self._resolve_taxonomy_names())
             yield version
         finally:
-            if taxonomy_token is not None:
-                self._taxonomy_scope.reset(taxonomy_token)
             self._release_scope.reset(token)
             self._served_scope.reset(served_token)
 
@@ -489,8 +444,6 @@ class ReleaseQueries(
 
     def _reset_query_connection(self) -> None:
         self._db_generation += 1
-        self._facet_cache.clear()
-        self._order_cache.clear()
         self._query_cache.clear()
         self._step_cache.clear()
         conn = getattr(self._db_local, "conn", None)
@@ -509,17 +462,6 @@ class ReleaseQueries(
             self._close_direct_connection(connection)
 
     # Resources of the release ----------------------------------------------------
-
-    @staticmethod
-    def _is_entity_key(token: str) -> bool:
-        return bool(ReleaseQueries._ENTITY_KEY_RE.fullmatch(token))
-
-    def _split_entity_tokens(self, tokens: list[str]) -> tuple[list[str], list[str]]:
-        keys: list[str] = []
-        other: list[str] = []
-        for token in tokens:
-            (keys if self._is_entity_key(token) else other).append(token)
-        return keys, other
 
     def _visible_resources(self) -> dict[str, dict[str, Any]]:
         return self.resources
@@ -575,57 +517,24 @@ class ReleaseQueries(
             if table in info["tables"]
         }
 
-    # Tables and lookups ----------------------------------------------------------
+    # Tables ----------------------------------------------------------
 
     def _in_database(self, table: str) -> bool:
         return table in self._served().columns
 
-    def _derived(self, table: str, resources: list[str] | None = None) -> tuple[str, str] | None:
-        """(source, condition on its ``resource``) of a derived table over the selected
-        resources, or None when the database has no such table. Derived tables hold
-        every resource's rows, so a selection or the query policy is a filter."""
-        if not self._in_database(table):
-            return None
-        infos = self._selected_resource_infos(resources)
-        if len(infos) == len(self.resources):
-            condition = "TRUE"
-        elif not infos:
-            condition = "FALSE"
-        else:
-            condition = f"resource IN ({', '.join(sql_literal(info['key']) for info in infos)})"
-        return self._source(table), condition
-
-    def _physical(self, table: str, column: str | None = None) -> str:
-        """The database table a read of ``table`` (by ``column``, or a scan) uses."""
-        copy = SORTED_COPIES.get(table)
-        if copy is not None and copy[0] in self._served().columns:
-            if column is None or column in copy[1]:
-                return copy[0]
-        return table
-
-    def _projection(self, table: str, column: str | None = None) -> str:
+    def _projection(self, table: str) -> str:
         """The table's columns as the resource files have them, then ``resource``."""
-        columns = self._served().columns[self._physical(table, column)]
+        columns = self._served().columns[table]
         # A derived table's stored ``resource`` is computed here as for every table; an
         # entity row's key rank (in the sorted copy, standing for its key) is no field.
-        helpers = (*_HELPERS, "resource", *(("key_rank",) if table == "entity" else ()))
+        helpers = ("_resource", "_resource_version", "_rid", "_eid", "resource", "key_rank")
         hidden = [c for c in helpers if c in columns]
         return (
             f"* EXCLUDE ({', '.join(hidden)}), _resource || '/' || _resource_version AS resource"
         )
 
-    def _source(self, table: str, column: str | None = None) -> str:
-        served = self._served()
-        return f"{served.alias}.main.{self._physical(table, column)}"
-
-    def _sorted_by(self, table: str, column: str) -> bool:
-        """Whether a read of ``table`` by ``column`` reads rows sorted by it over every
-        resource: a sorted copy, or the table itself rewritten so (entity_term with its
-        entities' key ranks)."""
-        copy = SORTED_COPIES.get(table)
-        if copy is not None and column in copy[1] and self._physical(table, column) == copy[0]:
-            return True
-        return (table, column) == ("entity_term", "term") and self._has_term_keys()
+    def _source(self, table: str) -> str:
+        return f"{self._served().alias}.main.{table}"
 
     def _file_table(self, table: str, selected_resources: list[str] | None = None) -> str:
         """A table that is only in the resources' files (raw payloads), read from them."""
@@ -658,288 +567,6 @@ class ReleaseQueries(
         return f"(SELECT {self._projection(table)} FROM {self._source(table)}{where})"
 
     @staticmethod
-    def _in(column, values):
-        """``column IN values`` that keeps row-group skipping on a sorted column: a
-        literal list when short, else the values' range around an unnested list."""
-        values = list(dict.fromkeys(values))
-        if len(values) <= 1000:
-            return f"{column} IN ({','.join('?' for _ in values)})", values
-        return (
-            f"{column} BETWEEN ? AND ? AND {column} IN (SELECT unnest(?))",
-            [min(values), max(values), values],
-        )
-
-    def _by_resource(self, pairs):
-        """{resource: values} of (resource, value) pairs, for resources of the release."""
-        values: dict[str, list] = {}
-        resources = self.resources
-        for resource, value in pairs:
-            if resource in resources:
-                values.setdefault(resource, []).append(value)
-        return dict(sorted(values.items()))
-
-    def _global_ids(self, table: str, by_resource: dict[str, list]) -> list[int]:
-        index = self._served().index
-        return sorted(
-            {
-                (index[resource.split("/", 1)[0]] << 32) + int(value)
-                for resource, values in by_resource.items()
-                for value in values
-            }
-        )
-
-    def _matching(self, table: str, column: str, by_resource: dict[str, list]) -> tuple[str, list]:
-        """The condition selecting the rows of (resource, value) pairs, with the global
-        ids or keys written into it as literals (the indexes apply only to those)."""
-        ids = GLOBAL_IDS.get(table)
-        if ids is not None and column == ids[0]:
-            global_ids = self._global_ids(table, by_resource)
-            if len(global_ids) <= LITERAL_LIMIT:
-                return f"{ids[1]} IN ({','.join(map(str, global_ids))})", []
-            return f"{ids[1]} IN (SELECT unnest(?::BIGINT[]))", [global_ids]
-        literal = lambda v: (  # noqa: E731
-            str(int(v)) if isinstance(v, int) and not isinstance(v, bool) else sql_literal(str(v))
-        )
-        if self._sorted_by(table, column):
-            # A copy sorted by the column: its values are a few row groups; the pairs
-            # keep each resource's own rows.
-            values = sorted({str(v) for vs in by_resource.values() for v in vs})
-            pairs = ", ".join(
-                f"({sql_literal(resource.split('/', 1)[0])}, {literal(v)})"
-                for resource, vs in by_resource.items()
-                for v in dict.fromkeys(vs)
-            )
-            return (
-                f"{column} IN ({', '.join(literal(v) for v in values)}) "
-                f"AND (_resource, {column}) IN (SELECT * FROM (VALUES {pairs}))",
-                [],
-            )
-        if ids is not None and len(by_resource) > 3:
-            # By key from more than a few resources, in two steps: the global ids of the wanted (resource, key) pairs
-            # from a narrow read of the key column, then the rows by those ids. One
-            # condition per resource, OR-ed, would scan the whole table.
-            wanted = {
-                (resource.split("/", 1)[0], str(value))
-                for resource, values in by_resource.items()
-                for value in values
-            }
-            values = sorted({value for _, value in wanted})
-            found = self._db.execute(
-                f"SELECT _resource, {column}, {ids[1]} FROM {self._source(table)} "
-                f"WHERE {column} IN ({', '.join(literal(v) for v in values)})"
-            ).fetchall()
-            global_ids = sorted({g for r, v, g in found if (r, str(v)) in wanted})
-            if not global_ids:
-                return "FALSE", []
-            if len(global_ids) <= LITERAL_LIMIT:
-                return f"{ids[1]} IN ({','.join(map(str, global_ids))})", []
-            return f"{ids[1]} IN (SELECT unnest(?::BIGINT[]))", [global_ids]
-        parts = []
-        for resource, values in by_resource.items():
-            literals = ", ".join(literal(v) for v in dict.fromkeys(values))
-            parts.append(
-                f"(_resource = {sql_literal(resource.split('/', 1)[0])} AND {column} IN ({literals}))"
-            )
-        return " OR ".join(parts), []
-
-    def _rows_sql(
-        self, table: str, column: str, by_resource: dict[str, list], fields: str = "*"
-    ) -> tuple[str, list]:
-        """A MATERIALIZED read of the rows of (resource, value) pairs: further
-        conditions in the same WHERE would make DuckDB scan instead of using an index.
-        With plain column names as ``fields``, only those columns (and the row order's)
-        are read."""
-        condition, params = self._matching(table, column, by_resource)
-        projection = self._projection(table, column)
-        names = [name.strip() for name in fields.split(",")]
-        if fields.strip() != "*" and all(re.fullmatch(r"[a-z_][a-z0-9_]*", n) for n in names):
-            available = self._served().columns[self._physical(table, column)]
-            ids = GLOBAL_IDS.get(table)
-            ordered = [c for c in (ids[0] if ids else None, "ordinal") if c and c in available]
-            wanted = list(dict.fromkeys([*names, *ordered]))
-            projection = ", ".join(wanted) + ", _resource || '/' || _resource_version AS resource"
-        return (
-            f"WITH __rows AS MATERIALIZED (SELECT {projection} FROM "
-            f"{self._source(table, column)} WHERE {condition})",
-            params,
-        )
-
-    def _lookup_sql(self, table, column, pairs, where="TRUE", params=()):
-        """SQL and parameters of the ``table`` rows (with ``resource``) for (resource,
-        value) pairs."""
-        by_resource = self._by_resource(pairs)
-        if not by_resource:
-            return f"SELECT * FROM {self._table(table, [])} WHERE FALSE", []
-        if not self._in_database(table):
-            return self._file_lookup_sql(table, column, by_resource, where, params)
-        cte, values = self._rows_sql(table, column, by_resource)
-        return f"{cte} SELECT * FROM __rows WHERE {where}", [*values, *params]
-
-    def _file_lookup_sql(self, table, column, by_resource, where, params):
-        parts, values = [], []
-        for resource, items in by_resource.items():
-            condition, items = self._in(column, items)
-            path = sql_literal(str(self.resources[resource]["tables"][table]))
-            parts.append(
-                f"SELECT *, ?::VARCHAR AS resource FROM read_parquet({path}) "
-                f"WHERE {condition} AND {where}"
-            )
-            values += [resource, *items, *params]
-        return " UNION ALL ".join(parts), values
-
-    def _lookup(self, table, column, pairs, fields="*", extra="", params=(), *, narrow=False):
-        """Rows of ``table`` for (resource, value) pairs, in resource order:
-        ``extra`` (conditions, order, limit) applies to each resource's rows.
-
-        Without a LIMIT in ``extra`` this is one query over every resource; with one,
-        one query per resource. ``narrow`` reads only the ``fields`` (plain column
-        names) and the row order's columns, for an ``extra`` that refers to no others.
-        """
-        by_resource = self._by_resource(pairs)
-        if by_resource and self._in_database(table) and not re.search(r"\bLIMIT\b", extra, re.I):
-            cte, values = self._rows_sql(table, column, by_resource, fields if narrow else "*")
-            selected = "*" if fields.strip() == "*" else f"{fields}, resource"
-            order = re.search(r"\bORDER\s+BY\b", extra, re.I)
-            # Each resource's rows in its file's order, as one read of its file gave them.
-            ids = GLOBAL_IDS.get(table)
-            native = ", ".join(
-                c for c in (ids[0] if ids else None, "ordinal")
-                if c and c in self._served().columns[table]
-            )
-            extra = (
-                extra[: order.start()] + "ORDER BY resource, " + extra[order.end():]
-                if order
-                else f"{extra} ORDER BY resource" + (f", {native}" if native else "")
-            )
-            return self._fetch_dicts(
-                f"{cte} SELECT {selected} FROM __rows WHERE TRUE {extra}", [*values, *params]
-            )
-        rows = []
-        for resource, items in by_resource.items():
-            if not self._in_database(table):
-                condition, items = self._in(column, items)
-                path = sql_literal(str(self.resources[resource]["tables"][table]))
-                rows += self._fetch_dicts(
-                    f"SELECT {fields}, ? AS resource FROM read_parquet({path}) WHERE {condition} {extra}",
-                    [resource, *items, *params],
-                )
-                continue
-            cte, values = self._rows_sql(table, column, {resource: items}, fields if narrow else "*")
-            selected = "*" if fields.strip() == "*" else f"{fields}, resource"
-            rows += self._fetch_dicts(
-                f"{cte} SELECT {selected} FROM __rows WHERE TRUE {extra}", [*values, *params]
-            )
-        return rows
-
-    def _relations_by_keys(self, keys, resources=None) -> list[dict[str, Any]]:
-        """(resource, relation_id, relation_key) of the selected resources' relations
-        with these keys, ordered by resource, through the database's key table."""
-        keys = list(dict.fromkeys(str(k) for k in keys))
-        if not keys:
-            return []
-        served = self._served()
-        selected = {info["key"] for info in self._selected_resource_infos(resources)}
-        literals = ", ".join(sql_literal(k) for k in keys)
-        found = []
-        if "key_prefix" in served.columns["relation_key_lookup"]:
-            # By the keys' first 60 bits, then the full key on the relations found; a
-            # key that is no sha256 hex is looked for in the relation table itself.
-            prefixes = sorted({int(k[:15], 16) for k in keys if _HEX_KEY.fullmatch(k)})
-            ids = [
-                r[0] for r in self._db.execute(
-                    f"SELECT _rid FROM {served.alias}.main.relation_key_lookup "
-                    f"WHERE key_prefix IN ({','.join(map(str, prefixes)) or 'NULL'})"
-                ).fetchall()
-            ]
-            rows = self._db.execute(
-                f"WITH r AS MATERIALIZED (SELECT relation_key, _rid FROM {served.alias}.main.relation "
-                f"WHERE _rid IN ({','.join(map(str, ids)) or 'NULL'})) "
-                f"SELECT relation_key, _rid FROM r WHERE relation_key IN ({literals})"
-            ).fetchall()
-            other = [k for k in keys if not _HEX_KEY.fullmatch(k)]
-            if other:
-                rows += self._db.execute(
-                    f"SELECT relation_key, _rid FROM {served.alias}.main.relation "
-                    f"WHERE relation_key IN ({', '.join(sql_literal(k) for k in other)})"
-                ).fetchall()
-        else:
-            rows = self._db.execute(
-                f"SELECT relation_key, _rid FROM {served.alias}.main.relation_key_lookup "
-                f"WHERE relation_key IN ({literals})"
-            ).fetchall()
-        for relation_key, global_id in rows:
-            resource = served.by_index.get(global_id >> 32)
-            if resource in selected:
-                found.append(
-                    {"resource": resource, "relation_id": global_id & 0xFFFFFFFF, "relation_key": relation_key}
-                )
-        return sorted(found, key=lambda r: (r["resource"], r["relation_id"]))
-
-    def _children(self, table, parents, field, extra=""):
-        """Attach each parent's rows of a child table, in ordinal order, as ``field``.
-
-        Parents are entity or relation rows with ``resource`` and their id. Child rows
-        drop the parent id and ordinal; a flattened quantity becomes one struct again.
-        """
-        column = "relation_id" if table.startswith("relation") else "entity_id"
-        found = defaultdict(list)
-        if parents:
-            for row in self._lookup(
-                table,
-                column,
-                [(p["resource"], p[column]) for p in parents],
-                extra=f"{extra} ORDER BY {column}, ordinal",
-            ):
-                found[(row.pop("resource"), row.pop(column))].append(_nest_quantity(row))
-                row.pop("ordinal")
-        for parent in parents:
-            parent[field] = found.get((parent["resource"], parent[column]), [])
-        return parents
-
-    def _with_entity_children(self, rows, *, evidence=False):
-        """Entity rows with their identifiers and annotations (and evidence) nested."""
-        self._children("entity_identifier", rows, "identifiers")
-        self._children("entity_annotation", rows, "annotations")
-        if evidence:
-            self._children("entity_evidence", rows, "evidence")
-        return rows
-
-    def _entity_rows(self, where, params=(), resources=None, *, nested=True, evidence=False):
-        """Every resource copy of the matching entities, ordered by resource."""
-        rows = self._fetch_dicts(
-            f"SELECT * FROM {self._table('entity', resources)} WHERE {where} ORDER BY resource, entity_id",
-            list(params),
-        )
-        return self._with_entity_children(rows, evidence=evidence) if nested else rows
-
-    def _endpoint_rows(self, relations, nested=False):
-        """{(resource, entity key): entity row} for both endpoints of relation rows.
-
-        A relation's endpoints are entities of its own resource, read there by key.
-        """
-        pairs = [
-            (r["resource"], r[side])
-            for r in relations
-            for side in ("subject_entity_key", "object_entity_key")
-            if r.get(side)
-        ]
-        # What an endpoint shows (shape_entity_summary), not the whole row.
-        rows = self._lookup("entity", "entity_key", pairs, ENDPOINT_FIELDS, narrow=True) if pairs else []
-        if nested:
-            self._with_entity_children(rows)
-        return {(r["resource"], r["entity_key"]): r for r in rows}
-
-    @staticmethod
-    def _with_qualifiers(row):
-        """Relation-scope qualifier annotations from the relation's qualifier columns."""
-        row["annotations"] = [
-            dict(term=term, value=value, scope="relation")
-            for term in RELATION_QUALIFIERS
-            for value in row.get(term) or []
-        ]
-        return row
-
-    @staticmethod
     def _jsonify(value: Any) -> Any:
         if value is None or isinstance(value, (str, int, float, bool)):
             return value
@@ -962,14 +589,6 @@ class ReleaseQueries(
             if exc.name != "numpy":
                 raise
         return str(value)
-
-    @staticmethod
-    def _as_list(value: Any) -> list[Any]:
-        if value is None:
-            return []
-        if isinstance(value, (list, tuple, set)):
-            return [item for item in value if item is not None and str(item).strip() != ""]
-        return [value]
 
     def _fetch_dicts(self, sql: str, params: list[Any] | None = None) -> list[dict[str, Any]]:
         cursor = self._db.execute(sql, params or [])

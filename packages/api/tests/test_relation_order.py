@@ -3,7 +3,6 @@
 import pytest
 
 from served import republish, served_queries
-from omnipath_api.queries.services import relations
 from omnipath_core.fixtures import rewrite_resource, write_resource
 
 HUB = "0" * 64
@@ -77,12 +76,12 @@ def page_through(engine, filters, limit=7):
             return rows, totals
 
 
-def test_pages_match_the_uncached_order(engine, monkeypatch):
+def test_pages_match_the_uncached_order(engine):
     filters = {"entity_ids": ["entrez:1"], "relation_categories": ["interaction"]}
     cached, totals = page_through(engine, filters)
     assert totals == {36} and len(cached) == len(set(cached)) == 36
-    monkeypatch.setattr(relations, "ORDER_CACHE_LIMIT", 0)
-    engine._order_cache.clear()
+    engine._query_cache.clear()
+    engine._step_cache.clear()
     uncached, totals = page_through(engine, filters)
     assert totals == {36}
     assert cached == uncached

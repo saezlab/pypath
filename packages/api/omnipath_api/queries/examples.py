@@ -56,7 +56,7 @@ def get_examples(queries):
         EXAMPLES,
         CACHE_FORMAT,
         queries._release_scope.get(),
-        queries._taxonomy_cache_version(),
+        queries._served().identity,
         [m.get("references") for m in queries.releases.list()],
     ]
     key = hashlib.sha256(json.dumps(identity, sort_keys=True, default=str).encode()).hexdigest()

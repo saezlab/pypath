@@ -113,7 +113,17 @@ def test_paging_search_selected_taxonomy_and_http_gzip(engine):
     assert client.post("/relations/scoped-facets", json={"taxonomyLimit": 0}).status_code == 422
 
 
+def _matches(engine, payload, **override):
+    """Every entity a search with the payload's query and filters finds."""
+    filters = {k: v for k, v in {**payload, **override}.items() if k != "query"}
+    found = engine.search_entities_api(query=payload.get("query", ""), filters=filters, limit=1000)
+    assert found["nextCursor"] is None
+    return found["entities"]
+
+
 def test_facet_batching_matches_independent_counts(engine):
+    # The facets count the resource copies of what the search finds: by type and taxon
+    # with every filter, by source without the source filter.
     for payload in [
         {},
         {"query": "02"},
@@ -121,35 +131,21 @@ def test_facet_batching_matches_independent_counts(engine):
         {"query": "Protein", "ncbi_tax_id": ["2", "3"]},
     ]:
         rows = engine.get_scoped_entity_facets(payload)
-        where, params, scope = engine._entity_scoped_facet_where(payload)
-        for facet, col in [("entity_type", "entity_type"), ("taxonomy_id", "taxon")]:
-            expected = dict(
-                engine._db.execute(
-                    f"SELECT {col},count(*) FROM {engine._table('entity', scope)} WHERE {where} GROUP BY 1",
-                    params,
-                ).fetchall()
-            )
-            assert all(
-                r["scopedCount"] == expected[r["facetValue"]]
-                for r in rows
-                if r["facetName"] == facet
-            )
-        source_where, source_params, _ = engine._entity_scoped_facet_where(
-            payload, apply_sources=False
-        )
-        for info in engine._selected_resource_infos():
-            expected = engine._db.execute(
-                f"SELECT count(*) FROM {engine._table('entity', [info['key']])} WHERE {source_where}",
-                source_params,
-            ).fetchone()[0]
-            assert (
-                next(
-                    r["scopedCount"]
-                    for r in rows
-                    if r["facetName"] == "source" and r["facetValue"] == info["resource"]
-                )
-                == expected
-            )
+        copies = [
+            entity
+            for source in payload.get("sources") or ("a", "b")
+            for entity in _matches(engine, payload, sources=[source])
+        ]
+        for facet, field in [("entity_type", "entityType"), ("taxonomy_id", "taxonomyId")]:
+            expected = {}
+            for entity in copies:
+                expected[str(entity[field])] = expected.get(str(entity[field]), 0) + 1
+            counted = {r["facetValue"]: r["scopedCount"] for r in rows if r["facetName"] == facet}
+            assert counted == expected
+        for source in ("a", "b"):
+            expected = len(_matches(engine, payload, sources=[source]))
+            counted = [r["scopedCount"] for r in rows if r["facetName"] == "source" and r["facetValue"] == source]
+            assert counted == ([expected] if expected else [])
 
 
 def test_shared_cache_bounds_failures_and_mutation_isolation():
@@ -184,12 +180,19 @@ def test_shared_cache_bounds_failures_and_mutation_isolation():
     assert "large" not in cache.entries
 
 
-def test_duplicate_label_choice_is_independent_of_scan_order(engine):
-    a = dict(
-        entity_key="a", label="aspirin-triggered resolvin D4", identifier="X", namespace="inchikey"
-    )
-    b = dict(a, label="AT-RvD4")
-    assert engine._merge_entity_row_group([a, b]) == engine._merge_entity_row_group([b, a])
+def test_duplicate_label_choice_is_independent_of_scan_order(tmp_path):
+    labels = ["aspirin-triggered resolvin D4", "AT-RvD4"]
+    chosen = []
+    for root, order in ((tmp_path / "one", labels), (tmp_path / "two", labels[::-1])):
+        for source, label in zip("ab", order):
+            entity = dict(entity_key="a", entity_type="small_molecule", label=label,
+                          identifier="X", namespace="inchikey")
+            write_resource(root / "resources" / source / "1", [entity])
+        queries = served_queries(root)
+        with queries.release_scope():
+            entity = queries.get_entity_core("a")["entity"]
+        chosen.append((entity["label"], entity["displayName"]))
+    assert chosen[0] == chosen[1]
 
 
 def test_scoped_pages_totals_details_and_shared_scope_cache(engine):
