@@ -163,13 +163,19 @@ def derived_tables() -> dict:
     }
 # ART indexes: rows by a list of global ids (DuckDB uses an index only for ids written into
 # the SQL as a literal list). Measured on a full release: 7,582 relations in 0.3 s instead
-# of 5.6 s. Indexes on entity_key or on entity._eid were slower than a scan.
+# of 5.6 s; 50 entities from across the release in 0.06-0.09 s instead of 0.4 s (a list
+# filter reads every column of the row groups it cannot skip), their evidence and
+# annotations 2-4 times faster. Together the entity indexes take 0.66 GB. Not on
+# entity_identifier (about 2 GB for 106 million rows) or entity_key.
 INDEXES = [
     ["relation_rid", "relation", "_rid"],
     ["relation_evidence_rid", "relation_evidence", "_rid"],
+    ["entity_eid", "entity", "_eid"],
+    ["entity_evidence_eid", "entity_evidence", "_eid"],
+    ["entity_annotation_eid", "entity_annotation", "_eid"],
 ]
 # Changes when the tables, derived tables or indexes a database holds change.
-DATABASE_FORMAT = 8
+DATABASE_FORMAT = 9
 
 
 def biolink_names() -> list[list[str]]:

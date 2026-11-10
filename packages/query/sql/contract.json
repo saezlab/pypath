@@ -145,7 +145,7 @@
    "_eid"
   ]
  },
- "database_format": 8,
+ "database_format": 9,
  "derived_tables": {
   "relation_key_lookup": {
    "select": "SELECT try_cast('0x' || substr(relation_key, 1, 15) AS BIGINT) AS key_prefix, _rid FROM relation",
@@ -184,6 +184,21 @@
    "relation_evidence_rid",
    "relation_evidence",
    "_rid"
+  ],
+  [
+   "entity_eid",
+   "entity",
+   "_eid"
+  ],
+  [
+   "entity_evidence_eid",
+   "entity_evidence",
+   "_eid"
+  ],
+  [
+   "entity_annotation_eid",
+   "entity_annotation",
+   "_eid"
   ]
  ],
  "macro_files": [

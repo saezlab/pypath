@@ -294,7 +294,7 @@ def test_sql_on_native_tables(service, monkeypatch):
                 "SELECT count(*) = (SELECT count(*) FROM relation) FROM relation_key_lookup"
             ).fetchone() == (True,)
             assert sorted(r[0] for r in db.sql("SELECT index_name FROM duckdb_indexes()").fetchall()) == [
-                "relation_evidence_rid", "relation_rid"
+                "entity_annotation_eid", "entity_eid", "entity_evidence_eid", "relation_evidence_rid", "relation_rid"
             ]
     # A new version and a new resource: the database is written anew.
     service.publish("alpha", "2.0")
