@@ -6,8 +6,10 @@ import shutil
 import pyarrow.parquet as pq
 import pytest
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import republish, served_queries
 from omnipath_core.fixtures import rewrite_resource
+
+QUALIFIERS = ("object_aspect_qualifier", "object_direction_qualifier", "causal_mechanism_qualifier")
 
 
 @pytest.fixture
@@ -59,7 +61,7 @@ def engine(tmp_path):
             )
         )
     rewrite_resource(directory / "relation.parquet", relations=rows)
-    return ParquetQueries(tmp_path)
+    return served_queries(tmp_path)
 
 
 def test_combined_filters_and_multi_select(engine):
@@ -137,28 +139,18 @@ def test_export_uses_same_qualifier_filter(engine):
     ],
 )
 def test_qualifier_options_match_independent_scans(engine, payload):
-    from omnipath_api.queries.services.constants import RELATION_QUALIFIER_FILTERS
-
     # The same relations in another resource version: its own combination table.
     source = engine.data_root / "resources/test/1"
     shutil.copytree(source, engine.data_root / "resources/duplicate/1")
-    engine._refresh_inventory_if_stale()
+    republish(engine.data_root, engine)
     expected = set()
-    for term in RELATION_QUALIFIER_FILTERS:
-        selection, params = engine._relation_selection({**payload, term: []})
-        rows = engine._db.execute(
-            f"""
-            SELECT DISTINCT a.value
-            FROM ({selection}) r JOIN {engine._table("relation_annotation")} a
-              USING (resource, relation_id)
-            WHERE a.scope = 'relation' AND a.term = ?
-        """,
-            [*params, term],
-        ).fetchall()
-        expected.update((term, value) for (value,) in rows)
+    for term in QUALIFIERS:
+        # A group's own filter does not narrow its options.
+        rows = engine.search_relations({**payload, term: []}, limit=1000)["rows"]
+        expected.update((term, value) for row in rows for value in row.get(term) or [])
     actual = {
         (f["facetName"], f["facetValue"])
         for f in engine.get_scoped_relation_facets(payload)
-        if f["facetName"] in RELATION_QUALIFIER_FILTERS
+        if f["facetName"] in QUALIFIERS
     }
     assert actual == expected

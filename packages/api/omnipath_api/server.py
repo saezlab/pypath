@@ -24,7 +24,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from omnipath_api.admin import AdminService, register_admin_routes
 from omnipath_api.settings import Settings
-from omnipath_api.queries.parquet import ParquetQueries
+from omnipath_api.queries.release import ReleaseQueries
 from omnipath_api.routers.health import router as health_router
 from omnipath_api.routers.common import EngineJSONResponse
 from omnipath_api.models import (
@@ -74,13 +74,13 @@ class StripPublicPrefixMiddleware:
 
 
 def create_app(
-    queries: ParquetQueries | None = None,
+    queries: ReleaseQueries | None = None,
     data_root: str | Path | None = None,
     admin_ops: Any | None = None,
     settings: Settings | None = None,
 ) -> FastAPI:
     settings = settings or Settings()
-    serving_queries = queries or ParquetQueries(data_root=data_root or settings.data_root)
+    serving_queries = queries or ReleaseQueries(data_root=data_root or settings.data_root)
 
     @asynccontextmanager
     async def lifespan(_app):
@@ -170,6 +170,9 @@ def create_app(
     from omnipath_api.routers.export import router as export_router
 
     app.include_router(export_router)
+    from omnipath_api.routers.queries import router as queries_router
+
+    app.include_router(queries_router)
     from omnipath_api.routers.index import router as index_router
 
     app.include_router(index_router)

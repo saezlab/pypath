@@ -3,7 +3,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 from omnipath_api.server import create_app
 from omnipath_core.keys import entity_key
 from omnipath_core.fixtures import write_resource
@@ -49,7 +49,7 @@ def reference_facets_engine(tmp_path):
             for kind, ns, identifier, taxon, ref in records
         ]
         write_resource(tmp_path / "resources" / source / "1", entities)
-    return ParquetQueries(tmp_path)
+    return served_queries(tmp_path)
 
 
 def counts(rows):

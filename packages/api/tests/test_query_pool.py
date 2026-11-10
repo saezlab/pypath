@@ -1,11 +1,13 @@
 """Resource limits apply across request threads and survive errors/reloads."""
 
+import shutil
+
 from concurrent.futures import ThreadPoolExecutor
 from threading import Event
 
 import pytest
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import republish, served_queries
 from omnipath_api.queries.store.query_pool import QueryCapacityError, QueryPool
 
 
@@ -52,7 +54,7 @@ def test_pool_bounds_real_connections_and_preserves_results(tmp_path, monkeypatc
     monkeypatch.setenv("OMNIPATH_QUERY_CONCURRENCY", "2")
     monkeypatch.setenv("OMNIPATH_QUERY_WAIT_SECONDS", "0")
     monkeypatch.setenv("OMNIPATH_DUCKDB_THREADS", "1")
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     started = [Event(), Event()]
     finish = Event()
 
@@ -90,7 +92,7 @@ def test_pool_bounds_real_connections_and_preserves_results(tmp_path, monkeypatc
 def test_invalid_resource_settings_fail_early(tmp_path, monkeypatch):
     monkeypatch.setenv("OMNIPATH_QUERY_CONCURRENCY", "0")
     with pytest.raises(ValueError, match="concurrency"):
-        ParquetQueries(tmp_path)
+        served_queries(tmp_path)
 
 
 def test_http_capacity_returns_retryable_status(tmp_path, monkeypatch):
@@ -99,7 +101,9 @@ def test_http_capacity_returns_retryable_status(tmp_path, monkeypatch):
 
     monkeypatch.setenv("OMNIPATH_QUERY_CONCURRENCY", "1")
     monkeypatch.setenv("OMNIPATH_QUERY_WAIT_SECONDS", "0")
-    engine = ParquetQueries(tmp_path)
+    from omnipath_core.fixtures import write_dataset
+
+    engine = served_queries(write_dataset(tmp_path))
     with TestClient(create_app(queries=engine)) as client:
         with engine.query_scope():
             response = client.get("/api/resources")
@@ -111,7 +115,7 @@ def test_http_capacity_returns_retryable_status(tmp_path, monkeypatch):
 def test_concurrent_search_facets_and_export_match_sequential(tmp_path):
     from omnipath_core.fixtures import write_dataset
 
-    engine = ParquetQueries(write_dataset(tmp_path))
+    engine = served_queries(write_dataset(tmp_path))
     calls = (
         lambda: engine.search_entities_api(query="TP53", limit=10)["entities"],
         lambda: {k: v for k, v in engine.get_facets(filters={}).items() if k != "elapsed_ms"},
@@ -137,12 +141,12 @@ def test_reload_uses_same_pool_and_never_allocates_direct_connections(tmp_path, 
 
     monkeypatch.setenv("OMNIPATH_QUERY_CONCURRENCY", "1")
     monkeypatch.setenv("OMNIPATH_QUERY_WAIT_SECONDS", "0")
-    engine = ParquetQueries(write_dataset(tmp_path))
+    engine = served_queries(write_dataset(tmp_path))
     try:
+        # Looking for release databases needs no query database, even when all are busy.
         with engine.query_scope():
             with ThreadPoolExecutor(1) as executor:
-                with pytest.raises(QueryCapacityError):
-                    executor.submit(engine.reload_resources).result()
+                executor.submit(engine.reload_resources).result()
         with ThreadPoolExecutor(4) as executor:
             for _ in range(4):
                 executor.submit(engine.reload_resources).result()
@@ -160,19 +164,21 @@ def test_busy_admin_delete_does_not_mutate_then_fail_refresh(tmp_path, monkeypat
 
     monkeypatch.setenv("OMNIPATH_QUERY_CONCURRENCY", "1")
     monkeypatch.setenv("OMNIPATH_QUERY_WAIT_SECONDS", "0")
-    engine = ParquetQueries(write_dataset(tmp_path))
+    engine = served_queries(write_dataset(tmp_path))
     settings = Settings(read_only=False, admin_secret="fixture-secret")
-    version = tmp_path / "resources/signor/1"
+    # A version no release pins (those cannot be deleted).
+    shutil.copytree(tmp_path / "resources/signor/1", tmp_path / "resources/signor/2")
+    version = tmp_path / "resources/signor/2"
     with TestClient(create_app(queries=engine, settings=settings)) as client:
         with engine.query_scope():
             response = client.delete(
-                "/api/admin/resources/signor/1", headers={"x-admin-secret": "fixture-secret"}
+                "/api/admin/resources/signor/2", headers={"x-admin-secret": "fixture-secret"}
             )
         assert response.status_code == 503
         assert response.headers["Retry-After"] == "1"
         assert version.is_dir()
         response = client.delete(
-            "/api/admin/resources/signor/1", headers={"x-admin-secret": "fixture-secret"}
+            "/api/admin/resources/signor/2", headers={"x-admin-secret": "fixture-secret"}
         )
         assert response.status_code == 200
         assert not version.exists()

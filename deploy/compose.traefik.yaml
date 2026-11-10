@@ -9,6 +9,10 @@ services:
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web.entrypoints=websecure
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web.tls.certresolver=${TLS_RESOLVER:-letsencrypt}
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web.priority=${ROUTE_PRIORITY:-100}
+      # Pages embed their data (the resource catalog makes a 1.4 MB page): gzip cuts it
+      # about 13x. Responses the app already compresses pass unchanged.
+      - traefik.http.middlewares.${COMPOSE_PROJECT_NAME:-omnipath-serving}-compress.compress=true
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web.middlewares=${COMPOSE_PROJECT_NAME:-omnipath-serving}-compress
       - traefik.http.services.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web.loadbalancer.server.port=8082
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web-http.rule=Host(`${PUBLIC_DOMAIN:?Set PUBLIC_DOMAIN}`)
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-omnipath-serving}-web-http.entrypoints=web

@@ -30,7 +30,8 @@ import duckdb
 from fastapi.testclient import TestClient
 import pyarrow.parquet as pq
 
-from omnipath_api.queries.parquet import ParquetQueries
+from omnipath_api.queries.release import ReleaseQueries
+from omnipath_api.release_database import serve_newest
 from omnipath_api.server import create_app
 from omnipath_api.settings import Settings
 from omnipath_core.molecular_forms import normalize_molecular_form
@@ -671,7 +672,9 @@ class Validator:
             folder.mkdir(parents=True)
             for path in self.folder.glob("*.parquet"):
                 (folder / path.name).symlink_to(path)
-            engine = ParquetQueries(isolated_root)
+            # The built resource as a release of its own, with its database.
+            serve_newest(isolated_root, memory_limit="2GB", threads=2)
+            engine = ReleaseQueries(isolated_root)
             with TestClient(
                 create_app(queries=engine, settings=Settings(read_only=True)),
                 headers={"x-omnipath-release": "latest"},

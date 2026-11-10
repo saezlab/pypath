@@ -1,7 +1,7 @@
 """An entity found by search is the same entity whatever the page size."""
 
 from omnipath_core.fixtures import fixture_key as key, write_resource
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 
 
 def _entity(identifier, label, **extra):
@@ -48,7 +48,7 @@ def test_relation_count_and_label_do_not_depend_on_the_page_size(tmp_path):
         ],
         _relations("second", "X1", 5),
     )
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     try:
         found = {
             limit: engine.search_entities_api("abc", limit=limit)["entities"][0]

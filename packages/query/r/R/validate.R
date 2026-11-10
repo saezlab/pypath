@@ -79,11 +79,28 @@
     .fail("Installation materialize must be true or false")
   }
   catalog <- .validate_catalog(value$resources)
+  taxonomy <- value$taxonomy
+  if (!is.null(taxonomy) && !(is.character(taxonomy) && length(taxonomy) == 1 && grepl("^[0-9a-f]{64}$", taxonomy))) {
+    .fail("Installation taxonomy must be a SHA-256 checksum")
+  }
   list(
     format = 1L,
     api_url = value$api_url,
     release = value$release,
     materialize = materialize,
-    resources = unname(catalog)
+    resources = unname(catalog),
+    taxonomy = taxonomy
   )
+}
+
+# The catalog's references: `taxonomy` (list(version = its SHA-256, size_bytes)) when the
+# release has taxon names.
+.validate_references <- function(value) {
+  taxonomy <- if (is.list(value)) value$taxonomy else NULL
+  if (is.null(taxonomy)) return(list())
+  if (!is.list(taxonomy) || !is.character(taxonomy$version) || !grepl("^[0-9a-f]{64}$", taxonomy$version) ||
+      !.is_int(taxonomy$size_bytes)) {
+    .fail("Invalid taxonomy reference in the catalog")
+  }
+  list(taxonomy = list(version = taxonomy$version, size_bytes = taxonomy$size_bytes))
 }

@@ -37,13 +37,6 @@ def main(argv: list[str] | None = None) -> None:
     install.add_argument(
         "--evidence", action="store_true", help="also download raw evidence payloads"
     )
-    install.add_argument(
-        "--materialize",
-        action=argparse.BooleanOptionalAction,
-        help="native DuckDB tables (the default for a new directory; about twice the files' "
-        "size in addition) or, with --no-materialize, views over the files (small, but "
-        "the prebuilt queries slow down with many resources); kept on later runs",
-    )
     common(install)
     listing = commands.add_parser(
         "list", help="list the resources of a release, their tags, sizes and what is installed"
@@ -58,7 +51,6 @@ def main(argv: list[str] | None = None) -> None:
             release=args.release,
             data_dir=args.data_dir,
             include_evidence=args.evidence,
-            materialize=args.materialize,
             api_url=args.api_url,
             progress=lambda message: print(message, flush=True),
         )

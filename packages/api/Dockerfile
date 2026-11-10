@@ -8,6 +8,7 @@ COPY packages ./packages
 COPY deploy/build-constraints.txt ./deploy/build-constraints.txt
 RUN uv export --frozen --package omnipath-api --no-dev --no-emit-workspace --no-hashes -o /api-requirements.txt \
     && uv build --package omnipath-core --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels \
+    && uv build --package omnipath-client --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels \
     && uv build --package omnipath-api --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels
 
 FROM python:3.12-slim-bookworm AS api

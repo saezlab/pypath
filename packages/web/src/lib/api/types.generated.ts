@@ -679,6 +679,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/relations/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Relation Evidence Summaries
+         * @description The sites and PubMed ids per evidence source of up to 1,000 relations at once:
+         *     the summary of GET /relations/{relation_pk}/evidence for each.
+         */
+        post: operations["relation_evidence_summaries_relations_evidence_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/relations/filter-options": {
         parameters: {
             query?: never;
@@ -1594,6 +1615,29 @@ export interface components {
             [key: string]: unknown;
         };
         /**
+         * EvidenceSite
+         * @description A modification of the subject's or object's molecular form.
+         */
+        EvidenceSite: {
+            /** Description */
+            description?: string | null;
+            /** End Position */
+            end_position?: number | null;
+            /** Position */
+            position?: number | null;
+            /** Residue */
+            residue?: string | null;
+            /**
+             * Side
+             * @enum {string}
+             */
+            side: "subject" | "object";
+            /** Term */
+            term?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
          * ExportRequest
          * @description A relation slice, defined by filters (entity and group keys included).
          */
@@ -1921,6 +1965,48 @@ export interface components {
             }[];
             /** Evidence */
             evidence?: components["schemas"]["RelationMolecularEvidence"][];
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * RelationEvidenceSummary
+         * @description What one evidence source states for a relation: its sites and PubMed ids.
+         */
+        RelationEvidenceSummary: {
+            /** Pmids */
+            pmids?: string[];
+            /** Sites */
+            sites?: components["schemas"]["EvidenceSite"][];
+            /** Source */
+            source: string;
+        } & {
+            [key: string]: unknown;
+        };
+        /** RelationEvidenceSummaryRequest */
+        RelationEvidenceSummaryRequest: {
+            /** @description Molecular form filters keep only the matching occurrences, as for GET /relations/{relation_pk}/evidence. */
+            filters?: components["schemas"]["SearchFilters"];
+            /**
+             * Relation Pks
+             * @description Up to 1,000 relation pks.
+             */
+            relation_pks?: string[];
+            /** Resources */
+            resources?: string[] | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /** RelationEvidenceSummaryResponse */
+        RelationEvidenceSummaryResponse: {
+            /** Elapsed Ms */
+            elapsed_ms?: number | null;
+            /**
+             * Evidence
+             * @description Each requested relation pk: per evidence source, the sites and PubMed ids of GET /relations/{relation_pk}/evidence ([] for an unknown pk).
+             */
+            evidence?: {
+                [key: string]: components["schemas"]["RelationEvidenceSummary"][];
+            };
         } & {
             [key: string]: unknown;
         };
@@ -4090,6 +4176,48 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    relation_evidence_summaries_relations_evidence_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RelationEvidenceSummaryRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelationEvidenceSummaryResponse"];
                 };
             };
             /** @description Validation Error */

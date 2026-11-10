@@ -63,3 +63,41 @@ class QueryCache:
         finally:
             with self.lock:
                 self.pending.pop(key, None)
+
+
+class StepCache:
+    """Bounded cache of step results (Arrow tables, lists, values) of the step-file
+    queries, by size; results are not copied, they are read only."""
+
+    def __init__(self, max_entries=32, max_bytes=512 * 1024**2):
+        self.max_entries, self.max_bytes = max_entries, max_bytes
+        self.lock = threading.Lock()
+        self.entries = OrderedDict()
+        self.bytes = 0
+
+    @staticmethod
+    def _size(value):
+        nbytes = getattr(value, "nbytes", None)
+        return int(nbytes) if nbytes is not None else len(repr(value))
+
+    def clear(self):
+        with self.lock:
+            self.entries.clear()
+            self.bytes = 0
+
+    def get(self, key, compute):
+        key = json.dumps(key, default=str)
+        with self.lock:
+            if key in self.entries:
+                self.entries.move_to_end(key)
+                return self.entries[key][0]
+        value = compute()
+        size = self._size(value)
+        with self.lock:
+            if size <= self.max_bytes and key not in self.entries:
+                self.entries[key] = (value, size)
+                self.bytes += size
+                while len(self.entries) > self.max_entries or self.bytes > self.max_bytes:
+                    _, (_, removed) = self.entries.popitem(last=False)
+                    self.bytes -= removed
+        return value

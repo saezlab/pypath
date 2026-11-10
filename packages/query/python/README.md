@@ -1,23 +1,34 @@
 # OmniPath client
 
-Install OmniPath resources on your machine and get a DuckDB database of them. Query
-it with SQL from Python, R or the DuckDB shell, or ask the questions the OmniPath
-website answers and get the same answers: the website's search, relation export and
-entity details are SQL macros in the database, so every DuckDB client can call them.
-Nothing is queried over the network; the API is contacted only while installing. The
-R package `omnipath.client` (`packages/query/r`) installs and reads the same data
-directory.
+Ask the questions the OmniPath website answers and get the same answers, in one of two
+modes:
+
+- **API mode** (the default): the hosted API answers the website's search, relation
+  export and entity details. Nothing is downloaded but the answers.
+- **Local mode**: install resources on your machine and get the DuckDB database the
+  API serves a release from. The same three questions are answered from it, and any
+  SQL from Python, R or the DuckDB shell runs on it too.
+
+The R package `omnipath.client` (`packages/query/r`) has the same two modes and
+installs and reads the same data directory.
 
 ```python
 import omnipath_client as op
 
-op.init(topic="signaling")                  # once: download and write the database
+api = op.connect()                                     # API mode
+api.search("TP53")                                     # the website's search
+api.relations("TP53", sources="signor")                # the website's relation export
 
-db = op.connect()
+op.init(topic="signaling")                             # local mode: download, write the database
+db = op.connect(op.data_directory())
 db.sql("SELECT * FROM signor.relation LIMIT 5").df()   # your SQL
-db.search("TP53")                                      # the website's search
-db.relations("TP53", sources="signor")                 # the website's relation export
+db.relations("TP53", sources="signor")                 # the same answer as above
 ```
+
+`connect()` is in API mode unless it gets a data directory (or `OMNIPATH_DATA_DIR` is
+set, or `mode="local"`). In API mode `release=` picks the release the API answers for
+(default `latest`, the newest one it serves) and `api_url=` the API; `sql()` needs
+local mode.
 
 This package lives in `packages/query/python`. It does not implement the retired
 PostgreSQL API.
@@ -34,7 +45,7 @@ python -m pip install -e './packages/query/python[pandas]'
 
 Requires Python 3.11+. The client depends on DuckDB, httpx and platformdirs only. What
 it shares with the build and the API (table names, the lookup tables' queries,
-Biolink names) is in `contract.json`, generated from `omnipath-core`; the macros and
+Biolink names) is in `contract.json`, generated from `omnipath-core`; the queries and
 the contract are edited in `packages/query/sql/` and copied into this package (see
 "Validation").
 The distribution and import names are `omnipath-client` and `omnipath_client`, which
@@ -94,26 +105,18 @@ is empty or damaged.
 | `signor.relation`, `chembl.entity`, ... | the same tables of one resource, in a schema named after it |
 | `resources` | the installed resources, their versions and whether they have raw evidence |
 
-By default these are **native DuckDB tables** copied from the downloaded Parquet
-files. With `materialize=False` (`--no-materialize`) they are **views** over the files:
-the database is about 1 MB and is written in a second, but the prebuilt queries get
-slower the more resources are installed (about 1 s per query with 72 resources).
-Names, columns and answers are the same; only speed and disk use differ. Measured for
-every resource of a 46-resource release:
+These are **native DuckDB tables** copied from the downloaded Parquet files: the same
+database the hosted API serves a release from (`omnipath_client.database`), written
+by the same code. A full release (173 resources) takes about 14 minutes and 18 GB.
+Any change to the installed resources writes the database anew; the Parquet files
+stay. The tables have global ids, `_rid` on relation tables and `_eid` on entity
+tables (the resource's index times 2^32 plus its own id), with which queries read rows
+by id over every resource. The database also has `relation_key_lookup`
+(`relation_key`, `_rid`, sorted by key) and indexes on the relation and evidence ids.
 
-| | Views | Native tables (default) |
-|---|---|---|
-| Written in | 1 s | under 3 minutes |
-| Extra disk | 1 MB | 13.6 GB |
-| Entities of a name or identifier | 0.05 s | 0.02 s |
-| Relations of one entity, joined | 0.25 s | 0.05 s |
-| A query joining classes, entities and relations of all resources | 4.6 s | 2.0 s |
-
-The choice is remembered: a later `init` keeps it, and `init(materialize=False)`
-goes back to views. Updates replace only the rows of resources whose version changed.
-The Parquet files stay in both modes. Native tables also have global ids, `_rid` on
-relation tables and `_eid` on entity tables (the resource's index times 2^32 plus its
-own id), with which the prebuilt queries read rows by id over every resource.
+To read rows by id quickly, write the ids into the SQL as a literal list, in a step of
+its own: DuckDB uses an index only then. With other conditions in the same `WHERE`, or
+ids from a subquery or join, it scans every row.
 
 The database is written in DuckDB 1.5's storage format, so DuckDB 1.5 and newer
 clients, the Python and R packages among them, can share a data directory.
@@ -125,8 +128,6 @@ Create your own tables as temporary tables, or attach the database to another on
 ATTACH '/path/to/omnipath.duckdb' AS omnipath (READ_ONLY);
 ```
 
-Views name the files by their full path. After moving the data directory, the first
-`connect()` writes them again.
 
 ## SQL
 
@@ -182,8 +183,8 @@ which predicates, types, taxa or qualifiers occur together (`relation_facet`).
 
 ## Prebuilt queries
 
-Three methods answer as the website does. Each calls a macro in the database, the
-same SQL the R client and any DuckDB client call:
+Every question the website asks is a query of the package (`omnipath_client/sql/queries/`),
+the same SQL the API and the R client run, so the answers are the API's:
 
 ```python
 with op.connect() as db:
@@ -196,6 +197,10 @@ with op.connect() as db:
     db.relations(protein_entity_keys=[key], isoform_identifiers=["uniprot:P04637-2"])
 
     db.entity(tp53)                                    # one entity's details, a dict
+
+    # Any query by name, with its parameters: a DuckDB relation, or the API's JSON text.
+    db.query("relation_page", entities=[tp53], limit=20)
+    db.query("ontology_tree", term_id="GO:0006915", output="json")
 ```
 
 - `search` and `relations` return DuckDB relations like `sql`, so they convert,
@@ -210,45 +215,29 @@ with op.connect() as db:
   relations. Larger selections are SQL on `relation`.
 - `entity` takes the exact `entity_key`, as `search` returns it, and returns the
   explorer's detail record (the API's JSON as a dict).
+- `query` runs any of the queries (`omnipath_client.steps.names()`: entity pages,
+  relation pages and facets, grouped search, ontology search and trees, molecular
+  context, statistics, ...). Each file's header lists its parameters, examples and
+  outputs (some answer only as JSON). In
+  API mode the API runs it (`POST /query/{name}`) and the table comes back as Parquet.
 - Unknown filters and Biolink names (`predicates`, `entity_types`, ...) are errors
   naming them; a source that is not installed is an error listing the installed ones.
-- The API's other queries (facets, grouped search, ontology browsing, molecular
-  context) are not in the client; the hosted API serves them.
 
-With every resource of a release installed, these give the hosted API's answers, with
-three differences: taxon names are absent (the taxonomy reference is not a download);
-resources the hosted API excludes from live queries are included here; and in search,
-entities that match equally well can come in another order, since the API orders
-those by the hits it read so far, which depends on its page size. With a subset
-installed, counts and merged entities cover only the installed resources. Product
-records in `relations` carry the entity columns of every installed resource.
+With every resource of a release installed, these give the hosted API's answers;
+`init` also downloads the release's taxon names (`references/taxonomy/`), so taxa are
+named as in the API. Resources the hosted API excludes from live queries are included
+here. With a subset installed, counts and merged entities cover only the installed
+resources. Product records in `relations` carry the entity columns of every installed
+resource.
 
-### The macros in SQL
+### The queries in SQL
 
-```sql
-SELECT * FROM op_search('TP53', entity_types := ['protein'], max_results := 50);
-SELECT * FROM op_relations(entities := ['TP53'], sources := ['signor'], predicates := ['affects']);
-SELECT details FROM op_entity('7796ad96a794e94b7b925cc47a9adb6bd7a69f57565e546ed2a22ebf7c6c0ff3');
-```
-
-Filters take the same names as in Python, lists as DuckDB lists. A connection that
-runs the macros should first set
-
-```sql
-SET dynamic_or_filter_threshold = 20000;
-```
-
-as `connect()` does: then DuckDB passes the ids a macro looks up into its scans as a
-list, and relations of a few entities among millions read only their rows. Pass
-values as literals, as above: DuckDB plans a relation from `sql()` with bound
-parameters without their values, which made a query ten times slower.
-
-The macros are written by `init` from `omnipath_client/sql/` (a copy of
-`packages/query/sql/`): `relations.sql`
-(`op_relations` and `op_entity_keys`, which turns names, identifiers, CURIEs and group
-keys into entity keys), `search.sql` and `entity.sql`, with the lookup macros of the
-installation (`op_<table>_at`, `op_<table>_with`) and the table `op_names`. A database
-written by another client version gets them written again on `connect()`.
+A query is a sequence of SQL statements (steps) whose results later steps use as
+literals; `packages/query/README.md` describes the format. `connect()` prepares each
+connection for them: the contract's settings (`index_scan_max_count`,
+`dynamic_or_filter_threshold`, ...) and the shaping macros of `shape.sql` as temporary
+macros. Another DuckDB client can run them with `omnipath_client.steps.run(con, name,
+params)` on its own connection, or read a step file and run its steps in order.
 
 ## Validation
 
@@ -261,10 +250,10 @@ OP_THREADS=2 nice -n 19 uv run python packages/query/scripts/compare_with_api.py
 ```
 
 The tests use Parquet files written by the core fixtures, a mocked catalog and file
-host and real DuckDB queries; they compare the prebuilt queries with the
-API's queries (`omnipath_api.queries`) on the same files in both database modes, and
-check that the shared contract and its copies are up to date. After changing the
-published or serving tables, Biolink or a macro in `packages/query/sql/`, run
+host and real DuckDB queries; they compare the clients' answers with the API's on the
+same files, in local and API mode, and check that the shared contract and its copies
+are up to date. After changing the published or serving tables, Biolink or a query or
+macro in `packages/query/sql/`, run
 `uv run python packages/query/scripts/generate_contract.py`, which copies `sql/` into
 this package and the R package. `compare_with_api.py` compares the three queries with
 the API's on a real installation; the smoke script contacts

@@ -1,7 +1,7 @@
 import tempfile
 from pathlib import Path
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 from omnipath_api.server import create_app
 from fastapi.testclient import TestClient
 from omnipath_core.fixtures import write_resource
@@ -12,7 +12,7 @@ def test_scoped_ontology_search_deduplicates_and_never_leaks_global_terms():
         root = Path(tmp)
         for source in ("a", "b"):
             write_resource(
-                root / "resources" / source / "v1",
+                root / "resources" / source / "1",
                 [
                     dict(
                         entity_key="p",
@@ -38,7 +38,7 @@ def test_scoped_ontology_search_deduplicates_and_never_leaks_global_terms():
                 ],
                 [dict(relation_key="r", subject_entity_key="p", object_entity_key="t")],
             )
-        engine = ParquetQueries(root)
+        engine = served_queries(root)
         payload = dict(entityPks=["p"], scoped=True)
         items = engine.search_ontology(payload)
         assert [i["termId"] for i in items] == ["GO:1"]

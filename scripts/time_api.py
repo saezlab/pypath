@@ -2,7 +2,7 @@
 """Time the explorer's API requests on a data root: first and repeated call.
 
 Caches are cleared before each call, so both times include the queries; the second
-reuses DuckDB's Parquet metadata. Run it with the serving memory limit, for example:
+reuses what DuckDB has read of the release database. Run it with the serving memory limit, for example:
 
     systemd-run --user --scope -p MemoryMax=3G uv run --frozen python scripts/time_api.py /data
 """
@@ -12,7 +12,7 @@ from __future__ import annotations
 import argparse
 import time
 
-from omnipath_api.queries.parquet import ParquetQueries
+from omnipath_api.queries.release import ReleaseQueries
 
 
 def main() -> None:
@@ -20,7 +20,7 @@ def main() -> None:
     parser.add_argument("data_root")
     parser.add_argument("--only", default="", help="time only requests whose name contains this")
     args = parser.parse_args()
-    engine = ParquetQueries(args.data_root)
+    engine = ReleaseQueries(args.data_root)
 
     def timed(name, call):
         if args.only not in name:

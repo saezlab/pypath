@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 from omnipath_api.server import create_app
 from omnipath_core.fixtures import rewrite_resource, write_resource
 
@@ -26,7 +26,7 @@ def test_details_never_resolve_accessions_aliases_or_text(tmp_path, monkeypatch)
         ]
     ]
     write_resource(folder, rows, [])
-    engine = ParquetQueries(data_root=tmp_path)
+    engine = served_queries(data_root=tmp_path)
 
     def unexpected_search(*args, **kwargs):
         raise AssertionError("Details must never invoke identifier resolution or search")
@@ -89,7 +89,7 @@ def test_detail_composition_uses_exact_endpoint_keys_and_keeps_quantities(tmp_pa
         ],
     )
     rewrite_resource(folder / "relation.parquet", relations=[relation])
-    engine = ParquetQueries(data_root=tmp_path)
+    engine = served_queries(data_root=tmp_path)
     detail = TestClient(create_app(queries=engine)).get("/entities/food-key").json()
     assert detail["relationshipsTotal"] == 1
     row = detail["relationships"][0]
@@ -101,7 +101,7 @@ def test_detail_composition_uses_exact_endpoint_keys_and_keeps_quantities(tmp_pa
 
 
 def test_integrated_entities_retain_distinct_typed_quantities(tmp_path):
-    engine = ParquetQueries(data_root=tmp_path)
+    # The same reaction in two resources: its two bounds stay two annotations.
     annotations = [
         dict(
             term="has_quantitative_value",
@@ -112,17 +112,19 @@ def test_integrated_entities_retain_distinct_typed_quantities(tmp_path):
         )
         for value, field in [(-1000.0, "lower_bound"), (1000.0, "upper_bound")]
     ]
-    base = dict(
+    entity = dict(
         entity_key="reaction-key",
+        entity_type="reaction",
         namespace="rhea",
         identifier="10000",
         label="Reaction",
-        identifiers=[],
         annotations=annotations,
     )
-    merged = engine._merge_entity_row_group([base, dict(base)])
-    assert len(merged["annotations"]) == 2
-    assert {a["quantity"]["source_field"] for a in merged["annotations"]} == {
-        "lower_bound",
-        "upper_bound",
-    }
+    for source in ("first", "second"):
+        write_resource(tmp_path / "resources" / source / "1", [entity])
+    engine = served_queries(data_root=tmp_path)
+    with engine.release_scope():
+        detail = engine.get_entity_core("reaction-key")["entity"]
+    quantities = [a for a in detail["entityAttributes"] if a.get("quantity")]
+    assert len(quantities) == 2
+    assert {a["quantity"]["source_field"] for a in quantities} == {"lower_bound", "upper_bound"}

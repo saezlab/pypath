@@ -99,12 +99,11 @@ def same(python, r):
     assert clean(python["entity"]) == clean(r["entity"])
 
 
-@pytest.mark.parametrize("materialize", [True, False])
-def test_r_and_python_share_directories_and_answers(service, tmp_path, materialize):  # noqa: F811
-    service.init(["alpha", "beta", "gamma"], include_evidence=True, materialize=materialize)
+def test_r_and_python_share_directories_and_answers(service, tmp_path):  # noqa: F811
+    service.init(["alpha", "beta", "gamma"], include_evidence=True)
     r_dir = tmp_path / "r"
     questions = tmp_path / "questions.json"
-    questions.write_text(json.dumps({**QUESTIONS, "materialize": materialize}))
+    questions.write_text(json.dumps(QUESTIONS))
     database = service.data / "omnipath.duckdb"
     before = database.stat().st_ino
     run = subprocess.run(
@@ -125,3 +124,64 @@ def test_r_and_python_share_directories_and_answers(service, tmp_path, materiali
     r_before = r_database.stat().st_ino
     same(python_answers(r_dir), from_r(answers["r"]))
     assert r_database.stat().st_ino == r_before
+
+
+def r_http_available() -> bool:
+    """R's curl package loads (httr2 needs it for real requests; a CRAN binary built
+    for another R fails to load)."""
+    check = subprocess.run(
+        ["Rscript", "-e", "loadNamespace('curl')"], capture_output=True,
+        env={**os.environ, "R_LIBS_USER": os.environ.get(
+            "R_LIBS_USER", str(Path.home() / "Library" / "R" / "library-4.6"))},
+    )
+    return check.returncode == 0
+
+
+@pytest.mark.skipif(not r_http_available(), reason="R's curl package does not load")
+def test_r_api_mode_answers_like_local_mode(service, tmp_path):  # noqa: F811
+    """R in API mode, against the API serving the Python client's directory over HTTP."""
+    import socket
+    import threading
+    import time
+
+    import uvicorn
+    from omnipath_api.queries import ReleaseQueries
+    from omnipath_api.release_database import serve_newest
+    from omnipath_api.server import create_app
+
+    service.init(["alpha", "beta", "gamma"], include_evidence=True)
+    serve_newest(service.data, memory_limit="1GB", threads=1)
+    engine = ReleaseQueries(service.data)
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    server = uvicorn.Server(uvicorn.Config(create_app(queries=engine), host="127.0.0.1", port=port, log_level="warning"))
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    try:
+        for _ in range(100):
+            if server.started:
+                break
+            time.sleep(0.05)
+        questions = tmp_path / "questions.json"
+        questions.write_text(json.dumps({**QUESTIONS, "api_url": f"http://127.0.0.1:{port}"}))
+        run = subprocess.run(
+            ["Rscript", str(R_CLIENT / "tests" / "cross_language.R"), str(R_CLIENT), str(tmp_path / "r"),
+             str(service.data), str(questions)],
+            capture_output=True, text=True, env={**os.environ, "R_LIBS_USER": os.environ.get(
+                "R_LIBS_USER", str(Path.home() / "Library" / "R" / "library-4.6"))},
+        )
+        assert run.returncode == 0, run.stderr[-3000:]
+        answers = json.loads(run.stdout[run.stdout.index('{"r"'):])["api"]
+        assert all(answers["entity_identical"]) and answers["sql_refused"]
+        python = python_answers(service.data)
+        api = from_r({**answers, "entity": ["null"] * len(QUESTIONS["entity"]), "query_layer": python["query_layer"]})
+        assert [clean(rows) for rows in python["search"]] == [clean(rows) for rows in api["search"]]
+        def canonical(rows):
+            return sorted(json.dumps(clean(row), sort_keys=True) for row in rows)
+        for p_rows, a_rows in zip(python["relations"], api["relations"]):
+            assert canonical(json.loads(json.dumps(p_rows, default=str))) == canonical(a_rows)
+    finally:
+        server.should_exit = True
+        thread.join(10)
+        engine.close()

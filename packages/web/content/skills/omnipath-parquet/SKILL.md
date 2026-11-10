@@ -136,8 +136,8 @@ rel.filter("sign = -1").aggregate("count(*)")   # refine a result without rewrit
 
 ### Prebuilt queries
 
-These run the engine behind the hosted API and give the website's answers on
-the installed resources.
+These run the same SQL as the hosted API (the package's step-file queries) and give
+the website's answers on the installed resources.
 
 ```python
 db.search("TP53")                                      # entity_key, label, entity_type, namespace, identifier, taxon, relation_count, ...
@@ -149,6 +149,9 @@ db.relations(["TP53", "MDM2"], predicates="affects", taxonomy_ids="9606")
 db.relations("gene:entrez:7157")                       # every product of a gene
 
 db.entity(key)                                         # dict: entity, annotations, summary, relationships
+
+db.query("relation_page", entities=[key], limit=20)    # any of the API's queries by name
+db.query("ontology_tree", term_id="GO:0006915", output="json")   # JSON text, as the API answers
 ```
 
 - `relations` takes exact names, identifiers, entity keys or group keys
@@ -166,8 +169,11 @@ db.entity(key)                                         # dict: entity, annotatio
 - `entity` takes the exact `entity_key`. It returns None when no installed
   resource has it.
 - With a subset installed, counts and merged entities cover only that subset.
-- `db.engine` exposes the rest of the API (facets, grouped search, ontology
-  browsing, molecular context).
+- `db.query(name, **params)` runs any of the API's queries: entity and relation
+  pages, facets, grouped search, ontology search and trees, molecular context,
+  statistics (`omnipath_client.steps.names()` lists them; each file in
+  `omnipath_client/sql/queries/` lists its parameters). A relation by default;
+  `output="json"` for the API's JSON (some queries answer only as JSON).
 
 ### Tables
 

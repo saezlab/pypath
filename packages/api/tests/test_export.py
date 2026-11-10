@@ -5,7 +5,7 @@ import io
 import pyarrow.parquet as pq
 from fastapi.testclient import TestClient
 
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 from omnipath_api.server import create_app
 from omnipath_core.fixtures import write_resource
 
@@ -36,7 +36,7 @@ def client(tmp_path):
         relations,
     )
     write_resource(tmp_path / "resources/b/1", [entity("p1", "TP53")])
-    return TestClient(create_app(queries=ParquetQueries(tmp_path)))
+    return TestClient(create_app(queries=served_queries(tmp_path)))
 
 
 def rows(response):

@@ -39,7 +39,7 @@ class ServingStatus(APIModel):
 
 class HealthResponse(APIModel):
     status: str
-    engine: str = "duckdb-parquet"
+    engine: str = "duckdb-release"
     timestamp: float | None = None
 
 
@@ -468,8 +468,18 @@ class ResourceRecord(APIModel):
     files: list[ResourceFile] = Field(default_factory=list)
 
 
+class ReferenceFile(APIModel):
+    version: str = Field(description="The file's SHA-256, which names it.")
+    size_bytes: int
+
+
 class ResourcesResponse(APIModel):
     resources: list[ResourceRecord] = Field(default_factory=list)
+    references: dict[str, ReferenceFile] | None = Field(
+        default=None,
+        description="The release's reference files (`taxonomy`: its taxon names, "
+        "downloaded from /references/taxonomy); with `shape=svelte`.",
+    )
 
 
 class ResourceTopic(APIModel):
@@ -554,6 +564,46 @@ class RelationMolecularEvidence(APIModel):
 class RelationEvidenceResponse(APIModel):
     evidence: list[RelationMolecularEvidence] = Field(default_factory=list)
     annotations: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class EvidenceSite(APIModel):
+    """A modification of the subject's or object's molecular form."""
+
+    side: Literal["subject", "object"]
+    term: str | None = None
+    residue: str | None = None
+    position: int | None = None
+    end_position: int | None = None
+    description: str | None = None
+
+
+class RelationEvidenceSummary(APIModel):
+    """What one evidence source states for a relation: its sites and PubMed ids."""
+
+    source: str
+    sites: list[EvidenceSite] = Field(default_factory=list)
+    pmids: list[str] = Field(default_factory=list)
+
+
+class RelationEvidenceSummaryRequest(APIModel):
+    relation_pks: list[str] = Field(
+        default_factory=list, max_length=1000, description="Up to 1,000 relation pks."
+    )
+    filters: SearchFilters = Field(
+        default_factory=SearchFilters,
+        description="Molecular form filters keep only the matching occurrences, as for "
+        "GET /relations/{relation_pk}/evidence.",
+    )
+    resources: list[str] | None = None
+
+
+class RelationEvidenceSummaryResponse(APIModel):
+    evidence: dict[str, list[RelationEvidenceSummary]] = Field(
+        default_factory=dict,
+        description="Each requested relation pk: per evidence source, the sites and PubMed "
+        "ids of GET /relations/{relation_pk}/evidence ([] for an unknown pk).",
+    )
+    elapsed_ms: float | None = None
 
 
 class RelationPayloadsResponse(APIModel):

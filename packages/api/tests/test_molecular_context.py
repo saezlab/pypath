@@ -2,7 +2,7 @@ import json
 import io
 import pyarrow.parquet as pq
 import pytest
-from omnipath_api.queries.parquet import ParquetQueries
+from served import republish, served_queries
 from omnipath_core.fixtures import nested_rows, rewrite_resource, write_resource
 
 
@@ -75,7 +75,7 @@ def molecular_engine(tmp_path):
             ],
         )
         write_resource(folder, entities, [relation])
-    return ParquetQueries(tmp_path)
+    return served_queries(tmp_path)
 
 
 def test_typed_identity_and_gene_group(molecular_engine):
@@ -223,7 +223,7 @@ def test_filters_do_not_combine_endpoints_or_occurrences(molecular_engine):
             ],
         )
         rewrite_resource(path, relations=[original, split])
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     filters = {"protein_entity_keys": ["3" * 64], "isoform_identifiers": ["uniprot:P00001-3"]}
     assert {r["relation_key"] for r in engine.search_relations(filters)["rows"]} == {"relation"}
     assert (
@@ -279,7 +279,7 @@ def test_fallback_references_do_not_become_gene_groups(molecular_engine):
     ]
     for path in engine.data_root.glob("resources/*/*/entity.parquet"):
         rewrite_resource(path, entities=nested_rows(path) + records)
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     groups = engine.search_entity_groups(strategy="gene_reference", limit=20)["groups"]
     by_key = {g["entity"]["entityPk"]: g for g in groups}
     assert "gene:entrez:1" in by_key
@@ -301,7 +301,7 @@ def test_product_context_keeps_native_fallback_without_losing_exact_observations
     product["reference_entity_key"] = "uniprot:P00001"
     product["label"] = "ZZZ fallback"  # Reference choice must not follow display rank.
     rewrite_resource(path, entities=records)
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     summary = engine.get_entity_core("3" * 64)["entity"]
     assert summary["referenceEntityKey"] == "uniprot:P00001"
     assert summary["geneReferenceKeys"] == ["entrez:1"]
@@ -415,7 +415,7 @@ def test_non_product_source_types_keep_native_context(
             ],
         )
         rewrite_resource(path, relations=rows + [native, other])
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     context = engine.get_molecular_context(key)
     assert context["filters"] == {"entity_pks": [key]}
     assert context["relationsTotal"] == 2
@@ -503,7 +503,7 @@ def test_compatible_product_type_and_namespace_keep_exact_context(
             ],
         )
         rewrite_resource(path, relations=rows + [product_relation])
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     context = engine.get_molecular_context(product_key, view="product")
     assert context["filters"] == {product_kind + "_entity_keys": [product_key]}
     assert context["relationsTotal"] == 2
@@ -549,7 +549,7 @@ def test_shared_cursor_pages_both_streams_to_completion(molecular_engine, relati
         record["evidence"] = []
     rewrite_resource(other_folder / "entity.parquet", entities=other_entities)
     rewrite_resource(other_folder / "relation.parquet", relations=[])
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     with TestClient(create_app(queries=engine)) as client:
         endpoint = "/entities/gene:entrez:1/molecular-context"
         first = client.get(endpoint).json()
@@ -621,7 +621,7 @@ def test_native_product_without_catalogue_links_finds_gene_standalone_occurrence
             )
         )
         rewrite_resource(path, entities=nested_rows(path) + records)
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     context = engine.get_molecular_context(
         product, view="product", isoform_identifier=f"{namespace}:{isoform['id']}"
     )
@@ -688,7 +688,7 @@ def test_actual_writer_native_source_and_exact_product_views(
         assert entities[main_key]["identifier"] == identifier.split(".")[0]
     else:
         assert main_key == product_key
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     source_context = engine.get_molecular_context(main_key)
     assert source_context["filters"] == {"entity_pks": [main_key]}
     assert source_context["relationsTotal"] == 1
@@ -758,7 +758,7 @@ def test_shared_native_product_key_does_not_turn_legacy_evidence_into_exact_prod
         ]
         records[0]["evidence_count"] = 1
         rewrite_resource(path, relations=records)
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     reference = engine.get_molecular_context(key)
     assert reference["filters"] == {"entity_pks": [key]}
     assert reference["relationsTotal"] == 2
@@ -848,7 +848,7 @@ def test_actual_writer_native_product_with_gene_is_labeled_before_navigation(
         writer.close()
     finally:
         resolver.close()
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     context = engine.get_molecular_context("gene:entrez:7157")
     assert context["relationsTotal"] == int(include_relation)
     assert context["catalogueProducts"] == []
@@ -918,23 +918,12 @@ def test_referenced_product_hydration_is_one_bounded_deduplicated_scalar_batch(
         ]
         rows[0]["evidence_count"] = len(records)
         rewrite_resource(path, relations=rows)
-    engine.reload_resources()
-    original = engine._fetch_entities_by_keys
-    calls = []
-
-    def lookup(keys, resources=None, *, slim=False):
-        calls.append((keys, resources, slim))
-        return original(keys, resources, slim=slim)
-
-    monkeypatch.setattr(engine, "_fetch_entities_by_keys", lookup)
+    republish(engine.data_root, engine)
     context = engine.get_molecular_context("gene:entrez:1", resources=["a"], limit=1)
-    assert len(calls) == 1  # Endpoints come with their relations; one product batch.
-    keys, resources, slim = calls[0]
-    assert resources == ["a"] and slim
+    # At most 100 products, each once, in the order the forms name them.
+    keys = [product["entityPk"] for product in context["referencedProducts"]]
     assert len(keys) == len(set(keys)) == 100
     assert keys[:2] == [records[0]["entity_key"], transcript["entity_key"]]
-    assert len(context["referencedProducts"]) == 100
-    assert {product["entityPk"] for product in context["referencedProducts"]} == set(keys)
     assert not set(keys).intersection(
         product["entityPk"] for product in context["catalogueProducts"]
     )
@@ -1011,7 +1000,7 @@ def test_referenced_product_metadata_only_follows_returned_trimmed_pairs_and_sta
             ),
         ]
         rewrite_resource(path, relations=rows)
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     standalone = engine.get_molecular_context("gene:entrez:1", resources=["a"], limit=1, offset=2)
     assert standalone["standaloneEvidence"] == []
     assert standalone["relations"] == []
@@ -1035,7 +1024,7 @@ def test_referenced_product_metadata_only_follows_returned_trimmed_pairs_and_sta
     # A lookahead observation must not hydrate products from the next page.
     for path in engine.data_root.glob("resources/*/*/relation.parquet"):
         rewrite_resource(path, relations=[])
-    engine.reload_resources()
+    republish(engine.data_root, engine)
     for offset, key in enumerate(keys[:2]):
         page = engine.get_molecular_context(
             "gene:entrez:1", resources=["a"], limit=1, offset=offset

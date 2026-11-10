@@ -1,5 +1,6 @@
 """Taxonomy labels are offline, release-pinned and never alter identity/filter IDs."""
 
+import hashlib
 import io
 import tarfile
 
@@ -7,7 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from omnipath_core.taxonomy import taxon_names
-from omnipath_api.queries.parquet import ParquetQueries
+from served import served_queries
 from omnipath_api.server import create_app
 from omnipath_api.queries.store.inventory import ReleaseStore
 from omnipath_core.fixtures import rewrite_resource
@@ -90,7 +91,7 @@ def test_release_names_entities_facets_and_cached_relations(tmp_path):
         manifests[0]["references"]["taxonomy"]["version"]
         != manifests[1]["references"]["taxonomy"]["version"]
     )
-    engine = ParquetQueries(tmp_path)
+    engine = served_queries(tmp_path)
     # Unfiltered relation facets share cached raw counts across these releases.
     for version, name in [
         ("1", "Arabidopsis thaliana"),
@@ -115,13 +116,28 @@ def test_release_names_entities_facets_and_cached_relations(tmp_path):
         )
         response = client.post("/entities/scoped-facets?release=1", json={})
         assert any(row.get("facetLabel") == "Arabidopsis thaliana" for row in response.json())
+        # The clients' init downloads a release's taxon names, as the catalog lists them.
+        for manifest in manifests:
+            version = manifest["version"]
+            listed = client.get(f"/resources?shape=svelte&release={version}").json()
+            reference = listed["references"]["taxonomy"]
+            assert reference["version"] == manifest["references"]["taxonomy"]["version"]
+            download = client.get(f"/references/taxonomy?release={version}")
+            assert download.status_code == 200
+            assert hashlib.sha256(download.content).hexdigest() == reference["version"]
+            assert len(download.content) == reference["size_bytes"]
+            etag = download.headers["etag"]
+            again = client.get(f"/references/taxonomy?release={version}", headers={"If-None-Match": etag})
+            assert again.status_code == 304
+        assert client.get("/resources?shape=svelte&release=0").json()["references"] == {}
+        assert client.get("/references/taxonomy?release=0").status_code == 404
     reference = manifests[0]["references"]["taxonomy"]["version"]
     (tmp_path / "references/taxonomy" / reference / "taxonomy.parquet").write_bytes(b"corrupt")
     with pytest.raises(ValueError, match="checksum"):
         store.validate_files(manifests[0])
 
 
-def test_latest_lookup_covers_new_taxa_without_changing_pinned_names(tmp_path):
+def test_lookup_names_taxa_from_the_dump(tmp_path):
     from omnipath_core.taxonomy_lookup import prepare, read_lookup
 
     archive = tmp_path / "references/taxonomy/taxdump.tar.gz"
@@ -132,18 +148,3 @@ def test_latest_lookup_covers_new_taxa_without_changing_pinned_names(tmp_path):
     assert names.get("999") == "Arabidopsis thaliana"
     assert names.get("123") is None
     assert prepare(tmp_path) == path
-    engine = ParquetQueries(tmp_path)
-    with engine.release_scope("latest"):
-        assert engine._taxonomy_names().get("3702") == "Arabidopsis thaliana"
-        first_version = engine._taxonomy_cache_version()
-    # A pinned scope without a taxonomy snapshot does not inherit moving labels.
-    token = engine._release_scope.set({"version": "old", "resources": {}})
-    try:
-        assert engine._taxonomy_names().get("3702") is None
-    finally:
-        engine._release_scope.reset(token)
-    dump(archive, "Updated name")
-    prepare(tmp_path)
-    with engine.release_scope("latest"):
-        assert engine._taxonomy_names().get("3702") == "Updated name"
-        assert engine._taxonomy_cache_version() != first_version

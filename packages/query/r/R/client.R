@@ -1,18 +1,37 @@
-#' Connect to the installed database
+#' Connect to OmniPath
 #'
-#' Opens the data directory's DuckDB database read-only and returns a DBI
-#' connection: use it with [op_sql()], the prebuilt queries ([op_search()],
-#' [op_relations()], [op_entity()]), DBI (`DBI::dbGetQuery()`) or dplyr
-#' (`dplyr::tbl(con, "relation")`). Checks that every installed file is complete,
-#' and writes the database again when it does not describe the installation (a moved
-#' directory, an interrupted [op_init()], another client version).
+#' Two modes with the same [op_search()], [op_relations()] and [op_entity()]:
+#'
+#' - `"api"` (the default without `data_dir` and `OMNIPATH_DATA_DIR`): the hosted
+#'   API answers, for `release`; nothing is downloaded.
+#' - `"local"` (the default with `data_dir` or `OMNIPATH_DATA_DIR`): the data
+#'   directory's DuckDB database, opened read-only, as a DBI connection; also for
+#'   [op_sql()], DBI (`DBI::dbGetQuery()`) and dplyr (`dplyr::tbl(con, "relation")`).
+#'   Checks that every installed file is complete, and writes the database again when
+#'   it does not describe the installation (a moved directory, an interrupted
+#'   [op_init()], another client version).
 #'
 #' @param data_dir The data directory; see [op_data_directory()].
+#' @param mode `"api"`, `"local"` or `NULL` for the default.
+#' @param api_url The API (API mode); by default `OMNIPATH_API_URL` or the
+#'   development deployment.
+#' @param release The release the API answers for (API mode).
 #' @param memory_limit DuckDB's memory limit.
 #' @param threads DuckDB's threads, or `NULL` for its default.
-#' @return A DBI connection; close it with [op_disconnect()].
+#' @param timeout Seconds to wait for the API to connect (API mode).
+#' @return A DBI connection (local mode) or an API handle; close either with
+#'   [op_disconnect()].
 #' @export
-op_connect <- function(data_dir = NULL, memory_limit = "2GB", threads = NULL) {
+op_connect <- function(data_dir = NULL, mode = NULL, api_url = NULL, release = "latest",
+                       memory_limit = "2GB", threads = NULL, timeout = 120) {
+  if (is.null(mode)) {
+    mode <- if (!is.null(data_dir) || nzchar(Sys.getenv("OMNIPATH_DATA_DIR", ""))) "local" else "api"
+  }
+  if (identical(mode, "api")) {
+    if (!is.null(data_dir)) stop("API mode reads no data directory; use mode = \"local\"", call. = FALSE)
+    return(.api_connection(api_url, release, timeout, memory_limit, threads))
+  }
+  if (!identical(mode, "local")) stop("mode must be \"api\" or \"local\"", call. = FALSE)
   root <- op_data_directory(data_dir)
   installation <- .read_installation(root)
   if (is.null(installation) || !length(installation$resources)) {
@@ -33,7 +52,7 @@ op_connect <- function(data_dir = NULL, memory_limit = "2GB", threads = NULL) {
   DBI::dbExecute(con, sprintf("SET memory_limit = %s", .quote(memory_limit)))
   if (!is.null(threads)) DBI::dbExecute(con, sprintf("SET threads = %d", as.integer(threads)))
   for (name in names(.contract()$settings)) {
-    DBI::dbExecute(con, sprintf("SET %s = %d", name, as.integer(.contract()$settings[[name]])))
+    DBI::dbExecute(con, sprintf("SET %s = %s", name, .scalar_literal(.contract()$settings[[name]])))
   }
   con
 }
@@ -58,6 +77,10 @@ op_connect <- function(data_dir = NULL, memory_limit = "2GB", threads = NULL) {
 #' @param con A connection from [op_connect()].
 #' @export
 op_disconnect <- function(con) {
+  if (.is_api(con)) {
+    DBI::dbDisconnect(con$state$db, shutdown = TRUE)
+    return(invisible(NULL))
+  }
   DBI::dbDisconnect(con, shutdown = TRUE)
   invisible(NULL)
 }
@@ -85,6 +108,9 @@ op_resources <- function(data_dir = NULL) {
 #' @return A data frame.
 #' @export
 op_sql <- function(con, query, params = NULL) {
+  if (.is_api(con)) {
+    stop("op_sql() needs a local installation: run op_init(), then op_connect(data_dir)", call. = FALSE)
+  }
   if (is.null(params)) DBI::dbGetQuery(con, query) else DBI::dbGetQuery(con, query, params = unname(params))
 }
 
@@ -96,6 +122,9 @@ op_sql <- function(con, query, params = NULL) {
 .biolink <- c(predicates = "predicate", interaction_types = "class", entity_types = "class", partner_types = "class")
 
 .parameters <- function(con, macro, internal) {
+  if (file.exists(file.path(.sql_dir(), "queries", paste0(macro, ".sql")))) {
+    return(sort(setdiff(names(.load_query(macro)$params), c(internal, "resources"))))
+  }
   row <- DBI::dbGetQuery(con, sprintf(
     "SELECT parameters FROM duckdb_functions() WHERE function_name = %s LIMIT 1", .quote(macro)
   ))
@@ -135,6 +164,17 @@ op_sql <- function(con, query, params = NULL) {
   }, "")
 }
 
+# A query's rows as a data frame, or (lazy) a dplyr table over them.
+.lazy_or_frame <- function(con, frame, lazy) {
+  if (!isTRUE(lazy)) return(frame)
+  if (!requireNamespace("dplyr", quietly = TRUE) || !requireNamespace("dbplyr", quietly = TRUE)) {
+    stop("lazy = TRUE needs the packages dplyr and dbplyr", call. = FALSE)
+  }
+  name <- paste0("op_result_", as.integer(stats::runif(1, 1, 1e9)))
+  duckdb::duckdb_register(con, name, frame)
+  dplyr::tbl(con, name)
+}
+
 .call <- function(con, macro, positional, filters, lazy) {
   sql <- sprintf("SELECT * FROM %s(%s)", macro, paste(c(positional, .arguments(filters)), collapse = ", "))
   if (isTRUE(lazy)) {
@@ -149,7 +189,7 @@ op_sql <- function(con, query, params = NULL) {
 #' Search entities as the explorer does
 #'
 #' Entities matching a name or identifier, merged across resources and ranked as in
-#' the explorer's search. The macro `op_search`.
+#' the explorer's search. The query `entity_search`.
 #'
 #' @param con A connection from [op_connect()].
 #' @param query A name, identifier, `ns:id` CURIE or entity key.
@@ -160,16 +200,18 @@ op_sql <- function(con, query, params = NULL) {
 #' @return A data frame with the entity table's columns.
 #' @export
 op_search <- function(con, query, limit = 20, ..., lazy = FALSE) {
-  filters <- .filters(con, "op_search", c("query", "max_results"), list(...))
-  filters$max_results <- as.integer(limit)
-  .call(con, "op_search", .literal(query), filters, lazy)
+  if (.is_api(con)) return(.api_search(con, query, limit, list(...)))
+  filters <- .filters(con, "entity_search", c("query", "limit", "cursor_phase", "cursor_offset", "cursor_key"), list(...))
+  filters$query <- query
+  filters$limit <- as.integer(limit)
+  .lazy_or_frame(con, .run_query(con, "entity_search", filters, output = "table"), lazy)
 }
 
 #' Relations as the explorer exports them
 #'
 #' One row per relation with its annotations, evidence and the product records its
 #' evidence names; at most 100,000 relations (larger selections are SQL on
-#' `relation`). The macro `op_relations`.
+#' `relation`). The query `relations`.
 #'
 #' @param con A connection from [op_connect()].
 #' @param entities Exact names, identifiers, entity keys or group keys such as
@@ -184,17 +226,35 @@ op_search <- function(con, query, limit = 20, ..., lazy = FALSE) {
 op_relations <- function(con, entities = NULL, limit = 100000, ..., lazy = FALSE) {
   most <- .contract()$relation_export_limit
   if (limit < 1 || limit > most) stop("limit must be between 1 and ", format(most, big.mark = ","), call. = FALSE)
-  filters <- .filters(con, "op_relations", c("entities", "max_relations"), list(...))
-  if (!is.null(entities)) filters$entities <- entities
+  if (.is_api(con)) return(.api_relations(con, entities, limit, list(...)))
+  filters <- .filters(con, "relations", c("entities", "max_relations"), list(...))
+  if (!is.null(entities)) filters$entities <- as.list(entities)
   filters$max_relations <- as.integer(limit)
-  .call(con, "op_relations", character(), filters, lazy)
+  .lazy_or_frame(con, .run_query(con, "relations", filters, output = "table"), lazy)
+}
+
+#' Run one of the shared queries by name
+#'
+#' The queries the API answers with, from the same SQL files: `entity_search`,
+#' `relations`, `entity_details`, `resolve_keys`, `relation`, `relation_evidence`,
+#' `relation_evidence_batch` and the others in the package's `sql/queries`.
+#'
+#' @param con A connection from [op_connect()]: in API mode, the API runs the query.
+#' @param name The query's name.
+#' @param ... Its parameters by name.
+#' @param output `"table"` for a data frame, `"json"` for the API's JSON text.
+#' @return A data frame, or JSON text (`NULL` when the query has no answer).
+#' @export
+op_query <- function(con, name, ..., output = "table") {
+  if (.is_api(con)) return(.api_query(con, name, list(...), output = output))
+  .run_query(con, name, list(...), output = output)
 }
 
 #' One entity's details as the explorer shows them
 #'
 #' The entity by its exact key (as [op_search()] returns it), with its identifiers,
 #' annotations, structural relationships, relation count and associations: the
-#' record the API and the Python client return. The macro `op_entity`.
+#' record the API and the Python client return. The query `entity_details`.
 #'
 #' @param con A connection from [op_connect()].
 #' @param entity_key An entity key.
@@ -203,7 +263,8 @@ op_relations <- function(con, entities = NULL, limit = 100000, ..., lazy = FALSE
 #' @return A list, or `NULL` when no installed resource has the entity.
 #' @export
 op_entity <- function(con, entity_key, simplify = TRUE) {
-  row <- DBI::dbGetQuery(con, sprintf("SELECT details FROM op_entity(%s)", .literal(as.character(entity_key))))
-  if (!nrow(row)) return(NULL)
-  jsonlite::fromJSON(row$details[[1]], simplifyVector = simplify)
+  if (.is_api(con)) return(.api_entity(con, entity_key, simplify))
+  text <- .run_query(con, "entity_details", list(entity_key = as.character(entity_key)), output = "json")
+  if (is.null(text) || is.na(text)) return(NULL)
+  jsonlite::fromJSON(text, simplifyVector = simplify)
 }

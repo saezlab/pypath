@@ -25,5 +25,8 @@ export const load: LayoutServerLoad = async ({ url, cookies }) => {
     error(404, `Unknown OmniPath release: ${selectedRelease}`);
   }
   cookies.set('omnipath_release', selectedRelease, { path: '/', httpOnly: false, sameSite: 'lax' });
-  return { releases: catalog.releases, selectedRelease, releasesUnavailable: false };
+  // Every page carries this: the release picker needs the versions only, not each
+  // release's resource manifests (130 KB).
+  const releases = catalog.releases.map(({ version }) => ({ version }));
+  return { releases, selectedRelease, releasesUnavailable: false };
 };

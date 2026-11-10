@@ -1,39 +1,38 @@
-from omnipath_api.queries.shape.display_name import preferred_name
-from omnipath_api.queries.shape.entity import shape_entity_summary
-from omnipath_api.queries.entity_details import page_details
+from fastapi.testclient import TestClient
+from served import served_queries
+from omnipath_api.server import create_app
+from omnipath_core.fixtures import write_resource
 
 
-def test_resolver_label_is_the_display_name_on_every_page():
-    entity = shape_entity_summary(
-        dict(
-            entity_key="a",
-            entity_type="chemical_entity",
-            namespace="inchikey",
-            identifier="QNAYBMKLOCPYGJ-UQEXSWPGSA-N",
-            label="alanine-d7",
-            identifiers=[dict(ns="name", id=f"Long chemical name {i}") for i in range(25)]
-            + [dict(ns="name", id="Alanine")],
-        )
+def _engine(tmp_path, **entity):
+    write_resource(
+        tmp_path / "resources/test/1",
+        [dict(entity_key="a", entity_type="chemical_entity", namespace="inchikey", **entity)],
     )
-    first = page_details(entity)
+    return TestClient(create_app(queries=served_queries(tmp_path)))
+
+
+def test_resolver_label_is_the_display_name_on_every_page(tmp_path):
+    client = _engine(
+        tmp_path,
+        identifier="QNAYBMKLOCPYGJ-UQEXSWPGSA-N",
+        label="alanine-d7",
+        identifiers=[dict(ns="name", id=f"Long chemical name {i}") for i in range(25)]
+        + [dict(ns="name", id="Alanine")],
+    )
+    first = client.get("/entities/a?includeRelationships=false").json()["entity"]
     assert first["displayName"] == "alanine-d7"
     assert first["identifiersNextCursor"] == "20"
-    assert page_details(entity, offset=20)["displayName"] == "alanine-d7"
+    later = client.get("/entities/a?includeRelationships=false&detail_offset=20").json()["entity"]
+    assert later["displayName"] == "alanine-d7"
 
 
-def test_numeric_chemical_labels_fall_back_to_a_named_identifier():
-    entity = shape_entity_summary(
-        dict(
-            entity_key="a",
-            entity_type="small_molecule",
-            namespace="pubchem",
-            identifier="1234",
-            label="1234",
-            identifiers=[dict(ns="chebi", id="CHEBI:15377")],
-        )
+def test_numeric_chemical_labels_fall_back_to_a_named_identifier(tmp_path):
+    client = _engine(
+        tmp_path,
+        identifier="1234",
+        label="1234",
+        identifiers=[dict(ns="chebi", id="CHEBI:15377")],
     )
+    entity = client.get("/entities/a?includeRelationships=false").json()["entity"]
     assert entity["displayName"] == "CHEBI:15377"
-
-
-def test_group_names_prefer_plain_names():
-    assert preferred_name(["Alanine", "alanine-d7", "CID_1234"]) == "Alanine"
