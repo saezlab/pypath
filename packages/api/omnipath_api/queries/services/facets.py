@@ -84,9 +84,42 @@ class FacetsQueries:
         return (cache or self._facet_cache).get(key, lambda: compute(payload, resources))
 
     def get_scoped_entity_facets(self, payload=None, resources=None):
+        """The entity filter options a search leaves: the query entity_facets."""
+        payload = dict(payload or {})
+        filters = normalize_filters(payload)
+        selection = resources or payload.get("resources") or None
+        tokens = list(filters["entity_ids"]) + list(filters["entity_pks"])
+        params = {
+            "query": str(payload.get("query") or ""),
+            "sources": list(filters["sources"]) or None,
+            "entity_types": list(filters["entity_types"]) or None,
+            "taxonomy_ids": [str(t) for t in filters["taxonomy_ids"]] or None,
+            "reference_entity_keys": list(filters["reference_entity_keys"]) or None,
+            "entity_ids": tokens or None,
+            "facet_limit": int(payload.get("facetLimit") or 50),
+            "selection": list(selection) if selection else None,
+        }
+        text = self.run_query("entity_facets", params)
+        return json.loads(text) if text else []
+
+    def _old_get_scoped_entity_facets(self, payload=None, resources=None):
         return self._cached_facets("entities", payload, resources, self._compute_entity_facets)
 
     def get_scoped_relation_facets(self, payload=None, resources=None):
+        """The relation filter options a selection leaves: the query relation_facets."""
+        from omnipath_api.queries.services.export import relation_params
+
+        payload = dict(payload or {})
+        limit = payload.pop("taxonomyLimit", None)
+        query = str(payload.pop("taxonomyQuery", "") or "")
+        params = {
+            **relation_params(_flattened(payload)),
+            "taxonomy_limit": None if limit is None else int(limit),
+            "taxonomy_query": query,
+        }
+        return json.loads(self.run_query("relation_facets", params, resources))
+
+    def _old_get_scoped_relation_facets(self, payload=None, resources=None):
         """The relation filter options a selection leaves: for each filter group, the values
         of the relations that the scope (an entity selection, molecular forms) and the
         other groups' filters keep, most relations first. A group's own filters do not
@@ -265,6 +298,9 @@ class FacetsQueries:
         return json.loads(self.run_query("entity_filter_options", {}, resources))
 
     def get_relation_filter_options(self, resources: list[str] | None = None) -> dict[str, Any]:
+        return json.loads(self.run_query("relation_filter_options", {}, resources))
+
+    def _old_get_relation_filter_options(self, resources: list[str] | None = None) -> dict[str, Any]:
         facets = self.get_scoped_relation_facets({}, resources=resources)
         predicates_by_category: dict[str, list[str]] = {}
         sources: list[str] = []

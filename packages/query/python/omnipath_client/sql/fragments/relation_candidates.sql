@@ -3,7 +3,8 @@
 -- given), keyed (endpoint filters given), scope (the resources read), the entity and
 -- scope keys, the candidate relations of the endpoint filters (__candidate_rows) and,
 -- under form filters, the relations with matching evidence (form_ids), unless the
--- including query's value read_candidates is false. The relation_conditions fragment
+-- including query's value read_candidates is false. The including query's value
+-- selection_sources (a source filter, or NULL) narrows the resources read. The relation_conditions fragment
 -- applies the other filters.
 
 -- step: predicate_names AS value
@@ -29,10 +30,10 @@ SELECT NOT (op_unset({{entities}}) AND op_unset({{scope_entity_ids}}) AND op_uns
 -- step: scope AS value
 -- the resources read: the selected ones and the source filter's; [''] selects none
 SELECT CASE
-    WHEN op_unset({{resources}}) AND op_unset({{sources}}) THEN NULL
-    WHEN op_unset({{sources}}) THEN {{resources}}
-    WHEN op_unset({{resources}}) THEN {{sources}}
-    ELSE coalesce(nullif(list_intersect({{resources}}, {{sources}}), []), [''])
+    WHEN op_unset({{resources}}) AND op_unset({{selection_sources}}) THEN NULL
+    WHEN op_unset({{selection_sources}}) THEN {{resources}}
+    WHEN op_unset({{resources}}) THEN {{selection_sources}}
+    ELSE coalesce(nullif(list_intersect({{resources}}, {{selection_sources}}), []), [''])
 END
 
 -- step: key_tokens AS list

@@ -33,6 +33,9 @@
 -- output: table rows
 -- example: {"entities": ["TP53"]}
 
+-- step: selection_sources AS value
+SELECT {{sources}}
+
 -- step: read_candidates AS value
 SELECT true
 
