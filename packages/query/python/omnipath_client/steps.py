@@ -20,7 +20,7 @@ File format::
     -- end
 
 Placeholders: ``{{name}}`` a literal (a list is ``[...]``), ``{{name*}}`` a list's items
-for ``IN (...)`` (``NULL`` when empty), ``{{#name}}`` a list's length,
+for ``IN (...)`` (a subquery without rows when empty), ``{{#name}}`` a list's length,
 ``{{name[offset:count]}}`` a slice spread like ``*`` (offset and count are params or
 numbers), ``{{table:name}}`` a rows step as a table (``VALUES``), and
 ``{{include:fragment table}}`` the SQL of ``sql/fragments/<fragment>.sql`` reading
@@ -36,6 +36,7 @@ from functools import lru_cache
 from importlib.resources import files
 import json
 import re
+import time
 from typing import Any, Callable
 
 import duckdb
@@ -286,6 +287,7 @@ class Run:
     def __init__(self, con, query: Query, values: dict[str, Any], cache, scope, fragments=fragment):
         self.con, self.query, self.cache, self.scope = con, query, cache, scope
         self.fragments = fragments
+        self.trace: list | None = None
         self.values = values  # params, list and value steps, loop variables
         self.types = {name: p.type for name, p in query.params.items()}
         self.rows: dict[str, tuple[list[str], list[tuple]]] = {}
@@ -308,7 +310,9 @@ class Run:
                 value, spread = (value or [])[start : start + length], "*"
             if spread:
                 items = list(value or [])
-                return ", ".join(literal(v) for v in items) if items else "NULL"
+                # Empty: a subquery without rows, which DuckDB answers without reading the
+                # table (it reads every row group for IN (NULL)).
+                return ", ".join(literal(v) for v in items) if items else "SELECT NULL WHERE false"
             return literal(value, self.types.get(name))
 
         return _PLACEHOLDER.sub(replace, sql)
@@ -350,6 +354,14 @@ class Run:
                 self.step(item)
 
     def step(self, step: Step) -> None:
+        started = time.perf_counter()
+        try:
+            self._step(step)
+        finally:
+            if self.trace is not None:
+                self.trace.append((step.name, time.perf_counter() - started))
+
+    def _step(self, step: Step) -> None:
         skip = step.when is not None and not self.scalar(step.when)
         sql = self.render(step.sql)
         if skip:
@@ -415,17 +427,20 @@ def run(
     cache: Callable[[tuple, Callable[[], Any]], Any] | None = None,
     scope: Any = None,
     fragments: Callable[[str], str] = fragment,
+    trace: list | None = None,
 ):
     """Run a query: an Arrow table for ``output="table"``, a JSON string (or None) for
     ``output="json"``.
 
     ``cache(key, compute)`` keeps the results of steps marked ``cache``; ``scope`` (the
-    database's identity) is part of their keys.
+    database's identity) is part of their keys. ``trace``, a list, gets (step, seconds)
+    for each step run.
     """
     query = load(name) if isinstance(name, str) else name
     if output not in query.outputs:
         raise ValueError(f"{query.name} has no {output} output")
     run_ = Run(con, query, bind(query, params or {}), cache, scope, fragments)
+    run_.trace = trace
     try:
         run_.steps(query.steps)
         target = query.outputs[output]

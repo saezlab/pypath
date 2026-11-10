@@ -118,7 +118,9 @@ LIMIT {{hits_limit}}
 SELECT _eid FROM __hits ORDER BY _eid
 
 -- step: hit_rows AS table
-SELECT * FROM entity WHERE _eid IN ({{hit_ids*}})
+-- only what ranking and the filters read
+SELECT _eid, entity_key, namespace, _resource, entity_type, taxon, reference_entity_key
+FROM entity WHERE _eid IN ({{hit_ids*}})
 
 -- step: ranked AS table
 -- each matching entity's best (rank, term length, term) among the hits read
@@ -144,7 +146,8 @@ SELECT NOT list_contains({{phases}}, 'prefix')
 SELECT entity_key FROM __ranked ORDER BY entity_key
 
 -- step: candidate_copies AS table
-SELECT * FROM entity_by_key
+-- the candidates' selected copies, for their relation counts
+SELECT entity_key, relation_count FROM entity_by_key
 WHERE entity_key IN ({{candidates*}})
     AND op_entity_ok(entity_by_key, {{scope}}, {{type_names}}, {{taxonomy_ids}}, {{reference_entity_keys}}, {{keys_filter}})
 
@@ -155,6 +158,14 @@ FROM __ranked r
 JOIN (SELECT entity_key, sum(coalesce(relation_count, 0)) AS relations FROM __candidate_copies GROUP BY ALL) c
     USING (entity_key)
 QUALIFY position <= {{count_}}
+
+-- step: page_keys AS list
+SELECT entity_key FROM __prefix_page ORDER BY entity_key
+
+-- step: page_copies AS table
+SELECT * FROM entity_by_key
+WHERE entity_key IN ({{page_keys*}})
+    AND op_entity_ok(entity_by_key, {{scope}}, {{type_names}}, {{taxonomy_ids}}, {{reference_entity_keys}}, {{keys_filter}})
 
 -- step: phase AS value
 SELECT CASE
@@ -184,7 +195,7 @@ WITH matched AS (
 SELECT m.*, p.position FROM matched m JOIN page p USING (entity_key)
 
 -- step: page_rows AS table
-SELECT c.*, p.position FROM __candidate_copies c JOIN __prefix_page p USING (entity_key)
+SELECT c.*, p.position FROM __page_copies c JOIN __prefix_page p USING (entity_key)
 WHERE {{phase}} = 'prefix'
 UNION ALL BY NAME
 SELECT * FROM __scan_rows

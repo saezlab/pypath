@@ -247,7 +247,8 @@
           }
           if (nzchar(spread)) {
             items <- if (is.null(value)) list() else as.list(value)
-            if (length(items) == 0) "NULL" else paste(vapply(items, .scalar_literal, ""), collapse = ", ")
+            # empty: a subquery without rows, which DuckDB answers without reading the table
+            if (length(items) == 0) "SELECT NULL WHERE false" else paste(vapply(items, .scalar_literal, ""), collapse = ", ")
           } else {
             type <- if (name %in% names(types) && !is.na(types[[name]])) types[[name]] else NULL
             .step_literal(value, type)
