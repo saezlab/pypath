@@ -401,7 +401,18 @@ class EntitiesQueries:
     def search_connectivity_groups(self, **kwargs):
         return self.search_entity_groups(strategy="chemical_connectivity", **kwargs)
 
-    def get_molecular_context(self, entity_id, resources=None, **kwargs):
+    def get_molecular_context(
+        self, entity_id, resources=None, *, view="reference", isoform_identifier=None, limit=20, offset=0
+    ):
+        """An entity's molecular context: the query molecular_context."""
+        params = {
+            "entity_id": str(entity_id), "view": view, "isoform_identifier": isoform_identifier,
+            "limit": int(limit), "offset": int(offset),
+        }
+        text = self.run_query("molecular_context", params, resources)
+        return json.loads(text) if text else None
+
+    def _old_get_molecular_context(self, entity_id, resources=None, **kwargs):
         from omnipath_api.queries.services.molecular_context import context
 
         return context(self, entity_id, resources, **kwargs)
