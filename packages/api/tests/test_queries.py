@@ -1,7 +1,6 @@
 """Unit tests for the release database queries."""
 
 import tempfile
-import time
 import unittest
 from pathlib import Path
 
@@ -129,7 +128,7 @@ class TestReleaseQueries(unittest.TestCase):
             scoped = self.engine.search_relations(filters=filters, limit=1000)
             full = self.engine.search_relations(filters=filters, resources=resources, limit=1000)
             def key(rows):
-                return sorted((r["resource"], r["relation_id"]) for r in rows)
+                return sorted(r["relation_key"] for r in rows)
 
             self.assertEqual(key(scoped["rows"]), key(full["rows"]))
             self.assertEqual(scoped["total"], full["total"])
@@ -310,10 +309,6 @@ class TestServedReleases(unittest.TestCase):
             self.assertEqual(len(builds), 2)
             self.assertEqual(catalog[0]["version"], "2")
             self.assertEqual(catalog[0]["interaction_count"], 3)
-            # So does a change of the query policy.
-            (root / "query_policy.json").write_text('{"disabled_resources": ["uniprot"]}')
-            self.assertFalse(engine.list_resource_catalog()[0]["queryable"])
-            self.assertEqual(len(builds), 3)
 
     def test_topic_map_lists_each_topics_resources(self):
         with tempfile.TemporaryDirectory() as tmp:

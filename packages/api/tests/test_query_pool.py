@@ -7,7 +7,7 @@ from threading import Event
 
 import pytest
 
-from served import republish, served_queries
+from served import served_queries
 from omnipath_api.queries.store.query_pool import QueryCapacityError, QueryPool
 
 

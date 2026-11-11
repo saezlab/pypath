@@ -23,7 +23,9 @@ Placeholders: ``{{name}}`` a literal (a list is ``[...]``), ``{{name*}}`` a list
 for ``IN (...)`` (a subquery without rows when empty), ``{{name+}}`` the same one item
 at a time (the statement is the ``UNION ALL`` of one statement per item, up to
 ``EACH_MAX`` items, more are spread like ``*``; DuckDB reads one key of a sorted table
-through its zonemaps, several in one ``IN`` by whole row groups), ``{{#name}}`` a list's length,
+through its zonemaps, several in one ``IN`` by whole row groups: only for a plain read
+of rows, without DISTINCT, aggregates, ORDER BY or LIMIT, which would apply to each
+item's rows), ``{{#name}}`` a list's length,
 ``{{name[offset:count]}}`` a slice spread like ``*`` (offset and count are params or
 numbers), ``{{table:name}}`` a rows step as a table (``VALUES``), and
 ``{{include:fragment table}}`` the SQL of ``sql/fragments/<fragment>.sql`` reading

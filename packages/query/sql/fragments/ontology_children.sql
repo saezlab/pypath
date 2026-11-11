@@ -3,22 +3,22 @@
 -- known lists the keys found in the namespace (the seed's, the children's).
 
 -- step: known AS value
-SELECT coalesce(list(DISTINCT entity_key), []::VARCHAR[]) FROM entity_by_key
+SELECT coalesce(list(DISTINCT entity_key), []::VARCHAR[]) FROM entity
 WHERE {{seed_key}} IS NOT NULL AND entity_key = {{seed_key}} AND namespace = {{seed_namespace}}
-    AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
+    AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
 
 -- step: child_edges AS table when len({{known}}) > 0
 SELECT DISTINCT child_key, child_label, predicate, parent_key, parent_label FROM ontology_edge
 WHERE parent_key = {{seed_key}}
-    AND (op_unset({{resources}}) OR list_contains({{resources}}, split_part(resource, '/', 1)))
+    AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
 
 -- step: child_candidates AS list
 SELECT DISTINCT child_key FROM __child_edges ORDER BY 1
 
 -- step: known AS value
-SELECT {{known}} || coalesce((SELECT list(DISTINCT entity_key) FROM entity_by_key
+SELECT {{known}} || coalesce((SELECT list(DISTINCT entity_key) FROM entity
     WHERE entity_key IN ({{child_candidates*}}) AND namespace = {{seed_namespace}}
-        AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))), []::VARCHAR[])
+        AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))), []::VARCHAR[])
 
 -- step: child_rows AS table
 SELECT child_key, child_label FROM __child_edges WHERE list_contains({{known}}, child_key)

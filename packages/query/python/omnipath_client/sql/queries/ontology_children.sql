@@ -20,11 +20,9 @@ SELECT CASE WHEN {{limit}} BETWEEN 1 AND 1000 AND {{offset}} >= 0 THEN true
 SELECT DISTINCT child_key FROM __child_rows ORDER BY 1
 
 -- step: children AS table
-SELECT entity_key, min(identifier) AS identifier, min(label) AS label, min(namespace) AS namespace,
-    row_number() OVER (ORDER BY entity_key) AS position
-FROM entity_by_key
-WHERE entity_key IN ({{child_keys*}}) AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
-GROUP BY entity_key
+SELECT entity_key, identifier, label, namespace, row_number() OVER (ORDER BY entity_key) AS position
+FROM entity
+WHERE entity_key IN ({{child_keys*}}) AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
 
 -- step: response AS value
 SELECT to_json(struct_pack(

@@ -1,6 +1,6 @@
 -- query: relation
 -- One relation by its key, as the API's relation item: the relation summary and both
--- endpoints, from the first selected resource stating it; NULL when none does.
+-- endpoints; NULL when no selected resource states it.
 -- param: relation_key VARCHAR
 -- param: resources VARCHAR[] = NULL
 -- output: json response
@@ -12,10 +12,10 @@ SELECT {{relation_key}}
 -- steps: relation_by_keys
 
 -- step: first_id AS list
-SELECT _rid FROM __found ORDER BY resource, relation_id LIMIT 1
+SELECT relation_n FROM __found LIMIT 1
 
 -- step: endpoint_relations AS table
-SELECT *, 1 AS position FROM relation WHERE _rid IN ({{first_id*}})
+SELECT *, 1 AS position FROM relation WHERE relation_n IN ({{first_id*}})
 
 -- steps: endpoint_rows
 

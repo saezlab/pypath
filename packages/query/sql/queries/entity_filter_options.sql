@@ -6,12 +6,12 @@
 
 -- step: types AS list
 SELECT DISTINCT entity_type FROM entity
-WHERE entity_type IS NOT NULL AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
+WHERE entity_type IS NOT NULL AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
 ORDER BY 1
 
 -- step: taxa AS list
 SELECT DISTINCT taxon::VARCHAR FROM entity
-WHERE taxon IS NOT NULL AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
+WHERE taxon IS NOT NULL AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
 ORDER BY 1
 
 -- step: sources AS list

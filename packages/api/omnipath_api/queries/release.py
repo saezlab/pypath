@@ -6,20 +6,19 @@ the release's resource files (see ``omnipath_api.release_database``). A request 
 one release: the one it names, or by default (``latest``) the newest release with a
 database. Each query connection attaches every served database read-only.
 
-The databases hold one table per published and lookup table over all of a release's
-resources, with ``_resource``/``_resource_version`` and a global id (``_rid``,
-``_eid``: the resource's index times 2^32 plus its own id). Queries see the tables as
-before, with ``resource`` = ``source/version``; rows are read by id through the global
-ids, written into the SQL as literal lists, so that DuckDB uses the databases' indexes.
-Raw evidence payloads are not in the databases and stay in the resources' files.
+The databases hold every entity and relation of a release merged over its resources
+(numbered ``entity_n``, ``relation_n``), with the resources that state each, their
+evidence records with their resource, and lookup tables; the step-file queries read
+them by number or key, written into the SQL as literal lists, so that DuckDB uses the
+databases' indexes. Raw evidence payloads are not in the databases and stay in the
+resources' files.
 """
 
 from __future__ import annotations
 
-from collections import defaultdict
 from contextlib import contextmanager
 from contextvars import ContextVar
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import json
 import logging
 import os
@@ -100,11 +99,6 @@ class ServedRelease:
     # {"source/version": inventory record} of the release's resources, with the paths
     # of their files (downloads and raw payloads read those).
     resources: Any
-    # {source: index of its global ids}
-    index: Any
-    # {table: column names} of the database's tables
-    columns: Any
-    by_index: Any = field(default=None)
 
 
 @dataclass(frozen=True)
@@ -245,15 +239,7 @@ class ReleaseQueries(
         path = self.serving_dir / f"{version}.duckdb"
         with duckdb.connect(str(path), read_only=True) as db:
             built_at = db.execute("SELECT built_at::VARCHAR FROM database_info").fetchone()[0]
-            index = dict(db.execute("SELECT _resource, idx FROM op_resource_index").fetchall())
             rows = db.execute("SELECT resource_id, version FROM resources ORDER BY ALL").fetchall()
-            columns = defaultdict(list)
-            for table, column in db.execute(
-                "SELECT table_name, column_name FROM duckdb_columns() "
-                "WHERE schema_name = 'main' AND database_name = current_database() "
-                "ORDER BY table_name, column_index"
-            ).fetchall():
-                columns[table].append(column)
         resources = {}
         for resource, resource_version in rows:
             record = _resource_record(self.data_root, resource, resource_version)
@@ -265,11 +251,6 @@ class ReleaseQueries(
             identity=identity,
             built_at=str(built_at),
             resources=MappingProxyType(resources),
-            index=MappingProxyType(index),
-            columns=MappingProxyType({t: tuple(c) for t, c in columns.items()}),
-            by_index=MappingProxyType(
-                {i: f"{r}/{v}" for r, v in rows for name, i in index.items() if name == r}
-            ),
         )
 
     def _refresh_inventory_if_stale(self, *, force: bool = False) -> bool:
@@ -370,8 +351,8 @@ class ReleaseQueries(
     ):
         """A step-file query (``omnipath_client/sql/queries/<name>.sql``, the same the
         clients run) on the served release: JSON text (None for no answer) for
-        ``output="json"``, an Arrow table for ``"table"``. The selected resources, less
-        those the query policy disables, are its ``resources`` parameter."""
+        ``output="json"``, an Arrow table for ``"table"``. The selected resources are its
+        ``resources`` parameter."""
         served = self._served()
         query = steps.load(name)
         params = self._query_params(query, params, resources)
@@ -392,8 +373,7 @@ class ReleaseQueries(
         return self._query_cache.get(self._answer_key(name, params), compute)
 
     def _query_params(self, query, params, resources) -> dict[str, Any]:
-        """The parameters with the selected resources, less those the query policy
-        disables, as ``resources``."""
+        """The parameters with the selected resources as ``resources``."""
         params = dict(params or {})
         if "resources" in query.params:
             infos = self._selected_resource_infos(resources)
@@ -531,29 +511,13 @@ class ReleaseQueries(
     def _visible_latest(self) -> dict[str, dict[str, Any]]:
         return self._latest_by_resource
 
-    def _disabled_query_resources(self) -> set[str]:
-        """Live serving policy, independent of immutable releases and downloads."""
-        try:
-            policy = json.loads((self.data_root / "query_policy.json").read_text())
-        except FileNotFoundError:
-            return set()
-        disabled = policy.get("disabled_resources", [])
-        if not isinstance(disabled, list) or any(not isinstance(item, str) for item in disabled):
-            raise ValueError(
-                "query_policy.json disabled_resources must be a list of resource slugs"
-            )
-        return set(disabled)
-
-    def _selected_resource_infos(
-        self, selected_resources: list[str] | None = None, *, include_disabled: bool = False
-    ) -> list[dict[str, Any]]:
+    def _selected_resource_infos(self, selected_resources: list[str] | None = None) -> list[dict[str, Any]]:
         visible = self._visible_resources()
         latest = self._visible_latest()
-        disabled = set() if include_disabled else self._disabled_query_resources()
         if not visible:
             return []
         if not selected_resources:
-            return [info for info in latest.values() if info["resource"] not in disabled]
+            return list(latest.values())
         infos: list[dict[str, Any]] = []
         seen: set[str] = set()
         for res in selected_resources:
@@ -562,8 +526,6 @@ class ReleaseQueries(
                 raise ValueError(
                     f"Resource {res!r} is unavailable in the selected OmniPath release"
                 )
-            if info["resource"] in disabled:
-                raise ValueError(f"Resource {res!r} is disabled for queries")
             marker = info["key"]
             if marker not in seen:
                 infos.append(info)
@@ -581,23 +543,6 @@ class ReleaseQueries(
 
     # Tables ----------------------------------------------------------
 
-    def _in_database(self, table: str) -> bool:
-        return table in self._served().columns
-
-    def _projection(self, table: str) -> str:
-        """The table's columns as the resource files have them, then ``resource``."""
-        columns = self._served().columns[table]
-        # A derived table's stored ``resource`` is computed here as for every table; an
-        # entity row's key rank (in the sorted copy, standing for its key) is no field.
-        helpers = ("_resource", "_resource_version", "_rid", "_eid", "resource", "key_rank")
-        hidden = [c for c in helpers if c in columns]
-        return (
-            f"* EXCLUDE ({', '.join(hidden)}), _resource || '/' || _resource_version AS resource"
-        )
-
-    def _source(self, table: str) -> str:
-        return f"{self._served().alias}.main.{table}"
-
     def _file_table(self, table: str, selected_resources: list[str] | None = None) -> str:
         """A table that is only in the resources' files (raw payloads), read from them."""
         paths = self._table_paths(table, selected_resources)
@@ -614,19 +559,6 @@ class ReleaseQueries(
         schema = {**PUBLISHED_TABLES, **SERVING_TABLES}[table]
         columns = ", ".join(f"NULL AS {name}" for name in schema.names)
         return f"(SELECT {columns}, NULL::VARCHAR AS resource WHERE FALSE)"
-
-    def _table(self, table: str, selected_resources: list[str] | None = None) -> str:
-        """SQL source of one table over the selected resources, with a ``resource`` column."""
-        if not self._in_database(table):
-            return self._file_table(table, selected_resources)
-        infos = self._selected_resource_infos(selected_resources)
-        if not infos:
-            return self._empty_table(table)
-        where = ""
-        if len(infos) < len(self.resources):
-            names = ", ".join(sql_literal(info["resource"]) for info in infos)
-            where = f" WHERE _resource IN ({names})"
-        return f"(SELECT {self._projection(table)} FROM {self._source(table)}{where})"
 
     @staticmethod
     def _jsonify(value: Any) -> Any:

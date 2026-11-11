@@ -1,16 +1,20 @@
--- Steps: the entity {{entity_key}} (merged over its copies at build) when one of its
--- copies is in the resources {{resources}}, with its identifiers and annotations: the
--- table __main (the columns entity_summary reads), __main_summary, the value
--- entity_json (its summary with molecularEvidenceTotal; NULL without the entity) and
--- __copies (its copies in those resources, for their evidence).
+-- Steps: the entity {{entity_key}} when a resource of {{resources}} has it, with its
+-- identifiers and annotations: the table __main (the columns entity_summary reads),
+-- __main_summary, the value entity_json (its summary with molecularEvidenceTotal; NULL
+-- without the entity) and the list main_ids (its number, for its evidence).
 
 -- step: merged AS table
-SELECT * FROM entity_merged
+SELECT * FROM entity
 WHERE entity_key = {{entity_key}} AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
 
--- step: copies AS table
-SELECT _eid, entity_id, _resource, _resource || '/' || _resource_version AS resource FROM entity_by_key
-WHERE entity_key = {{entity_key}} AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
+-- step: main_ids AS list
+SELECT entity_n FROM __merged
+
+-- step: identifier_rows AS table
+SELECT * FROM entity_identifier WHERE entity_n IN ({{main_ids+}})
+
+-- step: annotation_rows AS table
+SELECT * FROM entity_annotation WHERE entity_n IN ({{main_ids+}})
 
 -- step: main AS table
 WITH placed AS (SELECT *, 0 AS position FROM __merged)

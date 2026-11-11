@@ -22,30 +22,24 @@ SELECT NOT {{fast}}
 SELECT {{forms}} OR {{details}}
 
 -- step: fast_order AS table when {{fast}}
-SELECT r._rid, r.page_rank FROM __range_selected r WHERE {{include:relation_conditions r}}
+SELECT r.relation_n, r.page_rank FROM __range_selected r WHERE {{include:relation_conditions r}}
 
 -- step: general_order AS table when NOT {{fast}} AND {{keyed}}
-SELECT r._rid, row_number() OVER (ORDER BY r.category, r.predicate, r.subject_label, r.object_label,
-    r._resource || '/' || r._resource_version, r.relation_id) AS page_rank
-FROM __candidate_rows r
-WHERE {{include:relation_conditions r}}
+SELECT r.relation_n, r.page_rank FROM __candidate_rows r WHERE {{include:relation_conditions r}}
 
 -- step: page_ids AS list
--- the page: of the ordered selection, or straight from a scan without endpoint filters
-SELECT _rid FROM (
-    SELECT _rid, page_rank AS o1, NULL::VARCHAR AS o2, NULL::VARCHAR AS o3, NULL::VARCHAR AS o4,
-        NULL::VARCHAR AS o5, NULL::VARCHAR AS o6, NULL::INTEGER AS o7
-    FROM __fast_order WHERE {{fast}}
+-- the page: of the ordered selection, or straight from the relations without endpoint
+-- filters
+SELECT relation_n FROM (
+    SELECT relation_n, page_rank FROM __fast_order WHERE {{fast}}
     UNION ALL
-    SELECT _rid, page_rank, NULL, NULL, NULL, NULL, NULL, NULL FROM __general_order WHERE NOT {{fast}} AND {{keyed}}
+    SELECT relation_n, page_rank FROM __general_order WHERE NOT {{fast}} AND {{keyed}}
     UNION ALL
-    SELECT r._rid, NULL, r.category, r.predicate, r.subject_label, r.object_label,
-        r._resource || '/' || r._resource_version, r.relation_id
-    FROM relation r
-    WHERE NOT {{keyed}} AND (op_unset({{scope}}) OR list_contains({{scope}}, r._resource))
+    SELECT r.relation_n, r.page_rank FROM relation r
+    WHERE NOT {{keyed}} AND (op_unset({{scope}}) OR list_has_any(r.resources, {{scope}}))
         AND {{include:relation_conditions r}}
 )
-ORDER BY o1, o2, o3, o4, o5, o6, o7
+ORDER BY page_rank
 LIMIT {{limit}} OFFSET {{offset}}
 
 -- step: total AS value
@@ -54,48 +48,48 @@ SELECT CASE
     WHEN {{keyed}} THEN (SELECT count(*) FROM __general_order)
     WHEN {{#page_ids}} = {{limit}} OR {{offset}} > 0 THEN (
         SELECT count(*) FROM relation r
-        WHERE (op_unset({{scope}}) OR list_contains({{scope}}, r._resource))
+        WHERE (op_unset({{scope}}) OR list_has_any(r.resources, {{scope}}))
             AND {{include:relation_conditions r}})
     ELSE {{offset}} + {{#page_ids}}
 END
 
 -- step: endpoint_relations AS table
-SELECT * FROM relation WHERE _rid IN ({{page_ids*}})
+SELECT * FROM relation WHERE relation_n IN ({{page_ids*}})
 
 -- step: page_annotation_rows AS table when {{include_details}}
-SELECT * FROM relation_annotation WHERE _rid IN ({{page_ids*}})
+SELECT * FROM relation_annotation WHERE relation_n IN ({{page_ids+}})
 
 -- step: page_evidence_rows AS table when {{include_details}}
-SELECT * FROM relation_evidence WHERE _rid IN ({{page_ids*}})
+SELECT * FROM relation_evidence WHERE relation_n IN ({{page_ids*}}) AND (op_unset({{resources}}) OR list_contains({{resources}}, resource))
 
 -- steps: endpoint_rows
 
 -- step: items AS table
 WITH annotations AS (
-    SELECT _rid, list(struct_pack(term := term, value := value, scope := scope) ORDER BY ordinal) AS annotations
+    SELECT relation_n, list(struct_pack(term := term, value := value, scope := scope) ORDER BY ordinal) AS annotations
     FROM __page_annotation_rows GROUP BY ALL
 ), evidence AS (
-    -- under molecular form filters, the matching evidence rows count
-    SELECT _rid, count(*) AS n FROM __page_evidence_rows ev
+    -- under molecular form filters, the matching evidence records count
+    SELECT relation_n, count(*) AS n FROM __page_evidence_rows ev
     WHERE op_evidence_ok(ev, {{protein_entity_keys}}, {{transcript_entity_keys}},
         {{isoform_identifiers}}, {{molecular_endpoint_mode}})
     GROUP BY ALL
 ), ordered AS (
-    SELECT unnest({{page_ids}}::BIGINT[]) AS _rid, generate_subscripts({{page_ids}}::BIGINT[], 1) AS position
+    SELECT unnest({{page_ids}}::INTEGER[]) AS relation_n, generate_subscripts({{page_ids}}::INTEGER[], 1) AS position
 ), relations AS (
     SELECT r.* REPLACE (CASE WHEN {{forms}} THEN coalesce(e.n, 0) ELSE r.evidence_count END AS evidence_count),
         o.position,
         CASE WHEN {{include_details}} THEN coalesce(a.annotations, []) ELSE op_qualifier_annotations(r) END AS annotations
-    FROM __endpoint_relations r JOIN ordered o USING (_rid)
-    LEFT JOIN annotations a USING (_rid) LEFT JOIN evidence e USING (_rid)
+    FROM __endpoint_relations r JOIN ordered o USING (relation_n)
+    LEFT JOIN annotations a USING (relation_n) LEFT JOIN evidence e USING (relation_n)
 )
 SELECT * FROM {{include:relation_items relations}}
 
 -- step: page_evidence AS table
--- each page relation's evidence (the matching rows, under molecular form filters)
-SELECT _rid, list(struct_pack(source := source, dataset := dataset, row_id := row_id, upstream_id := upstream_id,
+-- each page relation's evidence (the matching records, under molecular form filters)
+SELECT relation_n, list(struct_pack(source := source, dataset := dataset, row_id := row_id, upstream_id := upstream_id,
         annotations := annotations, subject_molecular_form := subject_molecular_form,
-        object_molecular_form := object_molecular_form) ORDER BY ordinal) AS evidence
+        object_molecular_form := object_molecular_form) ORDER BY resource, resource_version, relation_id, ordinal) AS evidence
 FROM __page_evidence_rows ev
 WHERE NOT {{forms}} OR op_evidence_ok(ev, {{protein_entity_keys}}, {{transcript_entity_keys}},
     {{isoform_identifiers}}, {{molecular_endpoint_mode}})

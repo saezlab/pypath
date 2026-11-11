@@ -124,78 +124,79 @@ SELECT true
 -- the forms at the selected end of each relation's evidence (in product view, the
 -- forms of the selected product), first seen first
 SELECT f.form, min(struct_pack(p := i.position, e := f.e, s := f.s)) AS first FROM (
-    SELECT r._rid, ev.e, side.s,
+    SELECT r.relation_n, ev.e, side.s,
         CASE side.s WHEN 1 THEN ev.item.subject_molecular_form ELSE ev.item.object_molecular_form END AS form,
         CASE side.s WHEN 1 THEN rel.subject_reference_entity_key ELSE rel.object_reference_entity_key END AS side_reference,
-        CASE side.s WHEN 1 THEN rel.subject_entity_key ELSE rel.object_entity_key END AS side_key
+        CASE side.s WHEN 1 THEN rel.subject_n ELSE rel.object_n END AS side_n
     FROM __page_evidence r
-    JOIN __endpoint_relations rel USING (_rid),
+    JOIN __endpoint_relations rel USING (relation_n),
     LATERAL (SELECT unnest(r.evidence) AS item, generate_subscripts(r.evidence, 1) AS e) ev,
     (VALUES (1), (2)) AS side(s)
-) f JOIN (SELECT unnest({{page_ids}}::BIGINT[]) AS _rid, generate_subscripts({{page_ids}}::BIGINT[], 1) AS position) i USING (_rid)
+) f JOIN (SELECT unnest({{page_ids}}::INTEGER[]) AS relation_n, generate_subscripts({{page_ids}}::INTEGER[], 1) AS position) i USING (relation_n)
 WHERE f.form IS NOT NULL
     AND CASE WHEN {{is_product}} THEN op_form_ok(f.form, {{protein_entity_keys}}, {{transcript_entity_keys}}, {{isoform_identifiers}})
         WHEN {{gene_reference}} THEN f.side_reference = {{reference}}
-        ELSE f.side_key = {{entity_id}} END
+        ELSE list_contains({{main_ids}}, f.side_n) END
 GROUP BY f.form
 
 -- step: product_ids AS list when {{reference}} IS NOT NULL
-SELECT DISTINCT _eid FROM entity_group
-WHERE group_key = {{reference}} AND kind = 'gene' AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
-ORDER BY 1
+SELECT DISTINCT entity_n FROM entity_group WHERE group_key = {{reference}} AND kind = 'gene' ORDER BY 1
 
--- step: product_copies AS table
-SELECT * EXCLUDE (_resource_version), _resource || '/' || _resource_version AS resource FROM entity
-WHERE _eid IN ({{product_ids*}})
+-- step: product_rows AS table
+-- the gene's products (not its Entrez records) that a resource read has
+SELECT * FROM entity WHERE entity_n IN ({{product_ids*}}) AND namespace <> 'entrez'
+    AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
 
--- step: product_keys AS list
-SELECT DISTINCT entity_key FROM __product_copies WHERE namespace <> 'entrez' ORDER BY 1
+-- step: product_list_ids AS list
+SELECT entity_n FROM __product_rows ORDER BY entity_n
+
+-- step: identifier_rows AS table
+SELECT * FROM entity_identifier WHERE entity_n IN ({{product_list_ids+}})
+
+-- step: annotation_rows AS table
+SELECT * FROM entity_annotation WHERE entity_n IN ({{product_list_ids*}})
 
 -- step: products AS table
--- the products as merged at build, each in its first copy's place (by resource and id)
-WITH placed AS (
-    SELECT m.*, p.position
-    FROM (SELECT * FROM entity_merged WHERE entity_key IN ({{product_keys*}})) m
-    JOIN (SELECT entity_key, dense_rank() OVER (ORDER BY min(struct_pack(r := resource, i := entity_id))) AS position
-          FROM __product_copies WHERE namespace <> 'entrez' GROUP BY entity_key) p USING (entity_key)
-), listed AS (
-    SELECT * FROM {{include:merged_rows placed}}
-)
+-- the products, by key
+WITH placed AS (SELECT *, row_number() OVER (ORDER BY entity_n) AS position FROM __product_rows),
+listed AS (SELECT * FROM {{include:merged_rows placed}})
 SELECT * FROM {{include:entity_summary listed}}
 
--- step: standalone_ids AS list
--- the entity rows whose evidence is standalone: the gene's reference members, or the
--- entity's copies (product view reads every evidence row of the form)
-SELECT _eid FROM (
-    SELECT DISTINCT _eid FROM entity_group
+-- step: standalone_ns AS list
+-- the entities whose evidence is standalone: the gene's reference members, or the
+-- entity (product view reads every evidence record of the form)
+SELECT DISTINCT n FROM (
+    SELECT entity_n AS n FROM entity_group
     WHERE NOT {{is_product}} AND {{gene_reference}} AND group_key = {{reference}} AND kind = 'reference'
-        AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
-    UNION
-    SELECT _eid FROM __copies WHERE NOT {{is_product}} AND NOT {{gene_reference}}
-) ORDER BY 1
+    UNION ALL
+    SELECT unnest({{main_ids}}::INTEGER[]) WHERE NOT {{is_product}} AND NOT {{gene_reference}})
+ORDER BY 1
 
 -- step: standalone_rows AS table
 SELECT * FROM (
-    SELECT * FROM entity_evidence WHERE _eid IN ({{standalone_ids*}})
+    SELECT * FROM entity_evidence WHERE entity_n IN ({{standalone_ns*}}) AND (op_unset({{resources}}) OR list_contains({{resources}}, resource))
     UNION ALL BY NAME
     SELECT * FROM entity_evidence
-    WHERE {{is_product}} AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
+    WHERE {{is_product}} AND (op_unset({{resources}}) OR list_contains({{resources}}, resource))
         AND CASE {{product_kind}} WHEN 'protein' THEN molecular_form.protein_entity_key = {{entity_id}}
             WHEN 'transcript' THEN molecular_form.transcript_entity_key = {{entity_id}} ELSE false END)
 WHERE {{isoform_identifier}} IS NULL
     OR molecular_form.isoform_identifier.ns || ':' || molecular_form.isoform_identifier.id = {{isoform_identifier}}
-ORDER BY _resource || '/' || _resource_version, entity_id, ordinal
+ORDER BY resource, resource_version, entity_id, ordinal
 LIMIT {{limit}} + 1 OFFSET {{offset}}
 
+-- step: standalone_row_ns AS list
+SELECT DISTINCT entity_n FROM __standalone_rows ORDER BY 1
+
 -- step: standalone_keys AS table
-SELECT _eid, entity_key FROM entity WHERE _eid IN (SELECT DISTINCT _eid FROM __standalone_rows)
+SELECT entity_n, entity_key FROM entity WHERE entity_n IN ({{standalone_row_ns*}})
 
 -- step: standalone AS table
-SELECT row_number() OVER (ORDER BY s._resource || '/' || s._resource_version, s.entity_id, s.ordinal) AS position,
+SELECT row_number() OVER (ORDER BY s.resource, s.resource_version, s.entity_id, s.ordinal) AS position,
     k.entity_key, s.molecular_form,
     struct_pack(source := s.source, dataset := s.dataset, row_id := s.row_id, upstream_id := s.upstream_id,
         annotations := s.annotations, molecular_form := s.molecular_form) AS occurrence
-FROM __standalone_rows s JOIN __standalone_keys k USING (_eid)
+FROM __standalone_rows s JOIN __standalone_keys k USING (entity_n)
 
 -- step: known_keys AS value
 SELECT coalesce(list(DISTINCT k), []::VARCHAR[]) FROM (
@@ -217,7 +218,7 @@ SELECT k FROM (
             SELECT i.position, ev.e, side.s,
                 CASE side.s WHEN 1 THEN ev.item.subject_molecular_form ELSE ev.item.object_molecular_form END AS form
             FROM __page_evidence r
-            JOIN (SELECT unnest({{page_ids}}::BIGINT[]) AS _rid, generate_subscripts({{page_ids}}::BIGINT[], 1) AS position) i USING (_rid),
+            JOIN (SELECT unnest({{page_ids}}::INTEGER[]) AS relation_n, generate_subscripts({{page_ids}}::INTEGER[], 1) AS position) i USING (relation_n),
             LATERAL (SELECT unnest(r.evidence) AS item, generate_subscripts(r.evidence, 1) AS e) ev,
             (VALUES (1), (2)) AS side(s)))
     WHERE k IS NOT NULL AND NOT list_contains({{known_keys}}, k)
@@ -227,7 +228,7 @@ ORDER BY o LIMIT 100
 -- step: referenced AS table
 -- the referenced products' stored summaries, in the order of the keys
 SELECT o.position, op_summary(m.summary) AS summary
-FROM (SELECT entity_key, summary FROM entity_merged
+FROM (SELECT entity_key, summary FROM entity
       WHERE entity_key IN ({{referenced_keys*}}) AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))) m
 JOIN (SELECT unnest({{referenced_keys}}::VARCHAR[]) AS entity_key,
         generate_subscripts({{referenced_keys}}::VARCHAR[], 1) AS position) o USING (entity_key)
@@ -250,7 +251,7 @@ SELECT to_json(struct_pack(
     observedForms := coalesce((SELECT list(form ORDER BY o) FROM distinct_forms), []),
     relations := coalesce((SELECT list(op_json_patch(to_json(i.item), to_json(struct_pack(evidence := coalesce(e.evidence, []))))
             ORDER BY i.position)
-        FROM __items i LEFT JOIN __page_evidence e ON e._rid = list_extract({{page_ids}}::BIGINT[], i.position)), []),
+        FROM __items i LEFT JOIN __page_evidence e ON e.relation_n = list_extract({{page_ids}}::INTEGER[], i.position)), []),
     relationsTotal := {{total}},
     nextCursor := CASE WHEN {{offset}} + {{#page_ids}} < {{total}} OR (SELECT count(*) FROM __standalone) > {{limit}}
         THEN ({{offset}} + {{limit}})::VARCHAR END,

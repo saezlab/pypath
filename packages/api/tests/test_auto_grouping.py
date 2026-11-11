@@ -220,10 +220,12 @@ def test_auto_scope_text_resources_and_filters(mixed_engine):
         engine.search_entity_groups(strategy="auto", filters={"ncbi_tax_id": ["10090"]})["groups"]
         == []
     )
+    # Resource a selects entities; each groups by what all its copies agree on (the
+    # conflicting gene's copy in b names another gene).
     scoped = engine.search_entity_groups(strategy="auto", resources=["a"])["groups"]
-    assert next(g for g in scoped if g["group_key"] == "gene:entrez:1")["member_count"] == 4
+    assert next(g for g in scoped if g["group_key"] == "gene:entrez:1")["member_count"] == 3
     chemistry = next(g for g in scoped if g["connectivity"] == CONNECTIVITY)
-    assert chemistry["member_count"] == 4
+    assert chemistry["member_count"] == 3
     exact = engine.search_entity_groups(
         strategy="auto", filters={"entity_pks": [records["chemical_b"]["entity_key"]]}
     )["groups"]
@@ -265,7 +267,7 @@ def test_auto_api_hydration_concrete_strategies_and_relationships(mixed_engine):
             },
         ).json()["groups"][0]["entity"]
         # A source filter selects the groups; each shows its entity's full merged record.
-        assert scoped["sources"] == ["a", "b"] and len(scoped["entityAttributes"]) == 5
+        assert scoped["sources"] == ["a", "b"] and len(scoped["entityAttributes"]) == 4
         assert {a["source"] for a in scoped["entityAttributes"]} == {"a", "b"}
         by_key = {g["entity"]["entityPk"]: g for g in groups}
         for group in (by_key[chemical["entityPk"]], by_key["gene:entrez:1"]):

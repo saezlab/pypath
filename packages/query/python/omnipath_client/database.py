@@ -1,19 +1,19 @@
-"""The DuckDB database of a release: native tables over every resource, written anew.
+"""The DuckDB database of a release: every entity and relation merged over its resources.
 
 One database format serves the hosted API (one database per published release, written
 on the server by ``build_release_database``) and a local installation (written by
-``init()`` into its data directory). Each published and lookup table of the resources
-becomes one native table (``entity``, ``relation``, ...) with the provenance columns
-``_resource`` and ``_resource_version`` and a global id (``_rid``, ``_eid``: the
-resource's index times 2^32 plus its own id). The same tables per resource are views in
-a schema named after it (``signor.relation``); ``resources`` lists what the database
-holds and ``database_info`` describes it.
+``init()`` into its data directory). The resources' tables are written to the build's
+scratch database; the database's own tables are derived from them (the contract's
+``derived_tables``, sql/build/): one row per entity (``entity``, numbered ``entity_n``
+in key order) and per relation (``relation``, ``relation_n``) with the resources that
+state it, their merged identifiers and annotations, every evidence record with its
+resource, and lookup tables sorted for the reads they serve. ``resources`` lists what
+the database holds and ``database_info`` describes it.
 
-Rows are read by id through the global ids, written into the SQL as literal lists: then
-DuckDB uses the ART indexes the contract names (``indexes``), and filters a sorted
-column by its zone maps. The database's derived tables (``derived_tables``) hold what is
-read by a key the tables are not sorted by. A database is always written completely and
-put in place when done; nothing is updated in place.
+Rows are read by number or key, written into the SQL as literal lists: then DuckDB uses
+the ART indexes the contract names (``indexes``), and filters a sorted column by its
+zone maps. A database is always written completely and put in place when done; nothing
+is updated in place.
 """
 
 from __future__ import annotations
@@ -119,35 +119,6 @@ def _describe(db, sources: list[Source], payloads: bool, info: dict[str, Any]) -
         db.execute("INSERT INTO resources VALUES (?, ?, ?)", row)
 
 
-def _resource_schema(db, source: Source, payloads: bool) -> None:
-    schema = _name(source.resource_id)
-    db.execute(f"CREATE SCHEMA IF NOT EXISTS {schema}")
-    for table in source.tables(payloads):
-        db.execute(
-            f"CREATE OR REPLACE VIEW {schema}.{table} AS "
-            f"SELECT * FROM main.{table} WHERE _resource = {_literal(source.resource_id)}"
-        )
-
-
-def native_lookups() -> list[str]:
-    """Lookups over the native tables: one filter on one table, by global id or by key."""
-    statements = []
-    for table, column, kind in CONTRACT["lookups"]:
-        global_id = _GLOBAL_IDS[table][1]
-        if kind == "at":
-            parameter = "pairs"
-            body = (
-                f"SELECT * EXCLUDE ({global_id}) FROM {table} WHERE {global_id} IN ("
-                "SELECT (i.idx << 32) + w.p.v FROM (SELECT unnest(pairs) AS p) w "
-                "JOIN op_resource_index i ON i._resource = w.p.r)"
-            )
-        else:
-            parameter = "vals"
-            body = f"SELECT * EXCLUDE ({global_id}) FROM {table} WHERE {column} IN (SELECT unnest(vals))"
-        statements.append(f"CREATE OR REPLACE MACRO op_{table}_{kind}({parameter}) AS TABLE {body}")
-    return statements
-
-
 def _names(db) -> None:
     """The Biolink names (op_names), which the shared macros read."""
     db.execute("CREATE OR REPLACE TABLE op_names (kind VARCHAR, alias VARCHAR, name VARCHAR)")
@@ -159,21 +130,8 @@ def _names(db) -> None:
     )
 
 
-def _query_layer(db) -> None:
-    """Biolink names, the lookups and the macros; tables before what reads them."""
-    _names(db)
-    present = {
-        row[0]
-        for row in db.execute(
-            "SELECT table_name FROM duckdb_tables() WHERE schema_name = 'main' "
-            "AND database_name = current_database()"
-        ).fetchall()
-    }
-    for statement in native_lookups():
-        table = re.match(r"CREATE OR REPLACE MACRO op_(\w+)_(at|with)\(", statement).group(1)
-        if table in present:
-            db.execute(statement)
-    # The rule tables the macros read (display names, entity groups).
+def _query_tables(db) -> None:
+    """The rule tables the macros read (display names, entity groups)."""
     for table, spec in CONTRACT.get("query_tables", {}).items():
         db.execute(f"CREATE OR REPLACE TABLE {table} ({', '.join(spec['columns'])})")
         if spec["rows"]:
@@ -181,6 +139,12 @@ def _query_layer(db) -> None:
                 f"INSERT INTO {table} VALUES "
                 + ", ".join("(" + ", ".join(_value_literal(v) for v in row) + ")" for row in spec["rows"])
             )
+
+
+def _query_layer(db) -> None:
+    """Biolink names, the rule tables and the macros; tables before what reads them."""
+    _names(db)
+    _query_tables(db)
     for name in CONTRACT["macro_files"]:
         db.execute(_SQL.joinpath(name).read_text())
     db.execute("UPDATE database_info SET query_layer = ?", [QUERY_LAYER])
@@ -190,51 +154,44 @@ def _value_literal(value) -> str:
     return str(int(value)) if isinstance(value, int) and not isinstance(value, bool) else _literal(str(value))
 
 
-# Derived tables that replace a written table of the same name: {name: its select}.
-REPLACED = {
-    name: query["select"] for name, query in CONTRACT["derived_tables"].items() if query.get("replaces")
-}
-
-
-def _written_to(table: str) -> str | None:
-    """Where a resource table is written: the database, the scratch database ``work`` for
-    a table a derived table replaces (its space is never part of the database), or
-    nowhere (None) for one replaced without being read."""
-    if table not in REPLACED:
-        return ""
-    return "work." if re.search(rf"\b{table}\b", REPLACED[table]) else None
-
-
+# Where each resource table is written: the scratch database (``work``) for those the
+# build reads, the database itself for raw evidence (installations only).
+_WORK = set(CONTRACT["work_tables"])
 _PARTITION = re.compile(r"\{\{partition ([\w.]+)\}\}")
+# Keys are SHA-256 hex: their first characters, then any other.
+_SLICES = list("0123456789abcdef")
 
 
 def _slice(select: str, first: str | None) -> str:
-    """A build statement for the entity keys that start with ``first`` (none for None)."""
-    return _PARTITION.sub(
-        lambda m: "false" if first is None else f"left({m[1]}, 1) = {_literal(first)}", select
-    )
+    """A build statement for the keys that start with ``first`` (``""``: with another
+    character; None: none)."""
+    def condition(m):
+        if first is None:
+            return "false"
+        if first == "":
+            return f"left(coalesce({m[1]}, ''), 1) NOT IN ({', '.join(_literal(c) for c in _SLICES)})"
+        return f"left({m[1]}, 1) = {_literal(first)}"
+
+    return _PARTITION.sub(condition, select)
 
 
-def _derived(db, present: set[str]) -> None:
-    """The derived tables (each sorted) and the indexes, once the tables are written. A
-    table that replaces a written one reads it from ``work`` (on the search path), where
-    the stages of the build ("scratch") go too."""
+def _derived(db, say: Callable[[str], None]) -> None:
+    """The derived tables (each sorted), in build order, and the indexes. The stages of
+    the build ("scratch") go to the scratch database."""
     for name, query in CONTRACT["derived_tables"].items():
-        # A stage of the build goes to the scratch database (on the search path).
+        say(f"Deriving {name}")
         target = f"{'work' if query.get('scratch') else 'omnipath'}.main.{name}"
         select, order = query["select"], query["order"]
         if _PARTITION.search(select) is None:
             db.execute(f"CREATE TABLE {target} AS SELECT * FROM ({select}) ORDER BY {order}")
             continue
-        # In slices of entity keys by their first character, in key order: the table is
-        # sorted as a whole, and no slice needs the memory of all of them.
+        # In slices of keys by their first character, in key order: the table is sorted
+        # as a whole (its order follows the keys), and no slice needs the memory of all.
         db.execute(f"CREATE TABLE {target} AS SELECT * FROM ({_slice(select, None)}) LIMIT 0")
-        firsts = [r[0] for r in db.execute("SELECT DISTINCT left(entity_key, 1) FROM entity ORDER BY 1").fetchall()]
-        for first in firsts:
+        for first in [*_SLICES, ""]:
             db.execute(f"INSERT INTO {target} SELECT * FROM ({_slice(select, first)}) ORDER BY {order}")
     for name, table, column in CONTRACT["indexes"]:
-        if table in present or table in CONTRACT["derived_tables"]:
-            db.execute(f"CREATE INDEX {name} ON {table}({column})")
+        db.execute(f"CREATE INDEX {name} ON omnipath.main.{table}({column})")
 
 
 def _taxonomy(db, path: Path | None) -> None:
@@ -309,13 +266,13 @@ def write_database(
                 db.execute("SET threads = ?", [int(threads)])
             ordered = sorted(sources, key=lambda s: s.resource_id)
             index = {s.resource_id: i for i, s in enumerate(ordered)}
-            db.execute("CREATE TABLE op_resource_index (_resource VARCHAR, idx BIGINT)")
-            for name, i in index.items():
-                db.execute("INSERT INTO op_resource_index VALUES (?, ?)", [name, i])
             present = [t for t in TABLES + SERVING if any(t in s.tables(payloads) for s in ordered)]
             for table in present:
-                where = _written_to(table)
-                if where is None:
+                if table in _WORK:
+                    where = "work."
+                elif table == _PAYLOADS:
+                    where = ""
+                else:
                     continue
                 having = [s for s in ordered if table in s.tables(payloads)]
                 say(f"Writing {table} ({len(having)} resources)")
@@ -325,14 +282,12 @@ def write_database(
                 db.execute(f"CREATE TABLE {where}{table} AS SELECT * FROM ({union}) LIMIT 0")
                 for source in having:
                     db.execute(f"INSERT INTO {where}{table} BY NAME " + source.select(table, index[source.resource_id]))
-            say("Writing the derived tables and indexes")
-            # The merged entities' summaries name taxa and use the shared macros.
+            # The merged entities' summaries name taxa and use the shared macros and rules.
             _taxonomy(db, taxonomy)
             _names(db)
+            _query_tables(db)
             steps.prepare(db)
-            _derived(db, set(present))
-            for source in ordered:
-                _resource_schema(db, source, payloads)
+            _derived(db, say)
             _describe(db, ordered, payloads, info)
             _query_layer(db)
             db.execute("USE memory")

@@ -48,7 +48,7 @@ class EvidenceQueries:
     ) -> dict[str, Any]:
         """Fetch raw input JSON/string records from evidence_payloads.parquet for inspection."""
         rows = self._fetch_dicts(
-            f"SELECT source, row_id, payload_json FROM {self._table('evidence_payloads', resources)} "
+            f"SELECT source, row_id, payload_json FROM {self._file_table('evidence_payloads', resources)} "
             "WHERE relation_key = ?",
             [relation_pk],
         )

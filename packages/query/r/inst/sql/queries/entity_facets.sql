@@ -1,7 +1,7 @@
 -- query: entity_facets
 -- The entity filter options a search leaves: entity types and taxa of the matching
--- entities (most first), and every selected resource's count, which ignores the
--- source filter so that other sources stay selectable.
+-- entities (most first), and every selected resource's count of them, which ignores
+-- the source filter so that other sources stay selectable.
 -- param: query VARCHAR = ""
 -- param: sources VARCHAR[] = NULL
 -- param: entity_types VARCHAR[] = NULL
@@ -66,12 +66,14 @@ SELECT {{typed_scope}}
 -- steps: entity_matches
 
 -- step: typed_counts AS table
--- without a source filter the same rows give the source counts: one scan for all three
-SELECT CASE WHEN GROUPING(entity_type) = 0 THEN 'entity_type'
-        WHEN GROUPING(taxon) = 0 THEN 'taxonomy_id' ELSE 'source' END AS facet,
-    coalesce(entity_type, taxon, _resource)::VARCHAR AS value, count(*) AS n
-FROM {{include:entity_match_rows m}}
-GROUP BY GROUPING SETS ((entity_type), (taxon), (_resource))
+-- the matching entities by type, taxon and resource: without a source filter the same
+-- entities give the source counts
+WITH m AS {{include:entity_match_rows m}}
+SELECT 'entity_type' AS facet, entity_type::VARCHAR AS value, count(*) AS n FROM m GROUP BY entity_type
+UNION ALL
+SELECT 'taxonomy_id', taxon::VARCHAR, count(*) FROM m GROUP BY taxon
+UNION ALL
+SELECT 'source', r, count(*) FROM (SELECT unnest(resources) AS r FROM m) GROUP BY r
 
 -- step: key_scope AS value
 SELECT {{selected}}
@@ -87,8 +89,8 @@ SELECT {{selected}}
 -- steps: entity_matches
 
 -- step: filtered_source_counts AS table when NOT op_unset({{sources}})
-SELECT m._resource AS value, count(*) AS n
-FROM {{include:entity_match_rows m}} m GROUP BY m._resource
+SELECT r AS value, count(*) AS n
+FROM (SELECT unnest(resources) AS r FROM {{include:entity_match_rows m}} m) GROUP BY r
 
 -- step: source_counts AS table
 SELECT r.resource_id AS value, coalesce(c.n, 0) AS n

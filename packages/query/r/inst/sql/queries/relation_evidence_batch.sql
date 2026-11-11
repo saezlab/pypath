@@ -19,31 +19,32 @@ SELECT CASE WHEN len(coalesce({{relation_keys}}, [])) <= 1000 THEN true
 -- steps: relation_by_keys
 
 -- step: ids AS list
-SELECT _rid FROM __found ORDER BY _rid
+SELECT relation_n FROM __found ORDER BY relation_n
 
 -- step: evidence_rows AS table
-SELECT * FROM relation_evidence WHERE _rid IN ({{ids*}})
+SELECT * FROM relation_evidence WHERE relation_n IN ({{ids*}}) AND (op_unset({{resources}}) OR list_contains({{resources}}, resource))
 
 -- step: inheriting AS list
-SELECT DISTINCT _rid FROM __evidence_rows WHERE annotations IS NULL ORDER BY _rid
+SELECT DISTINCT relation_n FROM __evidence_rows WHERE annotations IS NULL ORDER BY relation_n
 
 -- step: inherited_rows AS table
-SELECT * FROM relation_annotation WHERE _rid IN ({{inheriting*}})
+SELECT * FROM relation_annotation WHERE relation_n IN ({{inheriting+}})
 
 -- step: response AS value
 WITH inherited AS (
-    SELECT _rid, list(value ORDER BY ordinal) AS publications FROM __inherited_rows
+    SELECT relation_n, list(value ORDER BY ordinal) AS publications FROM __inherited_rows
     WHERE term = 'publications' AND coalesce(lower(scope), 'relation') = 'relation' GROUP BY ALL
 ), records AS (
-    SELECT f.relation_key, f.resource, f.relation_id, e.ordinal,
+    SELECT f.relation_key, e.resource || '/' || e.resource_version AS resource, e.relation_id, e.ordinal,
         coalesce(nullif(e.source, ''), 'unknown') AS source,
         CASE WHEN e.annotations IS NULL THEN coalesce(i.publications, [])
             ELSE [a.value FOR a IN e.annotations IF a.term = 'publications'
                 AND coalesce(lower(a.scope), 'relation') = 'relation'] END AS publications,
         e.subject_molecular_form.modifications AS subject_modifications,
         e.object_molecular_form.modifications AS object_modifications,
-        row_number() OVER (PARTITION BY f.relation_key ORDER BY f.resource, f.relation_id, e.ordinal) AS seq
-    FROM __evidence_rows e JOIN __found f USING (_rid) LEFT JOIN inherited i USING (_rid)
+        row_number() OVER (PARTITION BY f.relation_key
+            ORDER BY e.resource, e.resource_version, e.relation_id, e.ordinal) AS seq
+    FROM __evidence_rows e JOIN __found f USING (relation_n) LEFT JOIN inherited i USING (relation_n)
     WHERE op_evidence_ok(e, {{protein_entity_keys}}, {{transcript_entity_keys}},
             {{isoform_identifiers}}, {{molecular_endpoint_mode}})
         OR (op_unset({{protein_entity_keys}}) AND op_unset({{transcript_entity_keys}})

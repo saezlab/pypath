@@ -33,16 +33,17 @@ FROM unnest(names::VARCHAR[]) AS u(v)
 LEFT JOIN op_names n ON n.kind = kind_ AND n.alias = lower(trim(u.v));
 
 
--- An entity row passes the search filters: its resource, type, taxon, reference and key.
+-- An entity passes the search filters: a resource of scope has it, and its type, taxon,
+-- reference and key.
 CREATE OR REPLACE MACRO op_entity_ok(e, scope, type_names, taxa, references_, keys) AS (
-    (op_unset(scope) OR list_contains(scope, e._resource))
+    (op_unset(scope) OR list_has_any(e.resources, scope))
     AND (op_unset(type_names) OR list_contains(type_names, e.entity_type))
     AND (op_unset(taxa) OR list_contains(taxa, e.taxon))
     AND (op_unset(references_) OR list_contains(references_, e.reference_entity_key))
     AND (keys IS NULL OR list_contains(keys, e.entity_key))
 );
 
--- A stored entity summary (entity_merged.summary) as the API shows it. The build stores
+-- A stored entity summary (entity.summary) as the API shows it. The build stores
 -- it without its identifiers, which are the canonical identifier and the label (as
 -- entity_summary lists them for an entity without nested identifiers): a nested list
 -- costs most of a summary's read.
@@ -56,16 +57,6 @@ CREATE OR REPLACE MACRO op_summary(s) AS struct_update(s, identifiers := list_fi
         type := CASE WHEN s.primaryNamespace IN ('uniprot', 'entrez', 'ensg') THEN 'genesymbol' ELSE 'name' END,
         id := s.label, curie := NULL::VARCHAR, source := '', isCanonical := false)] ELSE [] END,
     lambda x: x.type <> '' AND x.id <> ''));
-
--- A merged entity (entity_merged) passes the filters when some copy has each value: a
--- resource of scope, a type, a taxon, a reference key (and its key among keys).
-CREATE OR REPLACE MACRO op_merged_ok(e, scope, type_names, taxa, references_, keys) AS (
-    (op_unset(scope) OR list_has_any(e.resources, scope))
-    AND (op_unset(type_names) OR list_has_any(e.copy_types, type_names))
-    AND (op_unset(taxa) OR list_has_any(e.copy_taxa, taxa))
-    AND (op_unset(references_) OR list_has_any(e.copy_reference_keys, references_))
-    AND (keys IS NULL OR list_contains(keys, e.entity_key))
-);
 
 -- Values in first-seen order without repeats (positions are 1-based).
 CREATE OR REPLACE MACRO op_ordered_distinct(xs) AS (

@@ -31,7 +31,7 @@ class ResourcesQueries:
                     {
                         "key": key,
                         "resource": info["resource"],
-                        "queryable": info["resource"] not in self._disabled_query_resources(),
+                        "queryable": True,
                         "version": info["version"],
                         "entities_count": pq.read_metadata(tables["entity"]).num_rows,
                         "relations_count": pq.read_metadata(tables["relation"]).num_rows,
@@ -176,14 +176,13 @@ class ResourcesQueries:
         """The explorer catalog of the release in scope.
 
         It reads every resource's files, build manifest and statistics (about 1 s for 171
-        resources), so it is kept until the data, the release, the query policy or the public
+        resources), so it is kept until the data, the release or the public
         address of the files changes.
         """
         self._refresh_inventory_if_stale()
         key = (
             self._inventory_fingerprint,
             json.dumps(self._release_scope.get(), sort_keys=True, default=str),
-            tuple(sorted(self._disabled_query_resources())),
             getattr(self, "public_data_url", None),
         )
         return self._catalog_cache.get(key, self._build_resource_catalog)
@@ -215,8 +214,7 @@ class ResourcesQueries:
 
     def _build_resource_catalog(self) -> list[dict[str, Any]]:
         catalog: list[dict[str, Any]] = []
-        disabled = self._disabled_query_resources()
-        for info in self._selected_resource_infos(include_disabled=True):
+        for info in self._selected_resource_infos():
             files = [
                 record
                 for name, path in self._download_file_map(info).items()
@@ -261,7 +259,7 @@ class ResourcesQueries:
                     "resolution_stats": resolution,
                     **resource_metadata(info["resource"], manifest),
                     "resource_id": info["resource"],
-                    "queryable": info["resource"] not in disabled,
+                    "queryable": True,
                     "resource_name": info["resource"],
                     "version": info["version"],
                     "entity_count": entity_rows,

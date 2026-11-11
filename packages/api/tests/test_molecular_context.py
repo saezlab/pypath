@@ -105,9 +105,9 @@ def test_typed_identity_and_gene_group(molecular_engine):
 def test_exact_occurrence_filters_and_projection(molecular_engine):
     engine = molecular_engine
     filters = {"protein_entity_keys": ["3" * 64], "isoform_identifiers": ["uniprot:P00001-2"]}
-    assert engine.search_relations(filters)["total"] == 2
+    assert engine.search_relations(filters)["total"] == 1
     rows = engine.search_relations(filters, include_details=True)["rows"]
-    assert all(len(r["evidence"]) == 1 for r in rows)
+    assert all(len(r["evidence"]) == 2 for r in rows)
     assert engine.search_relations(dict(filters, molecular_endpoint_mode="target"))["total"] == 0
     assert (
         engine.search_relations(
@@ -126,7 +126,7 @@ def test_exact_occurrence_filters_and_projection(molecular_engine):
     context = engine.get_molecular_context(
         "3" * 64, view="product", isoform_identifier="uniprot:P00001-2"
     )
-    assert context["relationsTotal"] == 2
+    assert context["relationsTotal"] == 1
     assert len(context["standaloneEvidence"]) == 2
     # The entity carries the count; its items are paged from their own endpoint.
     core = engine.get_entity_core("2" * 64)["entity"]
@@ -136,17 +136,17 @@ def test_exact_occurrence_filters_and_projection(molecular_engine):
     assert first["evidenceTotal"] == 6 and first["nextCursor"] == "4"
     assert len(first["evidence"]) == 4 and len(rest["evidence"]) == 2 and rest["nextCursor"] is None
     assert len({json.dumps(e, sort_keys=True) for e in first["evidence"] + rest["evidence"]}) == 6
-    assert all(len(r["evidence"]) == 1 for r in context["relations"])
+    assert all(len(r["evidence"]) == 2 for r in context["relations"])
     gene_context = engine.get_molecular_context("gene:entrez:1")
     assert len(gene_context["catalogueProducts"]) == 1
     assert gene_context["filters"] == {"reference_entity_keys": ["entrez:1"]}
-    assert gene_context["relationsTotal"] == 2
+    assert gene_context["relationsTotal"] == 1
     assert len(gene_context["standaloneEvidence"]) == 6
-    assert engine.get_molecular_context("1" * 64)["relationsTotal"] == 2
+    assert engine.get_molecular_context("1" * 64)["relationsTotal"] == 1
     data, _ = engine.export_slice(filters)
     exported = pq.read_table(io.BytesIO(data)).to_pylist()
-    assert len(exported) == 2
-    assert all(len(r["evidence"]) == 1 for r in exported)
+    assert len(exported) == 1
+    assert all(len(r["evidence"]) == 2 for r in exported)
     assert {p["entity_key"] for p in exported[0]["referenced_product_records"]} == {"3" * 64}
 
 
@@ -176,7 +176,7 @@ def test_http_molecular_contract(molecular_engine):
         "/entities/" + ("3" * 64) + "/molecular-context",
         params={"view": "product", "isoform_identifier": "uniprot:P00001-2"},
     )
-    assert context.status_code == 200 and context.json()["relationsTotal"] == 2
+    assert context.status_code == 200 and context.json()["relationsTotal"] == 1
     groups = client.post("/entities/groups", json={"strategy": "gene_reference", "query": "ABC"})
     assert groups.status_code == 200 and groups.json()["groups"][0]["entity"][
         "memberEntityTypes"
@@ -232,18 +232,18 @@ def test_filters_do_not_combine_endpoints_or_occurrences(molecular_engine):
         )["total"]
         == 0
     )
-    assert engine.search_relations({"entity_ids": ["entrez:1"]})["total"] == 4
+    assert engine.search_relations({"entity_ids": ["entrez:1"]})["total"] == 2
 
 
 def test_paging_preserves_exact_evidence(molecular_engine):
     engine = molecular_engine
     filters = {"protein_entity_keys": ["3" * 64], "isoform_identifiers": ["uniprot:P00001-2"]}
     result = engine.search_relations(filters, limit=1, include_details=True)
-    assert result["total"] == 2
-    assert len(result["rows"][0]["evidence"]) == 1
+    assert result["total"] == 1
+    assert len(result["rows"][0]["evidence"]) == 2
     api = engine.search_relations_api(filters, limit=1)
-    assert api["rows"][0]["relation"]["evidenceCount"] == 1
-    assert engine.search_relations(filters, limit=1, offset=50)["total"] == 2
+    assert api["rows"][0]["relation"]["evidenceCount"] == 2
+    assert engine.search_relations(filters, limit=1, offset=50)["total"] == 1
 
 
 def test_fallback_references_do_not_become_gene_groups(molecular_engine):
@@ -309,7 +309,7 @@ def test_product_context_keeps_native_fallback_without_losing_exact_observations
         "3" * 64, view="product", isoform_identifier="uniprot:P00001-2"
     )
     assert context["referenceEntityKey"] == "uniprot:P00001"
-    assert context["relationsTotal"] == 2
+    assert context["relationsTotal"] == 1
     assert len(context["standaloneEvidence"]) == 2
     assert len(context["observedForms"]) == 1
     groups = engine.search_entity_groups(strategy="gene_reference", limit=20, member_limit=10)[
@@ -418,20 +418,20 @@ def test_non_product_source_types_keep_native_context(
     republish(engine.data_root, engine)
     context = engine.get_molecular_context(key)
     assert context["filters"] == {"entity_pks": [key]}
-    assert context["relationsTotal"] == 2
+    assert context["relationsTotal"] == 1
     assert context["observedForms"] == []
     assert len(context["standaloneEvidence"]) == 2
     assert all(record["entityPk"] == key for record in context["standaloneEvidence"])
     assert all(row["subjectEntity"]["entityType"] == entity_type for row in context["relations"])
     assert all(row["relation"]["subjectEntityPk"] == key for row in context["relations"])
     assert all(
-        len(row["evidence"]) == 1 and row["evidence"][0]["subject_molecular_form"] is None
+        len(row["evidence"]) == 2 and row["evidence"][0]["subject_molecular_form"] is None
         for row in context["relations"]
     )
     with TestClient(create_app(queries=engine)) as client:
         response = client.get(f"/entities/{key}/molecular-context")
         assert response.status_code == 200
-        assert response.json()["relationsTotal"] == 2
+        assert response.json()["relationsTotal"] == 1
         assert response.json()["filters"] == {"entity_pks": [key]}
 
 
@@ -506,11 +506,11 @@ def test_compatible_product_type_and_namespace_keep_exact_context(
     republish(engine.data_root, engine)
     context = engine.get_molecular_context(product_key, view="product")
     assert context["filters"] == {product_kind + "_entity_keys": [product_key]}
-    assert context["relationsTotal"] == 2
+    assert context["relationsTotal"] == 1
     assert len(context["standaloneEvidence"]) == 2
     assert len(context["observedForms"]) == 1
     assert all(
-        len(row["evidence"]) == 1
+        len(row["evidence"]) == 2
         and row["evidence"][0]["subject_molecular_form"][product_kind + "_entity_key"]
         == product_key
         for row in context["relations"]
@@ -569,7 +569,7 @@ def test_shared_cursor_pages_both_streams_to_completion(molecular_engine, relati
 def test_shared_cursor_continues_standalone_after_cross_resource_relations_finish(molecular_engine):
     engine = molecular_engine
     pages = [engine.get_molecular_context("gene:entrez:1", limit=2, offset=i) for i in (0, 2, 4)]
-    assert [len(page["relations"]) for page in pages] == [2, 0, 0]
+    assert [len(page["relations"]) for page in pages] == [1, 0, 0]
     assert [len(page["standaloneEvidence"]) for page in pages] == [2, 2, 2]
     assert [page["nextCursor"] for page in pages] == ["2", "4", None]
     assert [
@@ -761,7 +761,7 @@ def test_shared_native_product_key_does_not_turn_legacy_evidence_into_exact_prod
     republish(engine.data_root, engine)
     reference = engine.get_molecular_context(key)
     assert reference["filters"] == {"entity_pks": [key]}
-    assert reference["relationsTotal"] == 2
+    assert reference["relationsTotal"] == 1
     assert len(reference["standaloneEvidence"]) == 2
     product = engine.get_molecular_context(key, view="product")
     assert product["relationsTotal"] == 1
@@ -799,7 +799,7 @@ def test_isoform_selection_requires_explicit_product_view(molecular_engine):
         exact = client.get(
             endpoint, params={"view": "product", "isoform_identifier": "uniprot:P00001-2"}
         ).json()
-        assert exact["relationsTotal"] == 2
+        assert exact["relationsTotal"] == 1
         assert len(exact["standaloneEvidence"]) == 2
 
 

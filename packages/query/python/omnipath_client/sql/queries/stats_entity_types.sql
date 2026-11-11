@@ -1,5 +1,5 @@
 -- query: stats_entity_types
--- Entity rows per entity type, most first.
+-- Entities per entity type, most first.
 -- param: resources VARCHAR[] = NULL
 -- output: json response
 -- output: table counts
@@ -7,7 +7,7 @@
 
 -- step: counts AS table
 SELECT entity_type, count(*) AS n FROM entity
-WHERE entity_type IS NOT NULL AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
+WHERE entity_type IS NOT NULL AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
 GROUP BY 1 ORDER BY n DESC, entity_type
 
 -- step: response AS value

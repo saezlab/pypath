@@ -24,32 +24,32 @@ SELECT (SELECT list(name) FROM op_biolink('class', {{entity_types}}))
 WITH chosen AS (
     SELECT category, predicate, subject_type, object_type, taxon, sign, is_directed, sources,
         object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier,
-        _resource, evidence_count
+        resources, evidence_count
     FROM __range_selected WHERE {{fast}}
     UNION ALL BY NAME
     SELECT category, predicate, subject_type, object_type, taxon, sign, is_directed, sources,
         object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier,
-        _resource, evidence_count
-    FROM __candidate_rows WHERE NOT {{fast}} AND {{keyed}} AND (NOT {{forms}} OR _rid IN ({{form_ids*}}))
+        resources, evidence_count
+    FROM __candidate_rows WHERE NOT {{fast}} AND {{keyed}} AND (NOT {{forms}} OR relation_n IN ({{form_ids*}}))
     UNION ALL BY NAME
     SELECT category, predicate, subject_type, object_type, taxon, sign, is_directed, sources,
         object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier,
-        _resource, evidence_count
-    FROM relation WHERE NOT {{keyed}} AND {{forms}} AND _rid IN ({{form_ids*}})
-        AND (op_unset({{scope}}) OR list_contains({{scope}}, _resource))
+        resources, evidence_count
+    FROM relation WHERE NOT {{keyed}} AND {{forms}} AND relation_n IN ({{form_ids*}})
+        AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
 )
 SELECT category, predicate, subject_type, object_type, taxon, sign, is_directed, sources,
-    object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier, _resource,
+    object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier, resources,
     max(evidence_count) AS evidence_count, count(*) AS relation_count
 FROM chosen
 WHERE ({{is_directed}} IS NULL OR is_directed = {{is_directed}}) AND ({{sign}} IS NULL OR sign = {{sign}})
 GROUP BY ALL
 UNION ALL BY NAME
 SELECT category, predicate, subject_type, object_type, taxon, sign, is_directed, sources,
-    object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier, _resource,
+    object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier, resources,
     evidence_count, relation_count
 FROM relation_facet
-WHERE NOT ({{keyed}} OR {{forms}}) AND (op_unset({{scope}}) OR list_contains({{scope}}, _resource))
+WHERE NOT ({{keyed}} OR {{forms}}) AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
     AND ({{is_directed}} IS NULL OR is_directed = {{is_directed}}) AND ({{sign}} IS NULL OR sign = {{sign}})
 
 -- step: facet_rows AS table

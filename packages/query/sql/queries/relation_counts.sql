@@ -48,7 +48,7 @@ SELECT category, predicate, sign, count(*) AS n FROM (
     WHERE NOT {{fast}} AND {{keyed}} AND {{include:relation_conditions r}}
     UNION ALL
     SELECT r.category, r.predicate, r.sign FROM relation r
-    WHERE NOT {{keyed}} AND (op_unset({{scope}}) OR list_contains({{scope}}, r._resource))
+    WHERE NOT {{keyed}} AND (op_unset({{scope}}) OR list_has_any(r.resources, {{scope}}))
         AND {{include:relation_conditions r}})
 GROUP BY ALL
 

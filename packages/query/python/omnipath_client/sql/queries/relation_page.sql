@@ -41,20 +41,22 @@
 -- records: also the page's relation rows as stored (with their annotations and evidence
 -- under details)
 WITH annotations AS (
-    SELECT _rid, list(struct_pack(term := term, value := value,
+    SELECT relation_n, list(struct_pack(term := term, value := value,
         quantity := op_quantity(quantity_has_numeric_value, quantity_has_unit, quantity_has_unit_prefix,
             quantity_has_binary_relation, quantity_source_field, quantity_comparator),
         source := source, dataset := dataset, scope := scope) ORDER BY ordinal) AS annotations
     FROM __page_annotation_rows GROUP BY ALL
 ), ordered AS (
-    SELECT unnest({{page_ids}}::BIGINT[]) AS _rid, generate_subscripts({{page_ids}}::BIGINT[], 1) AS position
+    SELECT unnest({{page_ids}}::INTEGER[]) AS relation_n, generate_subscripts({{page_ids}}::INTEGER[], 1) AS position
 ), stored AS (
     SELECT o.position AS position_, a.annotations AS annotations_, e.evidence AS evidence_,
-        r.* EXCLUDE (_rid, _resource, _resource_version, evidence_count),
-        r._resource || '/' || r._resource_version AS resource,
+        r.* EXCLUDE (relation_n, subject_n, object_n, page_rank, evidence_count),
+        s.entity_key AS subject_entity_key, s.label AS subject_label,
+        b.entity_key AS object_entity_key, b.label AS object_label,
         CASE WHEN {{forms}} THEN len(coalesce(e.evidence, [])) ELSE r.evidence_count END AS evidence_count
-    FROM __endpoint_relations r JOIN ordered o USING (_rid)
-    LEFT JOIN annotations a USING (_rid) LEFT JOIN __page_evidence e USING (_rid)
+    FROM __endpoint_relations r JOIN ordered o USING (relation_n)
+    JOIN __endpoint_rows s ON s.entity_n = r.subject_n JOIN __endpoint_rows b ON b.entity_n = r.object_n
+    LEFT JOIN annotations a USING (relation_n) LEFT JOIN __page_evidence e USING (relation_n)
 ), records AS (
     -- each row's own columns (the helper fields dropped)
     SELECT position_ AS position, annotations_ AS annotations, evidence_ AS evidence,

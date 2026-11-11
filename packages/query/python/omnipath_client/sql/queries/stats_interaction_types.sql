@@ -7,7 +7,7 @@
 
 -- step: counts AS table
 SELECT predicate, interaction_class, count(*) AS n FROM relation
-WHERE op_unset({{resources}}) OR list_contains({{resources}}, _resource)
+WHERE op_unset({{resources}}) OR list_has_any(resources, {{resources}})
 GROUP BY 1, 2 ORDER BY n DESC, predicate, interaction_class
 
 -- step: response AS value

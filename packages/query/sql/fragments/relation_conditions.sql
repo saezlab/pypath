@@ -1,6 +1,6 @@
 -- The relation filters other than the endpoints, as a condition on the relation (or
 -- endpoint table) row {{input}}; needs the relation_candidates steps.
-(NOT {{forms}} OR {{input}}._rid IN ({{form_ids*}}))
+(NOT {{forms}} OR {{input}}.relation_n IN ({{form_ids*}}))
     AND (op_unset({{relation_categories}}) OR list_contains({{relation_categories}}, {{input}}.category))
     AND (op_unset({{predicate_names}}) OR list_contains({{predicate_names}}, {{input}}.predicate))
     AND (op_unset({{object_aspect_qualifier}})

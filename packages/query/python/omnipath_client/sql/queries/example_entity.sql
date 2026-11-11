@@ -17,7 +17,7 @@ SELECT {{resources}}
 -- steps: entity_keys
 
 -- step: chosen AS table
-SELECT * FROM entity_merged
+SELECT * FROM entity
 WHERE entity_key IN ({{entity_keys*}}) AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
 ORDER BY coalesce(entity_type IN ('physical_entity', 'named_thing', 'entity'), false),
     -coalesce(relation_count, 0),

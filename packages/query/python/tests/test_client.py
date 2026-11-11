@@ -218,7 +218,7 @@ def test_init_is_incremental_and_follows_the_release(service):
             ("alpha", "2.0", True),
             ("beta", "1.0", True),
         ]
-        assert db.sql("SELECT count(*) FROM alpha.evidence_payloads").fetchone() == (1,)
+        assert db.sql("SELECT count(*) FROM evidence_payloads WHERE _resource = 'alpha'").fetchone() == (1,)
 
 
 def test_derived_serving_tables_match_the_build(service):
@@ -245,25 +245,22 @@ def queries(db):
                 "AND NOT starts_with(table_name, 'op_')"
             ).fetchall()
         ),
-        entities=db.sql(
-            "SELECT label, _resource, _resource_version FROM entity ORDER BY ALL"
-        ).fetchall(),
+        entities=db.sql("SELECT label, resources FROM entity ORDER BY ALL").fetchall(),
         quoted=db.sql("SELECT identifier FROM entity WHERE label = ?", ["O'Brien"]).fetchall(),
-        additive=db.sql("SELECT count(*) FROM entity WHERE new_field IS NULL").fetchone(),
-        one=db.sql("SELECT count(*) FROM alpha.relation").fetchone(),
+        one=db.sql("SELECT count(*) FROM relation WHERE list_contains(resources, 'alpha')").fetchone(),
         joined=sorted(
             db.sql(
-                """SELECT e.label, r._resource FROM entity e
-                JOIN relation r ON e.entity_key = r.subject_entity_key AND e._resource = r._resource
-                WHERE e.identifier = ?""",
+                """SELECT e.label, unnest(r.resources) FROM entity e
+                JOIN relation r ON r.subject_n = e.entity_n WHERE e.identifier = ?""",
                 ["P04637"],
             ).fetchall()
         ),
         endpoints=db.sql(
-            "SELECT count(*) FROM relation_endpoint WHERE key = ? AND _resource = 'alpha'",
+            """SELECT count(*) FROM relation_endpoint p JOIN entity e USING (entity_n)
+            WHERE e.entity_key = ? AND list_contains(p.resources, 'alpha')""",
             [key("P04637")],
         ).fetchone(),
-        terms=db.sql("SELECT count(*) FROM beta.entity_term WHERE term = 'tp53'").fetchone(),
+        terms=db.sql("SELECT count(*) FROM entity_term WHERE term = 'tp53'").fetchone(),
     )
 
 
@@ -280,32 +277,31 @@ def test_sql_on_native_tables(service, monkeypatch):
         with connect(service.data) as db:
             assert db.path == database
             tables = queries(db)
-            assert ("alpha", "relation") in tables["tables"]
-            assert ("main", "entity_term") in tables["tables"]
+            # One merged table each, no tables per resource.
+            assert ("main", "relation") in tables["tables"] and ("main", "entity_term") in tables["tables"]
+            assert {schema for schema, _ in tables["tables"]} == {"main"}
             assert ("main", "evidence_payloads") not in tables["tables"]
-            assert len(tables["entities"]) == 6
-            assert tables["quoted"] == [("quote",), ("quote",)]
-            assert tables["additive"] == (3,)
+            assert tables["entities"] == [
+                ("O'Brien", ["alpha", "beta"]), ("TP53", ["alpha", "beta"]), ("caffeine", ["alpha", "beta"])
+            ]
+            assert tables["quoted"] == [("quote",)]
             assert tables["one"] == (2,)
             assert tables["joined"] == [("TP53", "alpha"), ("TP53", "beta")]
             assert tables["endpoints"] == (2,) and tables["terms"] == (1,)
             # The database is read-only; temporary tables are the session's own.
             with pytest.raises(duckdb.Error):
                 db.sql("CREATE TABLE mine AS SELECT 1")
-            db.connection.execute("CREATE TEMP TABLE mine AS SELECT label FROM alpha.entity")
+            db.connection.execute("CREATE TEMP TABLE mine AS SELECT label FROM entity")
             assert db.sql("SELECT count(*) FROM mine").fetchone() == (3,)
             types = db.sql(
                 "SELECT table_type FROM information_schema.tables "
                 "WHERE table_name = 'entity' AND table_schema = 'main'"
             ).fetchall()
             assert types == [("BASE TABLE",)]
-            # The database format's own tables and indexes.
-            assert db.sql(
-                "SELECT count(*) = (SELECT count(*) FROM relation) FROM relation_key_lookup"
-            ).fetchone() == (True,)
+            # The database format's indexes.
             assert sorted(r[0] for r in db.sql("SELECT index_name FROM duckdb_indexes()").fetchall()) == [
-                "entity_annotation_eid", "entity_eid", "entity_evidence_eid", "entity_merged_key",
-                "relation_evidence_rid", "relation_rid",
+                "entity_annotation_n", "entity_evidence_n", "entity_key", "entity_n",
+                "relation_evidence_n", "relation_n",
             ]
     # A new version and a new resource: the database is written anew.
     service.publish("alpha", "2.0")
@@ -314,9 +310,8 @@ def test_sql_on_native_tables(service, monkeypatch):
     assert database.stat().st_ino != before
     with connect(service.data) as db:
         assert db.sql(
-            "SELECT _resource, _resource_version, count(*) FROM entity GROUP BY ALL ORDER BY ALL"
-        ).fetchall() == [("alpha", "2.0", 3), ("beta", "1.0", 3), ("gamma", "1.0", 3)]
-        assert db.sql("SELECT count(*) FROM gamma.entity").fetchone() == (3,)
+            "SELECT r, count(*) FROM (SELECT unnest(resources) AS r FROM entity) GROUP BY ALL ORDER BY ALL"
+        ).fetchall() == [("alpha", 3), ("beta", 3), ("gamma", 3)]
         assert db.sql("SELECT * FROM resources ORDER BY ALL").fetchall() == [
             ("alpha", "2.0", False),
             ("beta", "1.0", False),
@@ -326,7 +321,7 @@ def test_sql_on_native_tables(service, monkeypatch):
     service.init("gamma", include_evidence=True)
     with connect(service.data) as db:
         assert db.sql("SELECT _resource FROM evidence_payloads").fetchall() == [("gamma",)]
-        assert db.sql("SELECT count(*) FROM entity").fetchone() == (9,)
+        assert db.sql("SELECT count(*) FROM entity").fetchone() == (3,)
         assert json.loads((service.data / "installed.json").read_text())["materialize"] is True
     # Nothing changed: the database stays.
     before = database.stat().st_ino
@@ -360,22 +355,23 @@ def test_prebuilt_queries_answer_like_the_api(service):
 
         relations_ = db.relations("TP53")
         assert {"relation_key", "annotations", "evidence", "sources"} <= set(relations_.columns)
-        assert relations_.count("*").fetchone() == (4,)
+        # The two resources state the same two relations: one row each, with both sources.
+        assert relations_.count("*").fetchone() == (2,)
         assert db.relations("TP53", sources="alpha", predicates=["affects"]).project(
             "subject_label, object_label, sources"
-        ).fetchall() == [("TP53", "caffeine", ["alpha"])]
+        ).fetchall() == [("TP53", "caffeine", ["alpha", "beta"])]
         with pytest.raises(ValueError, match="unavailable"):
             db.relations("TP53", sources="gamma")
         with pytest.raises(ValueError, match="Unknown Biolink predicate: nonsense"):
             db.relations("TP53", predicates="nonsense")
-        assert db.relations(["caffeine", "O'Brien"]).count("*").fetchone() == (4,)
-        assert db.relations(key("quote")).count("*").fetchone() == (2,)
-        assert db.relations("gene:entrez:7157").count("*").fetchone() == (4,)
-        assert db.relations(limit=3).count("*").fetchone() == (3,)
+        assert db.relations(["caffeine", "O'Brien"]).count("*").fetchone() == (2,)
+        assert db.relations(key("quote")).count("*").fetchone() == (1,)
+        assert db.relations("gene:entrez:7157").count("*").fetchone() == (2,)
+        assert db.relations(limit=1).count("*").fetchone() == (1,)
         # Results are DuckDB relations like any other.
         assert db.connection.sql(
             "SELECT count(*) FROM found JOIN relations_ ON entity_key = subject_entity_key"
-        ).fetchone() == (2,)
+        ).fetchone() == (1,)
         with pytest.raises(TypeError, match="Unknown filters: \\['source'\\]"):
             db.relations("TP53", source="alpha")
         with pytest.raises(TypeError, match="once"):
@@ -387,7 +383,7 @@ def test_prebuilt_queries_answer_like_the_api(service):
         assert details["entity"]["label"] == "TP53"
         assert db.entity("TP53") is None
         # The queries by name.
-        assert db.query("relations", entities=["TP53"]).count("*").fetchone() == (4,)
+        assert db.query("relations", entities=["TP53"]).count("*").fetchone() == (2,)
         assert db.sql(
             "SELECT count(*) FROM evidence_payloads WHERE relation_key = ?", [key("r1")]
         ).fetchone() == (2,)
@@ -412,7 +408,7 @@ def test_failed_download_installs_nothing(service):
     service.truncated.clear()
     service.init("beta")
     with connect(service.data) as db:
-        assert db.sql("SELECT count(DISTINCT _resource) FROM relation").fetchone() == (2,)
+        assert db.sql("SELECT count(DISTINCT r) FROM (SELECT unnest(resources) AS r FROM relation)").fetchone() == (2,)
 
 
 def test_missing_data_and_damaged_files(service, tmp_path):
@@ -687,3 +683,5 @@ def test_shared_contract_is_up_to_date():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     assert module.main(check=True) == 0, "run packages/query/scripts/generate_contract.py"
+
+

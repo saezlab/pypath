@@ -10,8 +10,7 @@ WITH shape_1 AS (
         trim(coalesce(nullif(raw_identifier, ''), coalesce(pk, ''))) AS identifier_s,
         list_transform(coalesce(annotations, []), lambda a: struct_pack(
             term := trim(coalesce(a.term, '')), value := trim(coalesce(a.value, '')),
-            quantity := a.quantity, source := trim(coalesce(a.source, '')),
-            dataset := trim(coalesce(a.dataset, '')))) AS annotations_s
+            quantity := a.quantity, source := trim(coalesce(a.source, '')))) AS annotations_s
     FROM {{input}}
 ), shape_2 AS (
     SELECT *,
@@ -42,9 +41,9 @@ WITH shape_1 AS (
             list_transform(list_filter(kept, lambda k: k.source <> ''), lambda k: k.source)
             || list_transform(list_filter(annotations_s, lambda a: a.source <> ''), lambda a: a.source)) AS sources,
         list_transform(annotations_s, lambda a: CASE WHEN a.quantity IS NULL
-            THEN to_json(struct_pack(term := a.term, value := a.value, source := a.source, dataset := a.dataset))
+            THEN to_json(struct_pack(term := a.term, value := a.value, source := a.source))
             ELSE to_json(struct_pack(term := a.term, value := a.value, quantity := a.quantity,
-                source := a.source, dataset := a.dataset)) END) AS annotations_json,
+                source := a.source)) END) AS annotations_json,
         lower(regexp_replace(coalesce(raw_type, ''), '[\s_]', '', 'g')) AS kind,
         flatten([list_transform(list_filter(kept, lambda k: k.type = ns_), lambda k: k.id)
             FOR ns_ IN ['chebi', 'chembl', 'hmdb', 'pubchem']]) AS chemical_names,

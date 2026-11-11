@@ -89,24 +89,20 @@ SELECT {{resources}}
 
 -- steps: entity_keys
 
--- step: group_members_rows AS table when {{group_key}} IS NOT NULL
+-- step: group_member_ids AS list when {{group_key}} IS NOT NULL
 -- one group: the entities listed under it
-SELECT DISTINCT _eid FROM entity_group
-WHERE {{group_key}} IS NOT NULL
-    AND group_key = substr({{group_key}}, strpos({{group_key}}, ':') + 1)
+SELECT DISTINCT entity_n FROM entity_group
+WHERE group_key = substr({{group_key}}, strpos({{group_key}}, ':') + 1)
     AND kind = CASE split_part({{group_key}}, ':', 1) WHEN 'connectivity' THEN 'connectivity' WHEN 'gene' THEN 'reference' END
-    AND (op_unset({{scope}}) OR list_contains({{scope}}, _resource))
-
--- step: group_member_ids AS list
-SELECT _eid FROM __group_members_rows ORDER BY _eid
+ORDER BY entity_n
 
 -- step: candidate_keys AS value
 SELECT CASE
     WHEN {{group_key}} IS NULL THEN NULL
     WHEN starts_with({{group_key}}, 'entity:') THEN [substr({{group_key}}, 8)]
     WHEN split_part({{group_key}}, ':', 1) NOT IN ('connectivity', 'gene') THEN []::VARCHAR[]
-    ELSE coalesce((SELECT list(DISTINCT entity_key ORDER BY entity_key) FROM entity
-        WHERE _eid IN ({{group_member_ids*}})), []::VARCHAR[])
+    ELSE coalesce((SELECT list(entity_key ORDER BY entity_key) FROM entity
+        WHERE entity_n IN ({{group_member_ids*}})), []::VARCHAR[])
 END
 
 -- step: match_keys AS value
@@ -122,24 +118,12 @@ SELECT {{scope}}
 -- steps: entity_matches
 
 -- step: keys AS table
--- one row per entity key: the group its copies agree on, or none
-WITH copies AS (
-    SELECT entity_key, list_contains((SELECT list(entity_type) FROM op_chemical_types), entity_type) AS chemical,
-        group_connectivity, reference_entity_key, relation_count
-    FROM {{include:entity_match_rows m}}
-)
+-- one row per entity: the group its copies agree on (stored at build), or none
 SELECT entity_key,
-    CASE WHEN {{strategy}} IN ('auto', 'chemical_connectivity') AND bool_or(coalesce(chemical, false))
-        AND min(hash(group_connectivity)) FILTER (WHERE group_connectivity IS NOT NULL)
-            = max(hash(group_connectivity)) FILTER (WHERE group_connectivity IS NOT NULL)
-        THEN any_value(group_connectivity) FILTER (WHERE group_connectivity IS NOT NULL) END AS connectivity,
-    CASE WHEN {{strategy}} IN ('auto', 'gene_reference') AND NOT bool_or(coalesce(chemical, false))
-        AND bool_and(coalesce(starts_with(reference_entity_key, 'entrez:'), false))
-        AND min(hash(reference_entity_key)) FILTER (WHERE reference_entity_key IS NOT NULL)
-            = max(hash(reference_entity_key)) FILTER (WHERE reference_entity_key IS NOT NULL)
-        THEN any_value(reference_entity_key) FILTER (WHERE reference_entity_key IS NOT NULL) END AS reference_entity_key,
-    sum(coalesce(relation_count, 0))::BIGINT AS relations
-FROM copies GROUP BY entity_key
+    CASE WHEN {{strategy}} IN ('auto', 'chemical_connectivity') AND chemical THEN structure_group END AS connectivity,
+    CASE WHEN {{strategy}} IN ('auto', 'gene_reference') AND NOT chemical THEN gene_group END AS reference_entity_key,
+    coalesce(relation_count, 0)::BIGINT AS relations
+FROM {{include:entity_match_rows m}}
 
 -- step: page AS table
 WITH counts AS (
@@ -176,44 +160,19 @@ SELECT p.group_key, k.entity_key FROM __page_groups p JOIN __keys k
 -- step: member_keys AS list
 SELECT DISTINCT entity_key FROM __members ORDER BY entity_key
 
--- step: listed_ids AS list
--- the copies a group's entity_group rows list (in scope), for the groups on the page
-SELECT DISTINCT g._eid FROM entity_group g
-JOIN __page_groups p ON (p.connectivity IS NOT NULL AND g.kind = 'connectivity' AND g.group_key = p.connectivity)
-    OR (p.reference_entity_key IS NOT NULL AND g.kind = 'reference' AND g.group_key = p.reference_entity_key)
-WHERE g.group_key IN (SELECT coalesce(connectivity, reference_entity_key) FROM __page_groups)
-    AND (op_unset({{scope}}) OR list_contains({{scope}}, g._resource))
-ORDER BY 1
+-- step: member_merged AS table
+-- the members a resource read has
+SELECT * FROM entity
+WHERE entity_key IN ({{member_keys*}}) AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
 
--- step: singleton_keys AS list
-SELECT DISTINCT m.entity_key FROM __members m JOIN __page_groups p USING (group_key)
-WHERE p.connectivity IS NULL AND p.reference_entity_key IS NULL ORDER BY 1
-
--- step: member_copies AS table when {{include_details}}
--- the members' copies in scope, for structure group cards with details (one entity
--- merged from all their members' copies): those their groups list, and every copy of a
--- single entity (not only those the search matched)
-SELECT * EXCLUDE (key_rank, _resource_version), _resource || '/' || _resource_version AS resource
-FROM (
-    SELECT e.* FROM entity e WHERE _eid IN ({{listed_ids*}})
-    UNION ALL BY NAME
-    SELECT * FROM entity_by_key
-    WHERE entity_key IN ({{singleton_keys*}}) AND (op_unset({{scope}}) OR list_contains({{scope}}, _resource)))
-WHERE list_contains({{member_keys}}, entity_key)
-
--- step: copy_ids AS list when {{include_details}}
-SELECT _eid FROM __member_copies ORDER BY _eid
+-- step: list_ids AS list when {{include_details}}
+SELECT entity_n FROM __member_merged ORDER BY entity_n
 
 -- step: identifier_rows AS table
-SELECT * FROM entity_identifier WHERE _eid IN ({{copy_ids*}})
+SELECT * FROM entity_identifier WHERE entity_n IN ({{list_ids+}})
 
 -- step: annotation_rows AS table
-SELECT * FROM entity_annotation WHERE _eid IN ({{copy_ids*}})
-
--- step: member_merged AS table
--- the members as merged at build (when a copy is in scope)
-SELECT * FROM entity_merged
-WHERE entity_key IN ({{member_keys*}}) AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
+SELECT * FROM entity_annotation WHERE entity_n IN ({{list_ids*}})
 
 -- step: member_summaries AS table
 -- the stored summaries, or with details built with the identifier and annotation lists
@@ -228,28 +187,29 @@ SELECT s.summary, m.entity_key, m.relation_count, m.entity_type, m.taxon, m.labe
 FROM summaries s JOIN __member_merged m ON m.entity_key = s.summary.entityPk
 
 -- step: chemical_bases AS table when {{include_details}}
--- with details, a structure group's card merges all its members' copies (as one entity
--- of the first member's key); else it is its first member
+-- with details, a structure group's card merges all its members (as one entity of the
+-- first member's key, each member ranked as a copy); else it is its first member
 WITH chosen AS (
-    SELECT p.group_key, c.* REPLACE ((SELECT min(entity_key) FROM __members WHERE group_key = p.group_key) AS entity_key)
-    FROM __page_groups p JOIN __members mb USING (group_key) JOIN __member_copies c USING (entity_key)
+    SELECT p.group_key, m.* REPLACE ((SELECT min(entity_key) FROM __members WHERE group_key = p.group_key) AS entity_key),
+        m.entity_key AS member_key
+    FROM __page_groups p JOIN __members mb USING (group_key) JOIN __member_merged m USING (entity_key)
     WHERE p.connectivity IS NOT NULL
-), copy_identifiers AS (
-    SELECT _eid, list(struct_pack(ns := ns, id := id, is_canonical := is_canonical, source := source)
+), member_identifiers AS (
+    SELECT entity_n, list(struct_pack(ns := ns, id := id, is_canonical := is_canonical, source := source)
         ORDER BY ordinal) AS identifiers
     FROM __identifier_rows GROUP BY ALL
-), copy_annotations AS (
-    SELECT _eid, list(struct_pack(term := term, value := value,
+), member_annotations AS (
+    SELECT entity_n, list(struct_pack(term := term, value := value,
         quantity := op_quantity(quantity_has_numeric_value, quantity_has_unit, quantity_has_unit_prefix,
             quantity_has_binary_relation, quantity_source_field, quantity_comparator),
-        source := source, dataset := dataset) ORDER BY ordinal) AS annotations
+        source := source) ORDER BY ordinal) AS annotations
     FROM __annotation_rows GROUP BY ALL
 ), nested AS (
-    -- each group's chosen copies as one entity (the group key stands for the entity key)
-    SELECT c.* EXCLUDE (group_key), c.group_key AS card_group, 0 AS position,
-        CASE WHEN {{include_details}} THEN coalesce(i.identifiers, []) END AS identifiers,
-        CASE WHEN {{include_details}} THEN coalesce(a.annotations, []) END AS annotations
-    FROM chosen c LEFT JOIN copy_identifiers i USING (_eid) LEFT JOIN copy_annotations a USING (_eid)
+    -- each group's members as one entity (the group key stands for the entity key)
+    SELECT c.* EXCLUDE (group_key, summary), c.group_key AS card_group, 0 AS position,
+        c.member_key AS resource, 0 AS entity_id,
+        coalesce(i.identifiers, []) AS identifiers, coalesce(a.annotations, []) AS annotations
+    FROM chosen c LEFT JOIN member_identifiers i USING (entity_n) LEFT JOIN member_annotations a USING (entity_n)
 ), merged AS (
     SELECT * FROM {{include:merged_entity nested}}
 ), shaped AS (

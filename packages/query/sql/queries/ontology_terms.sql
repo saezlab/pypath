@@ -8,24 +8,23 @@
 -- example: {"term_ids": ["GO:0006915"]}
 
 -- step: rows AS table
-SELECT _eid, _resource || '/' || _resource_version AS resource, entity_id, entity_key, label, identifier, namespace
-FROM entity
+SELECT entity_n, entity_key, label, identifier, namespace FROM entity
 WHERE (identifier IN ({{term_ids*}}) OR entity_key IN ({{term_ids*}}))
-    AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
+    AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
 
 -- step: ids AS list
-SELECT _eid FROM __rows ORDER BY _eid
+SELECT entity_n FROM __rows ORDER BY entity_n
 
 -- step: annotation_rows AS table
-SELECT _eid, term, value, ordinal FROM entity_annotation WHERE _eid IN ({{ids*}})
+SELECT entity_n, term, value, ordinal FROM entity_annotation WHERE entity_n IN ({{ids*}})
 
 -- step: response AS value
 WITH defined AS (
-    SELECT r.*, (SELECT value FROM __annotation_rows a WHERE a._eid = r._eid AND coalesce(a.value, '') <> ''
+    SELECT r.*, (SELECT value FROM __annotation_rows a WHERE a.entity_n = r.entity_n AND coalesce(a.value, '') <> ''
             AND (a.term IN ('description', 'biolink:description', 'IAO:0000115') OR contains(a.term, '0801')
                 OR contains(lower(a.term), 'def') OR contains(lower(a.term), 'comment'))
             ORDER BY a.ordinal LIMIT 1) AS definition,
-        row_number() OVER (ORDER BY resource, entity_id) AS n
+        row_number() OVER (ORDER BY entity_key) AS n
     FROM __rows r
 ), items AS (
     SELECT n, coalesce(identifier, '') AS ident, coalesce(nullif(label, ''), coalesce(identifier, '')) AS lbl,

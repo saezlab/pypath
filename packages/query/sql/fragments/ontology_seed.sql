@@ -13,17 +13,14 @@ SELECT CASE
 END
 
 -- step: seed_hits AS list
-SELECT DISTINCT _eid FROM entity_term
-WHERE term = lower({{seed_parts}}[2]) AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
-ORDER BY 1
+SELECT DISTINCT entity_n FROM entity_term WHERE term = lower({{seed_parts}}[2]) ORDER BY 1
 
 -- step: seed_rows AS table
 SELECT DISTINCT entity_key, label, identifier, namespace FROM (
-    SELECT entity_key, label, identifier, namespace FROM entity WHERE _eid IN ({{seed_hits*}})
+    SELECT entity_key, label, identifier, namespace, resources FROM entity WHERE entity_n IN ({{seed_hits*}})
     UNION ALL
-    SELECT entity_key, label, identifier, namespace FROM entity_by_key
-    WHERE entity_key = {{seed_parts}}[2] AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource)))
-WHERE {{seed_parts}}[2] IN (entity_key, identifier, label)
+    SELECT entity_key, label, identifier, namespace, resources FROM entity WHERE entity_key = {{seed_parts}}[2])
+WHERE (op_unset({{resources}}) OR list_has_any(resources, {{resources}})) AND {{seed_parts}}[2] IN (entity_key, identifier, label)
     AND ({{seed_parts}}[1] IS NULL OR lower(coalesce(namespace, '')) = lower({{seed_parts}}[1]))
 
 -- step: seed_checked AS value

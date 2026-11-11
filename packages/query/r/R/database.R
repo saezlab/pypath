@@ -1,9 +1,11 @@
 # The DuckDB database of an installation, as the Python client writes it
 # (omnipath_client/database.py), which is also the database the hosted API serves a
-# release from: native tables with global ids, the derived tables and indexes the
-# contract names, a schema per resource, `resources`, `database_info`, and the query
-# layer (Biolink names, the lookup macros and sql/*.sql). It is always written
-# completely and put in place when done.
+# release from: the resources' tables written to the build's scratch database, the
+# database's own tables derived from them in build order (every entity and relation
+# merged, numbered, with their identifiers, annotations, evidence and lookup tables),
+# the indexes the contract names, `resources`, `database_info`, and the query layer
+# (Biolink names, rule tables and sql/*.sql). It is always written completely and put in
+# place when done.
 
 .database_file <- "omnipath.duckdb"
 
@@ -74,39 +76,9 @@
   }
 }
 
-.resource_schema <- function(con, record) {
-  schema <- .name(record$resource_id)
-  .exec(con, sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema))
-  for (table in .record_tables(record)) {
-    .exec(con, sprintf(
-      "CREATE OR REPLACE VIEW %s.%s AS SELECT * FROM main.%s WHERE _resource = %s",
-      schema, table, table, .quote(record$resource_id)
-    ))
-  }
-}
-
 .configure <- function(con, root, memory_limit) {
   .exec(con, sprintf("SET memory_limit = %s", .quote(memory_limit)))
   .exec(con, sprintf("SET temp_directory = %s", .quote(file.path(root, ".duckdb-tmp"))))
-}
-
-.native_lookups <- function() {
-  vapply(.contract()$lookups, function(lookup) {
-    table <- lookup[[1]]; column <- lookup[[2]]; kind <- lookup[[3]]
-    global_id <- .global_ids()[[table]][[2]]
-    if (kind == "at") {
-      sprintf(paste0(
-        "CREATE OR REPLACE MACRO op_%s_at(pairs) AS TABLE SELECT * EXCLUDE (%s) FROM %s WHERE %s IN (",
-        "SELECT (i.idx << 32) + w.p.v FROM (SELECT unnest(pairs) AS p) w ",
-        "JOIN op_resource_index i ON i._resource = w.p.r)"
-      ), table, global_id, table, global_id)
-    } else {
-      sprintf(
-        "CREATE OR REPLACE MACRO op_%s_with(vals) AS TABLE SELECT * EXCLUDE (%s) FROM %s WHERE %s IN (SELECT unnest(vals))",
-        table, global_id, table, column
-      )
-    }
-  }, "")
 }
 
 # The Biolink names (op_names), which the shared macros read.
@@ -117,14 +89,8 @@
   .exec(con, paste0("INSERT INTO op_names VALUES ", paste(values, collapse = ", ")))
 }
 
-.query_layer_write <- function(con) {
-  .names_write(con)
-  present <- DBI::dbGetQuery(con, "SELECT table_name AS n FROM duckdb_tables() WHERE schema_name = 'main' AND database_name = current_database()")$n
-  for (statement in .native_lookups()) {
-    table <- sub("^CREATE OR REPLACE MACRO op_(\\w+)_(at|with)\\(.*$", "\\1", statement)
-    if (table %in% present) .exec(con, statement)
-  }
-  # The rule tables the macros read (display names, entity groups).
+# The rule tables the macros read (display names, entity groups).
+.query_tables_write <- function(con) {
   for (table in names(.contract()$query_tables)) {
     spec <- .contract()$query_tables[[table]]
     .exec(con, sprintf("CREATE OR REPLACE TABLE %s (%s)", table, paste(unlist(spec$columns), collapse = ", ")))
@@ -133,6 +99,11 @@
       .exec(con, sprintf("INSERT INTO %s VALUES %s", table, paste(values, collapse = ", ")))
     }
   }
+}
+
+.query_layer_write <- function(con) {
+  .names_write(con)
+  .query_tables_write(con)
   for (name in unlist(.contract()$macro_files)) {
     sql <- paste(readLines(file.path(.sql_dir(), name), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
     .exec(con, sql)
@@ -140,22 +111,24 @@
   .exec(con, sprintf("UPDATE database_info SET query_layer = %s", .quote(.query_layer())))
 }
 
-# Where a resource table is written: the database (""), the scratch database `work`
-# for a table a derived table replaces (its space is never part of the database), or
-# nowhere (NULL) for one replaced without being read.
+# Where each resource table is written: the scratch database for those the build reads,
+# the database itself for raw evidence, else nowhere (NULL).
 .written_to <- function(table) {
-  derived <- .contract()$derived_tables[[table]]
-  if (is.null(derived) || !isTRUE(derived$replaces)) return("")
-  if (grepl(paste0("\\b", table, "\\b"), derived$select, perl = TRUE)) "work." else NULL
+  if (table %in% unlist(.contract()$work_tables)) return("work.")
+  if (identical(table, .payloads())) return("")
+  NULL
 }
 
-# The derived tables (each sorted) and the indexes, once the tables are written. A
-# table that replaces a written one reads it from `work` (on the search path).
-.derived <- function(con, present) {
+# Keys are SHA-256 hex: their first characters, then any other ("").
+.slices <- c(strsplit("0123456789abcdef", "")[[1]], "")
+
+# The derived tables (each sorted), in build order, and the indexes. The stages of the
+# build ("scratch") go to the scratch database.
+.derived <- function(con) {
   derived <- .contract()$derived_tables
   partition <- "\\{\\{partition ([A-Za-z0-9_.]+)\\}\\}"
+  hex <- paste(sprintf("'%s'", .slices[nzchar(.slices)]), collapse = ", ")
   for (name in names(derived)) {
-    # A stage of the build goes to the scratch database (on the search path).
     target <- sprintf("%s.main.%s", if (isTRUE(derived[[name]]$scratch)) "work" else "omnipath", name)
     select <- derived[[name]]$select
     order <- derived[[name]]$order
@@ -163,19 +136,17 @@
       .exec(con, sprintf("CREATE TABLE %s AS SELECT * FROM (%s) ORDER BY %s", target, select, order))
       next
     }
-    # In slices of entity keys by their first character, in key order: the table is
-    # sorted as a whole, and no slice needs the memory of all of them.
+    # In slices of keys by their first character, in key order: the table is sorted as
+    # a whole, and no slice needs the memory of all of them.
     .exec(con, sprintf("CREATE TABLE %s AS SELECT * FROM (%s) LIMIT 0", target, gsub(partition, "false", select)))
-    firsts <- DBI::dbGetQuery(con, "SELECT DISTINCT left(entity_key, 1) AS f FROM entity ORDER BY 1")$f
-    for (first in firsts) {
-      sliced <- gsub(partition, sprintf("left(\\1, 1) = %s", gsub("\\\\", "\\\\\\\\", .quote(first))), select)
-      .exec(con, sprintf("INSERT INTO %s SELECT * FROM (%s) ORDER BY %s", target, sliced, order))
+    for (first in .slices) {
+      condition <- if (nzchar(first)) sprintf("left(\\1, 1) = '%s'", first)
+        else sprintf("left(coalesce(\\1, ''), 1) NOT IN (%s)", hex)
+      .exec(con, sprintf("INSERT INTO %s SELECT * FROM (%s) ORDER BY %s", target, gsub(partition, condition, select), order))
     }
   }
   for (index in .contract()$indexes) {
-    if (index[[2]] %in% present || index[[2]] %in% names(.contract()$derived_tables)) {
-      .exec(con, sprintf("CREATE INDEX %s ON %s(%s)", index[[1]], index[[2]], index[[3]]))
-    }
+    .exec(con, sprintf("CREATE INDEX %s ON omnipath.main.%s(%s)", index[[1]], index[[2]], index[[3]]))
   }
 }
 
@@ -203,10 +174,6 @@
   .configure(con, root, memory_limit)
   ordered <- .sorted_records(records)
   index <- stats::setNames(as.list(seq_along(ordered) - 1L), vapply(ordered, function(r) r$resource_id, ""))
-  .exec(con, "CREATE TABLE op_resource_index (_resource VARCHAR, idx BIGINT)")
-  for (name in names(index)) {
-    .exec(con, sprintf("INSERT INTO op_resource_index VALUES (%s, %d)", .quote(name), as.integer(index[[name]])))
-  }
   present <- Filter(function(t) any(vapply(ordered, function(r) t %in% .record_tables(r), TRUE)), c(.tables(), .serving()))
   for (table in present) {
     where <- .written_to(table)
@@ -221,12 +188,12 @@
       .exec(con, sprintf("INSERT INTO %s%s BY NAME %s", where, table, .source(root, record, table, index[[record$resource_id]])))
     }
   }
-  # The merged entities' summaries name taxa and use the shared macros.
+  # The merged entities' summaries name taxa and use the shared macros and rules.
   .taxonomy(con, if (is.null(taxonomy)) NULL else .taxonomy_file(root, taxonomy))
   .names_write(con)
+  .query_tables_write(con)
   .prepare_macros(con)
-  .derived(con, present)
-  for (record in ordered) .resource_schema(con, record)
+  .derived(con)
   .describe(con, root, records, release, taxonomy)
   .query_layer_write(con)
   .exec(con, "USE memory")

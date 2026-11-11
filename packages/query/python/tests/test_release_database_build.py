@@ -18,7 +18,7 @@ def release(root, version="1", resources=None):
     )
 
 
-def test_release_database_holds_every_resource_with_global_ids(tmp_path):
+def test_release_database_holds_merged_numbered_tables(tmp_path):
     root = write_dataset(tmp_path / "data")
     release(root)
     target = tmp_path / "serving" / "1.duckdb"
@@ -26,44 +26,42 @@ def test_release_database_holds_every_resource_with_global_ids(tmp_path):
     result = build_release_database(root, "1", target, memory_limit="1GB", threads=1)
     assert result["path"] == str(target) and result["resources"] == 3
     assert not [p for p in target.parent.iterdir() if p != target]  # no staging left
+    files = root / "resources"
+
+    def published(table, column):
+        return pq.ParquetDataset([files / r / "1" / f"{table}.parquet" for r in ("chebi", "signor", "uniprot")]) \
+            .read(columns=[column]).column(column).to_pylist()
+
     with duckdb.connect(str(target), read_only=True) as db:
         info = db.execute(
             "SELECT release, database_format, query_layer, built_by FROM database_info"
         ).fetchone()
         assert info == ("1", DATABASE_FORMAT, QUERY_LAYER, "build_release_database")
-        assert db.execute("SELECT * FROM op_resource_index ORDER BY idx").fetchall() == [
-            ("chebi", 0), ("signor", 1), ("uniprot", 2)
+        # One row per entity and per relation key, numbered in key order.
+        keys = sorted(set(published("entity", "entity_key")))
+        assert db.execute("SELECT entity_key FROM entity ORDER BY entity_n").fetchall() == [(k,) for k in keys]
+        assert db.execute("SELECT min(entity_n), max(entity_n) FROM entity").fetchone() == (1, len(keys))
+        relation_keys = sorted(set(published("relation", "relation_key")))
+        assert db.execute("SELECT relation_key FROM relation ORDER BY relation_n").fetchall() == [
+            (k,) for k in relation_keys
         ]
-        # Each table holds every resource's rows, with the global id of its rows.
-        for table, column, global_id in [
-            ("entity", "entity_id", "_eid"),
-            ("entity_evidence", "entity_id", "_eid"),
-            ("relation", "relation_id", "_rid"),
-            ("relation_evidence", "relation_id", "_rid"),
-        ]:
-            rows = sum(
-                pq.read_metadata(root / "resources" / r / "1" / f"{table}.parquet").num_rows
-                for r in ("chebi", "signor", "uniprot")
-            )
-            assert db.execute(f"SELECT count(*) FROM {table}").fetchone() == (rows,), table
-            assert db.execute(
-                f"""SELECT count(*) FROM {table} t JOIN op_resource_index i ON i._resource = t._resource
-                WHERE t.{global_id} <> (i.idx << 32) + t.{column}"""
-            ).fetchone() == (0,), table
-        # Raw payloads stay in their files on the server.
-        tables = {r[0] for r in db.execute("SELECT table_name FROM duckdb_tables()").fetchall()}
-        assert "evidence_payloads" not in tables
-        assert db.execute("SELECT bool_or(has_evidence) FROM resources").fetchone() == (False,)
-        # The derived tables and indexes.
         assert db.execute(
-            "SELECT _rid FROM relation_key_lookup WHERE key_prefix = ?", [int(fixture_key("relation")[:15], 16)]
-        ).fetchall() == [((1 << 32) + 0,)]
+            "SELECT resources FROM relation WHERE relation_key = ?", [fixture_key("relation")]
+        ).fetchone() == (["signor"],)
+        # Every evidence record, with the resource stating it.
+        for table in ("entity_evidence", "relation_evidence"):
+            assert db.execute(f"SELECT count(*) FROM {table}").fetchone() == (
+                len(published(table, "ordinal")),
+            ), table
+        # No resource tables, schemas or scratch tables are left.
+        tables = {r[0] for r in db.execute("SELECT table_name FROM duckdb_tables()").fetchall()}
+        assert not tables & {"entity_numbers", "relation_merged", "entity_copies", "evidence_payloads"}
+        assert db.execute("SELECT count(*) FROM duckdb_schemas() WHERE schema_name = 'signor'").fetchone() == (0,)
+        assert db.execute("SELECT bool_or(has_evidence) FROM resources").fetchone() == (False,)
         assert {r[0] for r in db.execute("SELECT index_name FROM duckdb_indexes()").fetchall()} == {
-            "relation_rid", "relation_evidence_rid", "entity_eid", "entity_evidence_eid", "entity_annotation_eid",
-            "entity_merged_key",
+            "entity_n", "entity_key", "entity_evidence_n", "entity_annotation_n", "relation_n", "relation_evidence_n",
         }
-        assert db.execute("SELECT count(*) FROM signor.relation").fetchone() == (1,)
-        # The tables the derived ones replace were written elsewhere: no space left over.
+        # The scratch database's tables took no space in the database.
         assert db.execute("SELECT free_blocks FROM pragma_database_size()").fetchone() == (0,)
 
 

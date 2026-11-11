@@ -69,7 +69,7 @@ def page_through(engine, filters, limit=7):
     rows, offset, totals = [], 0, set()
     while True:
         page = engine.search_relations(filters, limit=limit, offset=offset)
-        rows += [(r["resource"], r["relation_id"], r["relation_key"]) for r in page["rows"]]
+        rows += [r["relation_key"] for r in page["rows"]]
         totals.add(page["total"])
         offset += limit
         if offset >= page["total"]:

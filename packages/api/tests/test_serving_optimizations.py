@@ -1,4 +1,3 @@
-import json
 from concurrent.futures import ThreadPoolExecutor
 from threading import Event
 
@@ -64,32 +63,6 @@ def engine(tmp_path):
     return served_queries(tmp_path)
 
 
-def test_live_query_policy_preserves_catalog_and_invalidates_cached_queries(engine):
-    # Warm caches before changing policy.
-    before = engine.get_scoped_entity_facets({})
-    assert len(engine._selected_resource_infos()) == 2
-    policy = engine.data_root / "query_policy.json"
-    policy.write_text(json.dumps({"disabled_resources": ["b"]}))
-    assert [info["resource"] for info in engine._selected_resource_infos()] == ["a"]
-    for selection in [["b"], ["b/1"], ["a", "b"]]:
-        with pytest.raises(ValueError, match="disabled for queries"):
-            engine.search_entities_api(resources=selection)
-    assert engine.search_entities_api(query="alternate")["total"] == 0
-    assert engine.get_scoped_entity_facets({}) != before
-    assert [item["slug"] for item in engine.get_stats_sources()] == ["a"]
-    catalog = {item["resource_id"]: item for item in engine.list_resource_catalog()}
-    assert catalog["b"]["queryable"] is False
-    assert engine.get_resource_file_path("b", "entity.parquet").is_file()
-    client = TestClient(create_app(queries=engine))
-    assert client.post("/entities/search", json={"resources": ["b"]}).status_code == 400
-    assert any(
-        item["resource_id"] == "b" and not item["queryable"]
-        for item in client.get("/resources/catalog").json()["resources"]
-    )
-    policy.unlink()
-    assert engine.search_entities_api(query="alternate")["total"] == 1
-
-
 def test_paging_search_selected_taxonomy_and_http_gzip(engine):
     all_rows = engine.get_scoped_relation_facets({})
     page = engine.get_scoped_relation_facets({"taxonomyLimit": 10})
@@ -122,8 +95,8 @@ def _matches(engine, payload, **override):
 
 
 def test_facet_batching_matches_independent_counts(engine):
-    # The facets count the resource copies of what the search finds: by type and taxon
-    # with every filter, by source without the source filter.
+    # The facets count the entities the search finds: by type and taxon with every
+    # filter, by source (the resources that have them) without the source filter.
     for payload in [
         {},
         {"query": "02"},
@@ -131,14 +104,10 @@ def test_facet_batching_matches_independent_counts(engine):
         {"query": "Protein", "ncbi_tax_id": ["2", "3"]},
     ]:
         rows = engine.get_scoped_entity_facets(payload)
-        copies = [
-            entity
-            for source in payload.get("sources") or ("a", "b")
-            for entity in _matches(engine, payload, sources=[source])
-        ]
+        found = _matches(engine, payload)
         for facet, field in [("entity_type", "entityType"), ("taxonomy_id", "taxonomyId")]:
             expected = {}
-            for entity in copies:
+            for entity in found:
                 expected[str(entity[field])] = expected.get(str(entity[field]), 0) + 1
             counted = {r["facetValue"]: r["scopedCount"] for r in rows if r["facetName"] == facet}
             assert counted == expected
@@ -201,9 +170,10 @@ def test_scoped_pages_totals_details_and_shared_scope_cache(engine):
     keys = [f"{i:064x}" for i in range(1, 15)]
     filters = {"scope_entity_ids": keys}
     page = engine.search_relations(filters, limit=6, offset=2)
-    assert page["total"] == 28
+    # The two resources state the same relations: 14, once each.
+    assert page["total"] == 14
     assert sum(Counter(row["relation_key"] for row in page["rows"]).values()) == 6
-    assert engine.search_relations(filters, limit=6, offset=100)["total"] == 28
+    assert engine.search_relations(filters, limit=6, offset=100)["total"] == 14
     assert (
         engine.search_relations({"scope_entity_ids": keys, "scope_endpoint_mode": "both"})["total"]
         == 0

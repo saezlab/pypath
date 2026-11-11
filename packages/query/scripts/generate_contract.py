@@ -16,12 +16,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 import shutil
 import sys
 
 from omnipath_core import biolink
-from omnipath_core.schema import PUBLISHED_TABLES, RELATION_QUALIFIERS, ROW_GROUP_SIZE, SERVING_TABLES
+from omnipath_core.schema import (
+    PUBLISHED_TABLES,
+    RELATION_FACET_COLUMNS,
+    RELATION_QUALIFIERS,
+    ROW_GROUP_SIZE,
+    SERVING_TABLES,
+)
 from omnipath_core.serving_tables import serving_queries
 from omnipath_api.queries.services.export import RELATION_EXPORT_LIMIT
 
@@ -29,29 +36,13 @@ QUERY = Path(__file__).resolve().parents[1]
 SQL = QUERY / "sql"
 COPIES = [QUERY / "python" / "omnipath_client" / "sql", QUERY / "r" / "inst" / "sql"]
 
-# Rows of one table read by id or key (lookups): (table, column, kind). "at" tables are
-# read by a resource's own id, "with" tables by a key or term meaning the same in every
-# resource.
-LOOKUPS = [
-    ["relation", "relation_id", "at"],
-    ["relation_annotation", "relation_id", "at"],
-    ["relation_evidence", "relation_id", "at"],
-    ["entity", "entity_id", "at"],
-    ["entity_identifier", "entity_id", "at"],
-    ["entity_annotation", "entity_id", "at"],
-    ["entity_evidence", "entity_id", "at"],
-    ["entity", "entity_key", "with"],
-    ["relation_endpoint", "key", "with"],
-    ["entity_term", "term", "with"],
-    ["entity_group", "group_key", "with"],
-]
-# Native tables carry a global id (resource index * 2^32 + the resource's id), so a
-# lookup over every resource is a filter on one column.
+# The resources' tables in the build's scratch database carry a global id (resource index
+# * 2^32 + the resource's id), so that their rows find their entity or relation copy by
+# one column.
 GLOBAL_IDS = {
     "relation": ["relation_id", "_rid"],
     "relation_annotation": ["relation_id", "_rid"],
     "relation_evidence": ["relation_id", "_rid"],
-    "relation_endpoint": ["relation_id", "_rid"],
     "entity": ["entity_id", "_eid"],
     "entity_identifier": ["entity_id", "_eid"],
     "entity_annotation": ["entity_id", "_eid"],
@@ -71,115 +62,61 @@ def hierarchy_predicates() -> dict[str, bool]:
 
 
 def derived_tables() -> dict:
-    """The database's own tables, derived from the tables above once they are written:
-    the same statements merged or regrouped across every resource the database holds,
-    each sorted for the reads it serves. They keep each row's resource, so a query over
-    some resources only (or without the ones a query policy disables) filters them."""
-    resource = "_resource || '/' || _resource_version AS resource"
+    """The database's tables, derived at build from the resources' tables (written to the
+    build's scratch database, ``work``), in build order: every entity and relation merged
+    over the resources into one row, numbered in key order (``entity_n``, ``relation_n``),
+    with their identifiers, annotations and evidence, and the lookup tables sorted for the
+    reads they serve (sql/build/<name>.sql). ``scratch`` tables are stages of the build,
+    in its scratch database; ``{{partition column}}`` statements run in slices of keys by
+    their first character, so that none needs the memory of all of them."""
     qualifiers = ", ".join(RELATION_QUALIFIERS)
-    # A relation's filter and facet columns.
-    columns = (
-        "category, predicate, subject_type, object_type, taxon, "
-        f"sign, is_directed, sources, evidence_count, {qualifiers}"
-    )
     directions = hierarchy_predicates()
-    listed = ", ".join(f"'{name}'" for name in directions)
     reversed_ = ", ".join(f"'{name}'" for name, reverse in directions.items() if reverse) or "NULL"
-    flip = f"predicate IN ({reversed_})"
-    return {
-        # Relation keys are sorted only within each resource: one table over all of
-        # them, by the key's first 60 bits (the keys are sha256 hex: 8 bytes instead of
-        # 64 characters). A reader confirms the full key on the relation rows it finds.
-        "relation_key_lookup": {
-            "select": "SELECT try_cast('0x' || substr(relation_key, 1, 15) AS BIGINT) AS key_prefix, _rid FROM relation",
-            "order": "key_prefix",
-        },
-        # Every resource's entity rows sorted by key: an entity's copies are adjacent, so
-        # reading them by key reads a few row groups. key_rank numbers the keys in that
-        # order, so that other tables can name an entity by 4 bytes instead of its
-        # 64-character key. (The entity table itself is in global id order, for reads by
-        # id.)
-        "entity_by_key": {
-            "select": "SELECT *, dense_rank() OVER (ORDER BY entity_key)::INTEGER AS key_rank FROM entity",
-            "order": "entity_key, _resource, entity_id",
-        },
-        # The lowercase labels and identifiers, rewritten sorted by term over every
-        # resource and with the rank of the entity's key ("replaces": the table itself,
-        # not a copy): a prefix is one range, and its entities are read by key rank.
-        "entity_term": {
-            "select": "SELECT t.*, e.key_rank FROM entity_term t JOIN entity_by_key e USING (_eid)",
-            "order": "term, _resource, entity_id",
-            "replaces": True,
-        },
-        # The endpoint table rewritten over every resource, sorted by key and then page
-        # order, each row with its relation's filter and facet columns and its place in
-        # the page order of every relation (page_rank: category, predicate, labels,
-        # resource, id), instead of the labels themselves: the relations of an entity (or
-        # of a reference key) are one range, in page order. Its columns are the written
-        # table's and more, so readers of it are unchanged. One scan of relation gives
-        # each relation's four keys (two ends, entity and reference).
-        "relation_endpoint": {
-            "select": f"""SELECT * FROM (
-                SELECT unnest([subject_entity_key, subject_reference_entity_key,
-                        object_entity_key, object_reference_entity_key]) AS key,
-                    unnest(['entity', 'reference', 'entity', 'reference']) AS key_kind,
-                    unnest(['subject', 'subject', 'object', 'object']) AS side,
-                    relation_id, _resource, _resource_version, _rid, {resource},
-                    row_number() OVER (ORDER BY category, predicate, subject_label, object_label,
-                        _resource || '/' || _resource_version, relation_id)::INTEGER AS page_rank,
-                    {columns}
-                FROM relation) WHERE key IS NOT NULL""",
-            "order": "key, key_kind, page_rank",
-            "replaces": True,
-        },
-        # The ontologies' hierarchies as child -> parent edges.
-        "ontology_edge": {
-            "select": f"""SELECT
-                CASE WHEN {flip} THEN object_entity_key ELSE subject_entity_key END AS child_key,
-                CASE WHEN {flip} THEN object_label ELSE subject_label END AS child_label,
-                predicate,
-                CASE WHEN {flip} THEN subject_entity_key ELSE object_entity_key END AS parent_key,
-                CASE WHEN {flip} THEN subject_label ELSE object_label END AS parent_label,
-                {resource}
-                FROM relation WHERE statement_kind = 'ontology' AND predicate IN ({listed or 'NULL'})""",
-            "order": "child_key, parent_key",
-        },
-        # Each relation touching an ontology term, from the term's side: what the term
-        # annotates. The annotated entity and the relation are also numbered (dense
-        # ranks of their keys), so that counting distinct ones counts integers.
-        "term_entity": {
-            "select": f"""WITH terms AS (SELECT DISTINCT entity_key FROM entity WHERE entity_type = 'ontology_class'),
-                edges AS (
-                    SELECT object_entity_key AS term_key, subject_entity_key AS entity_key, relation_key, {resource}
-                    FROM relation WHERE object_entity_key IN (SELECT entity_key FROM terms)
-                    UNION ALL SELECT subject_entity_key, object_entity_key, relation_key, {resource}
-                    FROM relation WHERE subject_entity_key IN (SELECT entity_key FROM terms))
-                SELECT term_key, entity_key, resource,
-                    dense_rank() OVER (ORDER BY entity_key)::INTEGER AS entity_n,
-                    dense_rank() OVER (ORDER BY relation_key)::INTEGER AS relation_n
-                FROM edges""",
-            "order": "term_key",
-        },
-        # Entities merged once, at build, instead of on every request: one row per entity
-        # with its summary precomputed and its merged identifier and annotation lists
-        # (sql/build/).
-        # A request read an entity's copies by long key lists, which scan the tables, and
-        # merged them (TP53's 64 copies: about 600 ms of CPU).
-        **{
-            name: {"select": build_sql(name), "order": order, **({"scratch": True} if scratch else {})}
-            for name, (order, scratch) in MERGED_TABLES.items()
-        },
+    values = {
+        # A relation's filter and facet columns.
+        "relation_columns": (
+            "category, predicate, subject_type, object_type, taxon, sign, is_directed, sources, "
+            f"resources, evidence_count, {qualifiers}"
+        ),
+        "facet_columns": ", ".join(RELATION_FACET_COLUMNS),
+        "flip": f"r.predicate IN ({reversed_})",
+        "hierarchy_predicates": ", ".join(f"'{name}'" for name in directions) or "NULL",
     }
+    tables = {}
+    for name, order, scratch in BUILD:
+        select = build_sql(name)
+        for key, value in values.items():
+            select = select.replace("{{" + key + "}}", value)
+        tables[name] = {"select": select, "order": order, **({"scratch": True} if scratch else {})}
+    return tables
 
 
-# The merged entity tables (sql/build/<name>.sql): their order, and whether they are a
-# stage of the build ("scratch": written to its scratch database, not the release's), so
-# that no one statement needs the memory of all of them (5 GB was not enough).
-MERGED_TABLES = {
-    "merged_identifiers": ("entity_key", True),
-    "merged_annotations": ("entity_key", True),
-    "entity_merged": ("entity_key", False),
-}
+# (table, order, scratch) in build order.
+BUILD = [
+    ("endpoint_stubs", "entity_key, _resource", True),
+    ("entity_numbers", "entity_key", True),
+    ("relation_numbers", "relation_key", True),
+    ("entity_copies", "_eid", True),
+    ("relation_copies", "_rid", True),
+    ("relation_merged", "relation_n", True),
+    ("entity_relation_counts", "entity_n", True),
+    ("entity_identifier", "entity_n, ordinal", False),
+    ("entity_annotation", "entity_n, ordinal", False),
+    ("entity_list_counts", "entity_n", True),
+    ("entity", "entity_n", False),
+    ("entity_evidence", "entity_n, resource, resource_version, entity_id, ordinal", False),
+    ("relation_rank", "relation_n", True),
+    ("relation_annotation", "relation_n, ordinal", False),
+    ("relation_evidence", "relation_n, resource, resource_version, relation_id, ordinal", False),
+    ("relation", "relation_n", False),
+    ("relation_endpoint", "entity_n, page_rank, side", False),
+    ("relation_reference", "reference_key, page_rank, side", False),
+    ("entity_term", "term, entity_n, kind", False),
+    ("entity_group", "group_key, kind, entity_n", False),
+    ("ontology_edge", "child_key, parent_key", False),
+    ("term_entity", "term_n, entity_n, relation_n", False),
+    ("relation_facet", "category, predicate", False),
+]
 
 
 def build_sql(name: str) -> str:
@@ -193,25 +130,29 @@ def build_sql(name: str) -> str:
     )
 
 
-# ART indexes: rows by a list of global ids (DuckDB uses an index only for ids written into
-# the SQL as a literal list). Measured on a full release: 7,582 relations in 0.3 s instead
-# of 5.6 s; 50 entities from across the release in 0.06-0.09 s instead of 0.4 s (a list
-# filter reads every column of the row groups it cannot skip), their evidence and
-# annotations 2-4 times faster. Together the entity indexes take 0.66 GB. Not on
-# entity_identifier (about 2 GB for 106 million rows) or entity_key.
+def work_tables() -> list[str]:
+    """The resources' tables the build reads (from its scratch database)."""
+    scratch = {name for name, _, is_scratch in BUILD if is_scratch}
+    read = set()
+    for name, _, _ in BUILD:
+        read |= set(re.findall(r"\bwork\.(\w+)", (SQL / "build" / f"{name}.sql").read_text()))
+    return [t for t in [*PUBLISHED_TABLES, *SERVING_TABLES] if t in read - scratch]
+
+
+# ART indexes: rows by a list of numbers or keys written into the SQL as a literal list
+# (DuckDB uses an index only then): search pages, relation endpoints and groups read
+# dozens to hundreds of entities at a time, relation pages their relations and evidence.
 INDEXES = [
-    # The merged entities by key: search pages, relation endpoints and groups read dozens
-    # to hundreds of keys at a time.
-    ["entity_merged_key", "entity_merged", "entity_key"],
-    ["relation_rid", "relation", "_rid"],
-    ["relation_evidence_rid", "relation_evidence", "_rid"],
-    ["entity_eid", "entity", "_eid"],
-    ["entity_evidence_eid", "entity_evidence", "_eid"],
-    ["entity_annotation_eid", "entity_annotation", "_eid"],
+    ["entity_n", "entity", "entity_n"],
+    ["entity_key", "entity", "entity_key"],
+    ["entity_evidence_n", "entity_evidence", "entity_n"],
+    ["entity_annotation_n", "entity_annotation", "entity_n"],
+    ["relation_n", "relation", "relation_n"],
+    ["relation_evidence_n", "relation_evidence", "relation_n"],
 ]
 # Changes when the tables, derived tables or indexes a database holds change. 10: op_taxonomy;
-# 11: merged entities.
-DATABASE_FORMAT = 11
+# 11: merged entities; 12: merged entities and relations only, numbered.
+DATABASE_FORMAT = 12
 
 
 def biolink_names() -> list[list[str]]:
@@ -274,8 +215,8 @@ def contract() -> dict:
             "index_scan_percentage": 0.5,
             "disabled_optimizers": "common_subplan",
         },
-        "lookups": LOOKUPS,
         "global_ids": GLOBAL_IDS,
+        "work_tables": work_tables(),
         "database_format": DATABASE_FORMAT,
         "derived_tables": derived_tables(),
         "indexes": INDEXES,

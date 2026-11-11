@@ -47,6 +47,9 @@ SELECT {{scope}}
 -- step: entity_key_list AS value
 SELECT {{entity_keys}}
 
+-- step: entity_n_list AS list
+SELECT entity_n FROM entity WHERE entity_key IN ({{entity_key_list*}}) ORDER BY entity_n
+
 -- step: key_tokens AS list
 SELECT unnest(coalesce({{scope_entity_ids}}, []))
 
@@ -55,54 +58,57 @@ SELECT unnest(coalesce({{scope_entity_ids}}, []))
 -- step: scope_key_list AS value
 SELECT {{entity_keys}}
 
--- step: selection_keys AS list
-SELECT DISTINCT k FROM (
-    SELECT unnest(coalesce({{entity_key_list}}, [])) AS k
-    UNION ALL SELECT unnest(coalesce({{scope_key_list}}, []))
-    UNION ALL SELECT unnest(coalesce({{reference_entity_keys}}, []))) ORDER BY k
+-- step: scope_n_list AS list
+SELECT entity_n FROM entity WHERE entity_key IN ({{scope_key_list*}}) ORDER BY entity_n
+
+-- step: selection_ns AS list
+SELECT DISTINCT n FROM (SELECT unnest({{entity_n_list}}::INTEGER[]) AS n
+    UNION ALL SELECT unnest({{scope_n_list}}::INTEGER[])) ORDER BY n
 
 -- step: selection_endpoints AS table when {{read_candidates}}
-SELECT key, key_kind, side, _rid FROM relation_endpoint
-WHERE key IN ({{selection_keys+}}) AND (op_unset({{scope}}) OR list_contains({{scope}}, _resource))
+SELECT entity_n, side, relation_n FROM relation_endpoint
+WHERE entity_n IN ({{selection_ns+}}) AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
+
+-- step: selection_references AS table when {{read_candidates}} AND NOT op_unset({{reference_entity_keys}})
+SELECT relation_n FROM relation_reference
+WHERE reference_key IN ({{reference_entity_keys+}}) AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
 
 -- step: candidate_ids AS list when {{read_candidates}}
 WITH by_entity AS (
-    SELECT _rid FROM __selection_endpoints
-    WHERE key_kind = 'entity' AND list_contains(coalesce({{entity_key_list}}, []), key)
+    SELECT relation_n FROM __selection_endpoints
+    WHERE list_contains({{entity_n_list}}, entity_n)
         AND ({{gene_mode}} NOT IN ('source', 'source_only') OR side = 'subject')
         AND ({{gene_mode}} NOT IN ('target', 'target_only') OR side = 'object')
-    GROUP BY _rid
+    GROUP BY relation_n
     HAVING {{gene_mode}} <> 'both' OR (bool_or(side = 'subject') AND bool_or(side = 'object'))
 ), by_scope AS (
-    SELECT _rid FROM __selection_endpoints
-    WHERE key_kind = 'entity' AND list_contains(coalesce({{scope_key_list}}, []), key)
+    SELECT relation_n FROM __selection_endpoints
+    WHERE list_contains({{scope_n_list}}, entity_n)
         AND ({{scope_endpoint_mode}} NOT IN ('source', 'source_only') OR side = 'subject')
         AND ({{scope_endpoint_mode}} NOT IN ('target', 'target_only') OR side = 'object')
-    GROUP BY _rid
+    GROUP BY relation_n
     HAVING {{scope_endpoint_mode}} <> 'both' OR (bool_or(side = 'subject') AND bool_or(side = 'object'))
-), by_reference AS (
-    SELECT DISTINCT _rid FROM __selection_endpoints
-    WHERE key_kind = 'reference' AND list_contains(coalesce({{reference_entity_keys}}, []), key)
 )
-SELECT DISTINCT _rid FROM __selection_endpoints
-WHERE (op_unset({{entities}}) OR _rid IN (SELECT _rid FROM by_entity))
-    AND (op_unset({{scope_entity_ids}}) OR _rid IN (SELECT _rid FROM by_scope))
-    AND (op_unset({{reference_entity_keys}}) OR _rid IN (SELECT _rid FROM by_reference))
-ORDER BY _rid
+SELECT DISTINCT relation_n FROM (
+    SELECT relation_n FROM __selection_endpoints UNION ALL SELECT relation_n FROM __selection_references)
+WHERE (op_unset({{entities}}) OR relation_n IN (SELECT relation_n FROM by_entity))
+    AND (op_unset({{scope_entity_ids}}) OR relation_n IN (SELECT relation_n FROM by_scope))
+    AND (op_unset({{reference_entity_keys}}) OR relation_n IN (SELECT relation_n FROM __selection_references))
+ORDER BY relation_n
 
 -- step: candidate_rows AS table when {{read_candidates}}
-SELECT * FROM relation WHERE _rid IN ({{candidate_ids*}})
+SELECT * FROM relation WHERE relation_n IN ({{candidate_ids*}})
 
 -- step: candidate_evidence AS table when {{forms}} AND {{keyed}} AND {{read_candidates}}
-SELECT * FROM relation_evidence WHERE _rid IN ({{candidate_ids*}})
+SELECT * FROM relation_evidence WHERE relation_n IN ({{candidate_ids*}})
 
 -- step: form_ids AS list when {{forms}}
--- relations with an evidence row matching the molecular form filters
-SELECT DISTINCT _rid FROM (
+-- relations with an evidence record matching the molecular form filters
+SELECT DISTINCT relation_n FROM (
     SELECT * FROM __candidate_evidence
     UNION ALL BY NAME
-    SELECT * FROM relation_evidence
-    WHERE NOT {{keyed}} AND (op_unset({{scope}}) OR list_contains({{scope}}, _resource))) ev
+    SELECT e.* FROM relation_evidence e
+    WHERE NOT {{keyed}} AND (op_unset({{scope}}) OR list_contains({{scope}}, e.resource))) ev
 WHERE op_evidence_ok(ev, {{protein_entity_keys}}, {{transcript_entity_keys}},
     {{isoform_identifiers}}, {{molecular_endpoint_mode}})
-ORDER BY _rid
+ORDER BY relation_n

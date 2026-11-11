@@ -49,63 +49,6 @@
   "index_scan_percentage": 0.5,
   "disabled_optimizers": "common_subplan"
  },
- "lookups": [
-  [
-   "relation",
-   "relation_id",
-   "at"
-  ],
-  [
-   "relation_annotation",
-   "relation_id",
-   "at"
-  ],
-  [
-   "relation_evidence",
-   "relation_id",
-   "at"
-  ],
-  [
-   "entity",
-   "entity_id",
-   "at"
-  ],
-  [
-   "entity_identifier",
-   "entity_id",
-   "at"
-  ],
-  [
-   "entity_annotation",
-   "entity_id",
-   "at"
-  ],
-  [
-   "entity_evidence",
-   "entity_id",
-   "at"
-  ],
-  [
-   "entity",
-   "entity_key",
-   "with"
-  ],
-  [
-   "relation_endpoint",
-   "key",
-   "with"
-  ],
-  [
-   "entity_term",
-   "term",
-   "with"
-  ],
-  [
-   "entity_group",
-   "group_key",
-   "with"
-  ]
- ],
  "global_ids": {
   "relation": [
    "relation_id",
@@ -116,10 +59,6 @@
    "_rid"
   ],
   "relation_evidence": [
-   "relation_id",
-   "_rid"
-  ],
-  "relation_endpoint": [
    "relation_id",
    "_rid"
   ],
@@ -148,79 +87,151 @@
    "_eid"
   ]
  },
- "database_format": 11,
+ "work_tables": [
+  "entity",
+  "entity_identifier",
+  "entity_annotation",
+  "entity_evidence",
+  "relation",
+  "relation_annotation",
+  "relation_evidence",
+  "entity_group",
+  "entity_term"
+ ],
+ "database_format": 12,
  "derived_tables": {
-  "relation_key_lookup": {
-   "select": "SELECT try_cast('0x' || substr(relation_key, 1, 15) AS BIGINT) AS key_prefix, _rid FROM relation",
-   "order": "key_prefix"
+  "endpoint_stubs": {
+   "select": "-- The relation ends that no resource has an entity row for, one row per resource stating\n-- them: what the relation itself says of the end (type, label, reference key, taxon,\n-- from the resource's first such relation), so that every end is an entity.\nWITH ends AS (\n    SELECT subject_entity_key AS entity_key, subject_type AS entity_type, subject_label AS label,\n        subject_reference_entity_key AS reference_entity_key, taxon, _resource, _resource_version, relation_id\n    FROM work.relation\n    UNION ALL\n    SELECT object_entity_key, object_type, object_label, object_reference_entity_key, taxon,\n        _resource, _resource_version, relation_id\n    FROM work.relation\n)\nSELECT entity_key, _resource, any_value(_resource_version) AS _resource_version,\n    arg_min(struct_pack(entity_type := entity_type, label := label, reference_entity_key := reference_entity_key,\n        taxon := taxon), relation_id) AS stub\nFROM ends\nWHERE entity_key IS NOT NULL AND entity_key NOT IN (SELECT entity_key FROM work.entity WHERE entity_key IS NOT NULL)\nGROUP BY entity_key, _resource\n",
+   "order": "entity_key, _resource",
+   "scratch": true
   },
-  "entity_by_key": {
-   "select": "SELECT *, dense_rank() OVER (ORDER BY entity_key)::INTEGER AS key_rank FROM entity",
-   "order": "entity_key, _resource, entity_id"
+  "entity_numbers": {
+   "select": "-- Every entity key numbered in key order (entity_n), relation ends without an entity row\n-- included: the release's tables name an entity by 4 bytes instead of its 64-character\n-- key.\nSELECT entity_key, row_number() OVER (ORDER BY entity_key)::INTEGER AS entity_n\nFROM (SELECT entity_key FROM work.entity WHERE entity_key IS NOT NULL\n      UNION SELECT entity_key FROM work.endpoint_stubs)\n",
+   "order": "entity_key",
+   "scratch": true
   },
-  "entity_term": {
-   "select": "SELECT t.*, e.key_rank FROM entity_term t JOIN entity_by_key e USING (_eid)",
-   "order": "term, _resource, entity_id",
-   "replaces": true
+  "relation_numbers": {
+   "select": "-- Every relation key numbered in key order (relation_n).\nSELECT relation_key, row_number() OVER (ORDER BY relation_key)::INTEGER AS relation_n\nFROM (SELECT DISTINCT relation_key FROM work.relation WHERE relation_key IS NOT NULL)\n",
+   "order": "relation_key",
+   "scratch": true
+  },
+  "entity_copies": {
+   "select": "-- Each resource's entity row (copy) with its entity's number, by global id: how the\n-- resources' identifier, annotation, evidence, term and group rows find their entity.\nSELECT e._eid, n.entity_n, e.entity_key, e._resource AS resource, e._resource_version AS resource_version,\n    e.entity_id\nFROM work.entity e JOIN work.entity_numbers n USING (entity_key)\n",
+   "order": "_eid",
+   "scratch": true
+  },
+  "relation_copies": {
+   "select": "-- Each resource's relation row (copy) with its relation's number, by global id.\nSELECT r._rid, n.relation_n, r.relation_key, r._resource AS resource, r._resource_version AS resource_version,\n    r.relation_id\nFROM work.relation r JOIN work.relation_numbers n USING (relation_key)\n",
+   "order": "_rid",
+   "scratch": true
+  },
+  "relation_merged": {
+   "select": "-- Each relation key's copies as one relation: the copies agree on the statement (ends,\n-- predicate, direction, sign, category, qualifiers); their sources and resources are\n-- united, their evidence counts summed, and the reference keys taken from the first\n-- copy (by resource and id).\nSELECT n.relation_n, r.relation_key,\n    any_value(r.statement_kind) AS statement_kind,\n    s.entity_n AS subject_n,\n    o.entity_n AS object_n,\n    arg_min(r.subject_reference_entity_key, struct_pack(a := r._resource, b := r._resource_version, c := r.relation_id))\n        AS subject_reference_entity_key,\n    arg_min(r.object_reference_entity_key, struct_pack(a := r._resource, b := r._resource_version, c := r.relation_id))\n        AS object_reference_entity_key,\n    any_value(r.subject_type) AS subject_type,\n    any_value(r.predicate) AS predicate,\n    any_value(r.object_type) AS object_type,\n    any_value(r.taxon) AS taxon,\n    any_value(r.is_directed) AS is_directed,\n    any_value(r.sign) AS sign,\n    any_value(r.category) AS category,\n    any_value(r.interaction_class) AS interaction_class,\n    any_value(r.object_aspect_qualifier) AS object_aspect_qualifier,\n    any_value(r.object_direction_qualifier) AS object_direction_qualifier,\n    any_value(r.causal_mechanism_qualifier) AS causal_mechanism_qualifier,\n    list_sort(list_distinct(flatten(list(coalesce(r.sources, []))))) AS sources,\n    list(DISTINCT r._resource ORDER BY r._resource) AS resources,\n    sum(coalesce(r.evidence_count, 0))::BIGINT AS evidence_count\nFROM work.relation r\nJOIN work.relation_numbers n USING (relation_key)\nLEFT JOIN work.entity_numbers s ON s.entity_key = r.subject_entity_key\nLEFT JOIN work.entity_numbers o ON o.entity_key = r.object_entity_key\nWHERE {{partition r.relation_key}}\nGROUP BY n.relation_n, r.relation_key, s.entity_n, o.entity_n, r.subject_entity_key, r.object_entity_key\n",
+   "order": "relation_n",
+   "scratch": true
+  },
+  "entity_relation_counts": {
+   "select": "-- Each entity's number of relations (a relation from an entity to itself counts once).\nSELECT entity_n, count(*)::BIGINT AS relation_count FROM (\n    SELECT subject_n AS entity_n FROM work.relation_merged\n    UNION ALL SELECT object_n FROM work.relation_merged WHERE object_n <> subject_n)\nGROUP BY entity_n\n",
+   "order": "entity_n",
+   "scratch": true
+  },
+  "entity_identifier": {
+   "select": "-- Each entity's identifiers over its copies, united by (ns, id), numbered (ordinal) in\n-- the order each is first seen: copies by resource and id, each copy's in its order.\nSELECT entity_n, row_number() OVER (PARTITION BY entity_n ORDER BY first)::INTEGER AS ordinal,\n    ns, id, is_canonical, \"source\"\nFROM (\n    SELECT c.entity_n, i.ns, i.id,\n        min(struct_pack(r := c.resource, v := c.resource_version, e := c.entity_id, o := i.ordinal)) AS first,\n        arg_min(i.is_canonical, struct_pack(r := c.resource, v := c.resource_version, e := c.entity_id, o := i.ordinal)) AS is_canonical,\n        arg_min(i.\"source\", struct_pack(r := c.resource, v := c.resource_version, e := c.entity_id, o := i.ordinal)) AS \"source\"\n    FROM work.entity_identifier i JOIN work.entity_copies c USING (_eid)\n    WHERE {{partition c.entity_key}}\n    GROUP BY c.entity_n, i.ns, i.id)\n",
+   "order": "entity_n, ordinal"
+  },
+  "entity_annotation": {
+   "select": "-- Each entity's annotations over its copies, each once (by term, value, quantity and\n-- source), numbered (ordinal) in the order each is first seen.\nSELECT entity_n, row_number() OVER (PARTITION BY entity_n ORDER BY first)::INTEGER AS ordinal,\n    term, \"value\", quantity_has_numeric_value, quantity_has_unit, quantity_has_unit_prefix,\n    quantity_has_binary_relation, quantity_source_field, quantity_comparator, \"source\"\nFROM (\n    SELECT c.entity_n, a.term, a.\"value\", a.quantity_has_numeric_value, a.quantity_has_unit,\n        a.quantity_has_unit_prefix, a.quantity_has_binary_relation, a.quantity_source_field,\n        a.quantity_comparator, a.\"source\",\n        min(struct_pack(r := c.resource, v := c.resource_version, e := c.entity_id, o := a.ordinal)) AS first\n    FROM work.entity_annotation a JOIN work.entity_copies c USING (_eid)\n    WHERE {{partition c.entity_key}}\n    GROUP BY ALL)\n",
+   "order": "entity_n, ordinal"
+  },
+  "entity_list_counts": {
+   "select": "-- Each entity's numbers of merged identifiers and annotations.\nSELECT entity_n, sum(i)::BIGINT AS identifier_count, sum(a)::BIGINT AS annotation_count FROM (\n    SELECT entity_n, 1 AS i, 0 AS a FROM omnipath.entity_identifier\n    UNION ALL SELECT entity_n, 0, 1 FROM omnipath.entity_annotation)\nGROUP BY entity_n\n",
+   "order": "entity_n",
+   "scratch": true
+  },
+  "entity": {
+   "select": "-- Each entity's copies as one entity: the richest copy's columns (the merged_entity\n-- fragment, ranking copies by their identifier and annotation counts), its relations,\n-- evidence, identifier and annotation counts, the resources that have it, and the\n-- summary that search results, relation endpoints and group cards show (stored without\n-- its identifiers, which op_summary adds). chemical: some copy is of a chemical type;\n-- structure_group and gene_group: the structure block and Entrez gene reference all its\n-- copies agree on, which group it in the grouped explorer. A relation end without an\n-- entity row is an entity as its relations describe it (endpoint_stubs).\nWITH rows_ AS (\n    SELECT * FROM work.entity WHERE {{partition entity_key}}\n    UNION ALL BY NAME\n    SELECT entity_key, _resource, _resource_version, -1 AS entity_id,\n        coalesce(nullif(stub.entity_type, ''), 'unknown') AS namespace,\n        coalesce(nullif(stub.label, ''), entity_key) AS identifier, stub.label AS label,\n        stub.entity_type AS entity_type, stub.taxon AS taxon, stub.reference_entity_key AS reference_entity_key\n    FROM work.endpoint_stubs WHERE {{partition entity_key}}\n), copies AS (\n    SELECT * EXCLUDE (_resource_version), _resource || '/' || _resource_version AS resource,\n        0 AS position,\n        NULL::STRUCT(ns VARCHAR, id VARCHAR, is_canonical BOOLEAN, source VARCHAR)[] AS identifiers,\n        NULL::STRUCT(term VARCHAR, \"value\" VARCHAR, quantity STRUCT(has_numeric_value DOUBLE,\n            has_unit VARCHAR, has_unit_prefix VARCHAR, has_binary_relation VARCHAR,\n            source_field VARCHAR, comparator VARCHAR), \"source\" VARCHAR)[] AS annotations\n    FROM rows_\n), merged AS (\n    SELECT m.* REPLACE (coalesce(c.relation_count, 0) AS relation_count), n.entity_n\n    FROM (WITH merged AS (\n    SELECT\n        entity_key,\n        min(position) AS position,\n        arg_max(struct_pack(namespace := namespace, identifier := identifier, label := label,\n            entity_type := entity_type, taxon := taxon, has_hierarchy := has_hierarchy,\n            parent_count := parent_count, child_count := child_count,\n            group_connectivity := group_connectivity), struct_pack(\n            a := coalesce(len(annotations), annotation_count, 0),\n            i := coalesce(len(identifiers), identifier_count, 0),\n            g := regexp_full_match(coalesce(label, ''), '[A-Z][A-Z0-9-]{1,14}')::INTEGER,\n            n := (coalesce(label, '') <> '' AND coalesce(label, '') <> coalesce(identifier, '')\n                AND NOT regexp_full_match(coalesce(label, ''), '[0-9]+'))::INTEGER,\n            f := lower(coalesce(label, '')),\n            l := coalesce(label, ''),\n            k := entity_key,\n            r := resource,\n            h := coalesce(has_hierarchy, false),\n            p := coalesce(parent_count, 0),\n            c := coalesce(child_count, 0))) AS best,\n        sum(coalesce(relation_count, 0))::BIGINT AS relation_count,\n        sum(coalesce(evidence_count, 0))::BIGINT AS evidence_total,\n        list_sort(list_distinct(flatten(list(coalesce(gene_reference_keys, []))))) AS gene_reference_keys,\n        list(DISTINCT reference_entity_key)\n            FILTER (WHERE coalesce(reference_entity_key, '') <> '') AS reference_keys,\n        flatten(list(identifiers ORDER BY resource, entity_id)) AS all_identifiers,\n        flatten(list(annotations ORDER BY resource, entity_id)) AS all_annotations,\n        count(*) AS copies\n    FROM copies\n    GROUP BY entity_key\n), main_entity AS (\n    SELECT\n        'main' AS item, position,\n        entity_key AS pk, best.namespace AS raw_namespace, best.identifier AS raw_identifier,\n        best.label AS raw_label, best.entity_type AS raw_type, best.taxon AS taxon,\n        best.has_hierarchy AS has_hierarchy, best.parent_count AS parent_count,\n        best.child_count AS child_count, best.group_connectivity AS group_connectivity,\n        relation_count, gene_reference_keys,\n        CASE\n            WHEN list_contains(coalesce(reference_keys, []),\n                    coalesce(best.namespace, 'None') || ':' || coalesce(best.identifier, 'None'))\n                OR len(coalesce(reference_keys, [])) > 1\n            THEN coalesce(best.namespace, 'None') || ':' || coalesce(best.identifier, 'None')\n            WHEN len(coalesce(reference_keys, [])) = 1 THEN reference_keys[1]\n        END AS reference_entity_key,\n        list_transform(list_filter(\n            list_transform(all_identifiers, lambda x, i: struct_pack(x := x, i := i)),\n            lambda s: list_position(list_transform(all_identifiers,\n                lambda x: struct_pack(n := coalesce(x.ns, chr(1)), d := coalesce(x.id, chr(1)))),\n                struct_pack(n := coalesce(s.x.ns, chr(1)), d := coalesce(s.x.id, chr(1)))) = s.i),\n            lambda s: s.x) AS identifiers,\n        CASE WHEN copies > 1 THEN list_transform(list_filter(\n                list_transform(all_annotations, lambda x, i: struct_pack(x := x, i := i)),\n                lambda s: list_position(all_annotations, s.x) = s.i), lambda s: s.x)\n            ELSE all_annotations END AS annotations,\n        [entity_key] AS source_keys,\n        evidence_total\n    FROM merged\n)\nSELECT * FROM main_entity) m\n    JOIN work.entity_numbers n ON n.entity_key = m.pk\n    LEFT JOIN work.entity_relation_counts c USING (entity_n)\n), shaped AS (\n    SELECT * FROM (WITH shape_1 AS (\n    SELECT *,\n        coalesce(pk, '') AS pk_s,\n        trim(coalesce(nullif(raw_namespace, ''), 'unknown')) AS namespace_s,\n        trim(coalesce(nullif(raw_identifier, ''), coalesce(pk, ''))) AS identifier_s,\n        list_transform(coalesce(annotations, []), lambda a: struct_pack(\n            term := trim(coalesce(a.term, '')), value := trim(coalesce(a.value, '')),\n            quantity := a.quantity, source := trim(coalesce(a.source, '')))) AS annotations_s\n    FROM merged\n), shape_2 AS (\n    SELECT *,\n        lower(namespace_s) AS slug,\n        trim(coalesce(nullif(raw_label, ''), identifier_s)) AS label_s\n    FROM shape_1\n), shape_3 AS (\n    SELECT *, [struct_pack(type := slug, id := identifier_s, source := '', canon := true)]\n        || CASE WHEN label_s <> '' AND label_s <> identifier_s THEN [struct_pack(\n            type := CASE WHEN slug IN ('uniprot', 'entrez', 'ensg') THEN 'genesymbol' ELSE 'name' END,\n            id := label_s, source := '', canon := false)] ELSE [] END\n        || list_transform(coalesce(identifiers, []), lambda x: struct_pack(\n            type := lower(trim(coalesce(x.ns, ''))), id := trim(coalesce(x.id, '')),\n            source := coalesce(x.source, ''), canon := coalesce(x.is_canonical, false))) AS candidates\n    FROM shape_2\n), shape_4 AS (\n    SELECT *, list_transform(list_filter(\n            list_transform(candidates, lambda c, i: struct_pack(c := c, i := i)),\n            lambda s: s.c.type <> '' AND s.c.id <> ''\n                AND list_position(list_transform(candidates, lambda c: struct_pack(t := c.type, d := c.id)),\n                    struct_pack(t := s.c.type, d := s.c.id)) = s.i),\n        lambda s: s.c) AS kept\n    FROM shape_3\n), shape_5 AS (\n    SELECT *,\n        op_ordered_distinct(\n            list_transform(list_filter(kept, lambda k: k.source <> ''), lambda k: k.source)\n            || list_transform(list_filter(annotations_s, lambda a: a.source <> ''), lambda a: a.source)) AS sources,\n        list_transform(annotations_s, lambda a: CASE WHEN a.quantity IS NULL\n            THEN to_json(struct_pack(term := a.term, value := a.value, source := a.source))\n            ELSE to_json(struct_pack(term := a.term, value := a.value, quantity := a.quantity,\n                source := a.source)) END) AS annotations_json,\n        lower(regexp_replace(coalesce(raw_type, ''), '[\\s_]', '', 'g')) AS kind,\n        flatten([list_transform(list_filter(kept, lambda k: k.type = ns_), lambda k: k.id)\n            FOR ns_ IN ['chebi', 'chembl', 'hmdb', 'pubchem']]) AS chemical_names,\n        coalesce(has_hierarchy, false) AS hierarchy,\n        coalesce(parent_count, 0) AS parents,\n        coalesce(child_count, 0) AS children_\n    FROM shape_4\n), shaped AS (\n    SELECT item, position, struct_pack(\n        entityPk := pk_s,\n        referenceEntityKey := reference_entity_key,\n        geneReferenceKeys := coalesce(gene_reference_keys, []),\n        molecularEvidence := []::JSON[],\n        resolutionStatus := 'resolved',\n        sourceEntityPks := op_ordered_distinct(\n            list_filter(coalesce(source_keys, []), lambda k: trim(coalesce(k, '')) <> '') || [pk_s]),\n        entityFacetHints := struct_pack(chemicalClasses := []::JSON[],\n            metabolicDomains := []::JSON[], structuralSpecificities := []::JSON[]),\n        entityType := lower(trim(coalesce(nullif(raw_type, ''), 'unknown'))),\n        primaryNamespace := slug,\n        canonicalIdentifier := identifier_s,\n        canonicalIdentifierType := slug,\n        primaryIdentifier := identifier_s,\n        label := label_s,\n        taxon := taxon,\n        taxonomyId := nullif(coalesce(taxon, ''), ''),\n        hasHierarchy := hierarchy,\n        parentCount := parents,\n        childCount := children_,\n        relationCount := coalesce(relation_count, 0),\n        sources := sources,\n        sourceCount := len(sources),\n        resources := sources,\n        entityAttributes := CASE WHEN len(annotations_json) > 0 THEN annotations_json END,\n        ontologyHierarchy := CASE WHEN hierarchy OR parents + children_ > 0 THEN struct_pack(\n            termId := identifier_s,\n            ontologyPrefix := CASE\n                WHEN slug IN ('cvterm', 'cv_term') OR slug = '' THEN CASE\n                    WHEN contains(identifier_s, '-') THEN split_part(identifier_s, '-', 1)\n                    WHEN contains(identifier_s, ':') THEN split_part(identifier_s, ':', 1)\n                    WHEN starts_with(identifier_s, 'KW') THEN 'KW'\n                    ELSE slug END\n                ELSE slug END,\n            label := label_s,\n            definition := list_filter(annotations_s, lambda a: a.term IN\n                ('description', 'biolink:description', 'IAO:0000115') AND a.value <> '')[1].value,\n            ontologyId := NULL::VARCHAR,\n            childCount := children_,\n            parentCount := parents) END,\n        identifiersTotal := len(kept),\n        identifiers := list_transform(kept, lambda k: struct_pack(\n            entityPk := pk_s, identifier := k.id, identifierType := k.type, type := k.type,\n            id := k.id, curie := NULL::VARCHAR, source := k.source, isCanonical := k.canon)),\n        annotations := annotations_json,\n        displayName := CASE\n            WHEN kind IN ('chemicalentity', 'chemical', 'smallmolecule', 'compound', 'metabolite', 'drug', 'lipid')\n            THEN CASE\n                WHEN label_s <> '' AND NOT regexp_full_match(label_s, '[0-9]+')\n                    AND NOT starts_with(lower(label_s), 'inchi=') THEN label_s\n                ELSE coalesce(\n                    list_filter(chemical_names, lambda v: NOT regexp_full_match(v, '[0-9]+'))[1],\n                    chemical_names[1], nullif(label_s, ''), nullif(identifier_s, ''), pk_s) END\n            WHEN kind IN ('protein', 'gene') THEN coalesce(\n                nullif(label_s, ''),\n                list_filter(kept, lambda k: k.type IN ('genesymbol', 'gene_symbol', 'gene_name_primary',\n                    'symbol', 'om:0200'))[1].id,\n                list_filter(kept, lambda k: k.type IN ('uniprot', 'uniprotkb'))[1].id,\n                list_filter(kept, lambda k: k.type IN ('name', 'om:0202', 'entry_name', 'entry name')\n                    OR ends_with(k.type, ':name') OR contains(k.type, ' entry name'))[1].id,\n                nullif(identifier_s, ''), pk_s)\n            ELSE coalesce(\n                nullif(label_s, ''),\n                list_filter(kept, lambda k: k.type IN ('name', 'om:0202', 'entry_name', 'entry name')\n                    OR ends_with(k.type, ':name') OR contains(k.type, ' entry name'))[1].id,\n                nullif(identifier_s, ''), pk_s)\n        END,\n        taxonomyName := t.taxonomy_name\n    ) AS summary\n    FROM shape_5\n    LEFT JOIN (SELECT taxon AS taxonomy_id, name AS taxonomy_name FROM op_taxonomy) t\n        ON t.taxonomy_id = nullif(coalesce(shape_5.taxon, ''), '')\n)\nSELECT item, position, summary FROM shaped)\n), facts AS (\n    SELECT entity_key,\n        list(DISTINCT _resource ORDER BY _resource) AS resources,\n        bool_or(coalesce(list_contains((SELECT list(entity_type) FROM op_chemical_types), entity_type), false)) AS chemical,\n        CASE WHEN min(hash(group_connectivity)) FILTER (WHERE group_connectivity IS NOT NULL)\n                = max(hash(group_connectivity)) FILTER (WHERE group_connectivity IS NOT NULL)\n            THEN any_value(group_connectivity) FILTER (WHERE group_connectivity IS NOT NULL) END AS structure_group,\n        CASE WHEN bool_and(coalesce(starts_with(reference_entity_key, 'entrez:'), false))\n            THEN any_value(reference_entity_key) END AS gene_reference,\n        min(hash(reference_entity_key)) = max(hash(reference_entity_key)) AS one_reference\n    FROM rows_ GROUP BY entity_key\n)\nSELECT m.entity_n, m.pk AS entity_key, m.raw_namespace AS namespace, m.raw_identifier AS identifier,\n    m.raw_label AS label, m.raw_type AS entity_type, m.taxon, m.has_hierarchy, m.parent_count,\n    m.child_count, m.group_connectivity, m.reference_entity_key, m.gene_reference_keys,\n    m.relation_count, m.evidence_total AS evidence_count,\n    coalesce(l.identifier_count, 0) AS identifier_count, coalesce(l.annotation_count, 0) AS annotation_count,\n    f.resources, f.chemical, f.structure_group,\n    CASE WHEN f.one_reference THEN f.gene_reference END AS gene_group,\n    struct_update(s.summary, identifiers := NULL) AS summary\nFROM merged m\nJOIN shaped s ON s.summary.entityPk = m.pk\nJOIN facts f ON f.entity_key = m.pk\nLEFT JOIN work.entity_list_counts l USING (entity_n)\n",
+   "order": "entity_n"
+  },
+  "entity_evidence": {
+   "select": "-- Every evidence record of each entity, with the resource (and the resource's own\n-- entity id) that states it.\nSELECT c.entity_n, c.resource, c.resource_version, c.entity_id, e.ordinal, e.\"source\", e.dataset,\n    e.row_id, e.upstream_id, e.annotations, e.molecular_form\nFROM work.entity_evidence e JOIN work.entity_copies c USING (_eid)\nWHERE {{partition c.entity_key}}\n",
+   "order": "entity_n, resource, resource_version, entity_id, ordinal"
+  },
+  "relation_rank": {
+   "select": "-- Each relation's place in the page order of every relation: category, predicate, the\n-- ends' labels, key.\nSELECT r.relation_n, row_number() OVER (ORDER BY r.category, r.predicate, s.label, o.label, r.relation_key)::INTEGER AS page_rank\nFROM work.relation_merged r\nJOIN omnipath.entity s ON s.entity_n = r.subject_n\nJOIN omnipath.entity o ON o.entity_n = r.object_n\n",
+   "order": "relation_n",
+   "scratch": true
+  },
+  "relation_annotation": {
+   "select": "-- Each relation's annotations over its copies, each once (by every column but the\n-- position), numbered (ordinal) in the order each is first seen: copies by resource\n-- and id, each copy's in its order.\nSELECT relation_n, row_number() OVER (PARTITION BY relation_n ORDER BY first)::INTEGER AS ordinal,\n    term, \"value\", quantity_has_numeric_value, quantity_has_unit, quantity_has_unit_prefix,\n    quantity_has_binary_relation, quantity_source_field, quantity_comparator, \"source\", dataset, \"scope\"\nFROM (\n    SELECT c.relation_n, a.term, a.\"value\", a.quantity_has_numeric_value, a.quantity_has_unit,\n        a.quantity_has_unit_prefix, a.quantity_has_binary_relation, a.quantity_source_field,\n        a.quantity_comparator, a.\"source\", a.dataset, a.\"scope\",\n        min(struct_pack(r := c.resource, v := c.resource_version, i := c.relation_id, o := a.ordinal)) AS first\n    FROM work.relation_annotation a JOIN work.relation_copies c USING (_rid)\n    WHERE {{partition c.relation_key}}\n    GROUP BY ALL)\n",
+   "order": "relation_n, ordinal"
+  },
+  "relation_evidence": {
+   "select": "-- Every evidence record of each relation, with the resource (and the resource's own\n-- relation id) that states it.\nSELECT c.relation_n, c.resource, c.resource_version, c.relation_id, e.ordinal, e.\"source\", e.dataset,\n    e.row_id, e.upstream_id, e.annotations, e.subject_molecular_form, e.object_molecular_form\nFROM work.relation_evidence e JOIN work.relation_copies c USING (_rid)\nWHERE {{partition c.relation_key}}\n",
+   "order": "relation_n, resource, resource_version, relation_id, ordinal"
+  },
+  "relation": {
+   "select": "-- The merged relations with their place in the page order (page_rank) and their number\n-- of merged annotations.\nSELECT m.*, k.page_rank, coalesce(a.n, 0)::BIGINT AS annotation_count\nFROM work.relation_merged m\nJOIN work.relation_rank k USING (relation_n)\nLEFT JOIN (SELECT relation_n, count(*) AS n FROM omnipath.relation_annotation GROUP BY relation_n) a USING (relation_n)\n",
+   "order": "relation_n"
   },
   "relation_endpoint": {
-   "select": "SELECT * FROM (\n                SELECT unnest([subject_entity_key, subject_reference_entity_key,\n                        object_entity_key, object_reference_entity_key]) AS key,\n                    unnest(['entity', 'reference', 'entity', 'reference']) AS key_kind,\n                    unnest(['subject', 'subject', 'object', 'object']) AS side,\n                    relation_id, _resource, _resource_version, _rid, _resource || '/' || _resource_version AS resource,\n                    row_number() OVER (ORDER BY category, predicate, subject_label, object_label,\n                        _resource || '/' || _resource_version, relation_id)::INTEGER AS page_rank,\n                    category, predicate, subject_type, object_type, taxon, sign, is_directed, sources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\n                FROM relation) WHERE key IS NOT NULL",
-   "order": "key, key_kind, page_rank",
-   "replaces": true
+   "select": "-- Each relation under both its ends' entity numbers, sorted by entity and then page\n-- order, with its filter and facet columns: an entity's relations are one range, in\n-- page order.\nSELECT entity_n, side, relation_n, page_rank, category, predicate, subject_type, object_type, taxon, sign, is_directed, sources, resources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\nFROM (\n    SELECT subject_n AS entity_n, 'subject' AS side, * FROM omnipath.relation\n    UNION ALL\n    SELECT object_n, 'object', * FROM omnipath.relation)\n",
+   "order": "entity_n, page_rank, side"
+  },
+  "relation_reference": {
+   "select": "-- Each relation under the reference keys its copies give its ends (a gene's Entrez key,\n-- for instance), sorted by key and then page order, with its filter and facet columns.\nWITH refs AS (\n    SELECT DISTINCT c.relation_n, x.side, x.k\n    FROM work.relation r JOIN work.relation_copies c USING (_rid),\n        LATERAL (VALUES ('subject', r.subject_reference_entity_key), ('object', r.object_reference_entity_key)) AS x(side, k)\n    WHERE x.k IS NOT NULL\n)\nSELECT refs.k AS reference_key, refs.side, rel.relation_n, rel.page_rank, category, predicate, subject_type, object_type, taxon, sign, is_directed, sources, resources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\nFROM refs JOIN omnipath.relation rel USING (relation_n)\n",
+   "order": "reference_key, page_rank, side"
+  },
+  "entity_term": {
+   "select": "-- The lowercase labels and identifiers of every copy, sorted by term: a prefix is one\n-- range of entity numbers.\nSELECT DISTINCT t.term, t.kind, c.entity_n\nFROM work.entity_term t JOIN work.entity_copies c USING (_eid)\n",
+   "order": "term, entity_n, kind"
+  },
+  "entity_group": {
+   "select": "-- The entities under each group key their copies give (reference, gene, connectivity).\nSELECT DISTINCT g.group_key, g.kind, c.entity_n\nFROM work.entity_group g JOIN work.entity_copies c USING (_eid)\n",
+   "order": "group_key, kind, entity_n"
   },
   "ontology_edge": {
-   "select": "SELECT\n                CASE WHEN predicate IN ('has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'superclass_of') THEN object_entity_key ELSE subject_entity_key END AS child_key,\n                CASE WHEN predicate IN ('has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'superclass_of') THEN object_label ELSE subject_label END AS child_label,\n                predicate,\n                CASE WHEN predicate IN ('has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'superclass_of') THEN subject_entity_key ELSE object_entity_key END AS parent_key,\n                CASE WHEN predicate IN ('has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'superclass_of') THEN subject_label ELSE object_label END AS parent_label,\n                _resource || '/' || _resource_version AS resource\n                FROM relation WHERE statement_kind = 'ontology' AND predicate IN ('food_component_of', 'has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'is_a', 'is_active_ingredient_of', 'is_excipient_of', 'nutrient_of', 'part_of', 'plasma_membrane_part_of', 'subclass_of', 'superclass_of', 'variant_part_of')",
+   "select": "-- The ontologies' hierarchies as child -> parent edges, with the ends' labels.\nSELECT CASE WHEN r.predicate IN ('has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'superclass_of') THEN o.entity_key ELSE s.entity_key END AS child_key,\n    CASE WHEN r.predicate IN ('has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'superclass_of') THEN o.label ELSE s.label END AS child_label,\n    r.predicate,\n    CASE WHEN r.predicate IN ('has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'superclass_of') THEN s.entity_key ELSE o.entity_key END AS parent_key,\n    CASE WHEN r.predicate IN ('has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'superclass_of') THEN s.label ELSE o.label END AS parent_label,\n    r.resources\nFROM omnipath.relation r\nJOIN omnipath.entity s ON s.entity_n = r.subject_n\nJOIN omnipath.entity o ON o.entity_n = r.object_n\nWHERE r.statement_kind = 'ontology' AND r.predicate IN ('food_component_of', 'has_active_ingredient', 'has_excipient', 'has_food_component', 'has_nutrient', 'has_part', 'has_plasma_membrane_part', 'has_variant_part', 'is_a', 'is_active_ingredient_of', 'is_excipient_of', 'nutrient_of', 'part_of', 'plasma_membrane_part_of', 'subclass_of', 'superclass_of', 'variant_part_of')\n",
    "order": "child_key, parent_key"
   },
   "term_entity": {
-   "select": "WITH terms AS (SELECT DISTINCT entity_key FROM entity WHERE entity_type = 'ontology_class'),\n                edges AS (\n                    SELECT object_entity_key AS term_key, subject_entity_key AS entity_key, relation_key, _resource || '/' || _resource_version AS resource\n                    FROM relation WHERE object_entity_key IN (SELECT entity_key FROM terms)\n                    UNION ALL SELECT subject_entity_key, object_entity_key, relation_key, _resource || '/' || _resource_version AS resource\n                    FROM relation WHERE subject_entity_key IN (SELECT entity_key FROM terms))\n                SELECT term_key, entity_key, resource,\n                    dense_rank() OVER (ORDER BY entity_key)::INTEGER AS entity_n,\n                    dense_rank() OVER (ORDER BY relation_key)::INTEGER AS relation_n\n                FROM edges",
-   "order": "term_key"
+   "select": "-- Each relation touching an ontology term, from the term's side: what the term\n-- annotates.\nWITH terms AS (SELECT entity_n FROM omnipath.entity WHERE entity_type = 'ontology_class')\nSELECT object_n AS term_n, subject_n AS entity_n, relation_n, resources FROM omnipath.relation\nWHERE object_n IN (SELECT entity_n FROM terms)\nUNION ALL\nSELECT subject_n, object_n, relation_n, resources FROM omnipath.relation\nWHERE subject_n IN (SELECT entity_n FROM terms)\n",
+   "order": "term_n, entity_n, relation_n"
   },
-  "merged_identifiers": {
-   "select": "-- Each entity's identifiers over its copies, united by (ns, id) and ordered by where each\n-- is first seen (copies in resource and entity order, each copy's in its order); read by\n-- entity_merged. A stage of the build, in its scratch database; built in slices of\n-- entity keys ({{partition ...}}), since list aggregates hold their groups in memory.\nSELECT entity_key, list(struct_pack(ns := ns, id := id, is_canonical := is_canonical, source := source)\n    ORDER BY first) AS identifiers\nFROM (\n    SELECT e.entity_key, i.ns, i.id,\n        min(struct_pack(r := e._resource || '/' || e._resource_version, e := e.entity_id, o := i.ordinal)) AS first,\n        arg_min(i.is_canonical, struct_pack(r := e._resource || '/' || e._resource_version, e := e.entity_id, o := i.ordinal)) AS is_canonical,\n        arg_min(i.source, struct_pack(r := e._resource || '/' || e._resource_version, e := e.entity_id, o := i.ordinal)) AS source\n    FROM entity_identifier i JOIN entity e USING (_eid)\n    WHERE {{partition e.entity_key}}\n    GROUP BY e.entity_key, i.ns, i.id)\nGROUP BY entity_key\n",
-   "order": "entity_key",
-   "scratch": true
-  },
-  "merged_annotations": {
-   "select": "-- Each entity's annotations over its copies, in resource and entity order; with several\n-- copies an annotation they share appears once (first seen), a single copy's are kept as\n-- they are; read by entity_merged. A stage of the build, in its scratch database; built in\n-- slices of entity keys ({{partition ...}}), since list aggregates hold their groups in\n-- memory.\nSELECT entity_key, list(struct_pack(term := term, \"value\" := \"value\", quantity := quantity,\n    \"source\" := \"source\", dataset := dataset) ORDER BY first) AS annotations\nFROM (\n    SELECT e.entity_key, a.term, a.\"value\",\n        op_quantity(a.quantity_has_numeric_value, a.quantity_has_unit, a.quantity_has_unit_prefix,\n            a.quantity_has_binary_relation, a.quantity_source_field, a.quantity_comparator) AS quantity,\n        a.\"source\", a.dataset,\n        min(struct_pack(r := e._resource || '/' || e._resource_version, e := e.entity_id, o := a.ordinal)) AS first\n    FROM entity_annotation a JOIN entity e USING (_eid)\n    JOIN (SELECT entity_key, count(*) AS copies FROM entity WHERE {{partition entity_key}} GROUP BY entity_key) c\n        USING (entity_key)\n    GROUP BY e.entity_key, a.term, a.\"value\", quantity, a.\"source\", a.dataset,\n        CASE WHEN c.copies = 1 THEN a.ordinal END)\nGROUP BY entity_key\n",
-   "order": "entity_key",
-   "scratch": true
-  },
-  "entity_merged": {
-   "select": "-- Every entity's copies merged into one row: the merged_entity fragment over all copies\n-- (ranking them by their identifier and annotation counts), the summary that search\n-- results, relation endpoints and group cards show, the merged identifier and annotation\n-- lists an entity page shows, and the copies' resources, types, taxa and reference keys,\n-- which filters test (an entity passes when some copy has the value). The summary is stored\n-- without its identifiers (op_summary adds them). The lists come from merged_identifiers\n-- and merged_annotations (staged in the build's scratch database).\nWITH copies AS (\n    SELECT * EXCLUDE (_resource_version), _resource || '/' || _resource_version AS resource,\n        0 AS position,\n        NULL::STRUCT(ns VARCHAR, id VARCHAR, is_canonical BOOLEAN, source VARCHAR)[] AS identifiers,\n        NULL::STRUCT(term VARCHAR, \"value\" VARCHAR, quantity STRUCT(has_numeric_value DOUBLE,\n            has_unit VARCHAR, has_unit_prefix VARCHAR, has_binary_relation VARCHAR,\n            source_field VARCHAR, comparator VARCHAR), \"source\" VARCHAR, dataset VARCHAR)[] AS annotations\n    FROM entity WHERE {{partition entity_key}}\n), merged AS (\n    SELECT * FROM (WITH merged AS (\n    SELECT\n        entity_key,\n        min(position) AS position,\n        arg_max(struct_pack(namespace := namespace, identifier := identifier, label := label,\n            entity_type := entity_type, taxon := taxon, has_hierarchy := has_hierarchy,\n            parent_count := parent_count, child_count := child_count,\n            group_connectivity := group_connectivity), struct_pack(\n            a := coalesce(len(annotations), annotation_count, 0),\n            i := coalesce(len(identifiers), identifier_count, 0),\n            g := regexp_full_match(coalesce(label, ''), '[A-Z][A-Z0-9-]{1,14}')::INTEGER,\n            n := (coalesce(label, '') <> '' AND coalesce(label, '') <> coalesce(identifier, '')\n                AND NOT regexp_full_match(coalesce(label, ''), '[0-9]+'))::INTEGER,\n            f := lower(coalesce(label, '')),\n            l := coalesce(label, ''),\n            k := entity_key,\n            r := resource,\n            h := coalesce(has_hierarchy, false),\n            p := coalesce(parent_count, 0),\n            c := coalesce(child_count, 0))) AS best,\n        sum(coalesce(relation_count, 0))::BIGINT AS relation_count,\n        sum(coalesce(evidence_count, 0))::BIGINT AS evidence_total,\n        list_sort(list_distinct(flatten(list(coalesce(gene_reference_keys, []))))) AS gene_reference_keys,\n        list(DISTINCT reference_entity_key)\n            FILTER (WHERE coalesce(reference_entity_key, '') <> '') AS reference_keys,\n        flatten(list(identifiers ORDER BY resource, entity_id)) AS all_identifiers,\n        flatten(list(annotations ORDER BY resource, entity_id)) AS all_annotations,\n        count(*) AS copies\n    FROM copies\n    GROUP BY entity_key\n), main_entity AS (\n    SELECT\n        'main' AS item, position,\n        entity_key AS pk, best.namespace AS raw_namespace, best.identifier AS raw_identifier,\n        best.label AS raw_label, best.entity_type AS raw_type, best.taxon AS taxon,\n        best.has_hierarchy AS has_hierarchy, best.parent_count AS parent_count,\n        best.child_count AS child_count, best.group_connectivity AS group_connectivity,\n        relation_count, gene_reference_keys,\n        CASE\n            WHEN list_contains(coalesce(reference_keys, []),\n                    coalesce(best.namespace, 'None') || ':' || coalesce(best.identifier, 'None'))\n                OR len(coalesce(reference_keys, [])) > 1\n            THEN coalesce(best.namespace, 'None') || ':' || coalesce(best.identifier, 'None')\n            WHEN len(coalesce(reference_keys, [])) = 1 THEN reference_keys[1]\n        END AS reference_entity_key,\n        list_transform(list_filter(\n            list_transform(all_identifiers, lambda x, i: struct_pack(x := x, i := i)),\n            lambda s: list_position(list_transform(all_identifiers,\n                lambda x: struct_pack(n := coalesce(x.ns, chr(1)), d := coalesce(x.id, chr(1)))),\n                struct_pack(n := coalesce(s.x.ns, chr(1)), d := coalesce(s.x.id, chr(1)))) = s.i),\n            lambda s: s.x) AS identifiers,\n        CASE WHEN copies > 1 THEN list_transform(list_filter(\n                list_transform(all_annotations, lambda x, i: struct_pack(x := x, i := i)),\n                lambda s: list_position(all_annotations, s.x) = s.i), lambda s: s.x)\n            ELSE all_annotations END AS annotations,\n        [entity_key] AS source_keys,\n        evidence_total\n    FROM merged\n)\nSELECT * FROM main_entity)\n), shaped AS (\n    SELECT * FROM (WITH shape_1 AS (\n    SELECT *,\n        coalesce(pk, '') AS pk_s,\n        trim(coalesce(nullif(raw_namespace, ''), 'unknown')) AS namespace_s,\n        trim(coalesce(nullif(raw_identifier, ''), coalesce(pk, ''))) AS identifier_s,\n        list_transform(coalesce(annotations, []), lambda a: struct_pack(\n            term := trim(coalesce(a.term, '')), value := trim(coalesce(a.value, '')),\n            quantity := a.quantity, source := trim(coalesce(a.source, '')),\n            dataset := trim(coalesce(a.dataset, '')))) AS annotations_s\n    FROM merged\n), shape_2 AS (\n    SELECT *,\n        lower(namespace_s) AS slug,\n        trim(coalesce(nullif(raw_label, ''), identifier_s)) AS label_s\n    FROM shape_1\n), shape_3 AS (\n    SELECT *, [struct_pack(type := slug, id := identifier_s, source := '', canon := true)]\n        || CASE WHEN label_s <> '' AND label_s <> identifier_s THEN [struct_pack(\n            type := CASE WHEN slug IN ('uniprot', 'entrez', 'ensg') THEN 'genesymbol' ELSE 'name' END,\n            id := label_s, source := '', canon := false)] ELSE [] END\n        || list_transform(coalesce(identifiers, []), lambda x: struct_pack(\n            type := lower(trim(coalesce(x.ns, ''))), id := trim(coalesce(x.id, '')),\n            source := coalesce(x.source, ''), canon := coalesce(x.is_canonical, false))) AS candidates\n    FROM shape_2\n), shape_4 AS (\n    SELECT *, list_transform(list_filter(\n            list_transform(candidates, lambda c, i: struct_pack(c := c, i := i)),\n            lambda s: s.c.type <> '' AND s.c.id <> ''\n                AND list_position(list_transform(candidates, lambda c: struct_pack(t := c.type, d := c.id)),\n                    struct_pack(t := s.c.type, d := s.c.id)) = s.i),\n        lambda s: s.c) AS kept\n    FROM shape_3\n), shape_5 AS (\n    SELECT *,\n        op_ordered_distinct(\n            list_transform(list_filter(kept, lambda k: k.source <> ''), lambda k: k.source)\n            || list_transform(list_filter(annotations_s, lambda a: a.source <> ''), lambda a: a.source)) AS sources,\n        list_transform(annotations_s, lambda a: CASE WHEN a.quantity IS NULL\n            THEN to_json(struct_pack(term := a.term, value := a.value, source := a.source, dataset := a.dataset))\n            ELSE to_json(struct_pack(term := a.term, value := a.value, quantity := a.quantity,\n                source := a.source, dataset := a.dataset)) END) AS annotations_json,\n        lower(regexp_replace(coalesce(raw_type, ''), '[\\s_]', '', 'g')) AS kind,\n        flatten([list_transform(list_filter(kept, lambda k: k.type = ns_), lambda k: k.id)\n            FOR ns_ IN ['chebi', 'chembl', 'hmdb', 'pubchem']]) AS chemical_names,\n        coalesce(has_hierarchy, false) AS hierarchy,\n        coalesce(parent_count, 0) AS parents,\n        coalesce(child_count, 0) AS children_\n    FROM shape_4\n), shaped AS (\n    SELECT item, position, struct_pack(\n        entityPk := pk_s,\n        referenceEntityKey := reference_entity_key,\n        geneReferenceKeys := coalesce(gene_reference_keys, []),\n        molecularEvidence := []::JSON[],\n        resolutionStatus := 'resolved',\n        sourceEntityPks := op_ordered_distinct(\n            list_filter(coalesce(source_keys, []), lambda k: trim(coalesce(k, '')) <> '') || [pk_s]),\n        entityFacetHints := struct_pack(chemicalClasses := []::JSON[],\n            metabolicDomains := []::JSON[], structuralSpecificities := []::JSON[]),\n        entityType := lower(trim(coalesce(nullif(raw_type, ''), 'unknown'))),\n        primaryNamespace := slug,\n        canonicalIdentifier := identifier_s,\n        canonicalIdentifierType := slug,\n        primaryIdentifier := identifier_s,\n        label := label_s,\n        taxon := taxon,\n        taxonomyId := nullif(coalesce(taxon, ''), ''),\n        hasHierarchy := hierarchy,\n        parentCount := parents,\n        childCount := children_,\n        relationCount := coalesce(relation_count, 0),\n        sources := sources,\n        sourceCount := len(sources),\n        resources := sources,\n        entityAttributes := CASE WHEN len(annotations_json) > 0 THEN annotations_json END,\n        ontologyHierarchy := CASE WHEN hierarchy OR parents + children_ > 0 THEN struct_pack(\n            termId := identifier_s,\n            ontologyPrefix := CASE\n                WHEN slug IN ('cvterm', 'cv_term') OR slug = '' THEN CASE\n                    WHEN contains(identifier_s, '-') THEN split_part(identifier_s, '-', 1)\n                    WHEN contains(identifier_s, ':') THEN split_part(identifier_s, ':', 1)\n                    WHEN starts_with(identifier_s, 'KW') THEN 'KW'\n                    ELSE slug END\n                ELSE slug END,\n            label := label_s,\n            definition := list_filter(annotations_s, lambda a: a.term IN\n                ('description', 'biolink:description', 'IAO:0000115') AND a.value <> '')[1].value,\n            ontologyId := NULL::VARCHAR,\n            childCount := children_,\n            parentCount := parents) END,\n        identifiersTotal := len(kept),\n        identifiers := list_transform(kept, lambda k: struct_pack(\n            entityPk := pk_s, identifier := k.id, identifierType := k.type, type := k.type,\n            id := k.id, curie := NULL::VARCHAR, source := k.source, isCanonical := k.canon)),\n        annotations := annotations_json,\n        displayName := CASE\n            WHEN kind IN ('chemicalentity', 'chemical', 'smallmolecule', 'compound', 'metabolite', 'drug', 'lipid')\n            THEN CASE\n                WHEN label_s <> '' AND NOT regexp_full_match(label_s, '[0-9]+')\n                    AND NOT starts_with(lower(label_s), 'inchi=') THEN label_s\n                ELSE coalesce(\n                    list_filter(chemical_names, lambda v: NOT regexp_full_match(v, '[0-9]+'))[1],\n                    chemical_names[1], nullif(label_s, ''), nullif(identifier_s, ''), pk_s) END\n            WHEN kind IN ('protein', 'gene') THEN coalesce(\n                nullif(label_s, ''),\n                list_filter(kept, lambda k: k.type IN ('genesymbol', 'gene_symbol', 'gene_name_primary',\n                    'symbol', 'om:0200'))[1].id,\n                list_filter(kept, lambda k: k.type IN ('uniprot', 'uniprotkb'))[1].id,\n                list_filter(kept, lambda k: k.type IN ('name', 'om:0202', 'entry_name', 'entry name')\n                    OR ends_with(k.type, ':name') OR contains(k.type, ' entry name'))[1].id,\n                nullif(identifier_s, ''), pk_s)\n            ELSE coalesce(\n                nullif(label_s, ''),\n                list_filter(kept, lambda k: k.type IN ('name', 'om:0202', 'entry_name', 'entry name')\n                    OR ends_with(k.type, ':name') OR contains(k.type, ' entry name'))[1].id,\n                nullif(identifier_s, ''), pk_s)\n        END,\n        taxonomyName := t.taxonomy_name\n    ) AS summary\n    FROM shape_5\n    LEFT JOIN (SELECT taxon AS taxonomy_id, name AS taxonomy_name FROM op_taxonomy) t\n        ON t.taxonomy_id = nullif(coalesce(shape_5.taxon, ''), '')\n)\nSELECT item, position, summary FROM shaped)\n), facts AS (\n    SELECT entity_key,\n        list(DISTINCT _resource ORDER BY _resource) AS resources,\n        list(DISTINCT entity_type ORDER BY entity_type) FILTER (WHERE entity_type IS NOT NULL) AS copy_types,\n        list(DISTINCT taxon ORDER BY taxon) FILTER (WHERE taxon IS NOT NULL) AS copy_taxa,\n        list(DISTINCT reference_entity_key ORDER BY reference_entity_key)\n            FILTER (WHERE reference_entity_key IS NOT NULL) AS copy_reference_keys,\n        count(*) AS copies\n    FROM entity WHERE {{partition entity_key}} GROUP BY entity_key\n)\nSELECT m.pk AS entity_key, m.raw_namespace AS namespace, m.raw_identifier AS identifier,\n    m.raw_label AS label, m.raw_type AS entity_type, m.taxon, m.has_hierarchy, m.parent_count,\n    m.child_count, m.group_connectivity, m.relation_count, m.evidence_total,\n    m.gene_reference_keys, m.reference_entity_key,\n    f.resources, coalesce(f.copy_types, []) AS copy_types, coalesce(f.copy_taxa, []) AS copy_taxa,\n    coalesce(f.copy_reference_keys, []) AS copy_reference_keys, f.copies,\n    struct_update(s.summary, identifiers := NULL) AS summary,\n    coalesce(i.identifiers, []) AS identifiers, coalesce(a.annotations, []) AS annotations\nFROM merged m\nJOIN shaped s ON s.summary.entityPk = m.pk\nJOIN facts f ON f.entity_key = m.pk\nLEFT JOIN merged_identifiers i ON i.entity_key = m.pk\nLEFT JOIN merged_annotations a ON a.entity_key = m.pk\n",
-   "order": "entity_key"
+  "relation_facet": {
+   "select": "-- Each combination of the relation filter columns (and resources), with the largest\n-- evidence count and the number of its relations: which filter options a selection\n-- leaves, without reading the relations.\nSELECT category, predicate, subject_type, object_type, taxon, sign, is_directed, sources, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier, resources, max(evidence_count) AS evidence_count, count(*) AS relation_count\nFROM omnipath.relation GROUP BY ALL\n",
+   "order": "category, predicate"
   }
  },
  "indexes": [
   [
-   "entity_merged_key",
-   "entity_merged",
+   "entity_n",
+   "entity",
+   "entity_n"
+  ],
+  [
+   "entity_key",
+   "entity",
    "entity_key"
   ],
   [
-   "relation_rid",
-   "relation",
-   "_rid"
-  ],
-  [
-   "relation_evidence_rid",
-   "relation_evidence",
-   "_rid"
-  ],
-  [
-   "entity_eid",
-   "entity",
-   "_eid"
-  ],
-  [
-   "entity_evidence_eid",
+   "entity_evidence_n",
    "entity_evidence",
-   "_eid"
+   "entity_n"
   ],
   [
-   "entity_annotation_eid",
+   "entity_annotation_n",
    "entity_annotation",
-   "_eid"
+   "entity_n"
+  ],
+  [
+   "relation_n",
+   "relation",
+   "relation_n"
+  ],
+  [
+   "relation_evidence_n",
+   "relation_evidence",
+   "relation_n"
   ]
  ],
  "macro_files": [

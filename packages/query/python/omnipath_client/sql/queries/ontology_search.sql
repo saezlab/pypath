@@ -38,10 +38,11 @@ SELECT CASE WHEN {{has_selection}} THEN coalesce({{selection_term_ids}}, []) ELS
 SELECT {{has_selection}} OR {{scoped}} OR len({{keys}}) > 0 OR len({{terms}}) > 0
 
 -- step: scope_rows AS table
--- the scope's entity keys as a table: a selection with its neighbours has thousands, and
+-- the scope's entities as a table: a selection with its neighbours has thousands, and
 -- checking each of the ten million term_entity rows against a list of them took 75 s
 -- (a gene's selection); joining them takes 2-3 s
-SELECT DISTINCT k AS entity_key FROM (SELECT unnest({{keys}}) AS k) WHERE k IS NOT NULL
+SELECT e.entity_n, e.entity_key FROM entity e
+JOIN (SELECT DISTINCT k FROM (SELECT unnest({{keys}}) AS k) WHERE k IS NOT NULL) s ON s.k = e.entity_key
 
 -- step: term_rows AS table
 SELECT DISTINCT t AS term FROM (SELECT unnest({{terms}}) AS t) WHERE t IS NOT NULL
@@ -49,23 +50,22 @@ SELECT DISTINCT t AS term FROM (SELECT unnest({{terms}}) AS t) WHERE t IS NOT NU
 -- step: items AS table cache
 -- every term with its counts (or the scope's): kept, so that searches only filter it
 WITH terms AS (
-    SELECT entity_key, min(identifier) AS identifier, min(label) AS label, min(namespace) AS namespace
+    SELECT entity_n, entity_key, identifier, label, namespace
     FROM entity
-    WHERE entity_type = 'ontology_class' AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
+    WHERE entity_type = 'ontology_class' AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
         AND NOT ({{is_scoped}} AND len({{keys}}) = 0 AND len({{terms}}) = 0)
-    GROUP BY entity_key
 ), edges AS (
-    SELECT term_key, entity_n, relation_n FROM term_entity
-    WHERE (op_unset({{resources}}) OR list_contains({{resources}}, split_part(resource, '/', 1)))
-        AND (NOT {{is_scoped}} OR entity_key IN (SELECT entity_key FROM __scope_rows))
+    SELECT term_n, entity_n, relation_n FROM term_entity
+    WHERE (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
+        AND (NOT {{is_scoped}} OR entity_n IN (SELECT entity_n FROM __scope_rows))
 ), counts AS (
-    SELECT e.term_key, count(DISTINCT e.entity_n) AS entities, count(DISTINCT e.relation_n) AS relations
-    FROM edges e JOIN terms t ON t.entity_key = e.term_key GROUP BY e.term_key
+    SELECT e.term_n, count(DISTINCT e.entity_n) AS entities, count(DISTINCT e.relation_n) AS relations
+    FROM edges e JOIN terms t ON t.entity_n = e.term_n GROUP BY e.term_n
 )
-SELECT t.*, coalesce(a.entities, 0) AS entity_count, coalesce(a.relations, 0) AS relation_count,
+SELECT t.* EXCLUDE (entity_n), coalesce(a.entities, 0) AS entity_count, coalesce(a.relations, 0) AS relation_count,
     row_number() OVER (ORDER BY coalesce(a.entities, 0) DESC, t.identifier, t.entity_key) AS position
-FROM terms t LEFT JOIN counts a ON a.term_key = t.entity_key
-WHERE NOT {{is_scoped}} OR a.term_key IS NOT NULL
+FROM terms t LEFT JOIN counts a ON a.term_n = t.entity_n
+WHERE NOT {{is_scoped}} OR a.term_n IS NOT NULL
     OR t.entity_key IN (SELECT entity_key FROM __scope_rows)
     OR t.entity_key IN (SELECT term FROM __term_rows) OR t.identifier IN (SELECT term FROM __term_rows)
 

@@ -46,7 +46,7 @@ test_that("init is incremental and follows the release", {
     op_sql(con, "SELECT * FROM resources ORDER BY ALL"),
     data.frame(resource_id = c("alpha", "beta"), version = c("2.0", "1.0"), has_evidence = c(TRUE, TRUE))
   )
-  expect_equal(op_sql(con, "SELECT count(*) AS n FROM alpha.evidence_payloads")$n, 1)
+  expect_equal(op_sql(con, "SELECT count(*) AS n FROM evidence_payloads WHERE _resource = 'alpha'")$n, 1)
 })
 
 test_that("init downloads the release's taxon names", {
@@ -95,11 +95,10 @@ queries <- function(con) {
       "WHERE table_schema <> 'main' OR table_name NOT IN ('database_info')",
       "AND NOT starts_with(table_name, 'op_') ORDER BY ALL"
     )),
-    entities = op_sql(con, "SELECT label, _resource, _resource_version FROM entity ORDER BY ALL"),
+    entities = op_sql(con, "SELECT label, array_to_string(resources, ',') AS resources FROM entity ORDER BY ALL"),
     quoted = op_sql(con, "SELECT identifier FROM entity WHERE label = ?", list("O'Brien")),
-    additive = op_sql(con, "SELECT count(*) AS n FROM entity WHERE new_field IS NULL"),
-    one = op_sql(con, "SELECT count(*) AS n FROM alpha.relation"),
-    terms = op_sql(con, "SELECT count(*) AS n FROM beta.entity_term WHERE term = 'tp53'")
+    one = op_sql(con, "SELECT count(*) AS n FROM relation WHERE list_contains(resources, 'alpha')"),
+    terms = op_sql(con, "SELECT count(*) AS n FROM entity_term WHERE term = 'tp53'")
   )
 }
 
@@ -108,12 +107,14 @@ test_that("SQL on native tables, the derived tables and a database written anew"
   service$init(c("alpha", "beta"))
   con <- service$connect()
   tables <- queries(con)
-  expect_equal(nrow(tables$entities), 6)
-  expect_equal(tables$quoted$identifier, c("quote", "quote"))
-  expect_equal(tables$additive$n, 3)
+  # One merged table each, no tables per resource.
+  expect_equal(unique(tables$tables$table_schema), "main")
+  expect_equal(tables$entities$resources, rep("alpha,beta", 3))
+  expect_equal(tables$quoted$identifier, "quote")
+  expect_equal(tables$one$n, 2)
+  expect_equal(tables$terms$n, 1)
   expect_equal(op_sql(con, "SELECT table_type FROM information_schema.tables WHERE table_name = 'entity' AND table_schema = 'main'")$table_type, "BASE TABLE")
-  expect_true(op_sql(con, "SELECT count(*) = (SELECT count(*) FROM relation) AS same FROM relation_key_lookup")$same)
-  expect_equal(sort(op_sql(con, "SELECT index_name FROM duckdb_indexes()")$index_name), c("entity_annotation_eid", "entity_eid", "entity_evidence_eid", "entity_merged_key", "relation_evidence_rid", "relation_rid"))
+  expect_equal(sort(op_sql(con, "SELECT index_name FROM duckdb_indexes()")$index_name), c("entity_annotation_n", "entity_evidence_n", "entity_key", "entity_n", "relation_evidence_n", "relation_n"))
   expect_error(op_sql(con, "CREATE TABLE mine AS SELECT 1"))
   op_disconnect(con)
   # A new version and a new resource: the database is written anew.
@@ -121,8 +122,8 @@ test_that("SQL on native tables, the derived tables and a database written anew"
   service$init("gamma")
   con <- local_connection(service)
   expect_equal(
-    op_sql(con, "SELECT _resource, _resource_version, count(*) AS n FROM entity GROUP BY ALL ORDER BY ALL"),
-    data.frame(`_resource` = c("alpha", "beta", "gamma"), `_resource_version` = c("2.0", "1.0", "1.0"), n = c(3, 3, 3), check.names = FALSE)
+    op_sql(con, "SELECT r, count(*) AS n FROM (SELECT unnest(resources) AS r FROM entity) GROUP BY ALL ORDER BY ALL"),
+    data.frame(r = c("alpha", "beta", "gamma"), n = c(3, 3, 3))
   )
   expect_true(jsonlite::fromJSON(file.path(service$data, "installed.json"))$materialize)
 })
@@ -145,13 +146,14 @@ test_that("prebuilt queries answer like the explorer", {
 
   relations <- op_relations(con, "TP53")
   expect_true(all(c("relation_key", "annotations", "evidence", "sources") %in% names(relations)))
-  expect_equal(nrow(relations), 4)
+  # The two resources state the same two relations: one row each.
+  expect_equal(nrow(relations), 2)
   one <- op_relations(con, "TP53", sources = "alpha", predicates = "affects")
   expect_equal(one$subject_label, "TP53")
   expect_equal(one$object_label, "caffeine")
-  expect_equal(nrow(op_relations(con, c("caffeine", "O'Brien"))), 4)
-  expect_equal(nrow(op_relations(con, "gene:entrez:7157")), 4)
-  expect_equal(nrow(op_relations(con, limit = 3)), 3)
+  expect_equal(nrow(op_relations(con, c("caffeine", "O'Brien"))), 2)
+  expect_equal(nrow(op_relations(con, "gene:entrez:7157")), 2)
+  expect_equal(nrow(op_relations(con, limit = 1)), 1)
   expect_error(op_relations(con, "TP53", sources = "gamma"), "unavailable")
   expect_error(op_relations(con, "TP53", source = "alpha"), "Unknown filters: \\['source'\\]")
   expect_error(op_relations(con, "TP53", predicates = "nonsense"), "Unknown Biolink predicate: nonsense")
@@ -161,7 +163,7 @@ test_that("prebuilt queries answer like the explorer", {
   expect_equal(details$entity$label, "TP53")
   expect_null(op_entity(con, "TP53"))
   # The queries by name, the same the API runs.
-  expect_equal(nrow(op_query(con, "relations", entities = "TP53")), 4)
+  expect_equal(nrow(op_query(con, "relations", entities = "TP53")), 2)
   expect_equal(jsonlite::fromJSON(op_query(con, "resolve_keys", tokens = "TP53", output = "json")), found$entity_key)
 })
 
@@ -189,7 +191,7 @@ test_that("a failed download installs nothing of that resource", {
   service$truncated <- character()
   service$init("beta")
   con <- local_connection(service)
-  expect_equal(op_sql(con, "SELECT count(DISTINCT _resource) AS n FROM relation")$n, 2)
+  expect_equal(op_sql(con, "SELECT count(DISTINCT r) AS n FROM (SELECT unnest(resources) AS r FROM relation)")$n, 2)
 })
 
 test_that("locations follow the environment and normalise", {

@@ -32,15 +32,15 @@ SELECT NULL::VARCHAR AS parent_key, NULL::VARCHAR AS parent_label, NULL::VARCHAR
 -- step: found AS table
 SELECT DISTINCT child_key, child_label, predicate, parent_key, parent_label FROM ontology_edge
 WHERE child_key IN ({{frontier*}})
-    AND (op_unset({{resources}}) OR list_contains({{resources}}, split_part(resource, '/', 1)))
+    AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
 
 -- step: parent_candidates AS list
 SELECT DISTINCT parent_key FROM __found WHERE NOT list_contains({{known}}, parent_key) ORDER BY 1
 
 -- step: known AS value
-SELECT {{known}} || coalesce((SELECT list(DISTINCT entity_key) FROM entity_by_key
+SELECT {{known}} || coalesce((SELECT list(entity_key) FROM entity
     WHERE entity_key IN ({{parent_candidates*}}) AND namespace = {{seed_namespace}}
-        AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))), []::VARCHAR[])
+        AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))), []::VARCHAR[])
 
 -- step: walked AS table
 SELECT * FROM __tree_edges
@@ -69,14 +69,12 @@ SELECT DISTINCT k FROM (
 WHERE k IS NOT NULL ORDER BY 1
 
 -- step: meta AS table
--- each key's id and name: of its last copy, as a dict keeps them
-SELECT entity_key, arg_max(struct_pack(
+-- each key's id and name
+SELECT entity_key, struct_pack(
         id := coalesce(nullif(identifier, ''), nullif(label, ''), entity_key),
-        name := coalesce(nullif(label, ''), coalesce(nullif(identifier, ''), nullif(label, ''), entity_key))),
-    struct_pack(r := _resource, i := entity_id)) AS m
-FROM entity_by_key
-WHERE entity_key IN ({{tree_keys*}}) AND (op_unset({{resources}}) OR list_contains({{resources}}, _resource))
-GROUP BY entity_key
+        name := coalesce(nullif(label, ''), coalesce(nullif(identifier, ''), nullif(label, ''), entity_key))) AS m
+FROM entity
+WHERE entity_key IN ({{tree_keys*}}) AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))
 
 -- step: adjacency AS table
 SELECT DISTINCT parent_key, child_key FROM __tree_edges

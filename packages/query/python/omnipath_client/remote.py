@@ -10,9 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from copy import deepcopy
-from importlib.resources import files
 import os
-import re
 from typing import Any
 from urllib.parse import quote
 
