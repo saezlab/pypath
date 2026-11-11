@@ -184,13 +184,8 @@
    "select": "-- Each relation under both its ends' entity numbers, sorted by entity and then page\n-- order, with its filter and facet columns: an entity's relations are one range, in\n-- page order.\nSELECT entity_n, side, relation_n, page_rank, category, predicate, subject_type, object_type, taxon, sign, is_directed, sources, resources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\nFROM (\n    SELECT subject_n AS entity_n, 'subject' AS side, * FROM omnipath.relation\n    UNION ALL\n    SELECT object_n, 'object', * FROM omnipath.relation)\n",
    "order": "entity_n, page_rank, side"
   },
-  "relation_refs": {
-   "select": "-- The reference keys each relation's copies give its ends, once per relation, end and key.\nSELECT DISTINCT c.relation_n, x.side, x.k AS reference_key\nFROM work.relation r JOIN work.relation_copies c USING (_rid),\n    LATERAL (VALUES ('subject', r.subject_reference_entity_key), ('object', r.object_reference_entity_key)) AS x(side, k)\nWHERE x.k IS NOT NULL\n",
-   "order": "relation_n",
-   "scratch": true
-  },
   "relation_reference": {
-   "select": "-- Each relation under the reference keys its copies give its ends (a gene's Entrez key,\n-- for instance), sorted by key and then page order, with its filter and facet columns.\nSELECT refs.reference_key, refs.side, rel.relation_n, rel.page_rank, category, predicate, subject_type, object_type, taxon, sign, is_directed, sources, resources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\nFROM work.relation_refs refs JOIN omnipath.relation rel USING (relation_n)\n",
+   "select": "-- Each relation under the reference keys its copies give its ends (a gene's Entrez key,\n-- for instance), sorted by key and then page order, with its filter and facet columns.\n-- A key two copies give is listed twice: the readers take each relation once.\nWITH refs AS (\n    SELECT c.relation_n, x.side, x.k AS reference_key\n    FROM work.relation r JOIN work.relation_copies c USING (_rid),\n        LATERAL (VALUES ('subject', r.subject_reference_entity_key), ('object', r.object_reference_entity_key)) AS x(side, k)\n    WHERE x.k IS NOT NULL\n)\nSELECT refs.reference_key, refs.side, rel.relation_n, rel.page_rank, category, predicate, subject_type, object_type, taxon, sign, is_directed, sources, resources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\nFROM refs JOIN omnipath.relation rel USING (relation_n)\n",
    "order": "reference_key, page_rank, side"
   },
   "entity_term": {
