@@ -87,11 +87,16 @@ def derived_tables() -> dict:
         select = build_sql(name)
         for key, value in values.items():
             select = select.replace("{{" + key + "}}", value)
-        tables[name] = {"select": select, "order": order, **({"scratch": True} if scratch else {})}
+        tables[name] = {
+            "select": select,
+            **({"order": order} if order else {}),
+            **({"scratch": True} if scratch else {}),
+        }
     return tables
 
 
-# (table, order, scratch) in build order.
+# (table, order, scratch) in build order. The evidence tables keep the resources' order
+# (their rows are read through the index by number, and sorted by each query).
 BUILD = [
     ("endpoint_stubs", "entity_key, _resource", True),
     ("entity_numbers", "entity_key", True),
@@ -104,10 +109,10 @@ BUILD = [
     ("entity_annotation", "entity_n, ordinal", False),
     ("entity_list_counts", "entity_n", True),
     ("entity", "entity_n", False),
-    ("entity_evidence", "entity_n, resource, resource_version, entity_id, ordinal", False),
+    ("entity_evidence", None, False),
     ("relation_rank", "relation_n", True),
     ("relation_annotation", "relation_n, ordinal", False),
-    ("relation_evidence", "relation_n, resource, resource_version, relation_id, ordinal", False),
+    ("relation_evidence", None, False),
     ("relation", "relation_n", False),
     ("relation_endpoint", "entity_n, page_rank, side", False),
     ("relation_refs", "relation_n", True),
@@ -129,6 +134,14 @@ def build_sql(name: str) -> str:
         (SQL / "build" / f"{name}.sql").read_text(),
         lambda fragment: (SQL / "fragments" / f"{fragment}.sql").read_text(),
     )
+
+
+# The resources' tables the build reads in one statement only: views over their files
+# in the scratch database, not copies (written and read again).
+WORK_VIEWS = [
+    "entity_identifier", "entity_annotation", "entity_evidence", "relation_annotation",
+    "relation_evidence", "entity_term", "entity_group",
+]
 
 
 def work_tables() -> list[str]:
@@ -218,6 +231,7 @@ def contract() -> dict:
         },
         "global_ids": GLOBAL_IDS,
         "work_tables": work_tables(),
+        "work_views": WORK_VIEWS,
         "database_format": DATABASE_FORMAT,
         "derived_tables": derived_tables(),
         "indexes": INDEXES,

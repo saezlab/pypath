@@ -9,5 +9,4 @@ FROM (
         a.quantity_comparator, a."source",
         min(struct_pack(r := c.resource, v := c.resource_version, e := c.entity_id, o := a.ordinal)) AS first
     FROM work.entity_annotation a JOIN work.entity_copies c USING (_eid)
-    WHERE {{partition c.entity_key}}
     GROUP BY ALL)

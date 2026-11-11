@@ -10,5 +10,4 @@ FROM (
         a.quantity_comparator, a."source", a.dataset, a."scope",
         min(struct_pack(r := c.resource, v := c.resource_version, i := c.relation_id, o := a.ordinal)) AS first
     FROM work.relation_annotation a JOIN work.relation_copies c USING (_rid)
-    WHERE {{partition c.relation_key}}
     GROUP BY ALL)

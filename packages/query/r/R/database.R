@@ -133,7 +133,8 @@
     select <- derived[[name]]$select
     order <- derived[[name]]$order
     if (!grepl(partition, select)) {
-      .exec(con, sprintf("CREATE TABLE %s AS SELECT * FROM (%s) ORDER BY %s", target, select, order))
+      sorted <- if (is.null(order)) "" else paste(" ORDER BY", order)
+      .exec(con, sprintf("CREATE TABLE %s AS SELECT * FROM (%s)%s", target, select, sorted))
       next
     }
     # In slices of keys by their first character, in key order: the table is sorted as
@@ -183,6 +184,11 @@
     # file's order, so rows follow their global ids.
     union <- paste(vapply(having, function(r) .source(root, r, table, index[[r$resource_id]]), ""),
       collapse = " UNION ALL BY NAME ")
+    # A table the build reads once is a view over the files, not a copy.
+    if (table %in% unlist(.contract()$work_views)) {
+      .exec(con, sprintf("CREATE VIEW work.main.%s AS %s", table, union))
+      next
+    }
     .exec(con, sprintf("CREATE TABLE %s%s AS SELECT * FROM (%s) LIMIT 0", where, table, union))
     for (record in having) {
       .exec(con, sprintf("INSERT INTO %s%s BY NAME %s", where, table, .source(root, record, table, index[[record$resource_id]])))

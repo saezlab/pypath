@@ -8,5 +8,4 @@ FROM (
         arg_min(i.is_canonical, struct_pack(r := c.resource, v := c.resource_version, e := c.entity_id, o := i.ordinal)) AS is_canonical,
         arg_min(i."source", struct_pack(r := c.resource, v := c.resource_version, e := c.entity_id, o := i.ordinal)) AS "source"
     FROM work.entity_identifier i JOIN work.entity_copies c USING (_eid)
-    WHERE {{partition c.entity_key}}
     GROUP BY c.entity_n, i.ns, i.id)

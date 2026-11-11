@@ -157,6 +157,7 @@ def _value_literal(value) -> str:
 # Where each resource table is written: the scratch database (``work``) for those the
 # build reads, the database itself for raw evidence (installations only).
 _WORK = set(CONTRACT["work_tables"])
+_VIEWS = set(CONTRACT.get("work_views", []))
 _PARTITION = re.compile(r"\{\{partition ([\w.]+)\}\}")
 # Keys are SHA-256 hex: their first characters, then any other.
 _SLICES = list("0123456789abcdef")
@@ -181,9 +182,9 @@ def _derived(db, say: Callable[[str], None]) -> None:
     for name, query in CONTRACT["derived_tables"].items():
         say(f"Deriving {name}")
         target = f"{'work' if query.get('scratch') else 'omnipath'}.main.{name}"
-        select, order = query["select"], query["order"]
+        select, order = query["select"], query.get("order")
         if _PARTITION.search(select) is None:
-            db.execute(f"CREATE TABLE {target} AS SELECT * FROM ({select}) ORDER BY {order}")
+            db.execute(f"CREATE TABLE {target} AS SELECT * FROM ({select})" + (f" ORDER BY {order}" if order else ""))
             continue
         # In slices of keys by their first character, in key order: the table is sorted
         # as a whole (its order follows the keys), and no slice needs the memory of all.
@@ -275,10 +276,13 @@ def write_database(
                 else:
                     continue
                 having = [s for s in ordered if table in s.tables(payloads)]
-                say(f"Writing {table} ({len(having)} resources)")
                 # The columns of every resource (union by name), then each resource's
                 # rows in its file's order, so rows follow their global ids.
                 union = " UNION ALL BY NAME ".join(s.select(table, index[s.resource_id]) for s in having)
+                if table in _VIEWS:
+                    db.execute(f"CREATE VIEW work.main.{table} AS {union}")
+                    continue
+                say(f"Writing {table} ({len(having)} resources)")
                 db.execute(f"CREATE TABLE {where}{table} AS SELECT * FROM ({union}) LIMIT 0")
                 for source in having:
                     db.execute(f"INSERT INTO {where}{table} BY NAME " + source.select(table, index[source.resource_id]))
