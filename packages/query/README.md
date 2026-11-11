@@ -14,9 +14,10 @@ Both clients have two modes: API mode (the default) asks the hosted API; local m
 downloads the same files into the same data directory and writes the same database,
 which is also the database the API serves a release from (`omnipath_client.database`,
 `build_release_database` on the server): published tables as native DuckDB tables,
-lookup tables derived with the build's queries, global ids, a relation key table,
-indexes, the lookup macros, the query tables of the contract and the release's taxon
-names (`op_taxonomy`). Either client reads a directory the other installed; neither
+merged entities and relations numbered at build (`entity_n`, `relation_n`) with the
+resources that state each, every evidence record with its resource, lookup tables
+derived with the build's queries, indexes, the query tables of the contract and the
+release's taxon names (`op_taxonomy`). There are no per-resource tables or schemas. Either client reads a directory the other installed; neither
 needs the API or Biolink at run time in local mode.
 
 The hosted API (`packages/api`) runs the same step files on the same database, so a
@@ -28,8 +29,9 @@ query answers the same in the API, in Python and in R. API mode asks
 A query is a sequence of SQL statements, each a step whose result later steps use: a
 temporary table (`__name`), or a list or value fetched by the runner and written into
 the later SQL as a literal. Literals are what let DuckDB read rows through the ART
-indexes on the global ids (`_rid`, `_eid`) and skip row groups: an index read is a bare
-`_eid IN (<literal ids>)` with no other condition in the same `WHERE`; ids from a
+indexes on the entity and relation numbers (`entity_n`, `relation_n`) and skip row
+groups: an index read is a bare `entity_n IN (<literal numbers>)` with no other
+condition in the same `WHERE`; numbers from a
 subquery or join make a scan (seconds instead of milliseconds on a full release).
 
 ```sql
@@ -39,16 +41,16 @@ subquery or join make a scan (seconds instead of milliseconds on a full release)
 -- output: json answer
 -- example: {"entity_key": "..."}
 -- step: ids AS list
-SELECT _eid FROM entity_by_key WHERE entity_key = {{entity_key}}
+SELECT entity_n FROM entity WHERE entity_key = {{entity_key}}
 -- step: rows AS table
-SELECT * FROM entity WHERE _eid IN ({{ids*}})
+SELECT * FROM entity WHERE entity_n IN ({{ids*}})
 -- step: answer AS value
 SELECT to_json(...) FROM __rows
 ```
 
 | Construct | Effect |
 |---|---|
-| `-- param: name TYPE [= json default]` | Validated and written into the SQL as a literal (never bound). `resources` is set by the API from the request's selection and policy. |
+| `-- param: name TYPE [= json default]` | Validated and written into the SQL as a literal (never bound). `resources` is set by the API from the request's selection. |
 | `-- output: table <step>` / `json <step>` | What `query(name, output=...)` returns: a table step, or a value step holding JSON. |
 | `-- step: x AS table\|list\|value\|rows [when <expr>] [cache]` | A temporary table, the first column as a list, one value, or rows for `{{table:x}}`. `when` skips the step (a skipped list is empty); `cache` keeps its result per release and parameters. |
 | `-- repeat: v = <init> next <expr> until <value step> max N` … `-- end` | The only loop (search paging, the ontology walk). |

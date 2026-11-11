@@ -16,7 +16,7 @@ import omnipath_client as op
 op.init(["signor"], progress=print)        # once: download and write the database
 
 with op.connect() as db:
-    db.sql("SELECT predicate, count(*) n FROM signor.relation GROUP BY 1").fetchall()
+    db.sql("SELECT predicate, count(*) n FROM relation WHERE list_contains(resources, 'signor') GROUP BY 1").fetchall()
     db.search("TP53")                      # ranked entities, as the website searches
     db.relations("TP53", sources="signor") # relations, as the explorer exports them
 ```
@@ -106,9 +106,6 @@ omnipath-client init --topic signaling --knowledge-origin literature_curated
 - **Raw evidence.** Original source records (`evidence_payloads`) are
   downloaded only with `include_evidence=True` (`--evidence`). Ask for them
   only when the task needs the source rows themselves.
-- **Speed.** `materialize=True` (`--materialize`) copies the data into native
-  DuckDB tables: two to five times faster queries, about twice the files' size
-  in extra disk. The default views are enough for most work.
 - **Interruptions.** An interrupted `init` keeps finished resources; run it
   again to continue.
 
@@ -177,41 +174,49 @@ db.query("ontology_tree", term_id="GO:0006915", output="json")   # JSON text, as
 
 ### Tables
 
+The database holds merged entities and relations only: one row per entity and
+per relation, with the resources that have it. There are no per-resource
+tables or schemas.
+
 | Name | Contents |
 | --- | --- |
-| `entity`, `relation`, ... | one table over every installed resource, with `_resource` and `_resource_version` columns |
-| `signor.relation`, `chembl.entity`, ... | the same tables of one resource, in a schema named after it |
+| `entity` | one row per entity, numbered `entity_n` |
+| `relation` | one row per relation, numbered `relation_n`, with `subject_n` / `object_n` (entity numbers) |
+| `entity_identifier`, `entity_annotation`, `entity_evidence`, `relation_annotation`, `relation_evidence` | child rows, by `entity_n` / `relation_n` |
 | `resources` | installed resources, versions, and whether raw evidence is installed |
 
-In the tables over every resource, shared entities and relations are **not
-deduplicated**: there is one row per resource that has them. Use
-`entity_key` / `relation_key` to match them across resources, or `search` and
-`relations`, which merge them.
-
-Join child tables to their parent on `entity_id` / `relation_id` **and**
-`_resource` (these ids number rows within one resource version):
+An entity or relation that several resources state is one row; its `resources`
+column lists them. Filter by resource with `list_contains(resources, 'signor')`
+(evidence rows have a `resource` column instead). Join `relation` to `entity`
+on the numbers for keys and labels:
 
 ```sql
-SELECT e.label, r.predicate, r.object_label, r._resource
-FROM entity AS e
-JOIN relation AS r
-  ON e.entity_key = r.subject_entity_key
- AND e._resource = r._resource
-WHERE e.reference_entity_key = 'entrez:7157'   -- TP53 and its products, whatever the canonical id
+SELECT s.label, r.predicate, o.label AS object, r.resources
+FROM relation AS r
+JOIN entity AS s ON s.entity_n = r.subject_n
+JOIN entity AS o ON o.entity_n = r.object_n
+WHERE s.reference_entity_key = 'entrez:7157'   -- TP53 and its products, whatever the canonical id
 ```
+
+Evidence rows keep the resource that stated them (`resource`, `resource_version`,
+and that resource's own id as `entity_id` / `relation_id`):
+`SELECT * FROM relation_evidence WHERE resource = 'signor'`.
 
 Lookup tables `init` derives, for fast filtering without scanning:
 
-- `entity_term` (`term`, `kind`, `entity_id`): lowercase labels and
+- `entity_term` (`term`, `kind`, `entity_n`): lowercase labels and
   identifiers, to find entities by name: `WHERE term = 'tp53'`
-- `relation_endpoint` (`key`, `key_kind`, `side`, `relation_id`, `predicate`,
-  `category`): endpoint keys of relations, to find relations by endpoint
-- `entity_group` (`group_key`, `kind`, `entity_id`): gene, reference and
+- `relation_endpoint` (`entity_n`, `side`, `relation_n`, `page_rank`, the
+  relation filter columns): each relation under both its ends, sorted by
+  entity, to find an entity's relations as one range
+- `relation_reference` (`reference_key`, `side`, `relation_n`, `page_rank`,
+  the filter columns): the same by the ends' reference keys
+- `entity_group` (`group_key`, `kind`, `entity_n`): gene, reference and
   structure (`connectivity`) groups of entities
 - `relation_facet` (`category`, `predicate`, `subject_type`, `object_type`,
   `taxon`, `sign`, `is_directed`, `sources`, the three qualifiers,
-  `evidence_count`, `relation_count`): each distinct combination of the
-  relation filter columns, with the largest evidence count and the number of
+  `resources`, `evidence_count`, `relation_count`): each distinct combination
+  of the relation filter columns, with the largest evidence count and the number of
   relations, to see which values occur together without scanning `relation`
 
 The database is read-only. Make your own tables with `CREATE TEMP TABLE`, or
@@ -226,7 +231,7 @@ or relation across resources. `ordinal` keeps the original order of child rows.
 
 | column | type | meaning |
 | --- | --- | --- |
-| `entity_id` | int32 | Row number within the resource version |
+| `entity_n` | int32 | Row number, in `entity_key` order |
 | `entity_key` | string | Canonical entity identity |
 | `entity_type` | string | `protein`, `chemical_entity`, `macromolecular_complex`, … |
 | `namespace`, `identifier` | string | Canonical identifier, e.g. `uniprot` / `P04637` |
@@ -236,23 +241,24 @@ or relation across resources. `ordinal` keeps the original order of child rows.
 | `gene_reference_keys` | list<string> | Catalogue gene links of a product |
 | `group_connectivity` | string | First InChIKey block (chemical structure group) |
 | `has_hierarchy`, `parent_count`, `child_count` | bool, int64 | Ontology-style hierarchy |
-| `*_count` | int64 | Number of identifiers, annotations, evidence, relations |
+| `*_count` | int64 | Number of identifiers, annotations, evidence, relations (merged relations) |
+| `resources` | list<string> | Resources that have the entity |
 
-Child tables (each with `entity_id`, `ordinal`):
+Child tables (each with `entity_n`, `ordinal`):
 
 - `entity_identifier`: `ns`, `id`, `is_canonical`, `source`
-- `entity_annotation`: `term`, `value`, `quantity_*` (measurement fields), `source`, `dataset`
-- `entity_evidence`: `source`, `dataset`, `row_id`, `upstream_id`, `annotations`, `molecular_form`
+- `entity_annotation`: `term`, `value`, `quantity_*` (measurement fields), `source`
+- `entity_evidence`: `resource`, `resource_version`, `entity_id` (the resource's own id), `source`, `dataset`, `row_id`, `upstream_id`, `annotations`, `molecular_form`
 
 ### `relation`
 
 | column | type | meaning |
 | --- | --- | --- |
-| `relation_id` | int32 | Row number within the resource version |
+| `relation_n` | int32 | Row number, in `relation_key` order |
 | `relation_key` | string | Canonical relation identity |
 | `statement_kind` | string | `relation` or `ontology` |
-| `subject_entity_key`, `object_entity_key` | string | Endpoint `entity_key`s |
-| `subject_label`, `subject_type`, `object_label`, `object_type` | string | Endpoint names and types |
+| `subject_n`, `object_n` | int32 | Endpoint `entity_n`s; join `entity` for keys and labels |
+| `subject_type`, `object_type` | string | Endpoint types |
 | `*_reference_entity_key` | string | Endpoint references |
 | `predicate` | string | Relation predicate, e.g. `affects`, `has_member` |
 | `taxon` | string | Shared or primary taxon |
@@ -260,14 +266,16 @@ Child tables (each with `entity_id`, `ordinal`):
 | `sign` | int32 | `-1`, `0` or `1` |
 | `category` | string | `interaction`, `association`, `ontology`, … |
 | `interaction_class` | string | Optional interaction class |
-| `sources` | list<string> | Provenance sources |
-| `evidence_count` | int64 | Number of `relation_evidence` rows |
+| `sources` | list<string> | Provenance sources, united over the resources |
+| `resources` | list<string> | Resources that state the relation |
+| `evidence_count` | int64 | Number of `relation_evidence` rows, over all resources |
+| `page_rank` | int32 | Ranking the explorer lists relations by |
 | `*_qualifier` | list<string> | Biolink qualifiers |
 
-Child tables (each with `relation_id`, `ordinal`):
+Child tables (each with `relation_n`, `ordinal`):
 
 - `relation_annotation`: `term`, `value`, `quantity_*`, `source`, `dataset`, `scope`
-- `relation_evidence`: `source`, `dataset`, `row_id`, `upstream_id`, `annotations`, `subject_molecular_form`, `object_molecular_form`
+- `relation_evidence`: `resource`, `resource_version`, `relation_id` (the resource's own id), `source`, `dataset`, `row_id`, `upstream_id`, `annotations`, `subject_molecular_form`, `object_molecular_form`
 
 ### `evidence_payloads` (only with raw evidence)
 
@@ -280,7 +288,7 @@ Child tables (each with `relation_id`, `ordinal`):
 | `payload_json` | string | Original source record as JSON |
 
 Join a payload to its evidence row on `relation_key` (or `entity_key`) +
-`source` + `row_id`, within the same resource.
+`source` + `row_id`, within the same resource (`evidence_payloads` has `_resource`).
 
 ## Without Python
 
@@ -307,8 +315,8 @@ curl -fsSL -o signor.zip "$API/resources/signor/download"  # every table but evi
 ```
 
 Pass `?release=<release>` to every request to pin a release. The files are the
-tables above, one Parquet file each, without `_resource` columns and without
-the lookup tables.
+tables above, one Parquet file each, per resource and
+without the lookup tables or the merged rows of the database.
 
 ## Rules
 
@@ -318,8 +326,9 @@ the lookup tables.
 - Use `search` to turn a name into an `entity_key`, and `relations` for an
   entity's relations, before writing SQL for the same thing. Use SQL for
   counts, aggregates and anything over 100,000 relations.
-- In SQL over every resource, remember there is one row per resource; join
-  on `_resource` as well as the ids.
+- In SQL, an entity or relation is one row however many resources state it;
+  filter by resource with `list_contains(resources, '...')`, and join on
+  `entity_n` / `relation_n`.
 - For reproducible work, pin `release=...`, use a dedicated `data_dir`, and
   record `db.resources()` (resource versions) with the results.
 - Request raw evidence only when the task needs original source records.

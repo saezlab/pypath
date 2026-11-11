@@ -20,7 +20,7 @@ op_disconnect(api)
 
 op_init(topic = "signaling")                           # local mode: download, write the database
 con <- op_connect(op_data_directory())
-op_sql(con, "SELECT * FROM signor.relation LIMIT 5")  # your SQL
+op_sql(con, "SELECT * FROM relation WHERE list_contains(resources, 'signor') LIMIT 5")  # your SQL
 op_search(con, "TP53")                                 # the website's search
 op_relations(con, "TP53", sources = "signor")          # the website's relation export
 op_entity(con, op_search(con, "TP53")$entity_key[1])   # one entity's details
@@ -61,7 +61,7 @@ The data directory is the same as the Python client's: the directory given
 (`~/Library/Application Support/omnipath` on macOS, `~/.local/share/omnipath` on
 Linux, `%LOCALAPPDATA%\omnipath\omnipath` on Windows). `op_data_directory()` returns it.
 
-The database holds **native DuckDB tables** (about twice the files' size in addition),
+The database holds **native DuckDB tables**,
 the same database the API serves a release from, and any change to the installed
 resources writes it anew. It is written in DuckDB 1.5's storage format, so clients
 with an older DuckDB than R's can read it.
@@ -77,14 +77,15 @@ dplyr offer works on it:
 
 ```r
 con <- op_connect(op_data_directory())
-op_sql(con, "SELECT label, _resource FROM entity WHERE identifier = ?", list("P04637"))
+op_sql(con, "SELECT label, resources FROM entity WHERE identifier = ?", list("P04637"))
 DBI::dbGetQuery(con, "SELECT predicate, count(*) FROM relation GROUP BY 1")
 dplyr::tbl(con, "relation") |> dplyr::filter(sign == -1) |> dplyr::count(predicate)
 ```
 
-The tables are those of the Python client's README: `entity`, `relation` and the
-others over every installed resource with `_resource` and `_resource_version`, one
-resource's tables as `signor.relation`, and `resources`.
+The tables are those of the Python client's README: merged `entity` and `relation`
+(one row each, with the `resources` that have it, as a list; filter with
+`list_contains(resources, 'signor')`), their child and lookup tables, and `resources`.
+There are no per-resource tables.
 
 ## Prebuilt queries
 

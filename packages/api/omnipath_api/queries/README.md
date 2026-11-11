@@ -6,8 +6,9 @@ search, relation search, facets, ontology browsing, statistics and Parquet expor
 The API's routes call `ReleaseQueries`; nothing else does.
 
 Each published release the API serves has one DuckDB database,
-`serving/<version>.duckdb`: every resource's tables in one native table each, with
-global ids, a key table and indexes. It is the database format the clients
+`serving/<version>.duckdb`: merged entities and relations (one row each, numbered at
+build, with the resources that state them), every evidence record with its resource,
+lookup tables and indexes. It is the database format the clients
 (`packages/query`) write locally too, built by the same code
 (`omnipath_client.database`). A request reads one release, by default the newest one
 with a database.
@@ -31,7 +32,7 @@ queries.close()
   how it was built, written by `omnipath-api build-release-db <version>`
   (`omnipath_api.release_database`). The newest few are kept; a request for a release
   without a database gets 410 (its files stay downloadable).
-- `query_policy.json` excludes resources from queries; `references/taxonomy` names taxa.
+- `references/taxonomy` names taxa.
 
 The databases are snapshots: a resource rebuilt in place, or a new version, is served
 once a release pins it and its database is built.
@@ -41,8 +42,7 @@ once a release pins it and its database is built.
 Every query is a step file of the clients' package (`packages/query/sql/queries/`,
 described in `packages/query/README.md`): the API, the Python client and the R client
 run the same SQL, and the answers' JSON is written by DuckDB. `ReleaseQueries.run_query`
-runs one on the request's release, with the selected resources (less those the query
-policy disables) as its `resources` parameter, and caches the answers and the steps
+runs one on the request's release, with the selected resources as its `resources` parameter, and caches the answers and the steps
 marked `cache`. The services turn a request's fields into a query's parameters; the
 generic route `POST /query/{name}` (`routers/queries.py`) runs any query by name, which
 the clients' API mode uses.

@@ -152,20 +152,6 @@ references and pagination. Concurrent identical requests share work; resource
 updates invalidate results by selecting a new key. Opening the dialog does not
 request the combined endpoint's unused interaction count or association list.
 
-### Disable a resource for live queries
-
-Set `disabled_resources` in `<data-root>/query_policy.json`, using inventory slugs:
-
-```json
-{"disabled_resources": ["rampdb"]}
-```
-
-The policy applies across releases and is read on query selection without a restart.
-Default queries, details, facets and exports exclude these resources; explicitly
-selecting a disabled resource returns HTTP 400. Catalog entries and resource file
-downloads remain available, with `queryable: false` in the catalog. Remove the slug
-to re-enable it. Publish policy changes with an atomic file replacement.
-
 ### Taxonomy names in the latest view
 
 Named releases retain their immutable taxonomy subsets. The moving `latest` view

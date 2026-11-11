@@ -101,22 +101,22 @@ is empty or damaged.
 
 | In the database | What it is |
 |---|---|
-| `entity`, `relation`, ... | each table over every installed resource, with `_resource` and `_resource_version` columns |
-| `signor.relation`, `chembl.entity`, ... | the same tables of one resource, in a schema named after it |
+| `entity`, `relation`, ... | merged tables: one row per entity and per relation, with the `resources` that have it |
 | `resources` | the installed resources, their versions and whether they have raw evidence |
 
-These are **native DuckDB tables** copied from the downloaded Parquet files: the same
+These are **native DuckDB tables** built from the downloaded Parquet files: the same
 database the hosted API serves a release from (`omnipath_client.database`), written
-by the same code. A full release (173 resources) takes about 14 minutes and 18 GB.
+by the same code. There are no per-resource tables or schemas; the per-resource
+Parquet files stay as the downloads. A full release (173 resources) takes about 14 minutes and 18 GB.
 Any change to the installed resources writes the database anew; the Parquet files
-stay. The tables have global ids, `_rid` on relation tables and `_eid` on entity
-tables (the resource's index times 2^32 plus its own id), with which queries read rows
-by id over every resource. The database also has `relation_key_lookup`
-(`relation_key`, `_rid`, sorted by key) and indexes on the relation and evidence ids.
+stay. Entities and relations are numbered when the database is built, `entity_n` and
+`relation_n`, in key order; the child tables refer to them. Indexes cover `entity`
+(`entity_n`, `entity_key`), `relation` (`relation_n`) and the evidence and annotation
+tables' numbers.
 
-To read rows by id quickly, write the ids into the SQL as a literal list, in a step of
-its own: DuckDB uses an index only then. With other conditions in the same `WHERE`, or
-ids from a subquery or join, it scans every row.
+To read rows by number quickly, write the numbers into the SQL as a literal list, in
+a step of its own: DuckDB uses an index only then. With other conditions in the same
+`WHERE`, or numbers from a subquery or join, it scans every row.
 
 The database is written in DuckDB 1.5's storage format, so DuckDB 1.5 and newer
 clients, the Python and R packages among them, can share a data directory.
@@ -134,11 +134,10 @@ ATTACH '/path/to/omnipath.duckdb' AS omnipath (READ_ONLY);
 ```python
 with op.connect() as db:
     result = db.sql('''
-        SELECT e.label, r.predicate, r.object_label, r._resource
+        SELECT e.label, r.predicate, o.label AS object, r.resources
         FROM entity AS e
-        JOIN relation AS r
-          ON e.entity_key = r.subject_entity_key
-         AND e._resource = r._resource
+        JOIN relation AS r ON r.subject_n = e.entity_n
+        JOIN entity AS o ON o.entity_n = r.object_n
         WHERE e.identifier = ?
         LIMIT 20
     ''', ["P04637"])
@@ -155,29 +154,32 @@ not a sandbox. Outside Python, open the file with any DuckDB client:
 duckdb -readonly "$(python -c 'import omnipath_client as op; print(op.data_directory())')/omnipath.duckdb"
 ```
 
-Each resource version has these tables:
+The database has these tables:
 
 | Table | One row per | Refers to |
 |---|---|---|
-| `entity` | entity, with its label, type, taxon and references | |
-| `entity_identifier` | identifier of an entity | `entity_id` |
-| `entity_annotation` | annotation of an entity (quantities as `quantity_*` columns) | `entity_id` |
-| `entity_evidence` | source record stating an entity | `entity_id` |
-| `relation` | relation, with its endpoints, sign, sources and qualifiers | |
-| `relation_annotation` | annotation of a relation | `relation_id` |
-| `relation_evidence` | source record stating a relation, with molecular forms | `relation_id` |
+| `entity` | entity, with its label, type, taxon, references and `resources` | |
+| `entity_identifier` | identifier of an entity, merged by namespace and id | `entity_n` |
+| `entity_annotation` | annotation of an entity (quantities as `quantity_*` columns), merged | `entity_n` |
+| `entity_evidence` | source record stating an entity, with its `resource` | `entity_n` |
+| `relation` | relation, with its endpoints (`subject_n`, `object_n`), sign, sources, `resources` and qualifiers | |
+| `relation_annotation` | annotation of a relation, merged | `relation_n` |
+| `relation_evidence` | source record stating a relation, with its `resource` and molecular forms | `relation_n` |
 | `evidence_payloads` | raw source record (only where installed) | `relation_key`, `entity_key` |
-| `relation_endpoint` | endpoint key of a relation, sorted by key | `relation_id` |
-| `entity_group` | gene, reference or connectivity group of an entity | `entity_id` |
-| `entity_term` | lowercase label or identifier of an entity, sorted | `entity_id` |
+| `relation_endpoint` | relation under each of its ends, sorted by entity and page order | `entity_n`, `relation_n` |
+| `relation_reference` | the same under the ends' reference keys | `relation_n` |
+| `entity_group` | gene, reference or connectivity group of an entity | `entity_n` |
+| `entity_term` | lowercase label or identifier of an entity, sorted | `entity_n` |
+| `ontology_edge`, `term_entity` | ontology edges between terms, and the entities and relations annotated with a term | |
 | `relation_facet` | each distinct combination of the relation filter columns, with its relation count | |
 
-`entity_id` and `relation_id` number the rows of `entity` and `relation` within one
-resource version; join child tables on them together with `_resource`. The 64-character
-`entity_key` and `relation_key` identify the same entity or relation across resources.
-In the tables over every resource, shared entities and relations are **not
-deduplicated**: there is one row per resource that has them. The last four tables
-are lookup tables `init` derives from the others; use them to find entities by name
+`entity_n` and `relation_n` number the rows of `entity` and `relation`; the
+64-character `entity_key` and `relation_key` identify the same entity or relation across
+databases and releases. An entity or relation that several resources state is **one row**;
+filter by resource with `list_contains(resources, 'signor')`, or use the evidence tables'
+`resource` column (`SELECT * FROM relation_evidence WHERE resource = 'signor'`; their
+`entity_id` / `relation_id` is the resource's own id). Relation counts count merged
+relations. The lookup tables are derived by `init`; use them to find entities by name
 (`entity_term`) and relations by endpoint (`relation_endpoint`) without scanning, and
 which predicates, types, taxa or qualifiers occur together (`relation_facet`).
 
