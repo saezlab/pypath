@@ -110,6 +110,7 @@ BUILD = [
     ("relation_evidence", "relation_n, resource, resource_version, relation_id, ordinal", False),
     ("relation", "relation_n", False),
     ("relation_endpoint", "entity_n, page_rank, side", False),
+    ("relation_refs", "relation_n", True),
     ("relation_reference", "reference_key, page_rank, side", False),
     ("entity_term", "term, entity_n, kind", False),
     ("entity_group", "group_key, kind, entity_n", False),
