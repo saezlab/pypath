@@ -2,22 +2,20 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Sequence
 import duckdb
 
 
 def get_connection(memory_limit: str = "4GB", *, threads: int = 2) -> duckdb.DuckDBPyConnection:
-    """Create configured in-memory DuckDB connection."""
-    threads = int(os.getenv("OMNIPATH_DUCKDB_THREADS", str(threads)))
+    """Create configured in-memory DuckDB connection with the memory and threads given
+    (the caller reads OMNIPATH_DUCKDB_MEMORY_LIMIT and OMNIPATH_DUCKDB_THREADS: they are
+    per query, and the API's shared database has those of all its concurrent queries)."""
     if threads < 1:
         raise ValueError("OMNIPATH_DUCKDB_THREADS must be positive")
     con = duckdb.connect(database=":memory:")
     try:
-        con.execute(
-            "SET memory_limit = ?", [os.getenv("OMNIPATH_DUCKDB_MEMORY_LIMIT", memory_limit)]
-        )
+        con.execute("SET memory_limit = ?", [memory_limit])
         con.execute("SET threads = ?", [threads])
         con.execute("SET arrow_large_buffer_size=true")
         # Footers of the immutable resource files are read once, not on every query.

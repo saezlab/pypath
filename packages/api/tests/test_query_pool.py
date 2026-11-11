@@ -183,3 +183,19 @@ def test_busy_admin_delete_does_not_mutate_then_fail_refresh(tmp_path, monkeypat
         assert response.status_code == 200
         assert not version.exists()
         assert not engine._connections
+
+
+def test_shared_database_has_every_query_slots_memory_and_threads(tmp_path, monkeypatch):
+    # The settings are per query; the database the queries share has those of all of them.
+    monkeypatch.setenv("OMNIPATH_QUERY_CONCURRENCY", "3")
+    monkeypatch.setenv("OMNIPATH_DUCKDB_MEMORY_LIMIT", "100MB")
+    monkeypatch.setenv("OMNIPATH_DUCKDB_THREADS", "2")
+    engine = served_queries(tmp_path)
+    try:
+        with engine.query_scope():
+            limit, threads = engine._db.execute(
+                "SELECT current_setting('memory_limit'), current_setting('threads')"
+            ).fetchone()
+        assert limit in ("286.1 MiB", "300.0 MB") and threads == 6, (limit, threads)
+    finally:
+        engine.close()
