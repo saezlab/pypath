@@ -157,8 +157,8 @@ SELECT * FROM entity_identifier WHERE entity_n IN ({{product_list_ids+}})
 SELECT * FROM entity_annotation WHERE entity_n IN ({{product_list_ids*}})
 
 -- step: products AS table
--- the products, by key
-WITH placed AS (SELECT *, row_number() OVER (ORDER BY entity_n) AS position FROM __product_rows),
+-- the products, most connected first
+WITH placed AS (SELECT *, row_number() OVER (ORDER BY relation_count DESC, entity_key) AS position FROM __product_rows),
 listed AS (SELECT * FROM {{include:merged_rows placed}})
 SELECT * FROM {{include:entity_summary listed}}
 
