@@ -2,9 +2,10 @@
 -- predicate, direction, sign, category, qualifiers); their sources and resources are
 -- united, their evidence counts summed, and the reference keys taken from the first
 -- copy (by resource and id). Most keys have one copy, which is the relation as it is;
--- only the others are grouped (list aggregates hold their groups in memory).
+-- only the others are grouped. In slices of keys: list aggregates hold their groups in
+-- memory (one statement needed more than 5 GB on the full release).
 WITH copies AS (
-    SELECT relation_key, count(*) AS n FROM work.relation GROUP BY relation_key
+    SELECT relation_key, count(*) AS n FROM work.relation WHERE {{partition relation_key}} GROUP BY relation_key
 ), single AS (
     SELECT r.relation_key, r.subject_entity_key, r.object_entity_key, r.statement_kind,
         r.subject_reference_entity_key, r.object_reference_entity_key, r.subject_type, r.predicate,
@@ -12,7 +13,7 @@ WITH copies AS (
         r.object_aspect_qualifier, r.object_direction_qualifier, r.causal_mechanism_qualifier,
         list_sort(list_distinct(coalesce(r.sources, []))) AS sources, [r._resource] AS resources,
         coalesce(r.evidence_count, 0)::BIGINT AS evidence_count
-    FROM work.relation r JOIN copies c USING (relation_key) WHERE c.n = 1
+    FROM work.relation r JOIN copies c USING (relation_key) WHERE c.n = 1 AND {{partition r.relation_key}}
 ), several AS (
     SELECT r.relation_key, r.subject_entity_key, r.object_entity_key,
         any_value(r.statement_kind) AS statement_kind,
@@ -34,7 +35,7 @@ WITH copies AS (
         list_sort(list_distinct(flatten(list(coalesce(r.sources, []))))) AS sources,
         list(DISTINCT r._resource ORDER BY r._resource) AS resources,
         sum(coalesce(r.evidence_count, 0))::BIGINT AS evidence_count
-    FROM work.relation r JOIN copies c USING (relation_key) WHERE c.n > 1
+    FROM work.relation r JOIN copies c USING (relation_key) WHERE c.n > 1 AND {{partition r.relation_key}}
     GROUP BY r.relation_key, r.subject_entity_key, r.object_entity_key
 ), merged AS (
     SELECT * FROM single UNION ALL BY NAME SELECT * FROM several
