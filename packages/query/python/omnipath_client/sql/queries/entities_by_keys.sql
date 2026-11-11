@@ -29,7 +29,7 @@ JOIN (SELECT unnest({{entity_keys}}::VARCHAR[]) AS entity_key,
 -- slim: the stored summary (no identifier or annotation lists); else built with them
 WITH full_rows AS (SELECT * FROM __merged WHERE NOT {{slim}}),
 listed AS (SELECT * FROM {{include:merged_rows full_rows}})
-SELECT position, summary FROM __merged WHERE {{slim}}
+SELECT position, op_summary(summary) AS summary FROM __merged WHERE {{slim}}
 UNION ALL
 SELECT position, summary FROM {{include:entity_summary listed}}
 

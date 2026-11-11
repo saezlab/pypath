@@ -42,6 +42,21 @@ CREATE OR REPLACE MACRO op_entity_ok(e, scope, type_names, taxa, references_, ke
     AND (keys IS NULL OR list_contains(keys, e.entity_key))
 );
 
+-- A stored entity summary (entity_merged.summary) as the API shows it. The build stores
+-- it without its identifiers, which are the canonical identifier and the label (as
+-- entity_summary lists them for an entity without nested identifiers): a nested list
+-- costs most of a summary's read.
+CREATE OR REPLACE MACRO op_summary(s) AS struct_update(s, identifiers := list_filter(
+    [struct_pack(entityPk := s.entityPk, identifier := s.canonicalIdentifier,
+        identifierType := s.primaryNamespace, type := s.primaryNamespace, id := s.canonicalIdentifier,
+        curie := NULL::VARCHAR, source := '', isCanonical := true)]
+    || CASE WHEN s.label <> '' AND s.label <> s.canonicalIdentifier THEN [struct_pack(
+        entityPk := s.entityPk, identifier := s.label,
+        identifierType := CASE WHEN s.primaryNamespace IN ('uniprot', 'entrez', 'ensg') THEN 'genesymbol' ELSE 'name' END,
+        type := CASE WHEN s.primaryNamespace IN ('uniprot', 'entrez', 'ensg') THEN 'genesymbol' ELSE 'name' END,
+        id := s.label, curie := NULL::VARCHAR, source := '', isCanonical := false)] ELSE [] END,
+    lambda x: x.type <> '' AND x.id <> ''));
+
 -- A merged entity (entity_merged) passes the filters when some copy has each value: a
 -- resource of scope, a type, a taxon, a reference key (and its key among keys).
 CREATE OR REPLACE MACRO op_merged_ok(e, scope, type_names, taxa, references_, keys) AS (

@@ -61,11 +61,11 @@ SELECT DISTINCT k FROM (
     UNION ALL SELECT unnest(coalesce({{scope_key_list}}, []))
     UNION ALL SELECT unnest(coalesce({{reference_entity_keys}}, []))) ORDER BY k
 
--- step: selection_endpoints AS table
+-- step: selection_endpoints AS table when {{read_candidates}}
 SELECT key, key_kind, side, _rid FROM relation_endpoint
-WHERE key IN ({{selection_keys*}}) AND (op_unset({{scope}}) OR list_contains({{scope}}, _resource))
+WHERE key IN ({{selection_keys+}}) AND (op_unset({{scope}}) OR list_contains({{scope}}, _resource))
 
--- step: candidate_ids AS list
+-- step: candidate_ids AS list when {{read_candidates}}
 WITH by_entity AS (
     SELECT _rid FROM __selection_endpoints
     WHERE key_kind = 'entity' AND list_contains(coalesce({{entity_key_list}}, []), key)

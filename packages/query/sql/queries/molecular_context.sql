@@ -226,7 +226,7 @@ ORDER BY o LIMIT 100
 
 -- step: referenced AS table
 -- the referenced products' stored summaries, in the order of the keys
-SELECT o.position, m.summary
+SELECT o.position, op_summary(m.summary) AS summary
 FROM (SELECT entity_key, summary FROM entity_merged
       WHERE entity_key IN ({{referenced_keys*}}) AND (op_unset({{resources}}) OR list_has_any(resources, {{resources}}))) m
 JOIN (SELECT unnest({{referenced_keys}}::VARCHAR[]) AS entity_key,

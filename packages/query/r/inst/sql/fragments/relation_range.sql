@@ -8,8 +8,9 @@ SELECT unnest(CASE WHEN op_unset({{reference_entity_keys}}) THEN coalesce({{enti
     ELSE {{reference_entity_keys}} END) AS k ORDER BY k
 
 -- step: range_rows AS table when {{fast}}
-SELECT * FROM relation_endpoint
-WHERE key IN ({{range_keys*}})
+-- one key at a time; the columns the page, the counts and the facets read
+SELECT * EXCLUDE (key, key_kind, resource, _resource_version, relation_id) FROM relation_endpoint
+WHERE key IN ({{range_keys+}})
     AND key_kind = CASE WHEN op_unset({{reference_entity_keys}}) THEN 'entity' ELSE 'reference' END
 
 -- step: range_selected AS table when {{fast}}

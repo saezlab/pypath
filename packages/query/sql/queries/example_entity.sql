@@ -27,7 +27,7 @@ LIMIT 1
 
 -- step: response AS value when (SELECT count(*) FROM __chosen) > 0
 SELECT to_json(struct_pack(
-    entity := (SELECT summary FROM __chosen),
+    entity := (SELECT op_summary(summary) FROM __chosen),
     group_key := (SELECT CASE
         WHEN list_contains((SELECT list(entity_type) FROM op_chemical_types), entity_type) AND group_connectivity IS NOT NULL
             THEN 'connectivity:' || group_connectivity

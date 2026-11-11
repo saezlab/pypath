@@ -196,7 +196,7 @@ SELECT entity_key FROM __page ORDER BY entity_key
 
 -- step: summaries AS table
 -- the page's entities as merged at build
-SELECT p.position, m.summary
+SELECT p.position, op_summary(m.summary) AS summary
 FROM __page p JOIN (SELECT entity_key, summary FROM entity_merged WHERE entity_key IN ({{page_keys*}})) m
     USING (entity_key)
 

@@ -2,8 +2,9 @@
 -- (ranking them by their identifier and annotation counts), the summary that search
 -- results, relation endpoints and group cards show, the merged identifier and annotation
 -- lists an entity page shows, and the copies' resources, types, taxa and reference keys,
--- which filters test (an entity passes when some copy has the value). The lists come from
--- merged_identifiers and merged_annotations (staged in the build's scratch database).
+-- which filters test (an entity passes when some copy has the value). The summary is stored
+-- without its identifiers (op_summary adds them). The lists come from merged_identifiers
+-- and merged_annotations (staged in the build's scratch database).
 WITH copies AS (
     SELECT * EXCLUDE (_resource_version), _resource || '/' || _resource_version AS resource,
         0 AS position,
@@ -32,7 +33,7 @@ SELECT m.pk AS entity_key, m.raw_namespace AS namespace, m.raw_identifier AS ide
     m.gene_reference_keys, m.reference_entity_key,
     f.resources, coalesce(f.copy_types, []) AS copy_types, coalesce(f.copy_taxa, []) AS copy_taxa,
     coalesce(f.copy_reference_keys, []) AS copy_reference_keys, f.copies,
-    s.summary,
+    struct_update(s.summary, identifiers := NULL) AS summary,
     coalesce(i.identifiers, []) AS identifiers, coalesce(a.annotations, []) AS annotations
 FROM merged m
 JOIN shaped s ON s.summary.entityPk = m.pk

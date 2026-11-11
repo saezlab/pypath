@@ -5,7 +5,10 @@
 
 .step_re <- "^--\\s*step:\\s*(\\w+)\\s+AS\\s+(table|list|value|rows)(\\s+when\\s+(.*?))?(\\s+cache)?\\s*$"
 .repeat_re <- "^--\\s*repeat:\\s*(\\w+)\\s*=\\s*(.+?)\\s+next\\s+(.+?)\\s+until\\s+(\\w+)\\s+max\\s+(\\d+)\\s*$"
-.placeholder_re <- "\\{\\{\\s*(#?)([A-Za-z_][A-Za-z0-9_:]*)(\\[[^]]*\\])?(\\*?)\\s*\\}\\}"
+.placeholder_re <- "\\{\\{\\s*(#?)([A-Za-z_][A-Za-z0-9_:]*)(\\[[^]]*\\])?([*+]?)\\s*\\}\\}"
+# {{name+}}: one item at a time (steps.py)
+.each_re <- "\\{\\{\\s*([A-Za-z_][A-Za-z0-9_]*)\\+\\s*\\}\\}"
+.each_max <- 64L
 .step_types <- c("VARCHAR", "INTEGER", "BIGINT", "DOUBLE", "BOOLEAN", "JSON")
 .include_re <- "\\{\\{\\s*include:(\\w+)\\s+(\\w+)\\s*\\}\\}"
 
@@ -257,6 +260,19 @@
   # empty (a skipped step): every list spreads as empty, so that its SQL stays short
   render <- function(sql, empty = FALSE) {
     sql <- .expand_fragments(sql, fragments)
+    each <- if (empty) -1L else regexpr(.each_re, sql, perl = TRUE)
+    if (each > 0) {
+      start <- attr(each, "capture.start")[1]
+      name <- substr(sql, start, start + attr(each, "capture.length")[1] - 1)
+      value <- env$values[[name]]
+      items <- if (is.null(value)) list() else as.list(value)
+      if (length(items) > 0 && length(items) <= .each_max) {
+        before <- substr(sql, 1, each - 1)
+        after <- substring(sql, each + attr(each, "match.length"))
+        parts <- vapply(items, function(v) paste0("SELECT * FROM (", render(paste0(before, .scalar_literal(v), after)), ")"), "")
+        return(paste(parts, collapse = " UNION ALL "))
+      }
+    }
     out <- ""
     repeat {
       m <- regexpr(.placeholder_re, sql, perl = TRUE)

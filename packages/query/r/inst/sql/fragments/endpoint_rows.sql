@@ -8,4 +8,4 @@ SELECT DISTINCT k FROM (
 WHERE k IS NOT NULL ORDER BY k
 
 -- step: endpoint_rows AS table
-SELECT entity_key, summary FROM entity_merged WHERE entity_key IN ({{endpoint_keys*}})
+SELECT entity_key, op_summary(summary) AS summary FROM entity_merged WHERE entity_key IN ({{endpoint_keys*}})

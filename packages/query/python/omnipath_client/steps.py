@@ -20,7 +20,10 @@ File format::
     -- end
 
 Placeholders: ``{{name}}`` a literal (a list is ``[...]``), ``{{name*}}`` a list's items
-for ``IN (...)`` (a subquery without rows when empty), ``{{#name}}`` a list's length,
+for ``IN (...)`` (a subquery without rows when empty), ``{{name+}}`` the same one item
+at a time (the statement is the ``UNION ALL`` of one statement per item, up to
+``EACH_MAX`` items, more are spread like ``*``; DuckDB reads one key of a sorted table
+through its zonemaps, several in one ``IN`` by whole row groups), ``{{#name}}`` a list's length,
 ``{{name[offset:count]}}`` a slice spread like ``*`` (offset and count are params or
 numbers), ``{{table:name}}`` a rows step as a table (``VALUES``), and
 ``{{include:fragment table}}`` the SQL of ``sql/fragments/<fragment>.sql`` reading
@@ -41,7 +44,9 @@ from typing import Any, Callable
 
 import duckdb
 
-_PLACEHOLDER = re.compile(r"\{\{\s*(#?)([A-Za-z_][A-Za-z0-9_:]*)(\[[^\]]*\])?(\*?)\s*\}\}")
+_PLACEHOLDER = re.compile(r"\{\{\s*(#?)([A-Za-z_][A-Za-z0-9_:]*)(\[[^\]]*\])?([*+]?)\s*\}\}")
+_EACH = re.compile(r"\{\{\s*([A-Za-z_][A-Za-z0-9_]*)\+\s*\}\}")
+EACH_MAX = 64
 _STEP = re.compile(
     r"--\s*step:\s*(\w+)\s+AS\s+(table|list|value|rows)(?:\s+when\s+(.*?))?(\s+cache)?\s*$", re.I
 )
@@ -297,6 +302,13 @@ class Run:
         """The SQL with its placeholders filled in; ``empty`` (a skipped step) spreads
         every list as empty, so that its SQL stays short."""
         sql = expand(sql, self.fragments)
+        each = None if empty else _EACH.search(sql)
+        if each:
+            items = list(self.values.get(each[1]) or [])
+            if 0 < len(items) <= EACH_MAX:
+                return " UNION ALL ".join(
+                    f"SELECT * FROM ({self.render(sql[:each.start()] + literal(v) + sql[each.end():])})"
+                    for v in items)
 
         def replace(m):
             count, name, slice_, spread = m[1], m[2], m[3], m[4]

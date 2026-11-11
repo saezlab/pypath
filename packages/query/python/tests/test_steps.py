@@ -104,6 +104,20 @@ def test_rows_tables_and_invalid_input(db):
         run(db, pairs, {"mode": 3})
 
 
+def test_each_reads_one_item_at_a_time(db):
+    each = query("each")
+    assert json.loads(run(db, each, {"keys": ["c", "a", "zz"]}, output="json")) == {"labels": ["Alpha", "Gamma"]}
+    assert json.loads(run(db, each, {"keys": []}, output="json")) == {"labels": []}
+    # More than EACH_MAX items: one statement.
+    many = [f"k{i}" for i in range(steps.EACH_MAX + 1)] + ["a", "f"]
+    assert json.loads(run(db, each, {"keys": many}, output="json")) == {"labels": ["Alpha", "Zeta"]}
+    r = steps.Run(db, each, steps.bind(each, {}), None, None)
+    r.values["keys"] = ["a", "b"]
+    assert r.render(each.steps[0].sql).count("UNION ALL") == 1
+    r.values["keys"] = many
+    assert "UNION ALL" not in r.render(each.steps[0].sql)
+
+
 def test_fragments_are_included(db):
     assert json.loads(run(db, query("shouted"), {"limit": 2}, output="json", fragments=fragments)) == [
         "ALPHA!", "BETA!"
@@ -163,7 +177,7 @@ def test_r_runner_answers_like_python(tmp_path):
     database(tmp_path / "toy.duckdb").close()
     cases = [
         (name, example)
-        for name in ("lookup", "grow", "pairs", "shouted")
+        for name in ("lookup", "grow", "pairs", "shouted", "each")
         for example in query(name).examples
     ]
     (tmp_path / "cases.json").write_text(json.dumps([[name, example] for name, example in cases]))

@@ -220,7 +220,7 @@ WHERE entity_key IN ({{member_keys*}}) AND (op_unset({{scope}}) OR list_has_any(
 WITH placed AS (SELECT *, 0 AS position FROM __member_merged WHERE {{include_details}}),
 listed AS (SELECT * FROM {{include:merged_rows placed}}),
 summaries AS (
-    SELECT summary FROM __member_merged WHERE NOT {{include_details}}
+    SELECT op_summary(summary) AS summary FROM __member_merged WHERE NOT {{include_details}}
     UNION ALL
     SELECT summary FROM {{include:entity_summary listed}}
 )
