@@ -78,8 +78,9 @@ make publish-release RELEASE_MANIFEST=release.json DATA_ROOT=/root/data/release-
 make release-db RELEASE=2026.10.25.1 DATA_ROOT=/root/data/release-20261007-native
 ```
 
-- **Time and size:** a full release (173 resources, 2026.10.25.1) takes about 14 minutes
-  at 2 threads and 4 GB, and the database is about 19 GB.
+- **Time and size:** a full release (173 resources, 2026.10.25.1) takes about 22 minutes
+  at 3 threads and 5 GB (the defaults; less memory runs out in the merges), and the
+  database is about 18 GB.
 - **Disk:** the command refuses to start without the last database's size plus 20 GiB
   free. Three kept databases need about 60 GB.
 - **Pickup:** the running API sees a new database as soon as it is in place: no restart

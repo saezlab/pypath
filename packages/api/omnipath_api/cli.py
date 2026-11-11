@@ -31,8 +31,8 @@ def _release_db(args: list[str]) -> int:
         default=DEFAULT_KEEP,
         help=f"databases to keep (default {DEFAULT_KEEP}); 0 keeps all",
     )
-    parser.add_argument("--memory-limit", default="4GB")
-    parser.add_argument("--threads", type=int, default=None)
+    parser.add_argument("--memory-limit", default="5GB")
+    parser.add_argument("--threads", type=int, default=3)
     parsed = parser.parse_args(args)
     record = build_served_database(
         parsed.data_root,

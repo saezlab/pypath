@@ -59,8 +59,9 @@ def build_served_database(
     version: str,
     *,
     keep: int | None = DEFAULT_KEEP,
-    memory_limit: str = "4GB",
-    threads: int | None = None,
+    # Measured on the full release: the merges need 5 GB at 3 threads.
+    memory_limit: str = "5GB",
+    threads: int | None = 3,
     progress: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     """Write ``serving/<version>.duckdb`` for a published release, then keep only the
