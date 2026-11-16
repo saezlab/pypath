@@ -3,6 +3,9 @@ Parse IntAct data and emit Entity records.
 
 This module converts IntAct MITAB data into Entity records using the schema
 defined in pypath.internals.silver_schema.
+
+It downloads a full IntAct database with interactions between different organisms. 
+This is a big file (1.3 GB), remeber to change memory limits when running omnipath-build
 """
 
 from __future__ import annotations
@@ -207,15 +210,11 @@ def _specified_role(value: str) -> str | None:
     return None if value == _UNSPECIFIED_ROLE else value
 
 
-def _intact_raw(opener, organism: int = 9606, **_kwargs: object):
-    if organism != 9606:
-        raise ValueError('Currently only human (9606) is supported for IntAct')
+def _intact_raw(opener, **_kwargs: object):
     if not opener or not opener.result:
         return
-    for file_handle in opener.result.values():
-        reader = csv.DictReader(file_handle, delimiter='\t')
-        yield from reader
-        break
+    reader = csv.DictReader(opener.result['intact.txt'], delimiter='\t')
+    yield from reader
 
 
 config = ResourceConfig(
@@ -447,13 +446,17 @@ resource = Resource(
     config,
     interactions=Dataset(
         download=Download(
-            url='https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/species/human.zip',
-            filename='human.zip',
+            url='https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/intact.zip',
+            filename='intact.zip',
             subfolder='intact',
             large=True,
             ext='zip',
+            needed=['intact.txt'],
         ),
         mapper=interactions_schema,
         raw_parser=_intact_raw,
     ),
 )
+
+#The full intact.zip consists of intact.txt and intact_negative.txt. intact.txt is of the main interest.
+#We could only explictly donwload intact.txt from the ftp. But kept the zip formula as it was. 
