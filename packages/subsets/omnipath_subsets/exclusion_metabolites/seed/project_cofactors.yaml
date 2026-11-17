@@ -10,8 +10,8 @@
 # One line per member. The name is for the reviewer and is not matched.
 #
 # Ids marked "verified" were found in the 2026.10.19 dev5 build under that ChEBI
-# id. The others were written from knowledge of ChEBI and are checked by the
-# validation script, which prints each id's label next to the name below.
+# id, or carry the label named here in the check of the cycle 013 validation log
+# (all 29 ids, the 11 that were first written from knowledge of ChEBI among them).
 class: cofactors
 namespace: chebi
 members:
@@ -36,15 +36,15 @@ members:
   # Other nucleotide phosphates.
   - {id: "CHEBI:15996", name: GTP}             # verified
   - {id: "CHEBI:37565", name: GTP(4-)}         # verified
-  - {id: "CHEBI:17552", name: GDP}
-  - {id: "CHEBI:17345", name: GMP}
-  - {id: "CHEBI:15713", name: UTP}
-  - {id: "CHEBI:17659", name: UDP}
-  - {id: "CHEBI:16695", name: UMP}
-  - {id: "CHEBI:17677", name: CTP}
-  - {id: "CHEBI:17239", name: CDP}
-  - {id: "CHEBI:17361", name: CMP}
+  - {id: "CHEBI:17552", name: GDP}             # verified
+  - {id: "CHEBI:17345", name: GMP}             # verified
+  - {id: "CHEBI:15713", name: UTP}             # verified
+  - {id: "CHEBI:17659", name: UDP}             # verified
+  - {id: "CHEBI:16695", name: UMP}             # verified
+  - {id: "CHEBI:17677", name: CTP}             # verified
+  - {id: "CHEBI:17239", name: CDP}             # verified
+  - {id: "CHEBI:17361", name: CMP}             # verified
   # Flavin cofactors.
-  - {id: "CHEBI:16238", name: FAD}
-  - {id: "CHEBI:17877", name: FADH2}
-  - {id: "CHEBI:17621", name: FMN}
+  - {id: "CHEBI:16238", name: FAD}             # verified
+  - {id: "CHEBI:17877", name: FADH2}             # verified
+  - {id: "CHEBI:17621", name: FMN}             # verified

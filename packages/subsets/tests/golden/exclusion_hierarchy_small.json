@@ -1,0 +1,300 @@
+{
+ "members": [
+  [
+   "atoms",
+   "00000000-0000-0000-0000-000000000017",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "the root CHEBI:33250",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ],
+  [
+   "atoms",
+   "00000000-0000-0000-0000-000000000018",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:33250 at depth 1",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ],
+  [
+   "atoms",
+   "00000000-0000-0000-0000-00000000001b",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:33250 at depth 1",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000003",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:24867 at depth 1",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000014",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "the root CHEBI:24867",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000015",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:24867 at depth 1",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000016",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:24867 at depth 2",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-00000000001b",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:24867 at depth 1",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ]
+ ],
+ "report": [
+  [
+   "class_size",
+   "atoms",
+   null,
+   3,
+   null,
+   null,
+   "{\"by_source\": {\"chebi_hierarchy\": 3}, \"entity_matches\": 3, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "cofactors",
+   null,
+   0,
+   null,
+   null,
+   "{\"by_source\": {}, \"entity_matches\": 0, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "cofactors_extended",
+   null,
+   0,
+   null,
+   null,
+   "{\"by_source\": {}, \"entity_matches\": 0, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "ions",
+   null,
+   5,
+   null,
+   null,
+   "{\"by_source\": {\"chebi_hierarchy\": 5}, \"entity_matches\": 5, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "small_molecules",
+   null,
+   0,
+   null,
+   null,
+   "{\"by_source\": {}, \"entity_matches\": 0, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "xenobiotics",
+   null,
+   0,
+   null,
+   null,
+   "{\"by_source\": {}, \"entity_matches\": 0, \"structure_key_matches\": 0}"
+  ],
+  [
+   "derived_not_seeded",
+   "atoms",
+   null,
+   3,
+   null,
+   null,
+   "{\"entities\": [\"00000000-0000-0000-0000-000000000018\", \"00000000-0000-0000-0000-00000000001b\", \"00000000-0000-0000-0000-000000000017\"], \"labels\": [\"a child atom\", \"an ion that is also an atom class\", \"atom\"], \"truncated\": false}"
+  ],
+  [
+   "derived_not_seeded",
+   "ions",
+   null,
+   5,
+   null,
+   null,
+   "{\"entities\": [\"00000000-0000-0000-0000-000000000015\", \"00000000-0000-0000-0000-000000000016\", \"00000000-0000-0000-0000-00000000001b\", \"00000000-0000-0000-0000-000000000003\", \"00000000-0000-0000-0000-000000000014\"], \"labels\": [\"a child ion\", \"a grandchild ion\", \"an ion that is also an atom class\", \"hydron\", \"ion\"], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "atoms",
+   null,
+   3,
+   null,
+   null,
+   "{\"labels\": [\"a child atom\", \"an ion that is also an atom class\", \"atom\"], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "cofactors",
+   null,
+   0,
+   null,
+   null,
+   "{\"labels\": [], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "cofactors_extended",
+   null,
+   0,
+   null,
+   null,
+   "{\"labels\": [], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "ions",
+   null,
+   5,
+   null,
+   null,
+   "{\"labels\": [\"a child ion\", \"a grandchild ion\", \"an ion that is also an atom class\", \"hydron\", \"ion\"], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "small_molecules",
+   null,
+   0,
+   null,
+   null,
+   "{\"labels\": [], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "xenobiotics",
+   null,
+   0,
+   null,
+   null,
+   "{\"labels\": [], \"truncated\": false}"
+  ],
+  [
+   "seed_coverage",
+   "atoms",
+   "chebi",
+   1,
+   0,
+   0,
+   "{\"fallback_only\": [], \"unresolved\": []}"
+  ],
+  [
+   "seed_coverage",
+   "cofactors",
+   "chebi",
+   0,
+   0,
+   1,
+   "{\"fallback_only\": [], \"unresolved\": [\"CHEBI:57540\"]}"
+  ],
+  [
+   "seed_coverage",
+   "ions",
+   "chebi",
+   0,
+   0,
+   1,
+   "{\"fallback_only\": [], \"unresolved\": [\"CHEBI:29101\"]}"
+  ],
+  [
+   "seed_coverage",
+   "ions",
+   "kegg",
+   0,
+   0,
+   2,
+   "{\"fallback_only\": [], \"unresolved\": [\"C00076\", \"C00238\"]}"
+  ],
+  [
+   "seed_not_derived",
+   "atoms",
+   null,
+   0,
+   null,
+   null,
+   "{\"entities\": [], \"identifiers\": []}"
+  ],
+  [
+   "seed_not_derived",
+   "ions",
+   null,
+   0,
+   null,
+   null,
+   "{\"entities\": [], \"identifiers\": []}"
+  ],
+  [
+   "uncommitted_inputs",
+   null,
+   null,
+   null,
+   null,
+   null,
+   "{\"files\": [\"metaproviz_seed.yaml\", \"project_cofactors.yaml\", \"overrides.yaml\"], \"list_version\": \"uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5\"}"
+  ],
+  [
+   "veto_applied",
+   "atoms",
+   "chebi",
+   2,
+   null,
+   null,
+   "{\"entities\": [\"00000000-0000-0000-0000-000000000005\"], \"identifier\": \"CHEBI:18248\", \"note\": \"a curator removes it\", \"removed\": [{\"assignment_source\": \"chebi_hierarchy\", \"entity\": \"00000000-0000-0000-0000-000000000005\", \"match_kind\": \"entity\"}, {\"assignment_source\": \"metaproviz_seed\", \"entity\": \"00000000-0000-0000-0000-000000000005\", \"match_kind\": \"entity\"}], \"resolved\": true}"
+  ]
+ ]
+}

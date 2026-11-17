@@ -1,37 +1,15 @@
-"""MetSigDB unified membership substrate (cycle 010).
+"""MetSigDB: canonical metabolite memberships in resource-native sets.
 
-One build-time materialized table, ``metsigdb_membership``, holding canonical
-metabolite memberships in resource-native sets from KEGG, Reactome,
-WikiPathways, MACdb and ClassyFire.
-
-The step reads the build database, not the upstream resources. The core build
-already loaded all five through ``omnipath_resources.inputs_v2`` and already resolved their
-entities, so the memberships sit in ``relation_evidence``,
-``entity_evidence_resolution`` and ``entity_ontology_relation``. Reading those
-needs no network access, and it keeps the metabolite side identical to every
-other consumer of the canonical entity layer.
+One table, ``metsigdb_membership``, built from the published release as Parquet
+(``omnipath-subsets build``): memberships in sets from KEGG, Reactome, WikiPathways, MACdb
+and ClassyFire. The step reads the release's per-resource Parquet. It parses no upstream
+resource and downloads nothing: the resources already hold every membership, resolved
+against the release's entities.
 """
 
 from __future__ import annotations
 
-from omnipath_subsets.metsigdb.build import (
-    BuildStats,
-    ResourceLoadStats,
-    build_id,
-    build_metsigdb,
-    ensure_membership_table,
-    load_resource,
-)
 from omnipath_subsets.metsigdb.mapping import RESOURCES, ResourceRule, rule_for
+from omnipath_subsets.metsigdb.parquet_build import write_metsigdb
 
-__all__ = [
-    "RESOURCES",
-    "BuildStats",
-    "ResourceLoadStats",
-    "ResourceRule",
-    "build_id",
-    "build_metsigdb",
-    "ensure_membership_table",
-    "load_resource",
-    "rule_for",
-]
+__all__ = ["RESOURCES", "ResourceRule", "rule_for", "write_metsigdb"]

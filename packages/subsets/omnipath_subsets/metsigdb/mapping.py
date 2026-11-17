@@ -24,20 +24,6 @@ CHEMICAL_ENTITY_TYPE = "chemical_entity"
 PATHWAY_ENTITY_TYPE = "pathway"
 CV_TERM_ENTITY_TYPE = "ontology_class"
 
-# The default projection, in the priority order the row contract publishes. The
-# key is the column, the value the `vocab_identifier_type` name behind it.
-#
-# `inchi` is absent by design: no InChI identifier type exists in the schema.
-PROJECTION_IDENTIFIERS: tuple[tuple[str, str], ...] = (
-    ("inchikey", "Standard Inchi Key:MI:1101"),
-    ("smiles", "Smiles:MI:0239"),
-    ("hmdb", "Hmdb:OM:0004"),
-    ("pubchem", "Pubchem Compound:OM:0002"),
-    ("chebi", "Chebi:MI:0474"),
-    ("kegg", "Kegg Compound:MI:2012"),
-)
-
-
 @dataclass(frozen=True)
 class ResourceRule:
     """How one v1 resource becomes MetSigDB memberships.
@@ -58,6 +44,11 @@ class ResourceRule:
     # ClassyFire alone reads a second source: HMDB assigns the class, and
     # ChemOnt supplies the hierarchy the assignment expands over.
     hierarchy_source_name: str | None = None
+    # Sets whose identifier matches this have no organism.
+    organism_free_pattern: str | None = None
+    # Put before the source's set identifier. MACdb trait ids are bare integers that collide
+    # with ChEBI and PubChem numbers, so they say what they are.
+    set_id_prefix: str = ""
 
 
 REACTOME = ResourceRule(
@@ -95,6 +86,15 @@ KEGG_OVERVIEW_MAPS: tuple[str, ...] = (
 )
 
 
+# The map number of each overview map. An organism's own overview map (hsa01100, mmu01240)
+# is a whole-metabolism diagram as much as the reference map (rn01100), so the number
+# decides, not the prefix.
+KEGG_OVERVIEW_MAP_NUMBERS: tuple[str, ...] = tuple(map_id[2:] for map_id in KEGG_OVERVIEW_MAPS)
+
+# A KEGG reference map is not about one organism, whatever taxon a source stamped on it.
+KEGG_REFERENCE_MAP_PATTERN = "^rn[0-9]{5}$"
+
+
 KEGG = ResourceRule(
     name="KEGG",
     source_name="kegg",
@@ -103,6 +103,7 @@ KEGG = ResourceRule(
     # KEGG publishes no compound-to-pathway edge. A compound reaches a pathway
     # through a reaction assigned to it, so this resource alone is two hops.
     extraction="extract_kegg.sql",
+    organism_free_pattern=KEGG_REFERENCE_MAP_PATTERN,
 )
 
 MACDB = ResourceRule(
@@ -113,6 +114,7 @@ MACDB = ResourceRule(
     # MACdb resolves its trait on the evidence side, so the subject needs the
     # same resolution join as the object.
     extraction="extract_macdb.sql",
+    set_id_prefix="MACDB:",
 )
 
 CLASSYFIRE = ResourceRule(

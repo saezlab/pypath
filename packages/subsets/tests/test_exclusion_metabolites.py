@@ -9,7 +9,8 @@ import psycopg2
 from psycopg2 import sql
 import pytest
 
-from omnipath_subsets.exclusion_metabolites import build, resolve, seeds, version
+from omnipath_subsets.exclusion_metabolites import resolve, seeds, version
+import exclusion_shim
 
 CLASSES = ("ions", "atoms", "small_molecules", "xenobiotics", "cofactors", "cofactors_extended")
 SOURCES = ("metaproviz_seed", "project_seed", "override_add", "chebi_hierarchy", "chebi_role")
@@ -368,128 +369,6 @@ def core_list_size():
 
 
 # ---------------------------------------------------------------------------
-# The tables
-
-
-def columns(cur, table):
-    cur.execute(
-        "SELECT column_name, data_type, is_nullable FROM information_schema.columns "
-        "WHERE table_schema = current_schema() AND table_name = %s ORDER BY ordinal_position",
-        [table],
-    )
-    return cur.fetchall()
-
-
-def test_the_product_creates_both_tables_with_the_contracted_shape(release):
-    connection, schema = release
-    build.ensure_tables(connection, schema=schema)
-    cur = cursor_of(release)
-    assert columns(cur, "exclusion_metabolite") == [
-        ("entity_id", "uuid", "NO"),
-        ("exclusion_class", "text", "NO"),
-        ("assignment_source", "text", "NO"),
-        ("origin", "text", "NO"),
-        ("match_kind", "text", "NO"),
-        ("seed_namespace", "text", "YES"),
-        ("seed_identifier", "text", "YES"),
-        ("evidence", "text", "NO"),
-        ("via_entity_id", "uuid", "YES"),
-        ("list_version", "text", "NO"),
-        ("build_id", "text", "NO"),
-    ]
-    assert columns(cur, "exclusion_metabolite_report") == [
-        ("kind", "text", "NO"),
-        ("exclusion_class", "text", "YES"),
-        ("namespace", "text", "YES"),
-        ("resolved", "integer", "YES"),
-        ("fallback_only", "integer", "YES"),
-        ("unresolved", "integer", "YES"),
-        ("detail", "jsonb", "YES"),
-        ("build_id", "text", "NO"),
-    ]
-    cur.execute(
-        "SELECT a.attname FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid "
-        "AND a.attnum = ANY(i.indkey) WHERE i.indrelid = 'exclusion_metabolite'::regclass "
-        "AND i.indisprimary ORDER BY array_position(i.indkey::int[], a.attnum::int)"
-    )
-    assert [row[0] for row in cur.fetchall()] == [
-        "entity_id",
-        "exclusion_class",
-        "assignment_source",
-    ]
-    cur.execute(
-        "SELECT pg_get_indexdef(indexrelid) FROM pg_index "
-        "WHERE indrelid = 'exclusion_metabolite'::regclass AND NOT indisprimary"
-    )
-    definitions = [row[0] for row in cur.fetchall()]
-    assert any("(exclusion_class, entity_id)" in definition for definition in definitions)
-
-
-ROW = (
-    "INSERT INTO exclusion_metabolite(entity_id, exclusion_class, assignment_source, origin, "
-    "match_kind, evidence, via_entity_id, list_version, build_id) "
-    "VALUES (%s, %s, %s, %s, %s, 'e', %s, 'v', 'b')"
-)
-
-
-@pytest.mark.parametrize(
-    "row",
-    [
-        (WATER, "lipids", "metaproviz_seed", "curated", "entity", None),
-        (WATER, "ions", "somewhere", "curated", "entity", None),
-        (WATER, "ions", "metaproviz_seed", "invented", "entity", None),
-        (WATER, "ions", "metaproviz_seed", "curated", "fuzzy", None),
-        (WATER, "ions", "metaproviz_seed", "curated", "structure_key", None),
-    ],
-)
-def test_the_table_refuses_values_outside_its_vocabularies(release, row):
-    connection, schema = release
-    build.ensure_tables(connection, schema=schema)
-    cur = cursor_of(release)
-    with pytest.raises(psycopg2.errors.CheckViolation):
-        cur.execute(ROW, row)
-
-
-def test_the_table_accepts_every_class_and_a_key_row_with_its_member(release):
-    connection, schema = release
-    build.ensure_tables(connection, schema=schema)
-    cur = cursor_of(release)
-    for exclusion_class in CLASSES:
-        cur.execute(ROW, (WATER, exclusion_class, "metaproviz_seed", "curated", "entity", None))
-    cur.execute(ROW, (PROTON, "ions", "chebi_hierarchy", "derived", "structure_key", WATER))
-    with pytest.raises(psycopg2.errors.UniqueViolation):
-        cur.execute(ROW, (WATER, "ions", "metaproviz_seed", "curated", "entity", None))
-
-
-def test_applying_the_table_definition_twice_changes_nothing(release):
-    connection, schema = release
-    build.ensure_tables(connection, schema=schema)
-    cur = cursor_of(release)
-    cur.execute(ROW, (WATER, "ions", "metaproviz_seed", "curated", "entity", None))
-    connection.commit()
-    before = columns(cur, "exclusion_metabolite")
-    build.ensure_tables(connection, schema=schema)
-    cur = cursor_of(release)
-    assert columns(cur, "exclusion_metabolite") == before
-    cur.execute("SELECT count(*) FROM exclusion_metabolite")
-    assert cur.fetchone()[0] == 1
-
-
-def test_the_review_view_lists_members_with_their_label_and_identifiers(release):
-    connection, schema = release
-    build.ensure_tables(connection, schema=schema)
-    cur = cursor_of(release)
-    cur.execute(ROW, (WATER, "small_molecules", "metaproviz_seed", "curated", "entity", None))
-    cur.execute(
-        "SELECT exclusion_class, label, chebi, kegg, assignment_source, origin, match_kind "
-        "FROM exclusion_metabolite_members"
-    )
-    assert cur.fetchall() == [
-        ("small_molecules", "water", "15377", "C00001", "metaproviz_seed", "curated", "entity")
-    ]
-
-
-# ---------------------------------------------------------------------------
 # Resolution
 
 
@@ -506,7 +385,7 @@ def seed(exclusion_class, namespace, identifier):
 def resolved(release, *wanted):
     cur = cursor_of(release)
     return {
-        (r.seed.namespace, r.seed.identifier): r for r in resolve.resolve_seeds(cur, list(wanted))
+        (r.seed.namespace, r.seed.identifier): r for r in exclusion_shim.resolve_seeds(cur, list(wanted))
     }
 
 
@@ -569,21 +448,15 @@ def test_a_seed_that_finds_nothing_is_unresolved_and_not_dropped(release):
     assert found[("kegg", "C99999")].fallback_only is False
 
 
-def test_resolution_works_without_a_normalized_value_column(release):
-    connection, _ = release
-    cur = cursor_of(release)
-    cur.execute("ALTER TABLE identifier_evidence DROP COLUMN value_normalized")
-    found = resolved(release, seed("ions", "chebi", "CHEBI:15378"))
-    assert found[("chebi", "CHEBI:15378")].entity_ids == (PROTON,)
-
-
 # ---------------------------------------------------------------------------
 # The curated floor
 
 
 def built(release, directory=None):
     connection, schema = release
-    stats = build.build_exclusion_metabolites(connection, schema=schema, seed_directory=directory)
+    stats = exclusion_shim.build_exclusion_metabolites(
+        connection, schema=schema, seed_directory=directory
+    )
     cur = cursor_of(release)
     return stats, cur
 
@@ -615,11 +488,11 @@ def test_the_build_publishes_one_row_per_resolved_curated_seed(release):
 
 
 def test_every_row_carries_the_list_version_and_the_release_digest(release):
-    built(release)
+    stats, _ = built(release)
     cur = cursor_of(release)
     cur.execute("SELECT DISTINCT list_version, build_id FROM exclusion_metabolite")
     [(list_version, build_id)] = cur.fetchall()
-    assert build_id == FIXTURE_BUILD
+    assert build_id == stats["build_id"] and len(build_id) == 64
     assert list_version
 
 
@@ -681,22 +554,13 @@ def test_a_removed_seed_leaves_no_stale_row(release, tmp_path):
 
 def test_the_build_returns_counts_for_the_build_record(release):
     stats, _ = built(release)
-    assert stats["build_id"] == FIXTURE_BUILD
+    assert len(stats["build_id"]) == 64
     assert stats["rows"] == 10
     assert stats["classes"]["small_molecules"] == 5
     assert stats["classes"]["ions"] == 4
     assert stats["classes"]["atoms"] == 1
     assert stats["classes"]["xenobiotics"] == 0
     assert stats["unresolved_seeds"] == 279 + 185 + 12 + 12 + core_list_size()
-
-
-def test_the_runner_dispatches_the_product_and_reports_its_counts(release):
-    from omnipath_subsets import scientific
-
-    connection, schema = release
-    outcome = scientific.run_product(connection, "exclusion_metabolites", schema=schema)
-    assert outcome["result"]["rows"] == 10
-    assert outcome["result"]["build_id"] == FIXTURE_BUILD
 
 
 # ---------------------------------------------------------------------------
@@ -986,7 +850,7 @@ def test_every_resolvable_curated_seed_has_a_row_and_each_other_is_only_in_the_r
     loaded = seeds.read_seeds().seeds
     found = {
         (r.seed.exclusion_class, e)
-        for r in resolve.resolve_seeds(cur, loaded)
+        for r in exclusion_shim.resolve_seeds(cur, loaded)
         for e in r.entity_ids
     }
     cur.execute(
@@ -994,7 +858,7 @@ def test_every_resolvable_curated_seed_has_a_row_and_each_other_is_only_in_the_r
         "WHERE assignment_source = 'metaproviz_seed' AND match_kind = 'entity'"
     )
     assert {(c, e) for c, e in cur.fetchall()} == found
-    unresolved = [r.seed for r in resolve.resolve_seeds(cur, loaded) if not r.resolved]
+    unresolved = [r.seed for r in exclusion_shim.resolve_seeds(cur, loaded) if not r.resolved]
     assert unresolved
     cur.execute(
         "SELECT sum(unresolved) FROM exclusion_metabolite_report WHERE kind = 'seed_coverage'"

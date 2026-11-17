@@ -1,0 +1,240 @@
+{
+ "members": [
+  [
+   "cofactors_extended",
+   "00000000-0000-0000-0000-00000000003c",
+   "chebi_role",
+   "derived",
+   "entity",
+   null,
+   null,
+   "has_chemical_role CHEBI:23357",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ],
+  [
+   "cofactors_extended",
+   "00000000-0000-0000-0000-00000000003d",
+   "chebi_role",
+   "derived",
+   "entity",
+   null,
+   null,
+   "has_chemical_role a role below CHEBI:23357 at depth 1",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ],
+  [
+   "cofactors_extended",
+   "00000000-0000-0000-0000-00000000003e",
+   "chebi_role",
+   "derived",
+   "entity",
+   null,
+   null,
+   "has_chemical_role CHEBI:23357",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ],
+  [
+   "cofactors_extended",
+   "00000000-0000-0000-0000-00000000003f",
+   "chebi_role",
+   "derived",
+   "entity",
+   null,
+   null,
+   "has_chemical_role CHEBI:23357",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ],
+  [
+   "cofactors_extended",
+   "00000000-0000-0000-0000-000000000040",
+   "chebi_role",
+   "derived",
+   "entity",
+   null,
+   null,
+   "has_chemical_role CHEBI:23357",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ],
+  [
+   "cofactors_extended",
+   "00000000-0000-0000-0000-000000000042",
+   "chebi_role",
+   "derived",
+   "entity",
+   null,
+   null,
+   "has_chemical_role CHEBI:23357",
+   null,
+   "uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5"
+  ]
+ ],
+ "report": [
+  [
+   "class_size",
+   "atoms",
+   null,
+   0,
+   null,
+   null,
+   "{\"by_source\": {}, \"entity_matches\": 0, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "cofactors",
+   null,
+   0,
+   null,
+   null,
+   "{\"by_source\": {}, \"entity_matches\": 0, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "cofactors_extended",
+   null,
+   6,
+   null,
+   null,
+   "{\"by_source\": {\"chebi_role\": 6}, \"entity_matches\": 6, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "ions",
+   null,
+   0,
+   null,
+   null,
+   "{\"by_source\": {}, \"entity_matches\": 0, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "small_molecules",
+   null,
+   0,
+   null,
+   null,
+   "{\"by_source\": {}, \"entity_matches\": 0, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "xenobiotics",
+   null,
+   0,
+   null,
+   null,
+   "{\"by_source\": {}, \"entity_matches\": 0, \"structure_key_matches\": 0}"
+  ],
+  [
+   "no_key",
+   "atoms",
+   null,
+   0,
+   null,
+   null,
+   "{\"labels\": [], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "cofactors",
+   null,
+   0,
+   null,
+   null,
+   "{\"labels\": [], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "cofactors_extended",
+   null,
+   6,
+   null,
+   null,
+   "{\"labels\": [\"AMP\", \"ATP\", \"NAD\", \"NADH\", \"NADP\", \"NADPH\"], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "ions",
+   null,
+   0,
+   null,
+   null,
+   "{\"labels\": [], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "small_molecules",
+   null,
+   0,
+   null,
+   null,
+   "{\"labels\": [], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "xenobiotics",
+   null,
+   0,
+   null,
+   null,
+   "{\"labels\": [], \"truncated\": false}"
+  ],
+  [
+   "seed_coverage",
+   "atoms",
+   "chebi",
+   1,
+   0,
+   0,
+   "{\"fallback_only\": [], \"unresolved\": []}"
+  ],
+  [
+   "seed_coverage",
+   "cofactors",
+   "chebi",
+   0,
+   0,
+   1,
+   "{\"fallback_only\": [], \"unresolved\": [\"CHEBI:57540\"]}"
+  ],
+  [
+   "seed_coverage",
+   "ions",
+   "chebi",
+   0,
+   0,
+   1,
+   "{\"fallback_only\": [], \"unresolved\": [\"CHEBI:29101\"]}"
+  ],
+  [
+   "seed_coverage",
+   "ions",
+   "kegg",
+   0,
+   0,
+   2,
+   "{\"fallback_only\": [], \"unresolved\": [\"C00076\", \"C00238\"]}"
+  ],
+  [
+   "uncommitted_inputs",
+   null,
+   null,
+   null,
+   null,
+   null,
+   "{\"files\": [\"metaproviz_seed.yaml\", \"project_cofactors.yaml\", \"overrides.yaml\"], \"list_version\": \"uncommitted:65585c329b0ac6f2c98dd037e981083e7669b3cae013d3dc4b3d54570c9071c5\"}"
+  ],
+  [
+   "veto_applied",
+   "atoms",
+   "chebi",
+   1,
+   null,
+   null,
+   "{\"entities\": [\"00000000-0000-0000-0000-000000000005\"], \"identifier\": \"CHEBI:18248\", \"note\": \"a curator removes it\", \"removed\": [{\"assignment_source\": \"metaproviz_seed\", \"entity\": \"00000000-0000-0000-0000-000000000005\", \"match_kind\": \"entity\"}], \"resolved\": true}"
+  ]
+ ]
+}

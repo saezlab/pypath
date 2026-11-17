@@ -1,0 +1,513 @@
+{
+ "members": [
+  [
+   "atoms",
+   "00000000-0000-0000-0000-000000000005",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:33250 at depth 1",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "atoms",
+   "00000000-0000-0000-0000-000000000005",
+   "metaproviz_seed",
+   "curated",
+   "entity",
+   "chebi",
+   "CHEBI:18248",
+   "metaproviz_seed.yaml: atoms chebi CHEBI:18248",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "atoms",
+   "00000000-0000-0000-0000-000000000017",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "the root CHEBI:33250",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "atoms",
+   "00000000-0000-0000-0000-000000000017",
+   "metaproviz_seed",
+   "curated",
+   "entity",
+   "chebi",
+   "CHEBI:33250",
+   "metaproviz_seed.yaml: atoms chebi CHEBI:33250",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "atoms",
+   "00000000-0000-0000-0000-000000000018",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:33250 at depth 1",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "atoms",
+   "00000000-0000-0000-0000-00000000001b",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:33250 at depth 1",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000001",
+   "metaproviz_seed",
+   "curated",
+   "entity",
+   "kegg",
+   "C00001",
+   "metaproviz_seed.yaml: ions kegg C00001",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000002",
+   "metaproviz_seed",
+   "curated",
+   "entity",
+   "kegg",
+   "C00011",
+   "metaproviz_seed.yaml: ions kegg C00011",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000003",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:24867 at depth 1",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000003",
+   "metaproviz_seed",
+   "curated",
+   "entity",
+   "chebi",
+   "CHEBI:15378",
+   "metaproviz_seed.yaml: ions chebi CHEBI:15378",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000004",
+   "metaproviz_seed",
+   "curated",
+   "entity",
+   "chebi",
+   "CHEBI:17051",
+   "metaproviz_seed.yaml: ions chebi CHEBI:17051",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000014",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "the root CHEBI:24867",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000014",
+   "metaproviz_seed",
+   "curated",
+   "entity",
+   "chebi",
+   "CHEBI:24867",
+   "metaproviz_seed.yaml: ions chebi CHEBI:24867",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000015",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:24867 at depth 1",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-000000000016",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:24867 at depth 2",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-00000000001b",
+   "chebi_hierarchy",
+   "derived",
+   "entity",
+   null,
+   null,
+   "subclass_of descendant of CHEBI:24867 at depth 1",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-00000000001e",
+   "metaproviz_seed",
+   "curated",
+   "structure_key",
+   null,
+   null,
+   "shares structure key KEYWATER",
+   "00000000-0000-0000-0000-000000000001",
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "ions",
+   "00000000-0000-0000-0000-00000000001f",
+   "metaproviz_seed",
+   "curated",
+   "structure_key",
+   null,
+   null,
+   "shares structure key KEYWATER",
+   "00000000-0000-0000-0000-000000000001",
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "small_molecules",
+   "00000000-0000-0000-0000-000000000001",
+   "metaproviz_seed",
+   "curated",
+   "entity",
+   "kegg",
+   "C00001",
+   "metaproviz_seed.yaml: small_molecules kegg C00001",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "small_molecules",
+   "00000000-0000-0000-0000-000000000002",
+   "metaproviz_seed",
+   "curated",
+   "entity",
+   "kegg",
+   "C00011",
+   "metaproviz_seed.yaml: small_molecules kegg C00011",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "small_molecules",
+   "00000000-0000-0000-0000-000000000007",
+   "metaproviz_seed",
+   "curated",
+   "entity",
+   "kegg",
+   "C00013",
+   "metaproviz_seed.yaml: small_molecules kegg C00013",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "small_molecules",
+   "00000000-0000-0000-0000-000000000008",
+   "metaproviz_seed",
+   "curated",
+   "entity",
+   "kegg",
+   "C00027",
+   "metaproviz_seed.yaml: small_molecules kegg C00027",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "small_molecules",
+   "00000000-0000-0000-0000-000000000009",
+   "metaproviz_seed",
+   "curated",
+   "entity",
+   "kegg",
+   "C00027",
+   "metaproviz_seed.yaml: small_molecules kegg C00027",
+   null,
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "small_molecules",
+   "00000000-0000-0000-0000-00000000001e",
+   "metaproviz_seed",
+   "curated",
+   "structure_key",
+   null,
+   null,
+   "shares structure key KEYWATER",
+   "00000000-0000-0000-0000-000000000001",
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ],
+  [
+   "small_molecules",
+   "00000000-0000-0000-0000-00000000001f",
+   "metaproviz_seed",
+   "curated",
+   "structure_key",
+   null,
+   null,
+   "shares structure key KEYWATER",
+   "00000000-0000-0000-0000-000000000001",
+   "2a30a2d292e0449bbf655adf98a40afe28876589"
+  ]
+ ],
+ "report": [
+  [
+   "class_size",
+   "atoms",
+   null,
+   4,
+   null,
+   null,
+   "{\"by_source\": {\"chebi_hierarchy\": 4, \"metaproviz_seed\": 2}, \"entity_matches\": 4, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "cofactors",
+   null,
+   0,
+   null,
+   null,
+   "{\"by_source\": {}, \"entity_matches\": 0, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "cofactors_extended",
+   null,
+   0,
+   null,
+   null,
+   "{\"by_source\": {}, \"entity_matches\": 0, \"structure_key_matches\": 0}"
+  ],
+  [
+   "class_size",
+   "ions",
+   null,
+   10,
+   null,
+   null,
+   "{\"by_source\": {\"chebi_hierarchy\": 5, \"metaproviz_seed\": 7}, \"entity_matches\": 8, \"structure_key_matches\": 2}"
+  ],
+  [
+   "class_size",
+   "small_molecules",
+   null,
+   7,
+   null,
+   null,
+   "{\"by_source\": {\"metaproviz_seed\": 7}, \"entity_matches\": 5, \"structure_key_matches\": 2}"
+  ],
+  [
+   "class_size",
+   "xenobiotics",
+   null,
+   0,
+   null,
+   null,
+   "{\"by_source\": {}, \"entity_matches\": 0, \"structure_key_matches\": 0}"
+  ],
+  [
+   "derived_not_seeded",
+   "atoms",
+   null,
+   2,
+   null,
+   null,
+   "{\"entities\": [\"00000000-0000-0000-0000-000000000018\", \"00000000-0000-0000-0000-00000000001b\"], \"labels\": [\"a child atom\", \"an ion that is also an atom class\"], \"truncated\": false}"
+  ],
+  [
+   "derived_not_seeded",
+   "ions",
+   null,
+   3,
+   null,
+   null,
+   "{\"entities\": [\"00000000-0000-0000-0000-000000000015\", \"00000000-0000-0000-0000-000000000016\", \"00000000-0000-0000-0000-00000000001b\"], \"labels\": [\"a child ion\", \"a grandchild ion\", \"an ion that is also an atom class\"], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "atoms",
+   null,
+   4,
+   null,
+   null,
+   "{\"labels\": [\"a child atom\", \"an ion that is also an atom class\", \"atom\", \"iron atom\"], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "cofactors",
+   null,
+   0,
+   null,
+   null,
+   "{\"labels\": [], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "cofactors_extended",
+   null,
+   0,
+   null,
+   null,
+   "{\"labels\": [], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "ions",
+   null,
+   6,
+   null,
+   null,
+   "{\"labels\": [\"a child ion\", \"a grandchild ion\", \"an ion that is also an atom class\", \"fluoride\", \"hydron\", \"ion\"], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "small_molecules",
+   null,
+   3,
+   null,
+   null,
+   "{\"labels\": [\"a name-only identity\", \"twin a\", \"twin b\"], \"truncated\": false}"
+  ],
+  [
+   "no_key",
+   "xenobiotics",
+   null,
+   0,
+   null,
+   null,
+   "{\"labels\": [], \"truncated\": false}"
+  ],
+  [
+   "seed_coverage",
+   "atoms",
+   "chebi",
+   2,
+   0,
+   278,
+   "{\"fallback_only\": [], \"unresolved\": [\"CHEBI:137980\", \"CHEBI:155827\", \"CHEBI:176566\", \"CHEBI:176570\", \"CHEBI:176571\", \"CHEBI:176572\", \"CHEBI:176573\", \"CHEBI:176574\", \"CHEBI:176575\", \"CHEBI:176578\", \"CHEBI:176583\", \"CHEBI:176584\", \"CHEBI:18291\", \"CHEBI:194531\", \"CHEBI:194533\", \"CHEBI:194535\", \"CHEBI:194537\", \"CHEBI:194539\", \"CHEBI:194541\", \"CHEBI:196958\", \"CHEBI:196959\", \"CHEBI:22313\", \"CHEBI:22314\", \"CHEBI:22927\", \"CHEBI:22977\", \"CHEBI:22984\", \"CHEBI:23116\", \"CHEBI:233500\", \"CHEBI:24061\", \"CHEBI:24473\", \"CHEBI:24859\", \"CHEBI:25016\", \"CHEBI:25107\", \"CHEBI:25195\", \"CHEBI:25555\", \"CHEBI:25585\", \"CHEBI:25805\", \"CHEBI:26216\", \"CHEBI:26708\", \"CHEBI:26833\", \"CHEBI:27007\", \"CHEBI:27081\", \"CHEBI:27214\", \"CHEBI:27363\", \"CHEBI:27560\", \"CHEBI:27563\", \"CHEBI:27568\", \"CHEBI:27573\", \"CHEBI:27594\", \"CHEBI:27638\", \"CHEBI:27698\", \"CHEBI:27998\", \"CHEBI:28073\", \"CHEBI:28112\", \"CHEBI:28659\", \"CHEBI:28685\", \"CHEBI:28694\", \"CHEBI:28984\", \"CHEBI:29236\", \"CHEBI:29237\", \"CHEBI:29238\", \"CHEBI:29287\", \"CHEBI:30145\", \"CHEBI:30217\", \"CHEBI:30218\", \"CHEBI:30219\", \"CHEBI:30415\", \"CHEBI:30430\", \"CHEBI:30440\", \"CHEBI:30441\", \"CHEBI:30452\", \"CHEBI:30501\", \"CHEBI:30512\", \"CHEBI:30513\", \"CHEBI:30514\", \"CHEBI:30682\", \"CHEBI:30687\", \"CHEBI:32594\", \"CHEBI:32999\", \"CHEBI:33300\", \"CHEBI:33301\", \"CHEBI:33303\", \"CHEBI:33306\", \"CHEBI:33309\", \"CHEBI:33310\", \"CHEBI:33313\", \"CHEBI:33314\", \"CHEBI:33317\", \"CHEBI:33318\", \"CHEBI:33319\", \"CHEBI:33320\", \"CHEBI:33321\", \"CHEBI:33322\", \"CHEBI:33323\", \"CHEBI:33324\", \"CHEBI:33325\", \"CHEBI:33330\", \"CHEBI:33331\", \"CHEBI:33335\", \"CHEBI:33336\", \"CHEBI:33337\", \"CHEBI:33340\", \"CHEBI:33341\", \"CHEBI:33342\", \"CHEBI:33343\", \"CHEBI:33344\", \"CHEBI:33345\", \"CHEBI:33346\", \"CHEBI:33347\", \"CHEBI:33348\", \"CHEBI:33349\", \"CHEBI:33350\", \"CHEBI:33351\", \"CHEBI:33352\", \"CHEBI:33353\", \"CHEBI:33355\", \"CHEBI:33356\", \"CHEBI:33357\", \"CHEBI:33358\", \"CHEBI:33359\", \"CHEBI:33361\", \"CHEBI:33362\", \"CHEBI:33363\", \"CHEBI:33364\", \"CHEBI:33365\", \"CHEBI:33366\", \"CHEBI:33367\", \"CHEBI:33368\", \"CHEBI:33369\", \"CHEBI:33371\", \"CHEBI:33372\", \"CHEBI:33373\", \"CHEBI:33374\", \"CHEBI:33375\", \"CHEBI:33376\", \"CHEBI:33377\", \"CHEBI:33379\", \"CHEBI:33380\", \"CHEBI:33381\", \"CHEBI:33382\", \"CHEBI:33385\", \"CHEBI:33386\", \"CHEBI:33387\", \"CHEBI:33388\", \"CHEBI:33389\", \"CHEBI:33390\", \"CHEBI:33391\", \"CHEBI:33392\", \"CHEBI:33393\", \"CHEBI:33394\", \"CHEBI:33395\", \"CHEBI:33396\", \"CHEBI:33397\", \"CHEBI:33491\", \"CHEBI:33492\", \"CHEBI:33493\", \"CHEBI:33517\", \"CHEBI:33521\", \"CHEBI:33559\", \"CHEBI:33560\", \"CHEBI:33561\", \"CHEBI:33562\", \"CHEBI:33815\", \"CHEBI:33818\", \"CHEBI:33819\", \"CHEBI:36927\", \"CHEBI:36928\", \"CHEBI:36929\", \"CHEBI:36930\", \"CHEBI:36931\", \"CHEBI:36932\", \"CHEBI:36933\", \"CHEBI:36934\", \"CHEBI:36935\", \"CHEBI:36936\", \"CHEBI:36937\", \"CHEBI:36938\", \"CHEBI:36939\", \"CHEBI:36940\", \"CHEBI:37003\", \"CHEBI:37004\", \"CHEBI:37340\", \"CHEBI:37341\", \"CHEBI:37342\", \"CHEBI:37343\", \"CHEBI:37344\", \"CHEBI:37345\", \"CHEBI:37346\", \"CHEBI:37347\", \"CHEBI:37348\", \"CHEBI:37350\", \"CHEBI:37351\", \"CHEBI:37352\", \"CHEBI:37353\", \"CHEBI:37354\", \"CHEBI:37355\", \"CHEBI:37356\", \"CHEBI:37357\", \"CHEBI:37358\", \"CHEBI:37359\", \"CHEBI:37360\", \"CHEBI:37361\", \"CHEBI:37362\", \"CHEBI:37363\", \"CHEBI:37364\", \"CHEBI:37365\", \"CHEBI:37366\", \"CHEBI:37367\", \"CHEBI:37368\", \"CHEBI:37369\", \"CHEBI:37802\", \"CHEBI:37803\", \"CHEBI:37804\", \"CHEBI:37805\", \"CHEBI:37968\", \"CHEBI:37969\", \"CHEBI:37970\", \"CHEBI:37971\", \"CHEBI:37972\", \"CHEBI:37973\", \"CHEBI:37974\", \"CHEBI:37975\", \"CHEBI:37976\", \"CHEBI:37977\", \"CHEBI:37978\", \"CHEBI:37979\", \"CHEBI:37980\", \"CHEBI:37981\", \"CHEBI:37982\", \"CHEBI:37983\", \"CHEBI:37984\", \"CHEBI:37985\", \"CHEBI:49475\", \"CHEBI:49631\", \"CHEBI:49637\", \"CHEBI:49648\", \"CHEBI:49666\", \"CHEBI:49696\", \"CHEBI:49828\", \"CHEBI:49882\", \"CHEBI:49957\", \"CHEBI:50076\", \"CHEBI:52230\", \"CHEBI:52231\", \"CHEBI:52232\", \"CHEBI:52233\", \"CHEBI:52234\", \"CHEBI:52235\", \"CHEBI:52451\", \"CHEBI:52452\", \"CHEBI:52453\", \"CHEBI:52457\", \"CHEBI:52458\", \"CHEBI:52459\", \"CHEBI:52460\", \"CHEBI:52462\", \"CHEBI:52619\", \"CHEBI:52620\", \"CHEBI:52621\", \"CHEBI:52622\", \"CHEBI:52623\", \"CHEBI:52624\", \"CHEBI:52626\", \"CHEBI:52627\", \"CHEBI:52631\", \"CHEBI:52632\", \"CHEBI:52633\", \"CHEBI:52634\", \"CHEBI:52635\", \"CHEBI:52636\", \"CHEBI:52637\", \"CHEBI:52743\", \"CHEBI:52758\", \"CHEBI:52763\", \"CHEBI:5631\", \"CHEBI:77014\", \"CHEBI:82623\", \"CHEBI:88184\"]}"
+  ],
+  [
+   "seed_coverage",
+   "cofactors",
+   "chebi",
+   0,
+   0,
+   29,
+   "{\"fallback_only\": [], \"unresolved\": [\"CHEBI:15846\", \"CHEBI:16908\", \"CHEBI:18009\", \"CHEBI:16474\", \"CHEBI:15422\", \"CHEBI:16761\", \"CHEBI:16027\", \"CHEBI:15346\", \"CHEBI:57540\", \"CHEBI:57945\", \"CHEBI:58349\", \"CHEBI:57783\", \"CHEBI:30616\", \"CHEBI:456216\", \"CHEBI:456215\", \"CHEBI:57287\", \"CHEBI:15996\", \"CHEBI:37565\", \"CHEBI:17552\", \"CHEBI:17345\", \"CHEBI:15713\", \"CHEBI:17659\", \"CHEBI:16695\", \"CHEBI:17677\", \"CHEBI:17239\", \"CHEBI:17361\", \"CHEBI:16238\", \"CHEBI:17877\", \"CHEBI:17621\"]}"
+  ],
+  [
+   "seed_coverage",
+   "ions",
+   "chebi",
+   3,
+   0,
+   184,
+   "{\"fallback_only\": [], \"unresolved\": [\"CHEBI:149691\", \"CHEBI:149692\", \"CHEBI:15858\", \"CHEBI:16042\", \"CHEBI:16382\", \"CHEBI:16793\", \"CHEBI:17996\", \"CHEBI:18420\", \"CHEBI:23336\", \"CHEBI:23378\", \"CHEBI:23905\", \"CHEBI:23906\", \"CHEBI:24636\", \"CHEBI:24875\", \"CHEBI:25155\", \"CHEBI:25158\", \"CHEBI:25197\", \"CHEBI:25198\", \"CHEBI:25213\", \"CHEBI:25414\", \"CHEBI:25430\", \"CHEBI:25516\", \"CHEBI:26937\", \"CHEBI:27153\", \"CHEBI:27365\", \"CHEBI:29033\", \"CHEBI:29034\", \"CHEBI:29035\", \"CHEBI:29036\", \"CHEBI:29037\", \"CHEBI:29041\", \"CHEBI:29101\", \"CHEBI:29102\", \"CHEBI:29103\", \"CHEBI:29104\", \"CHEBI:29105\", \"CHEBI:29108\", \"CHEBI:29233\", \"CHEBI:29234\", \"CHEBI:29352\", \"CHEBI:29435\", \"CHEBI:29436\", \"CHEBI:29832\", \"CHEBI:30030\", \"CHEBI:30120\", \"CHEBI:30144\", \"CHEBI:30150\", \"CHEBI:30151\", \"CHEBI:30165\", \"CHEBI:30166\", \"CHEBI:30168\", \"CHEBI:30180\", \"CHEBI:30216\", \"CHEBI:30220\", \"CHEBI:30240\", \"CHEBI:30399\", \"CHEBI:30412\", \"CHEBI:30417\", \"CHEBI:30433\", \"CHEBI:30439\", \"CHEBI:30475\", \"CHEBI:30476\", \"CHEBI:30502\", \"CHEBI:30503\", \"CHEBI:30511\", \"CHEBI:30516\", \"CHEBI:30517\", \"CHEBI:30549\", \"CHEBI:30550\", \"CHEBI:30556\", \"CHEBI:30582\", \"CHEBI:30584\", \"CHEBI:30585\", \"CHEBI:30685\", \"CHEBI:30686\", \"CHEBI:30691\", \"CHEBI:32991\", \"CHEBI:32992\", \"CHEBI:32993\", \"CHEBI:32994\", \"CHEBI:32995\", \"CHEBI:33002\", \"CHEBI:33003\", \"CHEBI:33004\", \"CHEBI:33005\", \"CHEBI:33006\", \"CHEBI:33007\", \"CHEBI:33008\", \"CHEBI:33009\", \"CHEBI:33010\", \"CHEBI:33116\", \"CHEBI:33316\", \"CHEBI:33398\", \"CHEBI:33422\", \"CHEBI:33423\", \"CHEBI:33429\", \"CHEBI:33467\", \"CHEBI:33469\", \"CHEBI:33496\", \"CHEBI:33500\", \"CHEBI:33502\", \"CHEBI:33503\", \"CHEBI:33504\", \"CHEBI:33513\", \"CHEBI:33515\", \"CHEBI:33516\", \"CHEBI:33974\", \"CHEBI:35104\", \"CHEBI:35172\", \"CHEBI:37130\", \"CHEBI:37132\", \"CHEBI:37136\", \"CHEBI:37137\", \"CHEBI:37239\", \"CHEBI:37254\", \"CHEBI:37255\", \"CHEBI:37264\", \"CHEBI:37286\", \"CHEBI:37294\", \"CHEBI:37317\", \"CHEBI:39099\", \"CHEBI:39123\", \"CHEBI:39124\", \"CHEBI:39125\", \"CHEBI:39127\", \"CHEBI:39129\", \"CHEBI:39132\", \"CHEBI:48775\", \"CHEBI:48782\", \"CHEBI:48828\", \"CHEBI:49414\", \"CHEBI:49415\", \"CHEBI:49423\", \"CHEBI:49446\", \"CHEBI:49468\", \"CHEBI:49470\", \"CHEBI:49482\", \"CHEBI:49496\", \"CHEBI:49544\", \"CHEBI:49547\", \"CHEBI:49552\", \"CHEBI:49588\", \"CHEBI:49591\", \"CHEBI:49618\", \"CHEBI:49650\", \"CHEBI:49664\", \"CHEBI:49701\", \"CHEBI:49704\", \"CHEBI:49713\", \"CHEBI:49746\", \"CHEBI:49786\", \"CHEBI:49789\", \"CHEBI:49807\", \"CHEBI:49812\", \"CHEBI:49832\", \"CHEBI:49836\", \"CHEBI:49847\", \"CHEBI:49862\", \"CHEBI:49867\", \"CHEBI:49890\", \"CHEBI:49902\", \"CHEBI:49920\", \"CHEBI:49948\", \"CHEBI:49955\", \"CHEBI:49962\", \"CHEBI:49978\", \"CHEBI:49980\", \"CHEBI:50086\", \"CHEBI:50236\", \"CHEBI:50237\", \"CHEBI:60240\", \"CHEBI:60252\", \"CHEBI:60253\", \"CHEBI:60401\", \"CHEBI:60871\", \"CHEBI:63056\", \"CHEBI:63062\", \"CHEBI:63063\", \"CHEBI:63526\", \"CHEBI:84043\", \"CHEBI:85033\", \"CHEBI:85544\", \"CHEBI:85545\", \"CHEBI:88186\"]}"
+  ],
+  [
+   "seed_coverage",
+   "ions",
+   "kegg",
+   2,
+   0,
+   12,
+   "{\"fallback_only\": [], \"unresolved\": [\"C00076\", \"C00238\", \"C01330\", \"C00080\", \"C00698\", \"C00162\", \"C00704\", \"C00070\", \"C14818\", \"C00038\", \"C00291\", \"C01342\"]}"
+  ],
+  [
+   "seed_coverage",
+   "small_molecules",
+   "kegg",
+   4,
+   1,
+   12,
+   "{\"fallback_only\": [\"C00013\"], \"unresolved\": [\"C00533\", \"C00704\", \"C16844\", \"C00014\", \"C00288\", \"C00007\", \"C22381\", \"C00088\", \"C00244\", \"C00282\", \"C01322\", \"C00703\"]}"
+  ],
+  [
+   "seed_not_derived",
+   "atoms",
+   null,
+   0,
+   null,
+   null,
+   "{\"entities\": [], \"identifiers\": []}"
+  ],
+  [
+   "seed_not_derived",
+   "ions",
+   null,
+   3,
+   null,
+   null,
+   "{\"entities\": [\"00000000-0000-0000-0000-000000000001\", \"00000000-0000-0000-0000-000000000002\", \"00000000-0000-0000-0000-000000000004\"], \"identifiers\": [\"C00001\", \"C00011\", \"CHEBI:17051\"]}"
+  ],
+  [
+   "shared_key",
+   "ions",
+   null,
+   1,
+   null,
+   null,
+   "{\"keys\": [{\"key\": \"KEYWATER\", \"labels\": [\"a water variant\", \"another water variant\"], \"via\": \"00000000-0000-0000-0000-000000000001\"}], \"truncated\": false}"
+  ],
+  [
+   "shared_key",
+   "small_molecules",
+   null,
+   1,
+   null,
+   null,
+   "{\"keys\": [{\"key\": \"KEYWATER\", \"labels\": [\"a water variant\", \"another water variant\"], \"via\": \"00000000-0000-0000-0000-000000000001\"}], \"truncated\": false}"
+  ]
+ ]
+}

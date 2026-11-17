@@ -1,7 +1,7 @@
 """COSMOS reads the exclusion table; it is not changed by it."""
 
 from omnipath_subsets.cosmos import build, translate
-from omnipath_subsets.exclusion_metabolites.build import _sql_text as exclusion_sql
+from omnipath_postgres.subset_loading import ddl as subset_ddl
 import pytest
 from test_cosmos_gene_reference import product_input  # noqa: F401  (fixture)
 
@@ -45,7 +45,7 @@ def publish_exclusion_rows(cur, ids, classes):
     """What a finished exclusion product leaves in the release schema."""
     cur.execute("ALTER TABLE entity ADD COLUMN IF NOT EXISTS label text")
     cur.execute("ALTER TABLE identifier_evidence ADD COLUMN IF NOT EXISTS value_normalized text")
-    cur.execute(exclusion_sql("exclusion_tables.sql"))
+    cur.execute(subset_ddl("exclusion_metabolites"))
     cur.executemany(
         "INSERT INTO exclusion_metabolite(entity_id, exclusion_class, assignment_source, origin,"
         " match_kind, evidence, list_version, build_id)"

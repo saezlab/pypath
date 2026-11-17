@@ -10,6 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "omnipath-core>=0.1.0,<0.2.0",
+    "duckdb>=1.5,<2",
     "psycopg2-binary>=2.9,<3",
 ]
 

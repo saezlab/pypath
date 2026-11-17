@@ -109,13 +109,7 @@ class Cursor:
 def environment(monkeypatch):
     database = Database()
     monkeypatch.setattr(runner.psycopg2, "connect", database.connect)
-    tuning = []
-    monkeypatch.setattr(
-        runner,
-        "_fresh_worker",
-        lambda connection, products: tuning.append((connection, tuple(products))),
-    )
-    return database, tuning
+    return database
 
 
 def builder(*, failed_product=None, failure=RuntimeError, change_identity=False):
@@ -139,7 +133,7 @@ def builder(*, failed_product=None, failure=RuntimeError, change_identity=False)
 def test_checkpoint_callbacks_observe_durable_products_metadata_and_held_importer_lock(
     environment, monkeypatch
 ):
-    database, tuning = environment
+    database = environment
     monkeypatch.setattr(runner, "run_product", builder())
     observed = []
 
@@ -154,20 +148,16 @@ def test_checkpoint_callbacks_observe_durable_products_metadata_and_held_importe
     result = runner.build_subsets(
         "unused",
         "target",
-        products=("metsigdb", "cosmos"),
+        products=("network_views", "cosmos"),
         checkpoint_products=True,
         on_product_committed=committed,
     )
     assert isinstance(result, BuildResult)
     assert result.release == "release" and result.manifest_sha256 == "digest"
-    assert observed == [("metsigdb", ("metsigdb",)), ("cosmos", ("metsigdb", "cosmos"))]
-    assert result.products["metsigdb"]["rows"] == 1
+    assert observed == [("network_views", ("network_views",)), ("cosmos", ("network_views", "cosmos"))]
+    assert result.products["network_views"]["rows"] == 1
     assert len(database.connections) == 3
     assert database.connections[0].statements[0][1] == ("omnipath:main-parquet:target",)
-    assert tuning == [
-        (database.connections[1], ("metsigdb",)),
-        (database.connections[2], ("cosmos",)),
-    ]
     assert all(connection.closed for connection in database.connections)
     assert database.owner is None
 
@@ -176,36 +166,35 @@ def test_checkpoint_callbacks_observe_durable_products_metadata_and_held_importe
 def test_checkpoint_failure_retains_previous_product_and_rolls_back_only_current(
     environment, monkeypatch, failure
 ):
-    database, _ = environment
+    database = environment
     monkeypatch.setattr(runner, "run_product", builder(failed_product="cosmos", failure=failure))
     with pytest.raises(failure, match="deliberate"):
         runner.build_subsets(
-            "unused", "target", products=("metsigdb", "cosmos"), checkpoint_products=True
+            "unused", "target", products=("network_views", "cosmos"), checkpoint_products=True
         )
-    assert database.state["contents"] == {"metsigdb": 1}
-    assert set(database.state["metadata"]) == {"metsigdb"}
+    assert database.state["contents"] == {"network_views": 1}
+    assert set(database.state["metadata"]) == {"network_views"}
     assert "cosmos" not in database.state["phases"]
     assert database.connections[-1].rollbacks == 1
     assert database.owner is None
 
 
 def test_default_mode_rolls_back_all_selected_products_on_later_failure(environment, monkeypatch):
-    database, tuning = environment
+    database = environment
     monkeypatch.setattr(runner, "run_product", builder(failed_product="cosmos"))
     with pytest.raises(RuntimeError, match="deliberate"):
         runner.build_subsets(
-            "unused", "target", products=("metsigdb", "cosmos"), checkpoint_products=False
+            "unused", "target", products=("network_views", "cosmos"), checkpoint_products=False
         )
     assert database.state["contents"] == {}
     assert database.state["metadata"] == {}
     assert set(database.state["phases"]) == {"base", "derived"}
-    assert len(tuning) == 1 and tuning[0][1] == ("metsigdb", "cosmos")
 
 
 def test_callback_failure_preserves_current_commit_and_does_not_start_next_product(
     environment, monkeypatch
 ):
-    database, _ = environment
+    database = environment
     monkeypatch.setattr(runner, "run_product", builder())
 
     def failed(*_):
@@ -215,19 +204,19 @@ def test_callback_failure_preserves_current_commit_and_does_not_start_next_produ
         runner.build_subsets(
             "unused",
             "target",
-            products=("metsigdb", "cosmos"),
+            products=("network_views", "cosmos"),
             checkpoint_products=True,
             on_product_committed=failed,
         )
-    assert database.state["contents"] == {"metsigdb": 1}
-    assert set(database.state["metadata"]) == {"metsigdb"}
+    assert database.state["contents"] == {"network_views": 1}
+    assert set(database.state["metadata"]) == {"network_views"}
     assert len(database.connections) == 2
 
 
 def test_selected_rebuild_updates_only_explicit_product_and_keeps_other_checkpoints(
     environment, monkeypatch
 ):
-    database, _ = environment
+    database = environment
     database.state["contents"] = {
         "exclusion_metabolites": 5,
         "metsigdb": 10,
@@ -254,26 +243,37 @@ def test_selected_rebuild_updates_only_explicit_product_and_keeps_other_checkpoi
     assert database.state["status"] == "complete"
 
 
-def test_release_is_complete_only_when_every_product_has_published(environment, monkeypatch):
-    database, _ = environment
+def test_release_is_complete_only_when_loaded_and_built_products_have_published(
+    environment, monkeypatch
+):
+    database = environment
     monkeypatch.setattr(runner, "run_product", builder())
-    earlier = [product for product in runner.PRODUCTS if product != "exclusion_metabolites"]
-    runner.build_subsets("unused", "target", products=earlier, checkpoint_products=True)
-    assert len(earlier) == len(runner.PRODUCTS) - 1
-    assert database.state["status"] == earlier[-1]
+    runner.build_subsets("unused", "target", products=runner.BUILT_PRODUCTS, checkpoint_products=True)
+    # The subsets are loaded from Parquet, not built here: until they are, it is not complete.
+    assert database.state["status"] == runner.BUILT_PRODUCTS[-1]
 
-    runner.build_subsets(
-        "unused", "target", products=("exclusion_metabolites",), checkpoint_products=True
-    )
+    database.state["phases"].update({product: "loaded" for product in runner.LOADED_PRODUCTS})
+    runner.build_subsets("unused", "target", products=("cosmos",), checkpoint_products=True)
     assert database.state["status"] == "complete"
 
 
-def test_exclusion_metabolites_run_before_the_products_that_may_read_them():
+def test_a_loaded_product_is_not_built_here(environment, monkeypatch):
+    monkeypatch.setattr(runner, "run_product", builder())
+    with pytest.raises(ValueError, match="Products"):
+        runner.build_subsets("unused", "target", products=("metsigdb",), checkpoint_products=True)
+    with pytest.raises(ValueError, match="loaded from the release's Parquet"):
+        runner.run_products(
+            "unused", "target", owner=None, identity=("release", "digest"), products=("metsigdb",)
+        )
+
+
+def test_exclusion_metabolites_come_before_the_products_that_may_read_them():
     assert runner.PRODUCTS[0] == "exclusion_metabolites"
+    assert runner.PRODUCTS == runner.LOADED_PRODUCTS + runner.BUILT_PRODUCTS
 
 
 def test_release_change_between_transactions_stops_before_next_product(environment, monkeypatch):
-    database, _ = environment
+    database = environment
     monkeypatch.setattr(runner, "run_product", builder())
 
     def mutate(*_):
@@ -283,18 +283,18 @@ def test_release_change_between_transactions_stops_before_next_product(environme
         runner.build_subsets(
             "unused",
             "target",
-            products=("metsigdb", "cosmos"),
+            products=("network_views", "cosmos"),
             checkpoint_products=True,
             on_product_committed=mutate,
         )
-    assert database.state["contents"] == {"metsigdb": 1}
-    assert database.state["metadata"]["metsigdb"][:2] == ("release", "digest")
+    assert database.state["contents"] == {"network_views": 1}
+    assert database.state["metadata"]["network_views"][:2] == ("release", "digest")
 
 
 def test_product_mutating_release_identity_rolls_back_its_tables_and_metadata(
     environment, monkeypatch
 ):
-    database, _ = environment
+    database = environment
     monkeypatch.setattr(runner, "run_product", builder(change_identity=True))
     with pytest.raises(ValueError, match="release changed"):
         runner.build_subsets("unused", "target", products=("cosmos",), checkpoint_products=True)
@@ -304,7 +304,7 @@ def test_product_mutating_release_identity_rolls_back_its_tables_and_metadata(
 
 
 def test_missing_shared_checkpoint_rejects_product_before_build(environment, monkeypatch):
-    database, _ = environment
+    database = environment
     del database.state["phases"]["derived"]
     monkeypatch.setattr(
         runner,
@@ -316,7 +316,7 @@ def test_missing_shared_checkpoint_rejects_product_before_build(environment, mon
 
 
 def test_lock_collision_rejects_before_worker_is_created(environment):
-    database, _ = environment
+    database = environment
     previous_owner = object()
     database.owner = previous_owner
     with pytest.raises(ValueError, match="Another migration owns"):
@@ -335,9 +335,9 @@ def test_public_api_is_the_current_runner_without_layout_discovery():
 def test_finish_resume_skips_existing_products_and_emits_events_after_commit(
     environment, monkeypatch
 ):
-    database, tuning = environment
-    database.state["phases"]["metsigdb"] = {"old": True}
-    database.state["contents"]["metsigdb"] = 10
+    database = environment
+    database.state["phases"]["network_views"] = {"old": True}
+    database.state["contents"]["network_views"] = 10
     monkeypatch.setattr(runner, "run_product", builder())
     events = []
     owner = database.connect("unused")
@@ -355,20 +355,19 @@ def test_finish_resume_skips_existing_products_and_emits_events_after_commit(
             "target",
             owner=owner,
             identity=("release", "digest"),
-            products=("metsigdb", "cosmos"),
+            products=("network_views", "cosmos"),
             resume=True,
             observer=observer,
         )
         assert result.products == {"cosmos": {"rows": 1}}
-        assert database.state["contents"] == {"metsigdb": 10, "cosmos": 1}
+        assert database.state["contents"] == {"network_views": 10, "cosmos": 1}
         assert events == [("phase_start", "cosmos"), ("phase_committed", "cosmos")]
-        assert len(tuning) == 1 and tuning[0][1] == ("cosmos",)
     finally:
         owner.close()
 
 
 def test_finish_observer_failure_preserves_commit_and_stops_next_product(environment, monkeypatch):
-    database, _ = environment
+    database = environment
     monkeypatch.setattr(runner, "run_product", builder())
     owner = database.connect("unused")
     runner.acquire_schema_lock(owner, "target")
@@ -384,12 +383,12 @@ def test_finish_observer_failure_preserves_commit_and_stops_next_product(environ
                 "target",
                 owner=owner,
                 identity=("release", "digest"),
-                products=("metsigdb", "cosmos"),
+                products=("network_views", "cosmos"),
                 resume=True,
                 observer=observer,
             )
-        assert database.state["contents"] == {"metsigdb": 1}
-        assert "metsigdb" in database.state["phases"]
+        assert database.state["contents"] == {"network_views": 1}
+        assert "network_views" in database.state["phases"]
         assert database.owner is owner
     finally:
         owner.close()
@@ -400,7 +399,7 @@ def test_finish_observer_failure_preserves_commit_and_stops_next_product(environ
     [
         {"products": []},
         {"products": ["unknown"]},
-        {"products": ["metsigdb", "metsigdb"]},
+        {"products": ["network_views", "network_views"]},
         {"products": "cosmos"},
         {"products": [None]},
         {"checkpoint_products": 1},
@@ -419,12 +418,12 @@ def test_invalid_selection_fails_before_connecting(monkeypatch, options):
         runner.build_subsets("unused", "test_release", **options)
 
 
-@pytest.mark.parametrize("product", runner.PRODUCTS)
+@pytest.mark.parametrize("product", runner.BUILT_PRODUCTS)
 @pytest.mark.parametrize("release_rows", [[], [("release", "digest"), ("other", "digest")]])
 def test_unpublished_or_ambiguous_release_preserves_existing_products(
     environment, monkeypatch, product, release_rows
 ):
-    database, _ = environment
+    database = environment
     database.state["contents"][product] = "published product"
     database.state["metadata"][product] = "published metadata"
     before = deepcopy(database.state)

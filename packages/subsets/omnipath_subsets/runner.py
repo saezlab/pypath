@@ -13,7 +13,12 @@ from dataclasses import dataclass
 from .scientific import run_product
 from .db import validate_schema
 
-PRODUCTS = ("exclusion_metabolites", "metsigdb", "network_views", "cosmos")
+# What a release's PostgreSQL schema holds besides the base: the subsets built from the
+# published release as Parquet and loaded (`omnipath-postgres`), and the products built here
+# from the loaded tables. A release is complete when it has them all.
+LOADED_PRODUCTS = ("exclusion_metabolites", "metsigdb")
+BUILT_PRODUCTS = ("network_views", "cosmos")
+PRODUCTS = LOADED_PRODUCTS + BUILT_PRODUCTS
 
 
 @dataclass(frozen=True)
@@ -93,23 +98,13 @@ def _publish(connection, schema, product, identity, outcome, seconds):
     _identity(connection, schema, identity)
 
 
-def _fresh_worker(connection, products):
-    # MetSigDB's temp_buffers setting must precede any product temporary table.
-    # This dedicated worker has never run shared derivations or an earlier run.
-    if "metsigdb" in products:
-        from .metsigdb.build import configure_temp_buffers
-
-        with connection.cursor() as cursor:
-            configure_temp_buffers(cursor)
-
-
 def run_products(
     database_url,
     schema,
     *,
     owner,
     identity,
-    products=PRODUCTS,
+    products=BUILT_PRODUCTS,
     checkpoint_products=True,
     resume=False,
     observer=None,
@@ -124,6 +119,11 @@ def run_products(
     """
 
     results, timings = {}, {}
+    loaded = [product for product in products if product in LOADED_PRODUCTS]
+    if loaded:
+        raise ValueError(
+            f"{', '.join(loaded)} are loaded from the release's Parquet subsets, not built here"
+        )
     _identity(owner, schema, identity)
     _ready(owner, schema)
     if resume:
@@ -138,7 +138,6 @@ def run_products(
         for product in products:
             with closing(psycopg2.connect(database_url)) as worker:
                 try:
-                    _fresh_worker(worker, (product,))
                     _identity(worker, schema, identity)
                     _ready(worker, schema)
                     _metadata(worker, schema)
@@ -164,7 +163,6 @@ def run_products(
     else:
         with closing(psycopg2.connect(database_url)) as worker:
             try:
-                _fresh_worker(worker, products)
                 _identity(worker, schema, identity)
                 _ready(worker, schema)
                 _metadata(worker, schema)
@@ -195,13 +193,13 @@ def acquire_schema_lock(connection, schema):
 
 
 def build_subsets(
-    database_url, schema, *, products=PRODUCTS, checkpoint_products=False, on_product_committed=None
+    database_url, schema, *, products=BUILT_PRODUCTS, checkpoint_products=False, on_product_committed=None
 ):
     """Explicitly rebuild selected products from the committed current release."""
     validate_schema(schema)
     if not isinstance(products, (tuple, list)) or any(not isinstance(p, str) for p in products):
         raise ValueError("Products must be unique known products")
-    if not products or len(set(products)) != len(products) or set(products) - set(PRODUCTS):
+    if not products or len(set(products)) != len(products) or set(products) - set(BUILT_PRODUCTS):
         raise ValueError("Products must be unique known products")
     if type(checkpoint_products) is not bool:
         raise ValueError("checkpoint_products must be a boolean")

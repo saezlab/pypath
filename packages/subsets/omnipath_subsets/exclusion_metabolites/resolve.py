@@ -1,4 +1,4 @@
-"""Resolve seed identifiers to published chemical entities.
+"""What a seed resolves to in a published release, and the spellings it is looked up under.
 
 The release already holds every identifier an entity carries, so a seed is
 found by reading them, not by translating anything. The match is on the
@@ -18,25 +18,25 @@ import re
 
 from omnipath_subsets.exclusion_metabolites.seeds import Seed
 
-# The identifier type name the release uses for each chemical namespace.
-IDENTIFIER_TYPES = {
-    "chebi": "Chebi:MI:0474",
-    "kegg": "Kegg Compound:MI:2012",
-    "hmdb": "Hmdb:OM:0004",
-    "pubchem": "Pubchem Compound:OM:0002",
-    "lipidmaps": "Lipidmaps:OM:0003",
-    "swisslipids": "Swisslipids:OM:0009",
-    "chembl": "Chembl Compound:MI:0967",
-    "drugbank": "Drugbank:MI:2002",
-}
+# The namespaces a seed may name, as the release spells them (the `ns` of an identifier).
+NAMESPACES = (
+    "chebi",
+    "kegg",
+    "hmdb",
+    "pubchem",
+    "lipidmaps",
+    "swisslipids",
+    "chembl",
+    "drugbank",
+)
 
 # Entity types a seed may resolve to: the published chemical families.
 CHEMICAL_ENTITY_TYPES = ("chemical_entity", "small_molecule")
 
-# An entity whose canonical identity is in one of these namespaces was resolved
-# against a chemical database. Any other canonical identity (a name, a source
-# accession) is a native fallback: the build had nothing better to anchor on.
-STANDARD_IDENTITY_TYPES = tuple(IDENTIFIER_TYPES.values()) + ("Standard Inchi Key:MI:1101",)
+# An entity whose canonical identity is in one of these namespaces was resolved against a
+# chemical database. Any other canonical identity (a name, a source accession) is a native
+# fallback: the build had nothing better to anchor on.
+STANDARD_NAMESPACES = (*NAMESPACES, "inchikey")
 
 
 def spellings(namespace: str, identifier: str) -> list[str]:
@@ -71,69 +71,3 @@ class Resolution:
     @property
     def resolved(self) -> bool:
         return bool(self.entity_ids)
-
-
-def _has_column(cur, table: str, column: str) -> bool:
-    cur.execute(
-        "SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = to_regclass(%s) "
-        "AND attname = %s AND NOT attisdropped)",
-        [table, column],
-    )
-    return cur.fetchone()[0]
-
-
-def resolve_seeds(cur, seeds: list[Seed]) -> list[Resolution]:
-    """Resolve every seed in one query; the result follows the order of ``seeds``."""
-    wanted = [
-        (index, IDENTIFIER_TYPES[seed.namespace], spelling)
-        for index, seed in enumerate(seeds)
-        for spelling in spellings(seed.namespace, seed.identifier)
-    ]
-    # A release that stores a normalized value matches on it as well, so a
-    # spelling this module did not foresee still finds its entity.
-    matches_normalized = _has_column(cur, "identifier_evidence", "value_normalized")
-    value_test = (
-        "(i.value = w.spelling OR i.value_normalized = w.spelling)"
-        if matches_normalized
-        else "i.value = w.spelling"
-    )
-    cur.execute(
-        f"""
-        WITH wanted AS (
-          SELECT * FROM unnest(%s::int[], %s::text[], %s::text[])
-            AS w(seed_index, type_name, spelling)
-        )
-        SELECT DISTINCT w.seed_index, e.entity_id::text,
-               coalesce(ct.name = ANY(%s::text[]), false) AS standard_identity
-        FROM wanted w
-        JOIN vocab_identifier_type t ON t.name = w.type_name
-        JOIN identifier_evidence i
-          ON i.identifier_type_id = t.identifier_type_id AND {value_test}
-        JOIN entity_identifier_lookup l ON l.identifier_id = i.identifier_id
-        JOIN entity e ON e.entity_id = l.entity_id
-        JOIN vocab_entity_type vt
-          ON vt.entity_type_id = e.entity_type_id AND vt.name = ANY(%s::text[])
-        LEFT JOIN vocab_identifier_type ct ON ct.identifier_type_id = e.canonical_identifier_type_id
-        """,
-        [
-            [row[0] for row in wanted],
-            [row[1] for row in wanted],
-            [row[2] for row in wanted],
-            list(STANDARD_IDENTITY_TYPES),
-            list(CHEMICAL_ENTITY_TYPES),
-        ],
-    )
-    found: dict[int, list[tuple[str, bool]]] = {}
-    for index, entity_id, standard in cur.fetchall():
-        found.setdefault(index, []).append((entity_id, standard))
-    resolutions = []
-    for index, seed in enumerate(seeds):
-        rows = sorted(found.get(index, []))
-        resolutions.append(
-            Resolution(
-                seed,
-                tuple(entity_id for entity_id, _ in rows),
-                bool(rows) and not any(standard for _, standard in rows),
-            )
-        )
-    return resolutions

@@ -8,7 +8,6 @@ from psycopg2 import sql
 import pytest
 
 from omnipath_subsets.cosmos import build, translate
-from omnipath_subsets.metsigdb import build as metsigdb
 
 
 def catalyst(identifier, id_type="Entrez:MI:0477"):
@@ -255,28 +254,3 @@ def test_published_geneid_labels_and_connectors_preserve_reaction_participants(p
         assert (source_entity if source == chemical else target_entity) == expected_id
         assert (source_compartment if source == chemical else target_compartment) == "cytosol"
     assert all("P00001" not in source + target for source, target, *_ in edges)
-
-
-@pytest.mark.integration
-def test_metsigdb_memberships_remain_chemical_only_with_gene_reference_catalysts(product_input):
-    cur, ids = product_input
-    params = {
-        "source_id": 1,
-        "set_entity_type_id": 5,
-        "chemical_entity_type_ids": metsigdb._chemical_entity_type_ids(cur),
-        "is_pathway": True,
-        "max_records": None,
-    }
-
-    def memberships():
-        cur.execute(metsigdb._sql_text("extract_onehop.sql"), params)
-        cur.execute(
-            "SELECT set_source_id,set_entity_id::text,metabolite_entity_id::text "
-            "FROM metsigdb_stage"
-        )
-        return cur.fetchall()
-
-    before = memberships()
-    assert before == [("pathway", ids["pathway"], ids["input"])]
-    cur.execute("DELETE FROM relation_evidence WHERE subject_entity_id<>%s", [ids["input"]])
-    assert memberships() == before
