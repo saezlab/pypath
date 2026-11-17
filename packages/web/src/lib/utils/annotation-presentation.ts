@@ -126,6 +126,7 @@ const labels: Record<string, string> = {
   'omnipath:gene_mapping_status': 'Gene mapping',
   'omnipath:gene_mapping_candidate': 'Gene mapping candidates',
   'omnipath:protein_mapping_status': 'Protein mapping',
+  'omnipath:lipid_name_status': 'Lipid name parsing',
   'brenda:molecular_observation': 'BRENDA observation',
   'brenda:protein_note': 'BRENDA protein note',
   in_taxon_label: 'Organism',

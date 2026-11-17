@@ -115,6 +115,27 @@ def lipid_fallback_votes(normalized, observed, library):
     ]
 
 
+# An identifier of these namespaces says the occurrence is a lipid.
+LIPID_NAMESPACES = ("lipidmaps", "swisslipids")
+
+
+def lipid_name_status(observed):
+    """Why Goslin gave no lipid name for an occurrence that is a lipid, else ``None``.
+
+    Only occurrences with a lipid-resource identifier are candidates; Goslin cannot parse
+    most other chemical names, and that says nothing about them. ``None`` also when a name
+    parses or the occurrence has no name. Otherwise Goslin's status: ``unparsed`` when no
+    name parses at all.
+    """
+    if not any(observed.get(ns) for ns in LIPID_NAMESPACES):
+        return None
+    names = sorted({n for n in observed.get("name", []) + observed.get("synonym", []) if n.strip()})
+    statuses = {lipid_name_result(n)["status"] for n in names}
+    if not statuses or "parsed" in statuses:
+        return None
+    return "unparsed" if statuses == {"unparsed"} else sorted(statuses - {"unparsed"})[0]
+
+
 def observation_bundle(input_id, obs, normalized, observed, library, source="runtime"):
     """Encode normalized evidence for both serving builds and offline replay."""
     from .canonical.policy import INCHIKEY_RE, RNA_ENTITY_TYPES

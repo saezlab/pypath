@@ -272,6 +272,66 @@ def _write_exact_structure_hubs(hubs: Path) -> None:
     )
 
 
+L_ALANINE = "QNAYBMKLOCPYGJ-REOHCLBHSA-N"
+D_ALANINE = "QNAYBMKLOCPYGJ-UWTATZPHSA-N"
+DL_ALANINE = "QNAYBMKLOCPYGJ-UHFFFAOYSA-N"
+BETA_ALANINE = "UCMIRNVEIXFBKS-UHFFFAOYSA-N"
+
+
+def _write_benchmark_hubs(hubs: Path) -> None:
+    """The alanine family and the EGFR orthologs the resolution benchmarks resolve.
+
+    The alanines share one connectivity block and differ in the stereo layer; beta-alanine
+    is a positional isomer; the residue is a ChEBI class without a structure. They add to
+    the shared chebi hub (which keeps water and aspirin), so this variant needs its own
+    template. The EGFR genes are one reviewed product each, in their own taxon.
+    """
+    chebi = pq.read_table(hubs / "chebi.parquet").to_pylist()
+    for term, key, name in (
+        ("CHEBI:16977", L_ALANINE, "L-alanine"),
+        ("CHEBI:15570", D_ALANINE, "D-alanine"),
+        ("CHEBI:16449", DL_ALANINE, "alanine"),
+        ("CHEBI:16958", BETA_ALANINE, "beta-alanine"),
+    ):
+        chebi += [
+            dict(source_type="chebi", source_id=term, hub_id=term, taxonomy_id="0", backend="chebi"),
+            dict(source_type="inchikey", source_id=key, hub_id=term, taxonomy_id="0", backend="chebi"),
+            dict(source_type="name", source_id=name, hub_id=term, taxonomy_id="0", backend="chebi"),
+        ]
+    chebi += [
+        dict(source_type="chebi", source_id="CHEBI:90000", hub_id="CHEBI:90000", taxonomy_id="0", backend="chebi"),
+        dict(source_type="name", source_id="L-alanine residue", hub_id="CHEBI:90000", taxonomy_id="0", backend="chebi"),
+    ]
+    pq.write_table(pa.Table.from_pylist(chebi, schema=HUB_SCHEMA), hubs / "chebi.parquet")
+
+    uniprot = pq.read_table(hubs / "uniprot.parquet").to_pylist()
+    for accession, entry, symbol, entrez, taxon in (
+        ("P00533", "EGFR_HUMAN", "EGFR", "1956", "9606"),
+        ("Q01279", "EGFR_MOUSE", "Egfr", "13649", "10090"),
+    ):
+        uniprot += [
+            dict(source_type=ns, source_id=value, hub_id=accession, taxonomy_id=tax, backend="uniprot")
+            for ns, value, tax in (
+                ("uniprot", accession, taxon),
+                ("uniprot_entry", entry, "0"),
+                ("genesymbol", symbol, "0"),
+                ("entrez", entrez, "0"),
+            )
+        ]
+    pq.write_table(pa.Table.from_pylist(uniprot, schema=HUB_SCHEMA), hubs / "uniprot.parquet")
+    entrez = pq.read_table(hubs / "entrez.parquet").to_pylist()
+    for gene, taxon, symbol in (
+        ("1956", "9606", "EGFR"),
+        ("13649", "10090", "Egfr"),
+        ("24329", "10116", "Egfr"),
+    ):
+        entrez += [
+            dict(source_type="entrez", source_id=gene, hub_id=gene, taxonomy_id=taxon, backend="gene2ensembl"),
+            dict(source_type="genesymbol", source_id=symbol, hub_id=gene, taxonomy_id=taxon, backend="gene2ensembl"),
+        ]
+    pq.write_table(pa.Table.from_pylist(entrez, schema=HUB_SCHEMA), hubs / "entrez.parquet")
+
+
 # Variant name -> hub mutation applied on top of the shared hubs. Only fixtures
 # that contradict the shared hubs need a variant; everything additive belongs in
 # write_hubs() so it shares the single base build.
@@ -279,6 +339,7 @@ VARIANTS = {
     "base": None,
     "external-cid-claim": _write_external_cid_claim_hubs,
     "exact-structures": _write_exact_structure_hubs,
+    "benchmarks": _write_benchmark_hubs,
 }
 
 

@@ -94,8 +94,18 @@ class EntityResolver:
         data_root: str | Path | None = None,
         defer_aliases: bool = False,
         memory_limit: str | None = None,
+        require_library: bool = False,
     ) -> None:
         self.library_dir = locate_library_dir(library_dir, data_root)
+        if self.library_dir is None:
+            message = (
+                "No reference library was given or found: pass library_dir or data_root, or set "
+                "OMNIPATH_LIBRARY_DIR. Without one every observation is unmatched and keeps its "
+                "own identifier"
+            )
+            if require_library:
+                raise FileNotFoundError(message)
+            logger.warning(message)
         self.matcher = LibraryMatcher(
             self.library_dir, defer_aliases=defer_aliases, memory_limit=memory_limit
         )

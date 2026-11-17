@@ -42,8 +42,16 @@ class UnknownResourceError(DiscoveryError):
     """Raised when the requested source or dataset is not found."""
 
 
+# The slug of a resource when it is not its module's name. A slug is lowercase letters and
+# digits (`omnipath_resources.inputs_v2.resource_names`), and a resource has one name: the
+# module `rampdb` publishes `ramp`.
 SOURCE_OVERRIDES: dict[str, str] = {
     "connectomedb": "connectomedb2025",
+    "rampdb": "ramp",
+    "omnipath_ontology": "omnipathontology",
+    "phenol_explorer": "phenolexplorer",
+    "psi_mi": "psimi",
+    "switches_elm": "switcheselm",
 }
 
 

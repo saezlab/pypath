@@ -177,6 +177,8 @@ def _resolution_annotations(targets):
             and getattr(target, "protein_node_id", None) is None
         ):
             values.add(("omnipath:protein_mapping_status", "reported"))
+        if getattr(target, "lipid_name_status", None):
+            values.add(("omnipath:lipid_name_status", target.lipid_name_status))
         status = getattr(target, "gene_mapping_status", None)
         if status not in {"ambiguous", "conflict"}:
             continue
@@ -193,6 +195,8 @@ def _resolution_annotations(targets):
             source="resolver",
             dataset="molecular_reference"
             if term == "omnipath:protein_mapping_status"
+            else "lipid_reference"
+            if term == "omnipath:lipid_name_status"
             else "gene_reference",
         )
         for term, value in sorted(values)

@@ -71,6 +71,7 @@ class Match:
     gene_candidates: tuple[str, ...] = ()
     transcript_namespace: str | None = None
     transcript_identifier: str | None = None
+    lipid_name_status: str | None = None
 
     @property
     def matched(self) -> bool:
@@ -391,6 +392,11 @@ class LibraryMatcher:
         if ident not in aliases.setdefault(ns, []):
             aliases[ns].append(ident)
         label = assign_label(ns, ident, aliases, policy)
+        lipid_status = None
+        if policy.library == CHEMICAL:
+            from ..observations import lipid_name_status
+
+            lipid_status = lipid_name_status(aliases)
         if policy.entity_class == "cv_term" and label == ident:
             # A term cited by its id alone (UniProt's GO terms) is named by its ontology.
             label = (self.runtime.term_label(ident) if self.runtime else None) or label
@@ -402,6 +408,7 @@ class LibraryMatcher:
             taxon=str(getattr(obs, "taxon", None) or "").strip() or None,
             node_id=None,
             aliases=aliases,
+            lipid_name_status=lipid_status,
         )
 
     def close(self):
