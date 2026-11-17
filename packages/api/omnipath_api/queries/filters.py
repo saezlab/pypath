@@ -6,6 +6,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from omnipath_core.resource_metadata import resolve_resource_name
+
 # Unknown fields pass through, as in the API's models.
 _CONFIG = ConfigDict(extra="allow", populate_by_name=True)
 
@@ -89,6 +91,11 @@ class SearchFilters(BaseModel):
                     if text and text not in merged:
                         merged.append(text)
             data[canonical] = merged
+        # A resource is named by its slug, its short name or a synonym, in any case; the
+        # queries know the slug.
+        data["sources"] = list(
+            dict.fromkeys(resolve_resource_name(name) or name for name in data["sources"])
+        )
         if "endpointMode" in data:
             mode = data.pop("endpointMode")
             data.setdefault("gene_mode", mode)

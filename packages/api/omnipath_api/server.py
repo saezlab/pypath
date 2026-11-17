@@ -40,6 +40,7 @@ OPENAPI_TAGS = [
     {"name": "selection", "description": "Selection-scope expansion for the explorer."},
     {"name": "stats", "description": "Aggregate counts for the resources dashboard."},
     {"name": "export", "description": "Binary slice export (Parquet, Arrow, CSV, JSON)."},
+    {"name": "sets", "description": "Metabolite sets (MetSigDB memberships) of a release."},
     {"name": "admin", "description": "Inspect resolver/resources and trigger build jobs."},
 ]
 
@@ -173,6 +174,12 @@ def create_app(
     from omnipath_api.routers.queries import router as queries_router
 
     app.include_router(queries_router)
+    from omnipath_api.routers.metsigdb import router as metsigdb_router
+
+    app.include_router(metsigdb_router)
+    from omnipath_api.routers.metsigdb import describe_openapi
+
+    describe_openapi(app)
     from omnipath_api.routers.index import router as index_router
 
     app.include_router(index_router)

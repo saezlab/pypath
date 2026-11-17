@@ -29,6 +29,7 @@ dev = [
 ]
 build = [
     "omnipath-build",
+    "omnipath-subsets",
 ]
 
 [project.scripts]
@@ -42,3 +43,4 @@ include = ["omnipath_api*"]
 omnipath-core = { workspace = true }
 omnipath-client = { workspace = true }
 omnipath-build = { workspace = true }
+omnipath-subsets = { workspace = true }

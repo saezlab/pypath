@@ -19,7 +19,9 @@ import shutil
 import subprocess
 from typing import Any, Callable
 
+import duckdb
 from omnipath_client.database import build_release_database
+from omnipath_core.subset_layout import Subset, present_subsets
 from omnipath_core.versioning import RESOURCE_FILES, SERVING_FILES
 
 from omnipath_api.queries.release import SERVING_DIR
@@ -54,6 +56,42 @@ def served_databases(data_root: str | Path) -> list[str]:
     return sorted(versions, key=_version_key, reverse=True)
 
 
+def _copy_subsets(target: Path, subsets: list[Subset]) -> dict[str, str]:
+    """Copy the tables of each subset into the database, with a record of what came from where.
+
+    ``subset_info`` has one row per product: the manifest digest, the row contract and whether
+    the release pins samples. The API answers 503 for a product that has no row.
+    """
+    digests = {}
+    with duckdb.connect(str(target)) as db:
+        db.execute(
+            "CREATE TABLE subset_info (product VARCHAR, release VARCHAR, row_contract INTEGER, "
+            "manifest_sha256 VARCHAR, partial BOOLEAN, tables VARCHAR[], stats VARCHAR)"
+        )
+        for subset in subsets:
+            manifest = subset.manifest
+            for name, path in subset.tables.items():
+                db.execute(
+                    f'CREATE TABLE "{Path(name).stem}" AS SELECT * FROM read_parquet(?)',
+                    [str(path)],
+                )
+            db.execute(
+                "INSERT INTO subset_info VALUES (?, ?, ?, ?, ?, ?, ?)",
+                [
+                    manifest["product"],
+                    manifest["release"],
+                    manifest["row_contract"],
+                    subset.manifest_sha256,
+                    manifest["partial"],
+                    [Path(name).stem for name in subset.tables],
+                    json.dumps(manifest.get("stats") or {}),
+                ],
+            )
+            digests[manifest["product"]] = subset.manifest_sha256
+        db.execute("CHECKPOINT")
+    return digests
+
+
 def build_served_database(
     data_root: str | Path,
     version: str,
@@ -69,6 +107,8 @@ def build_served_database(
     is also written to ``serving/<version>.json``."""
     root = Path(data_root)
     ReleaseStore(root).get(version)  # a published release
+    # A subset that does not match its release is not served; this stops the build first.
+    subsets = present_subsets(root, version)
     directory = root / SERVING_DIR
     directory.mkdir(parents=True, exist_ok=True)
     previous = [directory / f"{v}.duckdb" for v in served_databases(root) if v != version]
@@ -83,6 +123,13 @@ def build_served_database(
     result = build_release_database(
         root, version, target, memory_limit=memory_limit, threads=threads, progress=progress
     )
+    subset_digests = {}
+    if subsets:
+        try:
+            subset_digests = _copy_subsets(target, subsets)
+        except BaseException:
+            target.unlink(missing_ok=True)
+            raise
     digest = hashlib.sha256()
     with target.open("rb") as stream:
         for chunk in iter(lambda: stream.read(16 * 1024**2), b""):
@@ -95,6 +142,7 @@ def build_served_database(
         "sha256": digest.hexdigest(),
         "build_seconds": result["seconds"],
         "resources": result["resources"],
+        "subsets": subset_digests,
     }
     staging = directory / f".{version}.json"
     staging.write_text(json.dumps(record, indent=2) + "\n")

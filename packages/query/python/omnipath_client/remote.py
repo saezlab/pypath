@@ -33,6 +33,16 @@ _answers = itertools.count()
 _SCALARS = {"gene_mode", "molecular_endpoint_mode", "is_directed", "sign", "min_evidence_count"}
 
 
+# The filters of GET /sets/metsigdb (and its set listing), which the API validates.
+_METSIGDB_SET_FILTERS = (
+    "resource", "set_type", "set_sub_type", "organism", "set", "limit", "offset", "total",
+)
+_METSIGDB_FILTERS = (
+    *_METSIGDB_SET_FILTERS, "entity", "metabolite_structure_key", "exclude_metabolites",
+    "fields", "group",
+)
+
+
 def _parameters(query: str) -> list[str]:
     """The parameters of one of the shared queries (sql/queries/<name>.sql): the filters
     it takes, in both modes."""
@@ -106,6 +116,8 @@ class ApiClient:
             raise ClientError(f"The API at {self.api_url} is unreachable: {exc}") from exc
         if response.status_code in (400, 422):
             raise ValueError(_detail(response))
+        if response.status_code == 503 and path.startswith("/sets/"):
+            raise ClientError(_detail(response))
         if response.status_code == 404 and path.startswith("/entities/"):
             return response
         if response.status_code >= 400:
@@ -168,6 +180,41 @@ class ApiClient:
         if entities is not None:
             named["entities"] = _value("entities", entities)
         return self.query("relations", **named, max_relations=int(limit))
+
+    def metsigdb(self, **filters: Any) -> dict[str, Any]:
+        """Metabolite memberships of resource-native sets (MetSigDB), one page: ``count``,
+        ``has_more``, ``rows`` and ``total``; with ``group=True``, ``groups`` of sets with
+        their members instead of ``rows``, counted in sets.
+
+        The filters are ``/sets/metsigdb``'s: ``resource``, ``set_type``, ``set_sub_type``,
+        ``organism``, ``set`` (the set's id), ``entity`` (an entity key, InChIKey, or HMDB,
+        ChEBI, KEGG or PubChem identifier), ``metabolite_structure_key``,
+        ``exclude_metabolites`` (``"all"`` or classes), ``fields``, ``group``, ``limit``,
+        ``offset`` and ``total``. A value may be a list. The API validates them: a name or
+        value it does not publish is a ``ValueError``."""
+        return self._sets("/sets/metsigdb", _METSIGDB_FILTERS, filters)
+
+    def metsigdb_sets(self, **filters: Any) -> dict[str, Any]:
+        """The sets of MetSigDB without their members: ``count``, ``has_more``, ``sets``
+        and ``total``. The set filters of ``metsigdb``: ``resource``, ``set_type``,
+        ``set_sub_type``, ``organism``, ``set``, ``limit``, ``offset`` and ``total``."""
+        return self._sets("/sets/metsigdb/sets", _METSIGDB_SET_FILTERS, filters)
+
+    def _sets(self, path: str, available: tuple[str, ...], filters: dict[str, Any]) -> dict[str, Any]:
+        unknown = set(filters) - set(available)
+        if unknown:
+            raise TypeError(f"Unknown filters: {sorted(unknown)}; available: {list(available)}")
+        params = {}
+        for name, value in filters.items():
+            if value is None:
+                continue
+            if isinstance(value, bool):
+                params[name] = "true" if value else "false"
+            elif isinstance(value, (str, int)):
+                params[name] = value
+            else:
+                params[name] = [str(item) for item in value]
+        return self._request("GET", path, params=params).json()
 
     def entity(self, entity_key: str) -> dict[str, Any] | None:
         """One entity by its exact key, with its identifiers, annotations and

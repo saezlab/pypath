@@ -10,6 +10,7 @@ from fastapi.responses import FileResponse, JSONResponse, Response
 from starlette.background import BackgroundTask
 from pydantic import ValidationError
 from omnipath_api.queries.release import NothingServed, ReleaseNotServed
+from omnipath_api.queries.services.sets import SubsetUnavailable
 from omnipath_api.queries.store.query_pool import QueryCapacityError
 
 
@@ -76,7 +77,7 @@ def _call(request: Request, method: str, *args: Any, **kwargs: Any) -> Any:
         raise HTTPException(status_code=503, detail=str(exc), headers={"Retry-After": "1"}) from exc
     except ValidationError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    except (ReleaseNotServed, NothingServed) as exc:
+    except (ReleaseNotServed, NothingServed, SubsetUnavailable) as exc:
         raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc

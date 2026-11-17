@@ -22,7 +22,7 @@ IDENTITY_ARGS ?=
 PYTEST_WORKERS ?= 4
 PYTEST_PG_WORKERS ?= 2
 PYTEST_ARGS ?=
-SUBSET_PRODUCTS ?= exclusion_metabolites metsigdb network_views cosmos
+SUBSET_PRODUCTS ?= network_views cosmos
 API_PORT ?= 8085
 WEB_PORT ?= 5173
 COMPOSE_FILES ?= -f packages/api/deploy/compose.serving.yaml
@@ -124,10 +124,11 @@ load-postgres:
 	@test -n "$(RELEASE_MANIFEST)" || (echo 'Set RELEASE_MANIFEST to a pinned JSON file or HTTPS URL'; exit 2)
 	uv run --frozen --package omnipath-postgres omnipath-postgres "$(RELEASE_MANIFEST)" --data-root "$(DATA_ROOT)" --schema "$(POSTGRES_SCHEMA)" $(POSTGRES_ARGS)
 finish-postgres:
-	uv run --frozen --package omnipath-postgres omnipath-postgres --finish --schema "$(POSTGRES_SCHEMA)" $(POSTGRES_ARGS)
-# Use the aligned PostgreSQL pipeline; durable completed phases are skipped.
+	uv run --frozen --package omnipath-postgres omnipath-postgres --finish --schema "$(POSTGRES_SCHEMA)" --data-root "$(DATA_ROOT)" $(POSTGRES_ARGS)
+# The Parquet subsets of a published release: subsets/<release>/<product>/.
 build-subsets:
-	uv run --frozen --package omnipath-postgres omnipath-postgres --finish --schema "$(POSTGRES_SCHEMA)" --products $(SUBSET_PRODUCTS)
+	@test -n "$(RELEASE)" || (echo 'Set RELEASE to a published release version'; exit 2)
+	uv run --frozen --package omnipath-subsets omnipath-subsets build --release "$(RELEASE)" --data-root "$(DATA_ROOT)"
 
 serving-build:
 	$(COMPOSE) build api web
@@ -170,7 +171,7 @@ POSTGRES_ENV ?= packages/postgres/deploy/postgres.env
 postgres-up:
 	docker compose --env-file "$(POSTGRES_ENV)" -f packages/postgres/deploy/docker-compose.postgres18.yml up -d --build --wait
 rebuild-subsets:
-	uv run --frozen --package omnipath-subsets omnipath-subsets build --schema "$(POSTGRES_SCHEMA)" --products $(SUBSET_PRODUCTS) --checkpoint-products
+	uv run --frozen --package omnipath-subsets omnipath-subsets build-postgres --schema "$(POSTGRES_SCHEMA)" --products $(SUBSET_PRODUCTS) --checkpoint-products
 # Documentation viewer (docs/index.html); it reads pages from docs/ and the packages.
 DOCS_PORT ?= 8090
 docs:

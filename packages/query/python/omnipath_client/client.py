@@ -244,6 +244,16 @@ class Client:
         text = self.query("entity_details", entity_key=str(entity_key), output="json")
         return json.loads(text) if text else None
 
+    def metsigdb(self, **filters: Any):
+        """Not available in local mode: the MetSigDB subset is built from a whole release and
+        served by the API (``connect(mode="api")``)."""
+        raise ClientError(
+            "MetSigDB memberships are answered by the API: use connect(mode='api') "
+            "(the local installation holds resources, not the release's subsets)"
+        )
+
+    metsigdb_sets = metsigdb
+
     def query(self, name: str, *, output: str = "table", **params: Any):
         """A query by name (``omnipath_client.steps.names()``): the same queries, with the
         same answers, as the API's; a relation for ``output="table"``, JSON text for

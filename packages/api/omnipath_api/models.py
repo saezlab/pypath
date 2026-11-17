@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
 
 from omnipath_api.queries.filters import EntitySearchCursor, SearchFilters
 
@@ -457,6 +457,11 @@ class ResourceRecord(APIModel):
     resource_id: str | None = None
     resource_name: str | None = None
     display_name: str | None = None
+    # The resource's three names: its slug is `resource_id`, its own spelling is `short` and
+    # its long name `full`; `synonyms` are other names that find it as a filter.
+    short: str | None = None
+    full: str | None = Field(default=None, validation_alias=AliasChoices("full", "full_name"))
+    synonyms: list[str] = Field(default_factory=list)
     key: str | None = None
     resource: str | None = None
     version: str | None = None

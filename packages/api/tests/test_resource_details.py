@@ -49,3 +49,40 @@ def test_resource_browsing_metadata_survives_api_serialization(tmp_path):
         "description": "Biological pathways and their constituent entities or activities.",
     }
     assert item["license_use"] == {"academic": "allowed", "commercial": "allowed"}
+
+
+def test_a_resource_record_carries_its_three_names(tmp_path):
+    _write_resource(tmp_path, "reactome", "1")
+    item = served_queries(data_root=tmp_path).list_resource_catalog()[0]
+    record = ResourcesResponse(resources=[item]).model_dump()["resources"][0]
+    assert record["short"] and record["full"] and isinstance(record["synonyms"], list)
+    assert record["full"] == item["full_name"]
+
+
+def test_a_resource_is_selected_by_its_slug_short_name_or_synonym_in_any_case(tmp_path):
+    _write_resource(tmp_path, "reactome", "1")
+    engine = served_queries(data_root=tmp_path)
+    from omnipath_core import resource_metadata
+
+    entry = resource_metadata._catalog()["reactome"]
+    for spelling in ("reactome", "REACTOME", entry["short"].upper(), *entry.get("synonyms", [])):
+        infos = engine._selected_resource_infos([spelling])
+        assert [info["resource"] for info in infos] == ["reactome"], spelling
+
+
+def test_a_name_that_is_nobodys_is_still_refused(tmp_path):
+    import pytest
+
+    _write_resource(tmp_path, "reactome", "1")
+    engine = served_queries(data_root=tmp_path)
+    with pytest.raises(ValueError, match="unavailable"):
+        engine._selected_resource_infos(["nonexistentresource"])
+
+
+def test_the_sources_of_a_search_are_resolved_to_resource_slugs():
+    from omnipath_api.queries.filters import normalize_filters
+
+    assert normalize_filters({"sources": ["REACTOME", "Reactome", "nonexistentresource"]})[
+        "sources"
+    ] == ["reactome", "nonexistentresource"]
+    assert normalize_filters({"resources": ["Reactome"]})["sources"] == ["reactome"]

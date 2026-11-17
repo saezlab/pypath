@@ -172,3 +172,35 @@ CREATE OR REPLACE MACRO op_json_patch(obj, patch) AS (
     to_json(map_concat(json_transform(obj::JSON, '"MAP(VARCHAR, JSON)"'),
         json_transform(patch::JSON, '"MAP(VARCHAR, JSON)"')))
 );
+
+-- One MetSigDB membership row (metsigdb_membership) as a JSON object of the response fields
+-- named in ``wanted``, under their response names and in the contract's order. The set and
+-- the entity are named as the filters name them, not as the table stores them.
+CREATE OR REPLACE MACRO op_metsigdb_fields(m, wanted) AS (
+    to_json(map_from_entries(list_filter([
+        struct_pack(key := 'entity', value := to_json(m.metabolite_entity_key)),
+        struct_pack(key := 'metabolite_label', value := to_json(m.metabolite_label)),
+        struct_pack(key := 'metabolite_entity_type', value := to_json(m.metabolite_entity_type)),
+        struct_pack(key := 'metabolite_structure_key', value := to_json(m.metabolite_structure_key)),
+        struct_pack(key := 'inchikey', value := to_json(m.inchikey)),
+        struct_pack(key := 'smiles', value := to_json(m.smiles)),
+        struct_pack(key := 'hmdb', value := to_json(m.hmdb)),
+        struct_pack(key := 'pubchem', value := to_json(m.pubchem)),
+        struct_pack(key := 'chebi', value := to_json(m.chebi)),
+        struct_pack(key := 'kegg', value := to_json(m.kegg)),
+        struct_pack(key := 'has_structure', value := to_json(m.has_structure)),
+        struct_pack(key := 'exclusion_classes', value := to_json(m.exclusion_classes)),
+        struct_pack(key := 'resource', value := to_json(m.resource)),
+        struct_pack(key := 'set', value := to_json(m.set_source_id)),
+        struct_pack(key := 'set_entity', value := to_json(m.set_entity_key)),
+        struct_pack(key := 'set_label', value := to_json(m.set_label)),
+        struct_pack(key := 'set_type', value := to_json(m.set_type)),
+        struct_pack(key := 'set_sub_type', value := to_json(m.set_sub_type)),
+        struct_pack(key := 'organism', value := to_json(m.organism)),
+        struct_pack(key := 'set_size', value := to_json(m.set_size)),
+        struct_pack(key := 'set_context', value := m.set_context::JSON),
+        struct_pack(key := 'provenance_source', value := to_json(m.provenance_source)),
+        struct_pack(key := 'provenance_record', value := m.provenance_record::JSON),
+        struct_pack(key := 'build_id', value := to_json(m.build_id))
+    ], lambda e: list_contains(wanted, e.key))))
+);

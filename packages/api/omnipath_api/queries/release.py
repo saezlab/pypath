@@ -36,6 +36,7 @@ from omnipath_api.queries.store.inventory import ReleaseStore
 from omnipath_api.queries.store.query_cache import QueryCache, StepCache
 from omnipath_api.queries.store.query_pool import QueryPool
 from omnipath_api.queries.store.connection import get_connection, sql_literal
+from omnipath_core.resource_metadata import resolve_resource_name
 from omnipath_core.schema import PUBLISHED_TABLES, SERVING_TABLES
 from omnipath_core.versioning import RESOURCE_FILES
 from omnipath_client import steps
@@ -50,6 +51,7 @@ from omnipath_api.queries.services.evidence import EvidenceQueries
 from omnipath_api.queries.services.selection import SelectionQueries
 from omnipath_api.queries.services.ontology import OntologyQueries
 from omnipath_api.queries.services.stats import StatsQueries
+from omnipath_api.queries.services.sets import SetsQueries
 
 logger = logging.getLogger(__name__)
 
@@ -99,6 +101,9 @@ class ServedRelease:
     # {"source/version": inventory record} of the release's resources, with the paths
     # of their files (downloads and raw payloads read those).
     resources: Any
+    # {product: {"row_contract", "partial", "tables", "stats", "manifest_sha256"}} of the
+    # subsets copied into the database (none for a release built without).
+    subsets: Any = MappingProxyType({})
 
 
 @dataclass(frozen=True)
@@ -113,6 +118,29 @@ class ServedState:
     def resources(self):
         """The resources of the newest served release (read-only)."""
         return self.releases[self.latest].resources if self.latest else MappingProxyType({})
+
+
+def _read_subsets(db: duckdb.DuckDBPyConnection) -> Any:
+    """The subsets a release database holds (``subset_info``), by product."""
+    present = db.execute(
+        "SELECT count(*) FROM duckdb_tables() WHERE table_name = 'subset_info'"
+    ).fetchone()[0]
+    if not present:
+        return MappingProxyType({})
+    found = {}
+    for product, contract, digest, partial, tables, stats in db.execute(
+        "SELECT product, row_contract, manifest_sha256, partial, tables, stats FROM subset_info"
+    ).fetchall():
+        found[product] = MappingProxyType(
+            {
+                "row_contract": contract,
+                "manifest_sha256": digest,
+                "partial": partial,
+                "tables": tuple(tables),
+                "stats": json.loads(stats or "{}"),
+            }
+        )
+    return MappingProxyType(found)
 
 
 def _resource_record(data_root: Path, resource: str, version: str) -> dict[str, Any]:
@@ -141,6 +169,7 @@ class ReleaseQueries(
     SelectionQueries,
     OntologyQueries,
     StatsQueries,
+    SetsQueries,
 ):
     """Queries over the served release databases of a serving root."""
 
@@ -240,6 +269,7 @@ class ReleaseQueries(
         with duckdb.connect(str(path), read_only=True) as db:
             built_at = db.execute("SELECT built_at::VARCHAR FROM database_info").fetchone()[0]
             rows = db.execute("SELECT resource_id, version FROM resources ORDER BY ALL").fetchall()
+            subsets = _read_subsets(db)
         resources = {}
         for resource, resource_version in rows:
             record = _resource_record(self.data_root, resource, resource_version)
@@ -251,6 +281,7 @@ class ReleaseQueries(
             identity=identity,
             built_at=str(built_at),
             resources=MappingProxyType(resources),
+            subsets=subsets,
         )
 
     def _refresh_inventory_if_stale(self, *, force: bool = False) -> bool:
@@ -522,6 +553,11 @@ class ReleaseQueries(
         seen: set[str] = set()
         for res in selected_resources:
             info = visible.get(res) or latest.get(res)
+            if info is None:
+                # Any name of the resource finds it: its slug, short name or a synonym, in
+                # any case.
+                slug = resolve_resource_name(res)
+                info = latest.get(slug) if slug else None
             if info is None:
                 raise ValueError(
                     f"Resource {res!r} is unavailable in the selected OmniPath release"
