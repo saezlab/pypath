@@ -10,8 +10,22 @@ import pkgutil
 from omnipath_build.discovery import resolve_source_name
 from omnipath_build.source_metadata import config_metadata
 import omnipath_resources.inputs_v2
+from omnipath_resources.inputs_v2.resource_names import resolve_names
 
 TARGET = Path(__file__).resolve().parents[1] / "omnipath_core/vocab/resource_metadata.yaml"
+
+
+def with_names(slug: str, metadata: dict) -> dict:
+    """The metadata with the resource's three names (slug, short, full) and its synonyms."""
+    names = resolve_names(name=metadata["display_name"], slug=slug)
+    named = {}
+    for key, value in metadata.items():
+        named[key] = value
+        if key == "display_name":
+            named["short"] = names.short
+            named["full_name"] = names.full
+            named["synonyms"] = list(names.synonyms)
+    return named
 
 
 def generate() -> str:
@@ -21,7 +35,8 @@ def generate() -> str:
             continue
         metadata = config_metadata(f"omnipath_resources.inputs_v2.{module.name}")
         if "website" in metadata:  # the module has a config
-            sources[resolve_source_name(module.name)] = metadata
+            slug = resolve_source_name(module.name)
+            sources[slug] = with_names(slug, metadata)
     return json.dumps(dict(sorted(sources.items())), indent=2, ensure_ascii=False) + "\n"
 
 

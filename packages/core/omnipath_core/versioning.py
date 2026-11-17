@@ -303,6 +303,23 @@ def partial_build_reason(manifest: Mapping[str, Any]) -> str | None:
     return None
 
 
+def input_module_revision(manifest: Mapping[str, Any]) -> tuple[str | None, bool]:
+    """The commit of the resources' input modules a build manifest records, and whether the
+    checkout had uncommitted edits.
+
+    The builds record the git state of each package they ran (``provenance.software``);
+    the revision of the builder (``provenance.code_revision``) stands in for builds that
+    recorded only that. ``(None, False)`` when the build recorded neither.
+    """
+    provenance = manifest.get("provenance") or {}
+    packages = ((provenance.get("software") or {}).get("packages")) or {}
+    git = (packages.get("omnipath-resources") or {}).get("git")
+    if git and git.get("commit"):
+        return git["commit"], bool(git.get("dirty"))
+    revision = provenance.get("code_revision")
+    return (revision, False) if revision else (None, False)
+
+
 def resource_dir(data_root: str | Path, source: str, version: str) -> Path:
     return (
         Path(data_root).resolve()

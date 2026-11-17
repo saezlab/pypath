@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pyarrow as pa
 import pyarrow.parquet as pq
+from omnipath_core import subset_layout
 from omnipath_core.measurements import QUANTITY_STRUCT
 from omnipath_core.schema import PUBLISHED_TABLES, RELATION_QUALIFIERS, SERVING_TABLES
 from omnipath_core.serving_tables import write_serving_tables
@@ -397,3 +398,175 @@ def write_resource_version(root, resource, version, *, n_relations=1):
     write_resource(target, [entity], relations)
     (target / "resolution_stats.json").write_text("{}\n", encoding="utf-8")
     return target
+
+
+# ---------------------------------------------------------------------------------------
+# A MetSigDB subset (and the exclusion list behind it) for the serving tests.
+
+
+def metsigdb_key(name):
+    """An entity key: the SHA-256 hex the release uses."""
+    return hashlib.sha256(name.encode()).hexdigest()
+
+
+METSIGDB_BUILD = "b" * 64
+
+
+# name -> label, inchikey, hmdb, chebi, kegg, pubchem, structure key, classes
+METSIGDB_METABOLITES = {
+    "atp": ("ATP", "ZKHQWZAMYRWXGA-KQYNXXCUSA-J", "HMDB0000538", "30616", "C00002", "5957",
+            "ZKHQWZAMYRWXGA", ["cofactors", "cofactors_extended"]),
+    "water": ("water", "XLYOFNOQVPJJNP-UHFFFAOYSA-N", "HMDB0002111", "15377", "C00001", "962",
+              "XLYOFNOQVPJJNP", ["small_molecules"]),
+    "glucose": ("glucose", "WQZGKKKJIJFFOK-GASJEMHNSA-N", "HMDB0000122", "17234", "C00031",
+                "5793", "WQZGKKKJIJFFOK", []),
+    "sodium": ("sodium(1+)", "FKNQFGJONOIPTF-UHFFFAOYSA-N", None, "29101", None, "923",
+               "FKNQFGJONOIPTF", ["ions"]),
+    "mystery": ("a generic class", None, None, None, None, None, None, []),
+}
+
+# resource, set id, label, type, sub-type, organism, members
+METSIGDB_SETS = [
+    ("Reactome", "R-HSA-70171", "Glycolysis", "pathway", None, 9606, ["atp", "water", "glucose"]),
+    ("Reactome", "R-HSA-1", "A pathway of cofactors", "pathway", None, 9606, ["atp"]),
+    ("WikiPathways", "WP534", "Glycolysis and gluconeogenesis", "pathway", None, 9606,
+     ["glucose", "atp"]),
+    ("KEGG", "rn00010", "Glycolysis / Gluconeogenesis", "pathway", "metabolic_map", None,
+     ["glucose", "atp"]),
+    ("KEGG", "hsa01100", "Metabolic pathways - Homo sapiens (human)", "pathway", "overview_map",
+     9606, ["water", "glucose", "sodium"]),
+    ("MACdb", "MACDB:15378", "Breast cancer", "disease", "cancer", 9606, ["glucose", "mystery"]),
+    ("ClassyFire", "CHEMONTID:0000000", "Chemical entities", "chemical_class", None, None,
+     ["atp", "water", "glucose", "sodium", "mystery"]),
+]
+
+
+def metsigdb_membership_rows():
+    rows = []
+    for resource, set_id, label, kind, sub, organism, members in METSIGDB_SETS:
+        for name in members:
+            label_, inchikey, hmdb, chebi, kegg, pubchem, structure, classes = METSIGDB_METABOLITES[name]
+            rows.append(
+                {
+                    "resource": resource,
+                    "set_source_id": set_id,
+                    "metabolite_entity_key": metsigdb_key(name),
+                    "metabolite_label": label_,
+                    "metabolite_entity_type": "small_molecule",
+                    "inchikey": inchikey,
+                    "metabolite_structure_key": structure,
+                    "smiles": "C" if inchikey else None,
+                    "hmdb": hmdb,
+                    "pubchem": pubchem,
+                    "chebi": chebi,
+                    "kegg": kegg,
+                    "has_structure": inchikey is not None,
+                    "exclusion_classes": classes,
+                    "set_entity_key": metsigdb_key(set_id),
+                    "set_label": label,
+                    "set_type": kind,
+                    "set_sub_type": sub,
+                    "organism": organism,
+                    "set_size": len(members),
+                    "set_context": '{"assignment":"direct","depth":0}'
+                    if resource == "ClassyFire"
+                    else None,
+                    "provenance_source": "omnipath_resources.inputs_v2.x@0123456789ab",
+                    "provenance_record": '{"source":"x","dataset":"d","row_id":"1"}',
+                    "build_id": METSIGDB_BUILD,
+                }
+            )
+    return sorted(rows, key=lambda r: (r["resource"], r["set_source_id"], r["metabolite_entity_key"]))
+
+
+def metsigdb_exclusion_rows():
+    rows = []
+    for name, spec in METSIGDB_METABOLITES.items():
+        for cls in spec[7]:
+            rows.append(
+                {
+                    "entity_key": metsigdb_key(name),
+                    "exclusion_class": cls,
+                    "assignment_source": "project_seed",
+                    "origin": "curated",
+                    "match_kind": "entity",
+                    "seed_namespace": "chebi",
+                    "seed_identifier": spec[3],
+                    "evidence": "fixture",
+                    "via_entity_key": None,
+                    "list_version": "v",
+                    "build_id": METSIGDB_BUILD,
+                }
+            )
+    return rows
+
+
+METSIGDB_COVERAGE = {
+    # What the build measured: the share of each resource's metabolites with the identifier.
+    resource: {
+        "rows": 1,
+        "sets": 1,
+        "metabolites": 1,
+        "identifiers": {"hmdb": 0.58 if resource == "Reactome" else 0.1, "chebi": 0.9,
+                        "kegg": 0.5, "pubchem": 0.4, "inchikey": 0.8},
+    }
+    for resource in ("KEGG", "Reactome", "WikiPathways", "MACdb", "ClassyFire")
+}
+
+
+def metsigdb_report_rows():
+    """The exclusion product's report: one class-size row per class that has members."""
+    sizes = {}
+    for row in metsigdb_exclusion_rows():
+        sizes.setdefault(row["exclusion_class"], set()).add(row["entity_key"])
+    return [
+        {
+            "kind": "class_size",
+            "exclusion_class": name,
+            "namespace": None,
+            "resolved": len(members),
+            "fallback_only": None,
+            "unresolved": None,
+            "detail": '{"entity_matches": %d}' % len(members),
+            "build_id": METSIGDB_BUILD,
+        }
+        for name, members in sorted(sizes.items())
+    ]
+
+
+def write_metsigdb_subsets(root, version="1", *, membership=None, exclusion=True):
+    """The exclusion and MetSigDB subsets of a published release, through the build's layout."""
+
+    def writer(tables, extra=None):
+        def write(directory, context):
+            for name, rows in tables.items():
+                pq.write_table(pa.Table.from_pylist(rows), directory / f"{name}.parquet")
+            return {"rows": sum(len(rows) for rows in tables.values()), **(extra or {})}
+
+        return write
+
+    if exclusion:
+        subset_layout.build_product(
+            root,
+            version,
+            "exclusion_metabolites",
+            writer(
+                {
+                    "exclusion_metabolite": metsigdb_exclusion_rows(),
+                    "exclusion_metabolite_report": metsigdb_report_rows(),
+                }
+            ),
+        )
+        subset_layout.build_product(
+            root,
+            version,
+            "metsigdb",
+            writer(
+                {
+                    "metsigdb_membership": membership
+                    if membership is not None
+                    else metsigdb_membership_rows()
+                },
+                {"coverage": METSIGDB_COVERAGE},
+            ),
+        )

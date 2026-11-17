@@ -159,3 +159,36 @@ def test_taxonomy_structure_validated_without_reading_a_reference():
         bad["references"]["taxonomy"][field] = value
         with pytest.raises(ValueError):
             validate_release_manifest(bad)
+
+
+def test_the_input_module_commit_is_the_one_the_resources_package_was_built_at():
+    from omnipath_core.versioning import input_module_revision
+
+    manifest = {
+        "provenance": {
+            "code_revision": "builder",
+            "software": {
+                "packages": {
+                    "omnipath-build": {"git": {"commit": "builder", "dirty": False}},
+                    "omnipath-resources": {"git": {"commit": "inputs", "dirty": True}},
+                }
+            },
+        }
+    }
+    assert input_module_revision(manifest) == ("inputs", True)
+
+
+def test_a_build_that_recorded_only_its_builders_revision_gives_that():
+    from omnipath_core.versioning import input_module_revision
+
+    assert input_module_revision({"provenance": {"code_revision": "builder"}}) == ("builder", False)
+
+
+def test_a_build_that_recorded_no_revision_gives_none():
+    from omnipath_core.versioning import input_module_revision
+
+    for manifest in ({}, {"provenance": None}, {"provenance": {"code_revision": None}}):
+        assert input_module_revision(manifest) == (None, False)
+    # A package without a checkout (an installed wheel) has no commit either.
+    no_git = {"provenance": {"software": {"packages": {"omnipath-resources": {"git": None}}}}}
+    assert input_module_revision(no_git) == (None, False)

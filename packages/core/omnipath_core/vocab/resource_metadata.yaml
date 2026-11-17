@@ -1,6 +1,9 @@
 {
   "abs": {
     "display_name": "ABS",
+    "short": "ABS",
+    "full_name": "Annotated Regulatory Binding Sites",
+    "synonyms": [],
     "description": "Experimentally verified transcription factor binding sites in the promoters of orthologous genes of human, mouse, rat and chicken.",
     "tags": [
       "gene_regulation",
@@ -18,6 +21,9 @@
   },
   "acsn": {
     "display_name": "ACSN",
+    "short": "ACSN",
+    "full_name": "Atlas of Cancer Signalling Networks",
+    "synonyms": [],
     "description": "Binary relations between proteins derived from the ACSN 2.0 cancer signaling maps: complex formation and regulation of reactions.",
     "tags": [
       "signaling",
@@ -36,6 +42,9 @@
   },
   "adhesome": {
     "display_name": "Adhesome",
+    "short": "Adhesome",
+    "full_name": "Adhesome",
+    "synonyms": [],
     "description": "Activating, inhibiting and binding interactions between the components of integrin adhesions, with publications.",
     "tags": [
       "signaling",
@@ -54,6 +63,9 @@
   },
   "almen2009": {
     "display_name": "Almen2009",
+    "short": "Almen2009",
+    "full_name": "Almen2009",
+    "synonyms": [],
     "description": "Classification of 6,264 human membrane proteins into receptor, transporter, enzyme and other families.",
     "tags": [
       "subcellular_localization",
@@ -72,6 +84,9 @@
   },
   "alzpathway": {
     "display_name": "AlzPathway",
+    "short": "AlzPathway",
+    "full_name": "AlzPathway",
+    "synonyms": [],
     "description": "Complexes of the AlzPathway map of Alzheimer's disease signaling, with their components and publications.",
     "tags": [
       "signaling",
@@ -90,6 +105,9 @@
   },
   "apo": {
     "display_name": "APO",
+    "short": "APO",
+    "full_name": "APO",
+    "synonyms": [],
     "description": "Ascomycete Phenotype Ontology: the phenotypes observed in yeast mutants, with their qualifiers, mutant types and experiment types.",
     "tags": [
       "ontologies"
@@ -105,6 +123,9 @@
   },
   "arn": {
     "display_name": "ARN",
+    "short": "ARN",
+    "full_name": "Autophagy Regulatory Network",
+    "synonyms": [],
     "description": "Curated stimulating, inhibiting and undirected interactions of human autophagy proteins, with PubMed references.",
     "tags": [
       "signaling",
@@ -123,6 +144,9 @@
   },
   "baccin2019": {
     "display_name": "Baccin2019",
+    "short": "Baccin2019",
+    "full_name": "Baccin 2019",
+    "synonyms": [],
     "description": "Manually checked mouse ligand–receptor pairs, with heteromeric receptors and their publications.",
     "tags": [
       "cell_cell_communication",
@@ -140,6 +164,9 @@
   },
   "bindingdb": {
     "display_name": "BindingDB",
+    "short": "BindingDB",
+    "full_name": "BindingDB",
+    "synonyms": [],
     "description": "Measured binding affinities between small molecules and protein targets.",
     "tags": [
       "pharmacology",
@@ -157,6 +184,9 @@
   },
   "biogrid": {
     "display_name": "BioGRID",
+    "short": "BioGRID",
+    "full_name": "Biological General Repository for Interaction Datasets",
+    "synonyms": [],
     "description": "Physical and genetic interactions of genes and proteins of all organisms curated by BioGRID from the literature (release 5.0.262), with the experimental system, throughput, score and publication of each, the experimental context (cell line, tissue, disease and other ontology terms, with their qualifiers) and the modification observed, and the phenotypes of genetic interactions as associations of the genes to the phenotype terms.",
     "tags": [
       "physical_interactions",
@@ -174,6 +204,9 @@
   },
   "brenda": {
     "display_name": "BRENDA",
+    "short": "BRENDA",
+    "full_name": "BRENDA",
+    "synonyms": [],
     "description": "Enzyme activators, inhibitors and cofactors, protein enzyme-class annotations and the enzyme classification hierarchy.",
     "tags": [
       "metabolism",
@@ -192,6 +225,9 @@
   },
   "bto": {
     "display_name": "BTO",
+    "short": "BTO",
+    "full_name": "BTO",
+    "synonyms": [],
     "description": "BRENDA Tissue Ontology: tissues, cell lines, cell types and cell cultures that are enzyme sources.",
     "tags": [
       "ontologies"
@@ -207,6 +243,9 @@
   },
   "ca1": {
     "display_name": "CA1",
+    "short": "CA1",
+    "full_name": "Human Hippocampal CA1 Region Neurons Signaling Network",
+    "synonyms": [],
     "description": "Activating, inhibitory and neutral links between signaling proteins of the hippocampal CA1 neuron, with publications.",
     "tags": [
       "signaling",
@@ -225,6 +264,9 @@
   },
   "cancercellmap": {
     "display_name": "CancerCellMap",
+    "short": "CancerCellMap",
+    "full_name": "CancerCellMap",
+    "synonyms": [],
     "description": "Protein interactions and state changes of ten cancer signaling pathways, with publications.",
     "tags": [
       "signaling",
@@ -243,6 +285,9 @@
   },
   "cancerdrugsdb": {
     "display_name": "CancerDrugsDB",
+    "short": "CancerDrugsDB",
+    "full_name": "Cancer Drugs Database",
+    "synonyms": [],
     "description": "Licensed cancer drugs with the target genes listed for them.",
     "tags": [
       "pharmacology",
@@ -260,6 +305,9 @@
   },
   "cancersea": {
     "display_name": "CancerSEA",
+    "short": "CancerSEA",
+    "full_name": "CancerSEA",
+    "synonyms": [],
     "description": "Gene sets (signatures) of 14 functional states of cancer cells, collected from databases and the literature.",
     "tags": [
       "disease_phenotype",
@@ -277,6 +325,9 @@
   },
   "cellcall": {
     "display_name": "CellCall",
+    "short": "CellCall",
+    "full_name": "CellCall",
+    "synonyms": [],
     "description": "Ligand–receptor pairs of the core and extended CellCall sets for human and mouse.",
     "tags": [
       "cell_cell_communication",
@@ -295,6 +346,9 @@
   },
   "cellcellinteractions": {
     "display_name": "CellCellInteractions",
+    "short": "CellCellInteractions",
+    "full_name": "CellCellInteractions",
+    "synonyms": [],
     "description": "Genes classified by the Bader lab as ligands, receptors and extracellular matrix proteins.",
     "tags": [
       "cell_cell_communication",
@@ -312,6 +366,9 @@
   },
   "cellchat": {
     "display_name": "CellChat",
+    "short": "CellChat",
+    "full_name": "CellChat",
+    "synonyms": [],
     "description": "Ligand–receptor interactions, protein complexes and signaling cofactors from CellChatDB.",
     "tags": [
       "cell_cell_communication",
@@ -330,6 +387,9 @@
   },
   "cellinker": {
     "display_name": "Cellinker",
+    "short": "Cellinker",
+    "full_name": "Cellinker",
+    "synonyms": [],
     "description": "Ligand–receptor and metabolite–protein interactions for intercellular communication.",
     "tags": [
       "cell_cell_communication",
@@ -347,6 +407,9 @@
   },
   "cellphonedb": {
     "display_name": "CellPhoneDB",
+    "short": "CellPhoneDB",
+    "full_name": "CellPhoneDB",
+    "synonyms": [],
     "description": "Ligand–receptor interactions, multisubunit protein complexes, and the roles of the proteins and complexes (receptor, secreted, transmembrane).",
     "tags": [
       "cell_cell_communication",
@@ -366,6 +429,9 @@
   },
   "celltalkdb": {
     "display_name": "CellTalkDB",
+    "short": "CellTalkDB",
+    "full_name": "CellTalkDB",
+    "synonyms": [],
     "description": "Literature-supported ligand–receptor pairs for human and mouse.",
     "tags": [
       "cell_cell_communication",
@@ -383,6 +449,9 @@
   },
   "celltypist": {
     "display_name": "CellTypist",
+    "short": "CellTypist",
+    "full_name": "CellTypist",
+    "synonyms": [],
     "description": "Curated marker genes and model top genes of immune cell types, with Cell Ontology terms.",
     "tags": [
       "cell_types",
@@ -401,6 +470,9 @@
   },
   "chebi": {
     "display_name": "ChEBI",
+    "short": "ChEBI",
+    "full_name": "ChEBI",
+    "synonyms": [],
     "description": "Chemical entities, identifiers and the ChEBI ontology hierarchy.",
     "tags": [
       "metabolism",
@@ -419,6 +491,9 @@
   },
   "chembl": {
     "display_name": "ChEMBL",
+    "short": "ChEMBL",
+    "full_name": "ChEMBL",
+    "synonyms": [],
     "description": "Bioactive compounds, molecular targets and ligand–target activity measurements.",
     "tags": [
       "pharmacology",
@@ -436,6 +511,9 @@
   },
   "chemont": {
     "display_name": "ChemOnt",
+    "short": "ChemOnt",
+    "full_name": "ChemOnt",
+    "synonyms": [],
     "description": "Chemical classification concepts and their ontology hierarchy.",
     "tags": [
       "ontologies",
@@ -452,6 +530,9 @@
   },
   "cl": {
     "display_name": "CL",
+    "short": "CL",
+    "full_name": "CL",
+    "synonyms": [],
     "description": "Cell Ontology: a structured vocabulary of cell types.",
     "tags": [
       "ontologies"
@@ -467,6 +548,9 @@
   },
   "collectri": {
     "display_name": "CollecTRI",
+    "short": "CollecTRI",
+    "full_name": "CollecTRI",
+    "synonyms": [],
     "description": "Transcription factor–target gene regulation with literature references, source databases and the mode of regulation where publications support it.",
     "tags": [
       "gene_regulation",
@@ -485,6 +569,9 @@
   },
   "collectri2": {
     "display_name": "CollecTRI2",
+    "short": "CollecTRI2",
+    "full_name": "CollecTRI2",
+    "synonyms": [],
     "description": "Transcription factor-target gene regulation from text mining and curated resources, with the supporting sources, literature references and the mode of regulation where the evidence states it.",
     "tags": [
       "gene_regulation",
@@ -503,6 +590,11 @@
   },
   "compleat": {
     "display_name": "COMPLEAT",
+    "short": "Compleat",
+    "full_name": "COMPLEAT protein COMPLex Enrichment Analysis Tool",
+    "synonyms": [
+      "COMPLEAT"
+    ],
     "description": "Human protein complexes collected from the literature databases and predicted from interaction networks, with their member genes.",
     "tags": [
       "protein_complexes",
@@ -520,6 +612,9 @@
   },
   "complexportal": {
     "display_name": "Complex Portal",
+    "short": "ComplexPortal",
+    "full_name": "ComplexPortal",
+    "synonyms": [],
     "description": "Human macromolecular complexes with their members, stoichiometry, evidence code and GO annotations.",
     "tags": [
       "protein_complexes",
@@ -537,6 +632,9 @@
   },
   "connectomedb2025": {
     "display_name": "connectomeDB2025",
+    "short": "ConnectomeDB2025",
+    "full_name": "ConnectomeDB2025",
+    "synonyms": [],
     "description": "Cell communication interactions and their ligand and receptor complexes.",
     "tags": [
       "cell_cell_communication",
@@ -555,6 +653,9 @@
   },
   "corum": {
     "display_name": "CORUM",
+    "short": "CORUM",
+    "full_name": "Comprehensive Resource of Mammalian protein complexes",
+    "synonyms": [],
     "description": "Curated mammalian protein complexes and their subunits.",
     "tags": [
       "protein_complexes",
@@ -571,6 +672,9 @@
   },
   "cpad": {
     "display_name": "CPAD",
+    "short": "CPAD",
+    "full_name": "CPAD",
+    "synonyms": [],
     "description": "Literature-curated entries relating regulators, signaling pathways and cancers, with expression pattern, pathway state, outcome and publication.",
     "tags": [
       "disease_phenotype",
@@ -590,6 +694,9 @@
   },
   "cpdb": {
     "display_name": "CPDB",
+    "short": "CPDB",
+    "full_name": "CPDB",
+    "synonyms": [],
     "description": "Human protein interactions, self-interactions and complex interactions that ConsensusPathDB integrates from other interaction databases, with the reporting databases, publications and, for pairs, a confidence score.",
     "tags": [
       "physical_interactions",
@@ -608,6 +715,9 @@
   },
   "cspa": {
     "display_name": "CSPA",
+    "short": "CSPA",
+    "full_name": "Cell Surface Protein Atlas",
+    "synonyms": [],
     "description": "Cell surface glycoproteins of human and mouse found by Cell Surface Capture, with a confidence category and the cell types they were identified on.",
     "tags": [
       "subcellular_localization",
@@ -626,6 +736,9 @@
   },
   "cytosig": {
     "display_name": "CytoSig",
+    "short": "CytoSig",
+    "full_name": "Cytokine Signaling Analyzer",
+    "synonyms": [],
     "description": "Response of 4,881 genes to 43 cytokines, the signature matrix of CytoSig.",
     "tags": [
       "signaling",
@@ -644,6 +757,9 @@
   },
   "dbptm": {
     "display_name": "dbPTM",
+    "short": "dbPTM",
+    "full_name": "dbPTM",
+    "synonyms": [],
     "description": "Human modification sites with the enzyme Swiss-Prot names for them, from a rescued table of dbPTM 3.0.",
     "tags": [
       "signaling",
@@ -661,6 +777,9 @@
   },
   "deathdomain": {
     "display_name": "DeathDomain",
+    "short": "DeathDomain",
+    "full_name": "DeathDomain",
+    "synonyms": [],
     "description": "Literature-curated physical interactions among death domain superfamily proteins, one record per method and publication.",
     "tags": [
       "signaling",
@@ -678,6 +797,9 @@
   },
   "depod": {
     "display_name": "DEPOD",
+    "short": "DEPOD",
+    "full_name": "Human Dephosphorylation Database",
+    "synonyms": [],
     "description": "Human phosphatases with their protein and non-protein substrates, dephosphorylation sites and in vitro or in vivo assay types.",
     "tags": [
       "signaling",
@@ -696,6 +818,9 @@
   },
   "dgidb": {
     "display_name": "DGIdb",
+    "short": "DGIdb",
+    "full_name": "DGIdb",
+    "synonyms": [],
     "description": "Druggable gene categories and drug-gene interactions with their types, aggregated from many source databases (data release 2026-09).",
     "tags": [
       "pharmacology",
@@ -714,6 +839,9 @@
   },
   "dip": {
     "display_name": "DIP",
+    "short": "DIP",
+    "full_name": "Database of Interacting Proteins",
+    "synonyms": [],
     "description": "Experimentally determined protein-protein interactions involving human proteins, with detection methods, interaction types, publications and the DIP quality status, February 2017 release.",
     "tags": [
       "signaling",
@@ -732,6 +860,9 @@
   },
   "disgenet": {
     "display_name": "DisGeNET",
+    "short": "DisGeNet",
+    "full_name": "DisGeNet",
+    "synonyms": [],
     "description": "Curated gene-disease associations with the DisGeNET score, the supporting databases and publication counts.",
     "tags": [
       "disease_phenotype",
@@ -750,6 +881,9 @@
   },
   "doid": {
     "display_name": "DOID",
+    "short": "DOID",
+    "full_name": "DOID",
+    "synonyms": [],
     "description": "Human Disease Ontology: human diseases classified by etiology, with synonyms and cross-references to disease vocabularies.",
     "tags": [
       "ontologies"
@@ -765,6 +899,9 @@
   },
   "domino": {
     "display_name": "DOMINO",
+    "short": "DOMINO",
+    "full_name": "DOMINO",
+    "synonyms": [],
     "description": "Protein-protein interactions mediated by interaction domains, with binding sites, detection methods and publications.",
     "tags": [
       "signaling",
@@ -783,6 +920,15 @@
   },
   "dorothea": {
     "display_name": "DoRothEA",
+    "short": "DoRothEA",
+    "full_name": "DoRothEA",
+    "synonyms": [
+      "DoRothEA_A",
+      "DoRothEA_B",
+      "DoRothEA_C",
+      "DoRothEA_D",
+      "DoRothEA_E"
+    ],
     "description": "Human transcription factor–target gene pairs with confidence levels A to E, the lines of evidence and their sources; curated pairs are regulation (with the mode where known), pairs with only ChIP-seq or motif evidence are binding, and pairs with only expression inference are associations.",
     "tags": [
       "gene_regulation",
@@ -802,6 +948,9 @@
   },
   "drugcentral": {
     "display_name": "DrugCentral",
+    "short": "DrugCentral",
+    "full_name": "Drug Central",
+    "synonyms": [],
     "description": "Drug identities, molecular targets and source-defined target action annotations.",
     "tags": [
       "pharmacology",
@@ -818,6 +967,9 @@
   },
   "eco": {
     "display_name": "ECO",
+    "short": "ECO",
+    "full_name": "ECO",
+    "synonyms": [],
     "description": "Evidence and Conclusion Ontology: the types of scientific evidence (assay, computational, curated) that support an assertion.",
     "tags": [
       "ontologies"
@@ -833,6 +985,9 @@
   },
   "elm": {
     "display_name": "ELM",
+    "short": "ELM",
+    "full_name": "Eukaryotic Linear Motif resource",
+    "synonyms": [],
     "description": "Interactions between linear motif instances and the protein domains that bind them, with detection methods and publications.",
     "tags": [
       "signaling",
@@ -851,6 +1006,9 @@
   },
   "embrace": {
     "display_name": "EMBRACE",
+    "short": "EMBRACE",
+    "full_name": "EMBRACE",
+    "synonyms": [],
     "description": "Mouse ligand–receptor pairs mapped in the embryonic brain by Sheikh et al. 2019.",
     "tags": [
       "cell_cell_communication",
@@ -867,6 +1025,12 @@
   },
   "encode": {
     "display_name": "ENCODE",
+    "short": "ENCODE",
+    "full_name": "Encyclopedia of DNA Elements",
+    "synonyms": [
+      "ENCODE-distal",
+      "ENCODE-proximal"
+    ],
     "description": "Transcription factor binding to genes and microRNAs, computed from ENCODE ChIP-seq peaks (ENCODE-Nets).",
     "tags": [
       "gene_regulation",
@@ -884,6 +1048,9 @@
   },
   "exocarta": {
     "display_name": "ExoCarta",
+    "short": "Exocarta",
+    "full_name": "Exocarta",
+    "synonyms": [],
     "description": "Proteins and RNAs found in exosomes (release 5 of 2015; release 6 of 2025 is not reachable), with species, publication, sample, isolation and detection methods.",
     "tags": [
       "subcellular_localization",
@@ -902,6 +1069,9 @@
   },
   "foodb": {
     "display_name": "FooDB",
+    "short": "FooDB",
+    "full_name": "FooDB",
+    "synonyms": [],
     "description": "Food constituents with chemical identifiers and concentration annotations.",
     "tags": [
       "nutrition",
@@ -919,6 +1089,11 @@
   },
   "go": {
     "display_name": "Gene Ontology",
+    "short": "GO",
+    "full_name": "Gene Ontology",
+    "synonyms": [
+      "GO-lig-rec"
+    ],
     "description": "Gene Ontology concepts describing biological processes, functions and cellular components.",
     "tags": [
       "ontologies"
@@ -934,6 +1109,9 @@
   },
   "gpcrdb": {
     "display_name": "GPCRdb",
+    "short": "GPCRdb",
+    "full_name": "GPCRdb",
+    "synonyms": [],
     "description": "GPCR classes, ligand types and receptor families, each with the human, rat and mouse receptors below it.",
     "tags": [
       "signaling",
@@ -951,6 +1129,9 @@
   },
   "guidetopharma": {
     "display_name": "Guide to Pharmacology",
+    "short": "GuidetoPharmacology",
+    "full_name": "Guide to Pharmacology",
+    "synonyms": [],
     "description": "Curated pharmacological ligands and their molecular targets.",
     "tags": [
       "pharmacology",
@@ -968,6 +1149,9 @@
   },
   "havugimana": {
     "display_name": "Havugimana2012",
+    "short": "Havugimana2012",
+    "full_name": "Havugimana2012",
+    "synonyms": [],
     "description": "622 putative soluble human protein complexes from biochemical fractionation, with their subunits.",
     "tags": [
       "protein_complexes",
@@ -985,6 +1169,9 @@
   },
   "hgnc": {
     "display_name": "HGNC",
+    "short": "HGNC",
+    "full_name": "Human Gene Nomenclature Committee",
+    "synonyms": [],
     "description": "HGNC gene groups (gene families) with their member genes and subgroups.",
     "tags": [
       "molecular_classification",
@@ -1002,6 +1189,9 @@
   },
   "hint": {
     "display_name": "HINT",
+    "short": "HINT",
+    "full_name": "High Quality Interactomes",
+    "synonyms": [],
     "description": "High-quality human binary protein interactions and co-complex associations compiled by HINT, with their publications, detection methods and the kind of study (high-throughput or literature curated) of the evidence.",
     "tags": [
       "physical_interactions",
@@ -1019,6 +1209,9 @@
   },
   "hippie": {
     "display_name": "HIPPIE",
+    "short": "HIPPIE",
+    "full_name": "Human Integrated Protein-Protein Interaction rEference",
+    "synonyms": [],
     "description": "Human protein-protein interactions from several interaction databases and studies, with the HIPPIE confidence score, publications and source databases of each pair (release 2.4).",
     "tags": [
       "physical_interactions",
@@ -1036,6 +1229,9 @@
   },
   "hmdb": {
     "display_name": "HMDB",
+    "short": "HMDB",
+    "full_name": "HMDB",
+    "synonyms": [],
     "description": "Human metabolite identities, chemical properties and biological annotations.",
     "tags": [
       "metabolism",
@@ -1053,6 +1249,9 @@
   },
   "hpmr": {
     "display_name": "HPMR",
+    "short": "HPMR",
+    "full_name": "Human Plasma Membrane Receptome",
+    "synonyms": [],
     "description": "Literature-curated ligands and interacting receptors of human plasma membrane receptors.",
     "tags": [
       "cell_cell_communication",
@@ -1072,6 +1271,9 @@
   },
   "hpo": {
     "display_name": "Human Phenotype Ontology",
+    "short": "HPO",
+    "full_name": "The Human Phenotype Ontology",
+    "synonyms": [],
     "description": "Human phenotype concepts and gene–phenotype associations.",
     "tags": [
       "disease_phenotype",
@@ -1089,6 +1291,11 @@
   },
   "hprd": {
     "display_name": "HPRD",
+    "short": "HPRD",
+    "full_name": "Human Protein Reference Database",
+    "synonyms": [
+      "HPRD-phos"
+    ],
     "description": "Human enzyme-substrate relations with modification sites, protein-protein interactions and protein complexes, with experiment types and publications, release 9 (2010).",
     "tags": [
       "signaling",
@@ -1108,6 +1315,9 @@
   },
   "htri": {
     "display_name": "HTRIdb",
+    "short": "HTRIdb",
+    "full_name": "HTRIdb",
+    "synonyms": [],
     "description": "Human transcription factor binding to target genes, with the detection technique and the PubMed ID of each observation.",
     "tags": [
       "gene_regulation",
@@ -1126,6 +1336,9 @@
   },
   "humancellmap": {
     "display_name": "HumanCellMap",
+    "short": "HumanCellMap",
+    "full_name": "Human Cell Map",
+    "synonyms": [],
     "description": "Subcellular localizations of human proteins predicted from a BioID proximity-labelling map of the HEK293 cell, by two methods (NMF and SAFE).",
     "tags": [
       "subcellular_localization",
@@ -1144,6 +1357,13 @@
   },
   "humap": {
     "display_name": "hu.MAP",
+    "short": "hu.MAP",
+    "full_name": "Human Protein Complex Map",
+    "synonyms": [
+      "hu.MAP1",
+      "hu.MAP2",
+      "hu.MAP3"
+    ],
     "description": "Human protein complexes predicted from mass spectrometry experiments, hu.MAP 1.0, 2.0 and 3.0 as separate datasets.",
     "tags": [
       "protein_complexes",
@@ -1160,6 +1380,9 @@
   },
   "huri": {
     "display_name": "HuRI",
+    "short": "HuRI",
+    "full_name": "Human Reference Interactome",
+    "synonyms": [],
     "description": "Human protein-protein interactions from the CCSB yeast two-hybrid screens (HuRI and its predecessors) and the Lit-BM literature set, as physical associations.",
     "tags": [
       "physical_interactions",
@@ -1177,6 +1400,9 @@
   },
   "i3d": {
     "display_name": "Interactome3D",
+    "short": "Interactome3D",
+    "full_name": "Interactome3D",
+    "synonyms": [],
     "description": "Human protein-protein interactions with the experimental structure or homology model of the complex, its PDB entry and the residues of each protein it covers (representative set, release 2024_12).",
     "tags": [
       "physical_interactions",
@@ -1194,6 +1420,9 @@
   },
   "icellnet": {
     "display_name": "ICELLNET",
+    "short": "ICELLNET",
+    "full_name": "ICELLNET",
+    "synonyms": [],
     "description": "Curated ligand–receptor interactions for cell communication analysis.",
     "tags": [
       "cell_cell_communication",
@@ -1211,6 +1440,9 @@
   },
   "imm1415": {
     "display_name": "iMM1415",
+    "short": "iMM1415",
+    "full_name": "iMM1415",
+    "synonyms": [],
     "description": "Mouse metabolic model entities and metabolic network information.",
     "tags": [
       "metabolism",
@@ -1227,6 +1459,11 @@
   },
   "innatedb": {
     "display_name": "InnateDB",
+    "short": "InnateDB",
+    "full_name": "InnateDB",
+    "synonyms": [
+      "InnateDB-All"
+    ],
     "description": "Human and mouse molecular interactions of the innate immune response curated by InnateDB from the literature, with their detection methods, interaction types and publications.",
     "tags": [
       "signaling",
@@ -1245,6 +1482,9 @@
   },
   "instruct": {
     "display_name": "INstruct",
+    "short": "INstruct",
+    "full_name": "INstruct",
+    "synonyms": [],
     "description": "Human protein-protein interactions with the Pfam domain pair that mediates them, where each domain lies in its protein, the supporting PDB entries and the publications of the interaction.",
     "tags": [
       "physical_interactions",
@@ -1262,6 +1502,9 @@
   },
   "intact": {
     "display_name": "IntAct",
+    "short": "IntAct",
+    "full_name": "IntAct Molecular Interaction Database",
+    "synonyms": [],
     "description": "Experimentally supported molecular interactions from IntAct.",
     "tags": [
       "physical_interactions",
@@ -1279,6 +1522,9 @@
   },
   "integrins": {
     "display_name": "Integrins",
+    "short": "Integrins",
+    "full_name": "Integrins",
+    "synonyms": [],
     "description": "The family of the human integrin subunits, with each subunit as a member.",
     "tags": [
       "cell_cell_communication",
@@ -1296,6 +1542,9 @@
   },
   "interpro": {
     "display_name": "InterPro",
+    "short": "InterPro",
+    "full_name": "InterPro",
+    "synonyms": [],
     "description": "InterPro protein families, domains and sites with their hierarchy and GO terms, and the entries that match each reviewed human protein.",
     "tags": [
       "molecular_classification",
@@ -1314,6 +1563,9 @@
   },
   "intogen": {
     "display_name": "IntOGen",
+    "short": "IntOGen",
+    "full_name": "IntOGen",
+    "synonyms": [],
     "description": "Cancer driver genes by cohort and cancer type, with the methods, the mode of action and the significance.",
     "tags": [
       "disease_phenotype",
@@ -1332,6 +1584,9 @@
   },
   "iptmnet": {
     "display_name": "iPTMnet",
+    "short": "iPTMnet",
+    "full_name": "iPTMnet",
+    "synonyms": [],
     "description": "Enzyme-substrate relations with modification sites, PTM types, source databases and confidence scores, across species.",
     "tags": [
       "signaling",
@@ -1350,6 +1605,9 @@
   },
   "italk": {
     "display_name": "iTALK",
+    "short": "iTALK",
+    "full_name": "iTALK",
+    "synonyms": [],
     "description": "Human ligand–receptor pairs from the iTALK package.",
     "tags": [
       "cell_cell_communication",
@@ -1366,6 +1624,9 @@
   },
   "kea": {
     "display_name": "KEA",
+    "short": "KEA",
+    "full_name": "Kinase Enrichment Analysis",
+    "synonyms": [],
     "description": "Kinase-substrate phosphorylation sites with references and source databases.",
     "tags": [
       "signaling",
@@ -1384,6 +1645,9 @@
   },
   "kegg": {
     "display_name": "KEGG",
+    "short": "KEGG",
+    "full_name": "Kyoto Encyclopedia of Genes and Genomes",
+    "synonyms": [],
     "description": "Metabolic reactions and their chemical participants from KEGG.",
     "tags": [
       "metabolism",
@@ -1400,6 +1664,9 @@
   },
   "kinasedotcom": {
     "display_name": "kinase.com",
+    "short": "kinase.com",
+    "full_name": "kinase.com",
+    "synonyms": [],
     "description": "Groups, families and subfamilies of the human protein kinases.",
     "tags": [
       "signaling",
@@ -1417,6 +1684,9 @@
   },
   "kirouac2010": {
     "display_name": "Kirouac2010",
+    "short": "Kirouac2010",
+    "full_name": "Kirouac 2010",
+    "synonyms": [],
     "description": "Manually curated pairs of secreted ligands and their receptors.",
     "tags": [
       "cell_cell_communication",
@@ -1434,6 +1704,9 @@
   },
   "lambert2018": {
     "display_name": "Lambert2018",
+    "short": "Lambert2018",
+    "full_name": "Lambert2018",
+    "synonyms": [],
     "description": "Human transcription factor genes with the curators' assessment, binding mode and DNA-binding domain family.",
     "tags": [
       "gene_regulation",
@@ -1451,6 +1724,9 @@
   },
   "laudanna": {
     "display_name": "Laudanna",
+    "short": "Laudanna",
+    "full_name": "Compiled Datasets for Network Analysis from Laudanna Lab",
+    "synonyms": [],
     "description": "Inferred directed links between human signaling proteins: the type of each link, and its activating, inhibiting or docking effect.",
     "tags": [
       "signaling",
@@ -1469,6 +1745,9 @@
   },
   "li2012": {
     "display_name": "Li2012",
+    "short": "Li2012",
+    "full_name": "Human Phosphotyrosine Signaling Network",
+    "synonyms": [],
     "description": "Curated tyrosine kinase-substrate sites and SH2/PTB domain binding to phosphotyrosine sites.",
     "tags": [
       "signaling",
@@ -1487,6 +1766,9 @@
   },
   "lipidmaps": {
     "display_name": "LIPID MAPS",
+    "short": "LipidMAPS",
+    "full_name": "LIPID MAPS",
+    "synonyms": [],
     "description": "Lipid structures, identifiers and chemical annotations from LIPID MAPS.",
     "tags": [
       "metabolism",
@@ -1504,6 +1786,9 @@
   },
   "lmpid": {
     "display_name": "LMPID",
+    "short": "LMPID",
+    "full_name": "LMPID",
+    "synonyms": [],
     "description": "Protein-protein interactions mediated by a linear motif binding a domain, with the motif instance and its position, the domain and the publications.",
     "tags": [
       "physical_interactions",
@@ -1520,6 +1805,9 @@
   },
   "lncdisease": {
     "display_name": "LncRNADisease",
+    "short": "LncRNADisease",
+    "full_name": "LncRNADisease",
+    "synonyms": [],
     "description": "Literature-curated interactions of lncRNAs with proteins, RNAs and DNA, and of lncRNA genes with transcription factors.",
     "tags": [
       "gene_regulation",
@@ -1537,6 +1825,9 @@
   },
   "lncrnadb": {
     "display_name": "lncRNAdb",
+    "short": "lncrnadb",
+    "full_name": "lncrnadb",
+    "synonyms": [],
     "description": "Literature-curated associations of functional lncRNAs with proteins, genes and transcripts.",
     "tags": [
       "gene_regulation",
@@ -1554,6 +1845,9 @@
   },
   "locate": {
     "display_name": "LOCATE",
+    "short": "LOCATE",
+    "full_name": "LOCATE",
+    "synonyms": [],
     "description": "Subcellular localizations of human and mouse proteins as Gene Ontology terms, from the literature, other databases and predictions, with the protein topology class.",
     "tags": [
       "subcellular_localization",
@@ -1572,6 +1866,9 @@
   },
   "lrdb": {
     "display_name": "LRdb",
+    "short": "LRdb",
+    "full_name": "LRdb",
+    "synonyms": [],
     "description": "Human ligand–receptor pairs with their supporting databases and publications.",
     "tags": [
       "cell_cell_communication",
@@ -1589,6 +1886,9 @@
   },
   "macdb": {
     "display_name": "MACdb",
+    "short": "MACdb",
+    "full_name": "MACdb",
+    "synonyms": [],
     "description": "Chemical–trait associations with study evidence and reported measurements.",
     "tags": [
       "metabolism",
@@ -1607,6 +1907,9 @@
   },
   "macrophage": {
     "display_name": "Macrophage",
+    "short": "Macrophage",
+    "full_name": "Macrophage",
+    "synonyms": [],
     "description": "Binding, activation, inhibition, modification and gene expression relationships between proteins of macrophage activation pathways, with publications.",
     "tags": [
       "signaling",
@@ -1626,6 +1929,9 @@
   },
   "matrisome": {
     "display_name": "Matrisome",
+    "short": "Matrisome",
+    "full_name": "Matrisome",
+    "synonyms": [],
     "description": "Human and mouse genes of the matrisome (extracellular matrix proteins and associated proteins) with their division and category.",
     "tags": [
       "cell_cell_communication",
@@ -1643,6 +1949,9 @@
   },
   "matrixdb": {
     "display_name": "MatrixDB",
+    "short": "MatrixDB",
+    "full_name": "MatrixDB",
+    "synonyms": [],
     "description": "Manually curated interactions of extracellular matrix proteins, glycosaminoglycans and other biomolecules, and the list of human ECM and secreted proteins.",
     "tags": [
       "cell_cell_communication",
@@ -1662,6 +1971,9 @@
   },
   "mcam": {
     "display_name": "MCAM",
+    "short": "MCAM",
+    "full_name": "Mammalian Cell Adhesion Molecule Database",
+    "synonyms": [],
     "description": "The list of human cell adhesion molecules of MCAM.",
     "tags": [
       "cell_cell_communication",
@@ -1679,6 +1991,9 @@
   },
   "mebocost": {
     "display_name": "MEBOCOST",
+    "short": "MEBOCOST",
+    "full_name": "MEBOCOST",
+    "synonyms": [],
     "description": "Metabolite–sensor interactions assembled through text mining and manual curation.",
     "tags": [
       "cell_cell_communication",
@@ -1698,6 +2013,9 @@
   },
   "membranome": {
     "display_name": "Membranome",
+    "short": "Membranome",
+    "full_name": "Membranome",
+    "synonyms": [],
     "description": "Membranes of single-pass transmembrane proteins of 18 species, with the side of the membrane their topology is on.",
     "tags": [
       "subcellular_localization",
@@ -1716,6 +2034,9 @@
   },
   "metachatdb": {
     "display_name": "MetaChatDB",
+    "short": "MetaChatDB",
+    "full_name": "MetaChatDB",
+    "synonyms": [],
     "description": "Literature-supported metabolite–sensor pairs: receptors, nuclear receptors and transporters.",
     "tags": [
       "cell_cell_communication",
@@ -1735,6 +2056,9 @@
   },
   "metatlas": {
     "display_name": "Metabolic Atlas",
+    "short": "MetabolicAtlas",
+    "full_name": "Metabolic Atlas",
+    "synonyms": [],
     "description": "Chemicals and metabolic reactions with stoichiometry and gene associations of Human-GEM and the mouse, rat, zebrafish, fruit fly and worm GEMs.",
     "tags": [
       "metabolism",
@@ -1751,6 +2075,9 @@
   },
   "mimp": {
     "display_name": "MIMP",
+    "short": "MIMP",
+    "full_name": "Mutations IMpact on Phosphorylation",
+    "synonyms": [],
     "description": "Human kinase-substrate phosphorylation sites that MIMP combined from PhosphoSitePlus, Phospho.ELM and HPRD.",
     "tags": [
       "signaling",
@@ -1768,6 +2095,9 @@
   },
   "mir2disease": {
     "display_name": "miR2Disease",
+    "short": "miR2Disease",
+    "full_name": "miR2Disease",
+    "synonyms": [],
     "description": "Human microRNA - target pairs validated by luciferase reporter experiments, curated from the literature.",
     "tags": [
       "gene_regulation",
@@ -1786,6 +2116,9 @@
   },
   "mirbase": {
     "display_name": "miRBase",
+    "short": "miRBase",
+    "full_name": "miRBase",
+    "synonyms": [],
     "description": "Precursor and mature microRNA identities with maturation relationships.",
     "tags": [
       "gene_regulation",
@@ -1802,6 +2135,9 @@
   },
   "mirdeathdb": {
     "display_name": "miRDeathDB",
+    "short": "miRDeathDB",
+    "full_name": "miRDeathDB",
+    "synonyms": [],
     "description": "Literature-curated microRNA-target gene pairs from studies of apoptosis and autophagy.",
     "tags": [
       "gene_regulation",
@@ -1819,6 +2155,9 @@
   },
   "mirecords": {
     "display_name": "miRecords",
+    "short": "miRecords",
+    "full_name": "miRecords",
+    "synonyms": [],
     "description": "Experimentally validated animal microRNA - target gene interactions curated from the literature (release of April 2013).",
     "tags": [
       "gene_regulation",
@@ -1836,6 +2175,9 @@
   },
   "mirtarbase": {
     "display_name": "miRTarBase",
+    "short": "miRTarBase",
+    "full_name": "miRTarBase",
+    "synonyms": [],
     "description": "Experimentally supported microRNA - target gene interactions of all species with their publications and support strength; non-functional results are left out.",
     "tags": [
       "gene_regulation",
@@ -1853,6 +2195,9 @@
   },
   "mondo": {
     "display_name": "Mondo",
+    "short": "Mondo",
+    "full_name": "Mondo",
+    "synonyms": [],
     "description": "Disease ontology concepts and explicit gene–disease associations.",
     "tags": [
       "disease_phenotype",
@@ -1870,6 +2215,9 @@
   },
   "mp": {
     "display_name": "MP",
+    "short": "MP",
+    "full_name": "MP",
+    "synonyms": [],
     "description": "Mammalian Phenotype Ontology: the standard terms for the phenotypes of mice and other mammals.",
     "tags": [
       "ontologies"
@@ -1885,6 +2233,9 @@
   },
   "mppi": {
     "display_name": "MPPI",
+    "short": "MPPI",
+    "full_name": "The MIPS Mammalian Protein-Protein Interaction Database",
+    "synonyms": [],
     "description": "Manually curated mammalian protein-protein interactions from individual experiments, with their detection methods and publications.",
     "tags": [
       "physical_interactions",
@@ -1901,6 +2252,9 @@
   },
   "mrclinksdb": {
     "display_name": "MRClinksDB",
+    "short": "MRClinksDB",
+    "full_name": "MRClinksDB",
+    "synonyms": [],
     "description": "Curated metabolite–receptor interactions with compound classification and literature evidence.",
     "tags": [
       "cell_cell_communication",
@@ -1918,6 +2272,9 @@
   },
   "msigdb": {
     "display_name": "MSigDB",
+    "short": "MSigDB",
+    "full_name": "Molecular Signatures Database",
+    "synonyms": [],
     "description": "Human gene sets (hallmark, curated, regulatory target, cell type and others) of MSigDB, with their accession, publication and ontology or pathway source.",
     "tags": [
       "molecular_classification",
@@ -1938,6 +2295,9 @@
   },
   "ncrdeathdb": {
     "display_name": "ncRDeathDB",
+    "short": "ncRDeathDB",
+    "full_name": "ncRDeathDB",
+    "synonyms": [],
     "description": "Literature-curated interactions of microRNAs, lncRNAs and snoRNAs with genes in apoptosis, autophagy and necrosis, and homology predictions for other species.",
     "tags": [
       "gene_regulation",
@@ -1956,6 +2316,9 @@
   },
   "netpath": {
     "display_name": "NetPath",
+    "short": "NetPath",
+    "full_name": "NetPath",
+    "synonyms": [],
     "description": "Literature-curated physical interactions of signaling pathways, with their pathway, publications and detection methods.",
     "tags": [
       "signaling",
@@ -1975,6 +2338,9 @@
   },
   "neuronchat": {
     "display_name": "NeuronChat",
+    "short": "NeuronChat",
+    "full_name": "NeuronChat",
+    "synonyms": [],
     "description": "Neural communication molecules and their receptor interactions.",
     "tags": [
       "cell_cell_communication",
@@ -1991,6 +2357,9 @@
   },
   "nichenet": {
     "display_name": "NicheNet",
+    "short": "NicheNet",
+    "full_name": "NicheNet",
+    "synonyms": [],
     "description": "Ligand–receptor networks from NicheNet v2.",
     "tags": [
       "cell_cell_communication",
@@ -2007,6 +2376,9 @@
   },
   "nrf2ome": {
     "display_name": "NRF2ome",
+    "short": "NRF2ome",
+    "full_name": "NRF2ome",
+    "synonyms": [],
     "description": "Curated inhibiting and undirected interactions of the NRF2 pathway proteins, with PubMed references.",
     "tags": [
       "signaling",
@@ -2023,8 +2395,11 @@
     },
     "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/nrf2ome.py"
   },
-  "omnipath_ontology": {
+  "omnipathontology": {
     "display_name": "OmniPath Ontology",
+    "short": "OmniPathOntology",
+    "full_name": "OmniPath Ontology",
+    "synonyms": [],
     "description": "Archived OmniPath controlled vocabulary concepts for interpreting historical data.",
     "tags": [
       "ontologies"
@@ -2040,6 +2415,9 @@
   },
   "oncotree": {
     "display_name": "OncoTree",
+    "short": "OncoTree",
+    "full_name": "OncoTree",
+    "synonyms": [],
     "description": "OncoTree: the cancer types of Memorial Sloan Kettering by code, with their hierarchy, main type, tissue and cross-references.",
     "tags": [
       "disease_phenotype",
@@ -2056,6 +2434,9 @@
   },
   "opm": {
     "display_name": "OPM",
+    "short": "OPM",
+    "full_name": "Orientations of Proteins in Membranes",
+    "synonyms": [],
     "description": "Membranes and families of the membrane protein structures of the PDB, with their calculated orientation in the membrane.",
     "tags": [
       "subcellular_localization",
@@ -2074,6 +2455,9 @@
   },
   "oreganno": {
     "display_name": "ORegAnno",
+    "short": "ORegAnno",
+    "full_name": "Open Regulatory Annotation",
+    "synonyms": [],
     "description": "Transcription factor binding sites annotated to a target gene, from the literature and curated data collections, for many species.",
     "tags": [
       "gene_regulation",
@@ -2092,6 +2476,9 @@
   },
   "panglaodb": {
     "display_name": "PanglaoDB",
+    "short": "PanglaoDB",
+    "full_name": "PanglaoDB",
+    "synonyms": [],
     "description": "Marker genes of human and mouse cell types, with their organs and germ layers.",
     "tags": [
       "cell_types",
@@ -2110,6 +2497,11 @@
   },
   "pathwaycommons": {
     "display_name": "PathwayCommons",
+    "short": "PathwayCommons",
+    "full_name": "PathwayCommons",
+    "synonyms": [
+      "KEGG-PC"
+    ],
     "description": "Binary relations between human genes, gene products and small molecules that Pathway Commons derives from the pathway and interaction databases it integrates, with their data sources and publications.",
     "tags": [
       "signaling",
@@ -2133,6 +2525,9 @@
   },
   "pato": {
     "display_name": "PATO",
+    "short": "PATO",
+    "full_name": "PATO",
+    "synonyms": [],
     "description": "Phenotype And Trait Ontology: phenotypic qualities (size, shape, color, viability, increased, decreased) used to describe phenotypes.",
     "tags": [
       "ontologies"
@@ -2148,6 +2543,9 @@
   },
   "pazar": {
     "display_name": "PAZAR",
+    "short": "PAZAR",
+    "full_name": "A Public Database of Transcription Factor and Regulatory Sequence Annotation",
+    "synonyms": [],
     "description": "Transcription factors and the genes whose regulatory sequences they were assayed on, from PAZAR projects, with the assay, the publication and the project of each line; binding records are interactions, reporter and expression assays are regulation.",
     "tags": [
       "gene_regulation",
@@ -2167,6 +2565,9 @@
   },
   "pdb": {
     "display_name": "PDB",
+    "short": "PDB",
+    "full_name": "Protein Data Bank",
+    "synonyms": [],
     "description": "Sets of UniProt proteins found together in one experimental PDB structure (derived groupings, not necessarily physiological complexes).",
     "tags": [
       "protein_complexes",
@@ -2183,6 +2584,9 @@
   },
   "pdzbase": {
     "display_name": "PDZBase",
+    "short": "PDZBase",
+    "full_name": "PDZBase",
+    "synonyms": [],
     "description": "Protein-protein interactions mediated by a PDZ domain, with their publications.",
     "tags": [
       "signaling",
@@ -2200,6 +2604,9 @@
   },
   "pepcyber": {
     "display_name": "PepCyber",
+    "short": "PepCyber",
+    "full_name": "PepCyber",
+    "synonyms": [],
     "description": "Interactions of phosphoprotein-binding domain proteins (SH2, 14-3-3, PTB, WW...) with phosphorylated substrates, with the phosphosite.",
     "tags": [
       "signaling",
@@ -2217,6 +2624,9 @@
   },
   "pfocr": {
     "display_name": "PFOCR",
+    "short": "PFOCR",
+    "full_name": "PFOCR",
+    "synonyms": [],
     "description": "Gene and chemical mentions extracted from published pathway figures.",
     "tags": [
       "literature_mentions",
@@ -2231,8 +2641,11 @@
     },
     "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/pfocr.py"
   },
-  "phenol_explorer": {
+  "phenolexplorer": {
     "display_name": "Phenol-Explorer",
+    "short": "Phenol-Explorer",
+    "full_name": "Phenol-Explorer",
+    "synonyms": [],
     "description": "Polyphenol constituents of foods with identifiers and concentration measurements.",
     "tags": [
       "nutrition",
@@ -2250,6 +2663,9 @@
   },
   "phobius": {
     "display_name": "Phobius",
+    "short": "Phobius",
+    "full_name": "Phobius",
+    "synonyms": [],
     "description": "Predicted transmembrane proteins and signal peptides of the human proteome, computed by OmniPath with Phobius.",
     "tags": [
       "subcellular_localization",
@@ -2267,6 +2683,9 @@
   },
   "phosphatome": {
     "display_name": "Phosphatome",
+    "short": "Phosphatome",
+    "full_name": "Phosphatome",
+    "synonyms": [],
     "description": "Folds, families and subfamilies of the human phosphatases, and their substrate types and catalytic activity.",
     "tags": [
       "signaling",
@@ -2284,6 +2703,11 @@
   },
   "phosphoelm": {
     "display_name": "Phospho.ELM",
+    "short": "phosphoELM",
+    "full_name": "phospho.ELM",
+    "synonyms": [
+      "phospho.ELM"
+    ],
     "description": "Kinase-substrate phosphorylation sites with their publications and low- or high-throughput origin, April 2015 dump.",
     "tags": [
       "signaling",
@@ -2301,6 +2725,9 @@
   },
   "phosphonetworks": {
     "display_name": "PhosphoNetworks",
+    "short": "PhosphoNetworks",
+    "full_name": "PhosphoNetworks",
+    "synonyms": [],
     "description": "Human kinase-substrate phosphorylation sites of the PhosphoNetworks high-resolution network, with the sequence window and a motif score.",
     "tags": [
       "signaling",
@@ -2319,6 +2746,9 @@
   },
   "phosphopoint": {
     "display_name": "PhosphoPOINT",
+    "short": "PhosphoPoint",
+    "full_name": "PhosphoPoint",
+    "synonyms": [],
     "description": "Human kinases with their substrates and their interacting proteins, with the category of each link.",
     "tags": [
       "signaling",
@@ -2337,6 +2767,9 @@
   },
   "phosphosite": {
     "display_name": "PhosphoSite",
+    "short": "PhosphoSite",
+    "full_name": "PhosphoSitePlus",
+    "synonyms": [],
     "description": "Kinase-substrate phosphorylation sites with their sequence context, in vivo or in vitro evidence, and the publications and PSI-MI methods of the BioPAX file, May 2022 release.",
     "tags": [
       "signaling",
@@ -2354,6 +2787,9 @@
   },
   "pmidb": {
     "display_name": "PMI-DB",
+    "short": "PMI-DB",
+    "full_name": "PMI-DB",
+    "synonyms": [],
     "description": "Protein–metabolite interactions measured by chemoproteomics in E. coli, yeast, human and mouse.",
     "tags": [
       "metabolism",
@@ -2372,6 +2808,9 @@
   },
   "progeny": {
     "display_name": "PROGENy",
+    "short": "PROGENy",
+    "full_name": "PROGENy",
+    "synonyms": [],
     "description": "Genes whose expression responds to the activity of 14 signaling pathways, with weights and p-values.",
     "tags": [
       "signaling",
@@ -2391,6 +2830,11 @@
   },
   "protmapper": {
     "display_name": "ProtMapper",
+    "short": "ProtMapper",
+    "full_name": "ProtMapper",
+    "synonyms": [
+      "hprd_ProtMapper"
+    ],
     "description": "Regulators of human phosphorylation sites from curated databases and text mining, with the source and publication of each evidence.",
     "tags": [
       "signaling",
@@ -2407,8 +2851,11 @@
     },
     "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/protmapper.py"
   },
-  "psi_mi": {
+  "psimi": {
     "display_name": "PSI-MI",
+    "short": "PSI-MI",
+    "full_name": "PSI-MI",
+    "synonyms": [],
     "description": "PSI-MI controlled vocabulary for describing molecular interaction experiments.",
     "tags": [
       "ontologies"
@@ -2424,6 +2871,9 @@
   },
   "ptfi": {
     "display_name": "PTFI",
+    "short": "PTFI",
+    "full_name": "PTFI",
+    "synonyms": [],
     "description": "Food composition, compound classifications and concentration measurements from PTFI Discover.",
     "tags": [
       "nutrition",
@@ -2442,6 +2892,11 @@
   },
   "ramilowski2015": {
     "display_name": "Ramilowski2015",
+    "short": "Ramilowski2015",
+    "full_name": "Ramilowski 2015",
+    "synonyms": [
+      "Ramilowski"
+    ],
     "description": "Literature-supported human ligand–receptor pairs with their source databases and publications.",
     "tags": [
       "cell_cell_communication",
@@ -2457,8 +2912,11 @@
     },
     "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/ramilowski2015.py"
   },
-  "rampdb": {
+  "ramp": {
     "display_name": "RaMP-DB",
+    "short": "RaMP",
+    "full_name": "Relational Database for Metabolomic Pathways",
+    "synonyms": [],
     "description": "Lipid and metabolite annotations with reference identifiers.",
     "tags": [
       "metabolism",
@@ -2476,6 +2934,9 @@
   },
   "reactome": {
     "display_name": "Reactome",
+    "short": "Reactome",
+    "full_name": "Reactome",
+    "synonyms": [],
     "description": "Biological pathways, biochemical activities and explicit regulatory controls.",
     "tags": [
       "signaling",
@@ -2497,6 +2958,9 @@
   },
   "recon3d": {
     "display_name": "Recon3D",
+    "short": "Recon3D",
+    "full_name": "Recon3D",
+    "synonyms": [],
     "description": "Human metabolic activities, chemical participants and model gene associations.",
     "tags": [
       "metabolism",
@@ -2513,6 +2977,9 @@
   },
   "refmet": {
     "display_name": "RefMet",
+    "short": "RefMet",
+    "full_name": "RefMet",
+    "synonyms": [],
     "description": "Reference metabolite names, identifiers and chemical classifications.",
     "tags": [
       "metabolism",
@@ -2530,6 +2997,9 @@
   },
   "rhea": {
     "display_name": "Rhea",
+    "short": "Rhea",
+    "full_name": "Rhea",
+    "synonyms": [],
     "description": "Curated biochemical reactions with chemical inputs, outputs and enzyme associations.",
     "tags": [
       "metabolism",
@@ -2547,6 +3017,9 @@
   },
   "scconnect": {
     "display_name": "scConnect",
+    "short": "scConnect",
+    "full_name": "scConnect",
+    "synonyms": [],
     "description": "Peptide and neurotransmitter ligands with their receptors and the action of the ligand, from the Guide to Pharmacology tables of scConnect.",
     "tags": [
       "cell_cell_communication",
@@ -2564,6 +3037,9 @@
   },
   "signalink": {
     "display_name": "SignaLink",
+    "short": "SignaLink",
+    "full_name": "SignaLink",
+    "synonyms": [],
     "description": "Signaling pathway members with their pathways and functions, and directed, signed interactions between them with publications.",
     "tags": [
       "signaling",
@@ -2583,6 +3059,11 @@
   },
   "signor": {
     "display_name": "SIGNOR",
+    "short": "SIGNOR",
+    "full_name": "Signaling Network Open Resource",
+    "synonyms": [
+      "Signor"
+    ],
     "description": "Causal signaling interactions, mechanisms and protein modification relationships.",
     "tags": [
       "signaling",
@@ -2601,6 +3082,9 @@
   },
   "slc": {
     "display_name": "SLC",
+    "short": "SLC",
+    "full_name": "Solute Carrier Annotation Resource",
+    "synonyms": [],
     "description": "Human solute carriers and the ChEBI-mapped substrates and ions they transport.",
     "tags": [
       "molecular_transport",
@@ -2615,24 +3099,11 @@
     },
     "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/slc.py"
   },
-  "slc": {
-    "display_name": "SLC",
-    "description": "Human solute carriers and the ChEBI-mapped substrates and ions they transport.",
-    "tags": [
-      "molecular_transport",
-      "literature_curated"
-    ],
-    "website": "https://opendata.cemm.at/gsflab/slcontology/",
-    "license": "Creative Commons Attribution 4.0 International license",
-    "license_url": "https://creativecommons.org/licenses/by/4.0/",
-    "license_use": {
-      "academic": "allowed",
-      "commercial": "allowed"
-    },
-    "input_module_url": "https://github.com/saezlab/pypath/blob/silver_schema_improvement/pypath/inputs_v2/slc.py"
-  },
   "slctables": {
     "display_name": "SLC tables",
+    "short": "SLCtables",
+    "full_name": "SLC tables",
+    "synonyms": [],
     "description": "Solute carrier proteins, transporter families and reference annotations.",
     "tags": [
       "molecular_transport",
@@ -2649,6 +3120,9 @@
   },
   "spike": {
     "display_name": "SPIKE",
+    "short": "SPIKE",
+    "full_name": "Signaling Pathway Integrated Knowledge Engine",
+    "synonyms": [],
     "description": "Signed regulations with their mechanisms, physical interactions, complexes and protein families of human signaling pathways.",
     "tags": [
       "signaling",
@@ -2670,6 +3144,9 @@
   },
   "stitch": {
     "display_name": "STITCH",
+    "short": "STITCH",
+    "full_name": "STITCH",
+    "synonyms": [],
     "description": "Chemical–protein interactions with action annotations and confidence evidence.",
     "tags": [
       "pharmacology",
@@ -2689,6 +3166,9 @@
   },
   "string": {
     "display_name": "STRING",
+    "short": "STRING",
+    "full_name": "STRING",
+    "synonyms": [],
     "description": "High-confidence human protein links of the STRING functional, physical and regulatory networks, with the combined score and the score of each evidence channel.",
     "tags": [
       "physical_interactions",
@@ -2709,6 +3189,9 @@
   },
   "surfaceome": {
     "display_name": "Surfaceome",
+    "short": "Surfaceome",
+    "full_name": "Surfaceome",
+    "synonyms": [],
     "description": "Human proteins predicted to be at the cell surface, with the prediction score, topology and membrane protein class.",
     "tags": [
       "subcellular_localization",
@@ -2726,6 +3209,9 @@
   },
   "swisslipids": {
     "display_name": "SwissLipids",
+    "short": "SwissLipids",
+    "full_name": "SwissLipids",
+    "synonyms": [],
     "description": "Lipid identities, classifications and molecular annotations.",
     "tags": [
       "metabolism",
@@ -2741,8 +3227,11 @@
     },
     "input_module_url": "https://github.com/saezlab/pypath/blob/parquet-migration/packages/resources/omnipath_resources/inputs_v2/swisslipids.py"
   },
-  "switches_elm": {
+  "switcheselm": {
     "display_name": "switches.ELM",
+    "short": "switches.ELM",
+    "full_name": "switches.ELM",
+    "synonyms": [],
     "description": "Motif-mediated interactions between two proteins that a modification, an effector or alternative splicing switches on or off, with the binding sites, the modified residues and publications.",
     "tags": [
       "signaling",
@@ -2760,6 +3249,9 @@
   },
   "talklr": {
     "display_name": "talklr",
+    "short": "talklr",
+    "full_name": "talklr",
+    "synonyms": [],
     "description": "Human ligand–receptor pairs from the talklr package, literature supported and putative.",
     "tags": [
       "cell_cell_communication",
@@ -2777,6 +3269,9 @@
   },
   "tcdb": {
     "display_name": "TCDB",
+    "short": "TCDB",
+    "full_name": "Transporter Classification Database",
+    "synonyms": [],
     "description": "Transporter protein classifications and transporter–substrate relationships.",
     "tags": [
       "molecular_transport",
@@ -2793,6 +3288,9 @@
   },
   "tfcensus": {
     "display_name": "TFcensus",
+    "short": "TFcensus",
+    "full_name": "Census of Human Transcription Factors",
+    "synonyms": [],
     "description": "Human transcription factor genes with the census class of evidence, DNA-binding InterPro entries and tissue specificity.",
     "tags": [
       "gene_regulation",
@@ -2810,6 +3308,9 @@
   },
   "threedid": {
     "display_name": "3did",
+    "short": "3did",
+    "full_name": "3did",
+    "synonyms": [],
     "description": "Pfam domain pairs, and Pfam domains with linear motifs, in contact in PDB structures, with the structures.",
     "tags": [
       "physical_interactions",
@@ -2826,6 +3327,9 @@
   },
   "topdb": {
     "display_name": "TOPDB",
+    "short": "TopDB",
+    "full_name": "Topology Data Bank of Transmembrane Proteins",
+    "synonyms": [],
     "description": "Membranes and topology types of transmembrane proteins of all species, with the number of transmembrane segments and the reliability of the topology.",
     "tags": [
       "subcellular_localization",
@@ -2845,6 +3349,9 @@
   },
   "transmir": {
     "display_name": "TransmiR",
+    "short": "TransmiR",
+    "full_name": "TransmiR",
+    "synonyms": [],
     "description": "Literature curated transcription factor - microRNA regulations with the action type, the publication and the species.",
     "tags": [
       "gene_regulation",
@@ -2862,6 +3369,9 @@
   },
   "trip": {
     "display_name": "TRIP",
+    "short": "TRIP",
+    "full_name": "Mammalian Transient Receptor Potential Channel-Interacting Protein Database",
+    "synonyms": [],
     "description": "Literature-curated interactions of mammalian TRP channels with other proteins, one record per method and publication.",
     "tags": [
       "signaling",
@@ -2880,6 +3390,9 @@
   },
   "trrust": {
     "display_name": "TRRUST",
+    "short": "TRRUST",
+    "full_name": "Transcriptional Regulatory Relationships Unraveled by Sentence-based Text mining",
+    "synonyms": [],
     "description": "Human and mouse transcription factor–target gene regulation with literature references and the mode of regulation where the articles state it.",
     "tags": [
       "gene_regulation",
@@ -2897,6 +3410,9 @@
   },
   "uberon": {
     "display_name": "Uberon",
+    "short": "Uberon",
+    "full_name": "Uberon",
+    "synonyms": [],
     "description": "Uberon: an integrated cross-species anatomy ontology of animal structures.",
     "tags": [
       "ontologies"
@@ -2912,6 +3428,9 @@
   },
   "uniprot": {
     "display_name": "UniProt",
+    "short": "UniProt",
+    "full_name": "UniProt",
+    "synonyms": [],
     "description": "Protein identities, functional annotations and reference identifier translations.",
     "tags": [
       "molecular_annotations",
@@ -2928,6 +3447,9 @@
   },
   "vesiclepedia": {
     "display_name": "Vesiclepedia",
+    "short": "Vesiclepedia",
+    "full_name": "Vesiclepedia",
+    "synonyms": [],
     "description": "Proteins and RNAs found in extracellular vesicles of many species (release 5.1), with vesicle type, publication, sample and methods.",
     "tags": [
       "subcellular_localization",
@@ -2946,6 +3468,9 @@
   },
   "wang": {
     "display_name": "Wang",
+    "short": "Wang",
+    "full_name": "Human Signaling Network version 6",
+    "synonyms": [],
     "description": "Activating, inhibiting and physical links between human signaling proteins.",
     "tags": [
       "signaling",
@@ -2964,6 +3489,9 @@
   },
   "wbphenotype": {
     "display_name": "WBPhenotype",
+    "short": "WBPhenotype",
+    "full_name": "WBPhenotype",
+    "synonyms": [],
     "description": "C. elegans Phenotype Ontology: the observable phenotypes of Caenorhabditis elegans and other nematodes.",
     "tags": [
       "ontologies"
@@ -2979,6 +3507,9 @@
   },
   "wikipathways": {
     "display_name": "WikiPathways",
+    "short": "WikiPathways",
+    "full_name": "WikiPathways",
+    "synonyms": [],
     "description": "Biological pathways and source-defined diagram interactions.",
     "tags": [
       "signaling",
@@ -2997,6 +3528,9 @@
   },
   "wojtowicz2020": {
     "display_name": "Wojtowicz2020",
+    "short": "Wojtowicz2020",
+    "full_name": "Wojtowicz2020",
+    "synonyms": [],
     "description": "Binding pairs of human cell-surface and secreted proteins from an extracellular interaction screen.",
     "tags": [
       "cell_cell_communication",
@@ -3014,6 +3548,9 @@
   },
   "zhong2015": {
     "display_name": "Zhong2015",
+    "short": "Zhong2015",
+    "full_name": "Zhong 2015",
+    "synonyms": [],
     "description": "Human cell adhesion molecule genes with their functional subtype.",
     "tags": [
       "cell_cell_communication",
