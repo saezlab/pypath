@@ -331,6 +331,7 @@ reads any systematically named acid as one (glutamine:
 | No match | The observation keeps its own normalized primary identifier as a native entity |
 | Chemical not resolved, but with exactly one valid InChIKey | That InChIKey becomes its identity |
 | Protein reported but not resolved | The exact reported product is kept (with version, isoform or chain suffix), marked `omnipath:protein_mapping_status = reported` |
+| A lipid (it has a LIPID MAPS or SwissLipids identifier) stays native because no name parses | The occurrence gets `omnipath:lipid_name_status` with the Goslin status, `unparsed` when no name parses. Other chemical names get no mark |
 | No unique gene | The native product or source identifier becomes the reference, with the gene mapping status |
 | Ontology term cited by ID only | It keeps its ID and is named from the ontology hub |
 | No identity library available | All identities stay native |

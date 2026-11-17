@@ -11,7 +11,7 @@ resource updates. PostgreSQL chooses its own explicit release on its monthly sch
 | resolver | Runtime matching, normalization, identity library lookup, entity records and the native policy kernel |
 | build | Inputs, hub export and the identity library, resource assembly and atomic publication |
 | postgres | Pinned local/HTTPS input, DuckDB projection, COPY, relational schema/indexes and shared derivations |
-| subsets | MetSigDB, network views, COSMOS and their shared transaction/checkpoint runner |
+| subsets | The Parquet subsets of a release (exclusion metabolites, MetSigDB) and the PostgreSQL products (network views, COSMOS) with their shared transaction/checkpoint runner |
 | api | Inventory snapshots, bounded DuckDB queries, exports and optional job adapters |
 | web | Explorer, generated HTTP/vocabulary types and shipped documentation |
 | client | Python queries over local or remote published Parquets |
@@ -24,6 +24,12 @@ serving tables are written by the build and scoped to one resource version; gene
 and chemical grouping across resources happens at query time.
 Public Python names remain `omnipath_*`; outer project folders use short names.
 Only Python's extra `src` level was removed; Rust and Svelte use their usual layout.
+
+The exclusion metabolites and MetSigDB read the whole release. The build makes them once
+from its Parquet, after the release goes out. They live in
+`subsets/<release>/<product>/`, are immutable and pin the release manifest. The serving
+database copies them in. PostgreSQL loads them from the Parquet. The network views and
+COSMOS stay PostgreSQL products.
 
 PostgreSQL never repeats entity resolution. It stages the resolved normalized
 tables in DuckDB, projects the established relational tables, streams COPY,

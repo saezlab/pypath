@@ -1,15 +1,66 @@
 # OmniPath subsets
 
-Build the exclusion metabolite list, MetSigDB memberships, network presets and
-COSMOS reaction networks from one fixed PostgreSQL release loaded by omnipath-postgres. Products use published
-identities and aliases; no resource builds or identifier resolution run.
+A published release gives four products: the exclusion metabolite list, MetSigDB
+memberships, network presets and COSMOS reaction networks. Products use published
+identities and aliases. They run no resource builds and no identifier resolution.
 
-## Build selected products
+The exclusion metabolites and MetSigDB are **Parquet subsets**. They read the whole
+release: the entities, identifiers, relations and ontology of many resources. The build
+reads the published Parquet once, after the release. The API and PostgreSQL both take
+the subsets from there. PostgreSQL builds the network views and COSMOS from a loaded
+release.
+
+## The order
+
+```
+make build                    resources                        resources/<source>/<version>/
+make publish-release          the pinned release               releases/<version>.json
+make build-subsets RELEASE=v  the Parquet subsets              subsets/<release>/<product>/
+make release-db RELEASE=v     the serving database             serving/<version>.duckdb
+make load-postgres            base tables, then the subsets    PostgreSQL schema
+```
+
+`publish-release --build-database` builds the subsets before the serving database.
+Add `--skip-subsets` to serve the release without them.
+
+## Build the Parquet subsets
+
+```sh
+uv run --frozen omnipath-subsets build --release 2026.11 --data-root data
+uv run --frozen omnipath-subsets build --release 2026.11 --data-root data --products exclusion_metabolites
+uv run --frozen omnipath-subsets check --release 2026.11 --data-root data
+```
+
+The build runs the products in dependency order. The exclusion metabolites come first.
+MetSigDB follows and carries each metabolite's exclusion classes. The build writes each
+product in a temporary directory and validates it. Then it moves the product to
+`<data_root>/subsets/<release>/<product>/` with a `subset_manifest.json`. The manifest
+holds:
+
+- the SHA-256 of the release manifest and the digests of the dependencies
+- the code version
+- the rows and SHA-256 of each table
+- the row contract and the counts the build reported
+
+A subset is immutable. A second build for the same release and product fails. A release
+that pins sample builds gives subsets marked partial.
+
+`check` runs the release checks on the subsets and on their release. It
+tests for duplicates, mandatory fields, the set type of each resource, set sizes, the
+build stamp, organism and overview-map rules, ChemOnt sets, MACdb ids, and the
+exclusion classes and their report. It fails on an error. It uses no frozen count.
+
+The Python entry point is `omnipath_subsets.parquet_products.build_release_subsets`.
+The layout and its rules are in `omnipath_core.subset_layout`, which the API also reads.
+
+## Build products in PostgreSQL
+
+The network views and COSMOS read a loaded release:
 
 ```sh
 export OMNIPATH_DATABASE_URL='postgresql:///omnipath'
-uv run --frozen omnipath-subsets build --schema release_2026_09
-uv run --frozen omnipath-subsets build --schema release_2026_09 --products metsigdb
+uv run --frozen omnipath-subsets build-postgres --schema release_2026_09
+uv run --frozen omnipath-subsets build-postgres --schema release_2026_09 --products cosmos
 ```
 
 The command requires exactly one release in the target schema. It takes the
@@ -28,8 +79,7 @@ remaining products with `--products`; existing metadata is not skipped
 implicitly.
 
 ```sh
-uv run --frozen omnipath-subsets build --schema release_2026_09 --checkpoint-products
-uv run --frozen omnipath-subsets build --schema release_2026_09 --checkpoint-products --products network_views cosmos
+uv run --frozen omnipath-subsets build-postgres --schema release_2026_09 --checkpoint-products
 ```
 
 The optional Python `on_product_committed(product, result)` callback requires
@@ -39,13 +89,20 @@ products committed by this call. A callback failure stops further builds while
 preserving that commit; `subset_build_metadata` is authoritative if observer
 persistence fails.
 
-The maintained scientific implementations live in `omnipath_subsets.exclusion_metabolites`,
-`omnipath_subsets.metsigdb`, `omnipath_subsets.network_views` and
-`omnipath_subsets.cosmos`. The standalone
-command and PostgreSQL importer share `omnipath_subsets.runner`; they publish
-`subset_build_metadata` and `parquet_phase` in the same product transaction.
-Explicit selection rebuilds each product. Use `omnipath-postgres --finish` to
-skip products already committed for the loaded monthly release.
+## Load the Parquet subsets into PostgreSQL
+
+After the shared derivations, `omnipath-postgres` loads each present subset through its
+staging and COPY path. It creates the tables and a `subset_build_metadata` row that
+names the digest of the subset manifest. Then it creates the indexes. No product logic
+runs there.
+
+The loader reads the subsets from the data root. Use `make load-postgres` or
+`omnipath-postgres --finish --data-root`. It loads a subset only for the published
+release that the subset came from. The subset's entities must be entities of the loaded
+release. Load the published manifest (`<data_root>/releases/<version>.json`).
+
+A release is complete when the loader and the build have made all four products. Use `--products` to
+leave a product out.
 
 ## Products
 
@@ -53,7 +110,8 @@ skip products already committed for the loaded monthly release.
   measure (ions, atoms, small molecules, xenobiotics, cofactors and extended cofactors), in classes.
   MetSigDB and COSMOS read it. See [Exclusion metabolites](#exclusion-metabolites).
 - **MetSigDB:** metabolite memberships in Reactome, WikiPathways, KEGG, MACdb
-  and ClassyFire sets, read from the normalized entity, evidence and ontology tables.
+  and ClassyFire sets, read from the release's per-resource Parquet. See
+  [MetSigDB](#metsigdb).
 - **Network views:** the MetaLinksDB, LIANA and Reactions preset definitions and
   registry. Registering a preset does not create a materialized network; consumers
   apply the stored recipe.
@@ -67,19 +125,47 @@ skip products already committed for the loaded monthly release.
   mappings only when exactly one UniProt target answers. Connectors use the
   same identifier and namespace as their reaction node.
 
-All four products use the current PostgreSQL schema. The earlier resource-record
-subset implementations and their verification command have been removed.
+The exclusion metabolites and MetSigDB are Parquet. The network views and COSMOS are
+PostgreSQL products. We removed the earlier resource-record subset implementations and
+their verification command.
+
+## MetSigDB
+
+The product has one table, `metsigdb_membership`. One row is one metabolite in one set of
+one resource. It comes from the per-resource Parquet of the release. The Parquet names
+entities by their release `entity_key`. PostgreSQL gets the ids that the release gave
+them. Each row carries:
+
+- the metabolite's identifiers from every pinned resource that states them
+- its structure key, and whether it has a structure at all (`has_structure`)
+- its exclusion classes, as a sorted list that is empty when there are none
+- the set: id, label, type, sub-type, organism and size
+- the provenance of the membership
+
+The manifest versions the row contract (`row_contract`). Version 2 prefixes MACdb set
+ids (`MACDB:<n>`), names the entities by key and adds `has_structure` and
+`exclusion_classes`.
+
+Three rules decide what a set is:
+
+- A ClassyFire set is a ChemOnt term. HMDB also links metabolites to disease terms, which
+  are not chemical classes.
+- A KEGG reference map (`rn*`) has no organism.
+- The map number identifies a KEGG overview map, whatever the organism prefix.
+
+The API serves the product as `/sets/metsigdb`. Its OpenAPI description gives the
+identifier coverage that the build measured for the release.
 
 ## Exclusion metabolites
 
-The product publishes two tables in the release schema. `exclusion_metabolite`
+The product publishes two tables. `exclusion_metabolite`
 holds one row for each entity, class and source of the assignment.
 `exclusion_metabolite_report` says what the list covers and what it does not. It
-reads one loaded release. It resolves no identifier and downloads nothing. It
-runs first, and you can rebuild it alone:
+reads the published release. It resolves no identifier and downloads nothing. It
+runs first, and you can build it alone:
 
 ```sh
-make rebuild-subsets POSTGRES_SCHEMA=release_2026_09 SUBSET_PRODUCTS=exclusion_metabolites
+uv run --frozen omnipath-subsets build --release 2026.11 --data-root data --products exclusion_metabolites
 ```
 
 ### The classes
@@ -152,15 +238,19 @@ Every row carries `list_version`, the commit of the three files. A build from
 uncommitted edits gets the stamp `uncommitted:<sha256>`, and the report says so.
 Commit before you build anything you intend to keep.
 
+The tables are Parquet. The loader creates `exclusion_metabolite_members` and the queries
+below in PostgreSQL. In the Parquet, `entity_key` names the entities.
+
 ## Validation scope
 
 ```sh
 make test-subsets
 ```
 
-Tests use disposable PostgreSQL and bounded synthetic fixtures. Current product
-parity tests under `packages/postgres/tests` compare complete rows, scientific
-semantics, preset definitions and database objects with frozen reference code.
+Tests use disposable PostgreSQL and bounded synthetic fixtures. They compare the Parquet
+products with rows frozen in `tests/golden/` (see its README). The parity tests for the
+PostgreSQL products are under `packages/postgres/tests`. They compare preset definitions
+and database objects with frozen reference code.
 Runner tests cover release identity, locking, durable product checkpoints,
 rollback, resume and explicit rebuild. These developer tests do not add a
 verification or rebuild phase to production runs.

@@ -1,5 +1,9 @@
 # Parquet migration: derivations and products
 
+> The exclusion metabolites and MetSigDB are no longer built in PostgreSQL: they are
+> Parquet subsets of the published release (see [subsets](subsets.md)). This page
+> describes the milestone as it was.
+
 This milestone builds the remaining shared derivations and product adapters from
 a fixed, already resolved release in PostgreSQL.
 

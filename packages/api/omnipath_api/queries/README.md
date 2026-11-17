@@ -28,6 +28,10 @@ queries.close()
   tables (`omnipath_core.schema`), as built. Downloads and raw evidence payloads
   (`evidence_payloads.parquet`) are read from here.
 - `releases/<version>.json`: published releases, each pinning resource versions.
+- `subsets/<release>/<product>/`: the Parquet subsets of a release, with their
+  `subset_manifest.json`. `publish-release --build-database` builds
+  them first, copies them into `serving/<version>.duckdb` and records their digests. Use
+  `--skip-subsets` to leave them out.
 - `serving/<version>.duckdb` and `serving/<version>.json`: the database of a release and
   how it was built, written by `omnipath-api build-release-db <version>`
   (`omnipath_api.release_database`). The newest few are kept; a request for a release

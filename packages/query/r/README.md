@@ -25,6 +25,7 @@ op_search(con, "TP53")                                 # the website's search
 op_relations(con, "TP53", sources = "signor")          # the website's relation export
 op_entity(con, op_search(con, "TP53")$entity_key[1])   # one entity's details
 op_query(con, "ontology_tree", term_id = "GO:0006915", output = "json")  # any query by name
+op_metsigdb(api, resource = "Reactome", entity = "HMDB0000538")  # metabolites in sets (API mode)
 op_disconnect(con)
 ```
 

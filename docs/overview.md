@@ -14,8 +14,11 @@ flowchart TB
     P --> API["API + explorer<br/>(DuckDB over Parquet)"]
     P --> C["Python client"]
     P --> REL["Named release<br/>(pins versions)"]
+    REL --> SUB["Parquet subsets<br/>exclusion metabolites · MetSigDB"]
+    SUB --> API
     REL --> PG["PostgreSQL<br/>monthly snapshot"]
-    PG --> S["Subsets<br/>MetSigDB · network views · COSMOS"]
+    SUB --> PG
+    PG --> S["PostgreSQL products<br/>network views · COSMOS"]
 ```
 
 ## The four stages
@@ -25,7 +28,7 @@ flowchart TB
 | Parse | `omnipath_resources.inputs_v2` maps source rows to typed entities and relations | `resources` | — |
 | Build | Extract, [resolve](../packages/resolver/docs/resolution.md), aggregate, write the normalized tables, publish atomically | `build`, `resolver`, `core` | [Entities](../packages/core/docs/entities.md), [Resolution](../packages/resolver/docs/resolution.md) |
 | Serve | API and explorer query Parquet through DuckDB; the clients read the same files | `api`, `web`, `query` | — |
-| Load | Pinned release → PostgreSQL relational schema → derived products | `postgres`, `subsets` | [PostgreSQL](../packages/postgres/docs/postgres.md), [Subsets](../packages/subsets/docs/subsets.md) |
+| Subsets | The published release → Parquet subsets (exclusion metabolites, MetSigDB) | `subsets` | [PostgreSQL](../packages/postgres/docs/postgres.md), [Subsets](../packages/subsets/docs/subsets.md) |
 
 > **Decision: the Parquet files are the contract between systems.** The published
 > tables of each resource version are the only interface between builder, serving
@@ -89,7 +92,7 @@ data/
 | `resolver` | Runtime matching, identifier normalization, index reads, the Rust decision kernel |
 | `build` | Source ingestion, reference construction, resource assembly and publication |
 | `postgres` | Pinned input, DuckDB projection, COPY, relational schema and shared derivations |
-| `subsets` | MetSigDB, network views, COSMOS and the shared product runner |
+| `subsets` | The exclusion metabolites and MetSigDB (Parquet subsets of a release), the network views and COSMOS (PostgreSQL products) and the shared product runner |
 | `api` / `web` / `query` | Serving, exploring and querying published Parquets |
 | `utils` | ID translation, taxonomy, orthology and reference lists |
 

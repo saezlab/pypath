@@ -18,7 +18,7 @@ independent schedules ([versioning](docs/versioning.md)).
 | [web](packages/web/README.md) | The explorer and its API proxy |
 | [query](packages/query/README.md) | SQL macros and the Python and R clients that install resources and query them locally |
 | [postgres](packages/postgres/README.md) | Loads a pinned release into PostgreSQL: relational layout, indexes, shared derivations |
-| [subsets](packages/subsets/README.md) | Products built in PostgreSQL: MetSigDB, network views, COSMOS |
+| [subsets](packages/subsets/README.md) | Four products of a release. The exclusion metabolites and MetSigDB are Parquet subsets that the build makes after the release. The network views and COSMOS are PostgreSQL products |
 | [utils](packages/utils/README.md) | ID translation, taxonomy, orthology and reference lists (`omnipath_utils`) |
 
 Data flows from resources through build (with resolver and core) to published

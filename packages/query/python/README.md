@@ -18,6 +18,7 @@ import omnipath_client as op
 api = op.connect()                                     # API mode
 api.search("TP53")                                     # the website's search
 api.relations("TP53", sources="signor")                # the website's relation export
+api.metsigdb(entity="HMDB0000538", resource="Reactome")  # metabolites in sets (API mode only)
 
 op.init(topic="signaling")                             # local mode: download, write the database
 db = op.connect(op.data_directory())
