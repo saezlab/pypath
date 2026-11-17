@@ -16,7 +16,6 @@ from biolink_model.datamodel.model import ChemicalEntity, Gene, Pathway, slots
 from bs4 import BeautifulSoup
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
-import requests
 
 from omnipath_resources.inputs_v2._class_terms import (
     Level,
@@ -28,6 +27,7 @@ from omnipath_resources.inputs_v2._class_terms import (
     with_chemont,
 )
 from omnipath_resources.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from omnipath_resources.share.downloads import fetch_text
 from omnipath_resources.inputs_v2.parsers.base import iter_sqlite
 from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from omnipath_resources.internals.tabular_builder import (
@@ -47,8 +47,9 @@ def get_ramp_latest_ver(branch='main'):
     """
     Retrieves the URL for the latest version of the database SQL file
     """
-    res = requests.get(BASE_URL % branch)
-    soup = BeautifulSoup(res.text, 'html.parser')
+    # The listing changes with each release: never one from the download cache.
+    listing = fetch_text(BASE_URL % branch, force_download=True)
+    soup = BeautifulSoup(listing, 'html.parser')
     files = sorted(
         {f.text for f in soup.find_all(title=re.compile('\\.sqlite.gz$'))}
     )
@@ -88,6 +89,7 @@ class RampDownload:
 download = RampDownload()
 table_names = [
     'analyte',
+    'analytesynonym',
     'metabolite_class',
     'analytehaspathway',
     'pathway',
@@ -143,6 +145,15 @@ analyte_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.RAMP, value=f('rampId')),
         CV(term=Namespace.NAME, value=f('common_name')),
+    ),
+    annotations=AnnotationsBuilder(),
+)
+# A synonym of an analyte, beside its common name.
+analytesynonym_schema = EntityBuilder(
+    entity_type=f('rampId', map='id_to_entity', extract='rampID'),
+    identifiers=IdentifiersBuilder(
+        CV(term=Namespace.RAMP, value=f('rampId')),
+        CV(term=Namespace.SYNONYM, value=f('Synonym')),
     ),
     annotations=AnnotationsBuilder(),
 )
@@ -260,6 +271,7 @@ pathway_schema = EntityBuilder(
 )
 schemas = {
     'analyte': analyte_schema,
+    'analytesynonym': analytesynonym_schema,
     'metabolite_class': metabolite_class_schema,
     'analytehaspathway': analytehaspathway_schema,
     'pathway': pathway_schema,

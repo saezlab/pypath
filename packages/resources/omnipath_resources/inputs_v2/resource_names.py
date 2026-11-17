@@ -55,6 +55,12 @@ def slugify(name: str) -> str:
     return re.sub(r'[^a-z0-9]', '', (name or '').lower())
 
 
+def _spelled_short(name: str) -> str:
+    """A short name from a long one: its own spelling without the spaces and underscores a
+    short name may not have (``Metabolic Atlas`` is ``MetabolicAtlas``)."""
+    return re.sub(r'[\s_]+', '', name)
+
+
 def validate_resource_name(slug: str, short: str, full: str) -> list[str]:
     """Return a list of rule violations (empty == valid)."""
     errors: list[str] = []
@@ -117,7 +123,7 @@ def resolve_names(
     """
     lookup_slug = slug or slugify(short or name)
     entry = resource_registry().get(lookup_slug)
-    resolved_short = short or (entry.short if entry else (name or lookup_slug))
+    resolved_short = short or (entry.short if entry else _spelled_short(name or lookup_slug))
     # full falls back to the config `name` (for inputs_v2 resources that is the
     # long name, e.g. hmdb name='Human Metabolome Database') before the short.
     resolved_full = full or (entry.full if entry else (name or resolved_short))

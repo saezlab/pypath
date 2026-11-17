@@ -690,6 +690,14 @@ def _build_pathway_term_records(handles: dict[str, Any]) -> list[dict[str, Any]]
     return sorted(terms.values(), key=lambda term: term['id'])
 
 
+_REFERENCE_MAP_RE = re.compile(r'^(?:rn|map|ko|ec)\d{5}$')
+
+
+def _is_reference_map(pathway_id: str) -> bool:
+    """A reference map (``rn00010``) describes no organism; an organism's map (``hsa00010``) does."""
+    return bool(_REFERENCE_MAP_RE.match(pathway_id))
+
+
 def _empty_pathway_record(
     pathway_id: str,
     pathway_name: str = '',
@@ -1019,7 +1027,11 @@ def _build_records(
             pathway_id = pathway['pathway_id']
             pathway_record = pathways_by_id.setdefault(
                 pathway_id,
-                _empty_pathway_record(pathway_id, pathway['pathway_name'], taxon_id),
+                _empty_pathway_record(
+                    pathway_id,
+                    pathway['pathway_name'],
+                    '' if _is_reference_map(pathway_id) else taxon_id,
+                ),
             )
             if not pathway_record['pathway_name'] and pathway['pathway_name']:
                 pathway_record['pathway_name'] = pathway['pathway_name']

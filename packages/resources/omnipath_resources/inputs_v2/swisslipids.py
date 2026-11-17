@@ -101,6 +101,15 @@ def _swisslipids_identifier(value: object) -> str | None:
     return identifier
 
 
+def _swisslipids_identifiers(value: object) -> list[str]:
+    """The identifiers of a cell that may name several, separated by ``|``."""
+    return [
+        identifier
+        for part in str(value or '').split('|')
+        if (identifier := _swisslipids_identifier(part))
+    ]
+
+
 def _ontology_relations(row: dict) -> list[OntologyRelation]:
     """The lipid below its parent and its class, and its components.
 
@@ -113,9 +122,9 @@ def _ontology_relations(row: dict) -> list[OntologyRelation]:
     relations = []
     above = []
     for field in ('Parent', 'Lipid class*'):
-        above_id = _swisslipids_identifier(row.get(field))
-        if above_id and above_id != lipid_id and above_id not in above:
-            above.append(above_id)
+        for above_id in _swisslipids_identifiers(row.get(field)):
+            if above_id != lipid_id and above_id not in above:
+                above.append(above_id)
     for above_id in above:
         relations.append(
             OntologyRelation(

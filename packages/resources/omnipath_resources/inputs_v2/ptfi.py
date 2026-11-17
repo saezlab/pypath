@@ -24,7 +24,6 @@ from biolink_model.datamodel.model import (
 )
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
-import requests
 
 from omnipath_resources.inputs_v2._class_terms import (
     Level,
@@ -36,6 +35,7 @@ from omnipath_resources.inputs_v2._class_terms import (
 )
 from omnipath_resources.inputs_v2._measurements import measurement as _measurement
 from omnipath_resources.inputs_v2.base import Dataset, Resource, ResourceConfig
+from omnipath_resources.share.downloads import fetch_text
 from omnipath_resources.inputs_v2.parsers.ptfi import MEMBER_DELIMITER, _raw
 from omnipath_resources.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from omnipath_resources.internals.tabular_builder import (
@@ -340,44 +340,38 @@ def download_ptfi_data(
         )
         return output_dir
     print(f'Found {len(full_specimen_ids)} specimen IDs to download')
-    with requests.Session() as session:
-        session.headers.update(
-            {
-                'User-Agent': 'Mozilla/5.0 (compatible; OmniPath/1.0; +https://omnipathdb.org/)'
-            }
-        )
-        successful = 0
-        skipped = 0
-        failed = 0
-        for i, specimen_id in enumerate(full_specimen_ids, 1):
-            output_file = output_dir / f'{specimen_id}.json'
-            if output_file.exists() and (not force_refresh):
-                skipped += 1
-                if i % 50 == 0:
-                    print(
-                        f'  [{i}/{len(full_specimen_ids)}] Processed (skipped existing files)'
-                    )
-                continue
-            url = BASE_API_URL.format(specimen_id=specimen_id)
-            try:
-                response = session.get(url, timeout=30)
-                response.raise_for_status()
-                data = response.json()
-                with open(output_file, 'w') as f:
-                    json.dump(data, f)
-                successful += 1
-                if i % 10 == 0:
-                    print(
-                        f'  [{i}/{len(full_specimen_ids)}] Downloaded: {specimen_id}'
-                    )
-                if i < len(full_specimen_ids):
-                    time.sleep(DELAY_SECONDS)
-            except (
-                requests.exceptions.RequestException,
-                json.JSONDecodeError,
-            ) as e:
-                print(f'  ERROR downloading {specimen_id}: {e}')
-                failed += 1
+    # Each specimen is fetched through the download manager (its CA bundle, timeouts
+    # and retries); the files kept here are the ones the next run skips.
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (compatible; OmniPath/1.0; +https://omnipathdb.org/)'
+    }
+    successful = 0
+    skipped = 0
+    failed = 0
+    for i, specimen_id in enumerate(full_specimen_ids, 1):
+        output_file = output_dir / f'{specimen_id}.json'
+        if output_file.exists() and (not force_refresh):
+            skipped += 1
+            if i % 50 == 0:
+                print(
+                    f'  [{i}/{len(full_specimen_ids)}] Processed (skipped existing files)'
+                )
+            continue
+        url = BASE_API_URL.format(specimen_id=specimen_id)
+        try:
+            data = json.loads(
+                fetch_text(url, headers=headers, force_download=force_refresh)
+            )
+            with open(output_file, 'w') as f:
+                json.dump(data, f)
+            successful += 1
+            if i % 10 == 0:
+                print(f'  [{i}/{len(full_specimen_ids)}] Downloaded: {specimen_id}')
+            if i < len(full_specimen_ids):
+                time.sleep(DELAY_SECONDS)
+        except (RuntimeError, OSError, json.JSONDecodeError) as e:
+            print(f'  ERROR downloading {specimen_id}: {e}')
+            failed += 1
     print(
         f'\nDownload complete: {successful} downloaded, {skipped} skipped, {failed} failed'
     )

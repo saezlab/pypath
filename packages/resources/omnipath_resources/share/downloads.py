@@ -228,3 +228,16 @@ def download_and_open(
     )
 
     return opener
+
+
+def fetch_text(url: str, **kwargs) -> str:
+    """The body of ``url`` as text, read through the shared download manager and not saved.
+
+    Inputs that fetch a page or a small document use this rather than an HTTP client of
+    their own, so that they share the manager's CA bundle, timeouts and retries. Keyword
+    arguments (``headers``, ``force_download``, ...) go to the manager.
+    """
+    buffer = get_download_manager().download(url, dest=False, **kwargs)
+    if buffer is None:
+        raise RuntimeError(f'Download returned no data: {url}')
+    return buffer.getvalue().decode('utf-8')

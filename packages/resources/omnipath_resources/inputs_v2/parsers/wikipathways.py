@@ -161,9 +161,21 @@ def _load_records(opener, force_refresh: bool = False) -> dict[str, list[dict[st
     return records
 
 
+def _the_pathway(graph: Graph) -> URIRef | None:
+    """The pathway a file describes.
+
+    A file types other pathways it refers to (data nodes that link to them) as
+    ``wp:Pathway`` too. Those have no title or organism of their own, so the pathway is the
+    one that is named; the order of the file decides nothing.
+    """
+    candidates = sorted(set(graph.subjects(RDF.type, WP.Pathway)), key=str)
+    named = [uri for uri in candidates if next(graph.objects(uri, DC.title), None) is not None]
+    return (named or candidates or [None])[0]
+
+
 def _extract_pathway_record(graph: Graph) -> dict[str, str] | None:
 
-    pathway_uri = next(graph.subjects(RDF.type, WP.Pathway), None)
+    pathway_uri = _the_pathway(graph)
 
     if not pathway_uri:
         return None

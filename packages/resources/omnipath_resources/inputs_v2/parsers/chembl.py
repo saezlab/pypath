@@ -26,7 +26,7 @@ CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE = int(
 )
 CHEMBL_DUCKDB_MEMORY = os.environ.get('OMNIPATH_CHEMBL_DUCKDB_MEMORY', '1500MB')
 
-CHEMBL_PARQUET_CACHE_VERSION = 9
+CHEMBL_PARQUET_CACHE_VERSION = 10
 CHEMBL_ACTIVITY_MIN_PCHEMBL = 5.0
 
 
@@ -45,6 +45,10 @@ DUCKDB_TABLES: dict[str, str] = {
     'compound_properties': """
         SELECT molregno, full_mwt, alogp
         FROM s.compound_properties
+    """,
+    'molecule_synonyms': """
+        SELECT molregno, synonyms, syn_type
+        FROM s.molecule_synonyms
     """,
     'assays': """
         SELECT
@@ -129,10 +133,17 @@ PARQUET_QUERIES: dict[str, str] = {
             cs.standard_inchi,
             cs.standard_inchi_key,
             cp.full_mwt,
-            cp.alogp
+            cp.alogp,
+            ms.synonyms
         FROM molecule_dictionary md
         LEFT JOIN compound_structures cs ON md.molregno = cs.molregno
         LEFT JOIN compound_properties cp ON md.molregno = cp.molregno
+        LEFT JOIN (
+            SELECT molregno, string_agg(DISTINCT synonyms, chr(31)) AS synonyms
+            FROM molecule_synonyms
+            WHERE synonyms IS NOT NULL AND synonyms <> ''
+            GROUP BY molregno
+        ) ms ON md.molregno = ms.molregno
         WHERE md.molregno IN (
             SELECT molregno
             FROM activities
@@ -435,6 +446,7 @@ def _duckdb_cache_compatible(duckdb_path: Path) -> bool:
             con.execute('SELECT mutation, accession, version, isoform, sequence FROM variant_sequences LIMIT 0')
             con.execute('SELECT tissue_id FROM assays LIMIT 0')
             con.execute('SELECT uberon_id FROM tissue_dictionary LIMIT 0')
+            con.execute('SELECT molregno, synonyms FROM molecule_synonyms LIMIT 0')
         return True
     except duckdb.Error:
         return False
@@ -654,10 +666,20 @@ SQLITE_QUERIES: dict[str, str] = {
             cs.standard_inchi,
             cs.standard_inchi_key,
             cp.full_mwt,
-            cp.alogp
+            cp.alogp,
+            ms.synonyms
         FROM molecule_dictionary md
         LEFT JOIN compound_structures cs ON md.molregno = cs.molregno
         LEFT JOIN compound_properties cp ON md.molregno = cp.molregno
+        LEFT JOIN (
+            SELECT molregno, GROUP_CONCAT(synonym, CHAR(31)) AS synonyms
+            FROM (
+                SELECT DISTINCT molregno, synonyms AS synonym
+                FROM molecule_synonyms
+                WHERE synonyms IS NOT NULL AND synonyms <> ''
+            )
+            GROUP BY molregno
+        ) ms ON md.molregno = ms.molregno
         WHERE md.molregno IN (
             SELECT molregno
             FROM activities

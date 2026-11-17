@@ -208,6 +208,9 @@ molecules_schema = EntityBuilder(
         CV(term=Namespace.INCHI, value=f('standard_inchi')),
         CV(term=Namespace.INCHIKEY, value=f('standard_inchi_key')),
         CV(term=Namespace.NAME, value=f('pref_name')),
+        # The molecule's other names (trade names, INNs, research codes), joined by the
+        # unit separator, which no name holds.
+        CV(term=Namespace.SYNONYM, value=f('synonyms', delimiter='\x1f')),
     ),
     annotations=AnnotationsBuilder(
         CV(term='chemrof:mass', value=f('full_mwt')),
