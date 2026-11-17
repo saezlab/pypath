@@ -27,7 +27,13 @@ from .locations import is_remote, measure_http_transfer
 from .projection import companion_ddl, prepare_aligned_release
 from .bulk import BulkCopyResult
 from omnipath_subsets.db import validate_schema
-from omnipath_subsets.runner import PRODUCTS, acquire_schema_lock, run_products
+from omnipath_subsets.runner import (
+    BUILT_PRODUCTS,
+    LOADED_PRODUCTS,
+    PRODUCTS,
+    acquire_schema_lock,
+    run_products,
+)
 from .releases import load_release as read_release, verify_release
 from .relational.db.schema import ensure_schema, ensure_source_partitions, ensure_deferred_indexes
 from .relational.db.indexes import create_secondary_indexes
@@ -477,8 +483,23 @@ def _checkpoint(conn, schema, phase, seconds, result, identity, observer):
     _emit(observer, "phase_committed", phase=phase, seconds=seconds, result=_json(result))
 
 
-def finish_release(database_url, *, schema="omnipath", products=PRODUCTS, observer=None):
-    """Resume committed main substrate; never repeat COPY or completed products."""
+def finish_release(
+    database_url,
+    *,
+    schema="omnipath",
+    products=PRODUCTS,
+    observer=None,
+    subsets_root=None,
+    memory_limit="1GB",
+    duckdb_threads=1,
+    temp_directory=None,
+):
+    """Resume committed main substrate; never repeat COPY or completed products.
+
+    The exclusion metabolites and MetSigDB are loaded from the release's Parquet subsets,
+    which are read under ``subsets_root`` (the data root); the other products are built
+    here. A product already committed is not run again.
+    """
     validate_schema(schema)
     if not isinstance(products, (tuple, list)) or any(not isinstance(p, str) for p in products):
         raise ValueError("Products must be unique known products")
@@ -511,16 +532,42 @@ def finish_release(database_url, *, schema="omnipath", products=PRODUCTS, observ
             _checkpoint(
                 conn, schema, "derived", perf_counter() - start, outcome, identity, observer
             )
-        run_products(
-            database_url,
-            schema,
-            owner=conn,
-            identity=identity,
-            products=products,
-            resume=True,
-            observer=observer,
-            progress=True,
-        )
+        loaded = tuple(p for p in LOADED_PRODUCTS if p in products and p not in completed)
+        if loaded:
+            if subsets_root is None:
+                raise ValueError(
+                    f"Loading {', '.join(loaded)} needs the data root that holds the release's "
+                    "subsets (--data-root); or leave them out with --products"
+                )
+            if is_remote(subsets_root):
+                raise ValueError("Subsets are loaded from a local data root")
+            from .subset_loading import load_subsets
+
+            spool = Path(temp_directory or gettempdir()) / "main-staging"
+            spool.mkdir(parents=True, exist_ok=True)
+            load_subsets(
+                conn,
+                schema,
+                subsets_root,
+                identity,
+                loaded,
+                spool=spool,
+                observer=observer,
+                memory_limit=memory_limit,
+                duckdb_threads=duckdb_threads,
+            )
+        built = tuple(p for p in BUILT_PRODUCTS if p in products)
+        if built:
+            run_products(
+                database_url,
+                schema,
+                owner=conn,
+                identity=identity,
+                products=built,
+                resume=True,
+                observer=observer,
+                progress=True,
+            )
         with conn.cursor() as cur:
             cur.execute(
                 sql.SQL("SELECT phase FROM {}.parquet_phase").format(sql.Identifier(schema))
@@ -728,4 +775,13 @@ def load_release(
             (),
             dict(plan.compatibility),
         )
-    return finish_release(database_url, schema=schema, products=products, observer=observer)
+    return finish_release(
+        database_url,
+        schema=schema,
+        products=products,
+        observer=observer,
+        subsets_root=data_root,
+        memory_limit=memory_limit,
+        duckdb_threads=duckdb_threads,
+        temp_directory=temp_directory,
+    )

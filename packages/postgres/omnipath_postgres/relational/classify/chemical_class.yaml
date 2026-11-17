@@ -25,7 +25,7 @@ default: metabolite
 sources:
   lipid:      [lipidmaps, swisslipids]
   drug:       [drugcentral, drugbank, chembl]
-  food:       [foodb, phenol_explorer, ptfi]
+  food:       [foodb, phenolexplorer, ptfi]
   metabolite: [hmdb, refmet, recon3d, recon3d_metabolic, metatlas, chebi, kegg, rhea, mebocost, bindingdb]
 
 # Xenobiotic identification (precedence over drug/food): membership in a curated

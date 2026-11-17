@@ -54,14 +54,6 @@ CONTENT_TABLES: tuple[str, ...] = (
     "relation_evidence_relation",
     "entity_evidence_resolution",
     "resolution_conflict",
-    # Gene-anchored state model (spec 011's predecessor, "spec-003 Phase 6"):
-    # not previously listed here, so reset-content never truncated these --
-    # stale rows survived every wipe and eventually collided with a later
-    # PRIMARY KEY add on evidence_state. Found live on 2026-09-09.
-    "evidence_state",
-    "state_component",
-    "state",
-    "gene_protein_representative",
     "annotation",
     "interaction_fact_resource",
     "interaction_party",
@@ -84,9 +76,7 @@ CONTENT_TABLES: tuple[str, ...] = (
     "resource_overlap_summary",
     # omnipath-metabo's WP6 QC layer (structure_consistency_finding
     # references data_source; found live during the cycle's final
-    # reset-content -- same "not previously listed here" bug class as
-    # evidence_state/state_component above, T098's tables just never got
-    # added when they landed in the other repo).
+    # reset-content: a table that is not listed here survives every wipe).
     "structure_consistency_finding",
     "structure_consistency_summary",
     "data_source",
@@ -106,7 +96,6 @@ SOURCE_PARTITIONED_TABLES: tuple[str, ...] = (
     "resolution_conflict",
     "relation_evidence_relation",
     "entity_annotation_relation",
-    "evidence_state",
 )
 
 SOURCE_PARTITION_DROP_ORDER: tuple[str, ...] = (
@@ -122,7 +111,6 @@ SOURCE_PARTITION_DROP_ORDER: tuple[str, ...] = (
     "resolution_conflict",
     "entity_identifier",
     "entity_evidence_identifier",
-    "evidence_state",
     "entity_evidence",
 )
 
@@ -175,10 +163,6 @@ CONTENT_PRIMARY_KEYS: tuple[tuple[str, tuple[str, ...]], ...] = (
         "entity_name",
         ("source_id", "entity_id", "name_normalized"),
     ),
-    ("gene_protein_representative", ("entity_id",)),
-    ("state", ("state_id",)),
-    ("state_component", ("state_id", "component_type", "value")),
-    ("evidence_state", ("source_id", "entity_evidence_id", "state_id")),
 )
 
 
@@ -916,11 +900,9 @@ def _ensure_gene_anchored_schema(
 
     Additive + idempotent. The base ``entity`` gains the stored label +
     resolution-mechanism columns; ``entity_evidence_resolution`` gains the cheap
-    ``molecular_type_id`` (set even when only a symbol is known). The gene form
-    lives in two tiers: a precomputed ``gene_protein_representative`` (1:1, the
-    no-state-join representative UniProt) and the heavy opt-in ``state`` /
-    ``state_component`` / ``evidence_state``. The base graph keeps referencing
-    gene-level entities.
+    ``molecular_type_id`` (set even when only a symbol is known). The base graph
+    keeps referencing gene-level entities; nothing recanonicalizes a protein to a gene
+    or invents a molecular state the sources did not publish.
     """
     schema_id = sql.Identifier(schema)
 
@@ -1024,84 +1006,17 @@ def _ensure_gene_anchored_schema(
         ).format(schema_id)
     )
 
-    # precomputed representative UniProt (cheap tier, no state join)
+    # gene-centric output: one row per gene entity with the human-readable
+    # `gene` (symbol, NCBI Gene id fallback), the pure `ncbi_gene_id`, and the
+    # UniProt accession of a gene keyed by one. A view (not a materialised
+    # table) so it stays continuous with `entity` at zero cost. An older schema
+    # carried representative-UniProt columns that nothing filled; a view cannot
+    # lose columns in place.
+    cur.execute(sql.SQL("DROP VIEW IF EXISTS {0}.gene_output").format(schema_id))
     cur.execute(
         sql.SQL(
             """
-            CREATE TABLE IF NOT EXISTS {0}.gene_protein_representative (
-              entity_id uuid PRIMARY KEY
-                REFERENCES {0}.entity(entity_id) ON DELETE CASCADE,
-              representative_uniprot text,
-              is_reviewed boolean,
-              uniprot_all text[]
-            )
-            """
-        ).format(schema_id)
-    )
-
-    # heavy opt-in: full molecular state
-    cur.execute(
-        sql.SQL(
-            """
-            CREATE TABLE IF NOT EXISTS {0}.state (
-              state_id uuid PRIMARY KEY,
-              gene_entity_id uuid NOT NULL
-                REFERENCES {0}.entity(entity_id) ON DELETE CASCADE,
-              molecular_type_id smallint
-                REFERENCES {0}.vocab_molecular_type(molecular_type_id)
-            )
-            """
-        ).format(schema_id)
-    )
-    cur.execute(
-        sql.SQL(
-            """
-            CREATE TABLE IF NOT EXISTS {0}.state_component (
-              state_id uuid NOT NULL
-                REFERENCES {0}.state(state_id) ON DELETE CASCADE,
-              component_type text NOT NULL,
-              value text NOT NULL,
-              PRIMARY KEY (state_id, component_type, value)
-            )
-            """
-        ).format(schema_id)
-    )
-    cur.execute(
-        sql.SQL(
-            """
-            CREATE TABLE IF NOT EXISTS {0}.evidence_state (
-              source_id bigint NOT NULL
-                REFERENCES {0}.data_source(source_id),
-              entity_evidence_id uuid NOT NULL,
-              state_id uuid NOT NULL
-                REFERENCES {0}.state(state_id) ON DELETE CASCADE,
-              PRIMARY KEY (source_id, entity_evidence_id, state_id),
-              FOREIGN KEY (source_id, entity_evidence_id)
-                REFERENCES {0}.entity_evidence(source_id, entity_evidence_id)
-                ON DELETE CASCADE
-            ) PARTITION BY LIST (source_id)
-            """
-        ).format(schema_id)
-    )
-    cur.execute(
-        sql.SQL(
-            """
-            CREATE TABLE IF NOT EXISTS {0}.evidence_state_default
-            PARTITION OF {0}.evidence_state DEFAULT
-            """
-        ).format(schema_id)
-    )
-
-    # gene-centric output: the primary deliverable layout — one row per gene
-    # entity with the human-readable `gene` (symbol, NCBI Gene id fallback),
-    # the pure `ncbi_gene_id`, and the representative UniProt on demand from
-    # gene_protein_representative. Reads only gene-level columns — NO
-    # state/evidence_state join. A view (not a materialised table) so it stays
-    # continuous with `entity` at zero cost.
-    cur.execute(
-        sql.SQL(
-            """
-            CREATE OR REPLACE VIEW {0}.gene_output AS
+            CREATE VIEW {0}.gene_output AS
             SELECT
               e.entity_id,
               e.taxonomy_id,
@@ -1119,21 +1034,14 @@ def _ensure_gene_anchored_schema(
                 ) THEN e.canonical_identifier
               END AS ncbi_gene_id,
               coalesce(e.label, e.canonical_identifier) AS gene,
-              coalesce(
-                gpr.representative_uniprot,
-                CASE
-                  WHEN e.canonical_identifier_type_id = (
-                    SELECT identifier_type_id
-                    FROM {0}.vocab_identifier_type
-                    WHERE name = 'Uniprot:MI:1097'
-                  ) THEN e.canonical_identifier
-                END
-              ) AS uniprot,
-              gpr.is_reviewed AS uniprot_is_reviewed,
-              gpr.uniprot_all
+              CASE
+                WHEN e.canonical_identifier_type_id = (
+                  SELECT identifier_type_id
+                  FROM {0}.vocab_identifier_type
+                  WHERE name = 'Uniprot:MI:1097'
+                ) THEN e.canonical_identifier
+              END AS uniprot
             FROM {0}.entity e
-            LEFT JOIN {0}.gene_protein_representative gpr
-              ON gpr.entity_id = e.entity_id
             WHERE e.entity_type_id = (
               SELECT entity_type_id
               FROM {0}.vocab_entity_type
@@ -1565,68 +1473,6 @@ def _ensure_resolution_schema(
             """
         ).format(schema_id)
     )
-    log_step("create resolver protein lookup table")
-    cur.execute(
-        sql.SQL(
-            """
-            CREATE TABLE IF NOT EXISTS {}.resolver_protein_identifier_lookup (
-              key_identifier_type_id bigint NOT NULL
-                REFERENCES {}.vocab_identifier_type(identifier_type_id),
-              key_value text NOT NULL,
-              taxonomy_id text,
-              canonical_identifier_type_id bigint NOT NULL
-                REFERENCES {}.vocab_identifier_type(identifier_type_id),
-              canonical_identifier text NOT NULL
-            )
-            """
-        ).format(schema_id, schema_id, schema_id)
-    )
-    log_step("create ambiguous resolver protein lookup table")
-    cur.execute(
-        sql.SQL(
-            """
-            CREATE TABLE IF NOT EXISTS {}.resolver_protein_identifier_lookup_ambiguous (
-              key_identifier_type_id bigint NOT NULL
-                REFERENCES {}.vocab_identifier_type(identifier_type_id),
-              key_value text NOT NULL,
-              taxonomy_id text,
-              canonical_identifier_type_id bigint NOT NULL
-                REFERENCES {}.vocab_identifier_type(identifier_type_id),
-              canonical_identifier text NOT NULL
-            )
-            """
-        ).format(schema_id, schema_id, schema_id)
-    )
-    log_step("create resolver chemical lookup table")
-    cur.execute(
-        sql.SQL(
-            """
-            CREATE TABLE IF NOT EXISTS {}.resolver_chemical_identifier_lookup (
-              key_identifier_type_id bigint NOT NULL
-                REFERENCES {}.vocab_identifier_type(identifier_type_id),
-              key_value text NOT NULL,
-              canonical_identifier_type_id bigint NOT NULL
-                REFERENCES {}.vocab_identifier_type(identifier_type_id),
-              canonical_identifier text NOT NULL
-            )
-            """
-        ).format(schema_id, schema_id, schema_id)
-    )
-    log_step("create ambiguous resolver chemical lookup table")
-    cur.execute(
-        sql.SQL(
-            """
-            CREATE TABLE IF NOT EXISTS {}.resolver_chemical_identifier_lookup_ambiguous (
-              key_identifier_type_id bigint NOT NULL
-                REFERENCES {}.vocab_identifier_type(identifier_type_id),
-              key_value text NOT NULL,
-              canonical_identifier_type_id bigint NOT NULL
-                REFERENCES {}.vocab_identifier_type(identifier_type_id),
-              canonical_identifier text NOT NULL
-            )
-            """
-        ).format(schema_id, schema_id, schema_id)
-    )
     log_step("create resources table")
     cur.execute(
         sql.SQL(
@@ -1840,22 +1686,29 @@ def _ensure_identifier_evidence_value_normalized(
 #: sync. The same duplication already exists in resolver_chemical.sql,
 #: because the two repos share no runtime dependency.
 #:
-#: The build stores a bare accession as ``entity.canonical_identifier``,
-#: with no namespace prefix -- the namespace is already carried by
-#: ``canonical_identifier_type_id``. This differs from omnipath-utils'
-#: CURIE-style resolver key (``CHEBI:123``, T024-T026). That prefix is a
-#: join-key convention for the translation database, not the build's own
-#: identity-storage convention, so this table keeps the two apart.
+#: An identity is stored as published, with its namespace prefix where the
+#: namespace has one (``CHEBI:15377``, ``SLM:000000239``), as omnipath-utils'
+#: resolver key is. The patterns here are the plain forms; ``chemical_value_pattern``
+#: anchors them, which is what the coverage check needs.
 _CHEMICAL_VALUE_PATTERNS: dict[str, str] = {
     "pubchem": r"[1-9]\d*|0",
     "chembl": r"CHEMBL\d+",
-    "chebi": r"\d+",
+    "chebi": r"CHEBI:\d+",
     "hmdb": r"HMDB\d{7}",
     "lipidmaps": r"LM[A-Z0-9]+",
     "swisslipids": r"SLM:\d+",
     "kegg": r"C\d{5}",
     "inchikey": r"[A-Z]{14}-[A-Z]{10}-[A-Z]",
 }
+
+
+def chemical_value_pattern(slug: str) -> str:
+    """The pattern stored for a chemical namespace: its plain form, anchored at both ends.
+
+    The coverage check matches with ``!~``, which is unanchored. Without the anchors a value
+    that merely contains a valid identifier passes (``SLM:1 | SLM:2``, ``74546 | 82922``).
+    """
+    return rf"^(?:{_CHEMICAL_VALUE_PATTERNS[slug]})$"
 
 
 def _ensure_identifier_type_value_pattern(
@@ -1898,9 +1751,9 @@ def _ensure_identifier_type_value_pattern(
         ).format(schema_id)
     )
     for slug, type_name in slug_to_type_name.items():
-        pattern = _CHEMICAL_VALUE_PATTERNS.get(slug)
-        if pattern is None:
+        if slug not in _CHEMICAL_VALUE_PATTERNS:
             continue
+        pattern = chemical_value_pattern(slug)
         cur.execute(
             sql.SQL(
                 """
@@ -3575,10 +3428,33 @@ def _ensure_entity_resolution_entity_check(
     )
 
 
+# Tables an earlier layout created that nothing fills or reads: the resolver lookup copies of
+# the translation database, and the gene-anchored molecular state model.
+_DEAD_TABLES = (
+    "resolver_chemical_identifier_lookup_ambiguous",
+    "resolver_chemical_identifier_lookup",
+    "resolver_protein_identifier_lookup_ambiguous",
+    "resolver_protein_identifier_lookup",
+    "evidence_state",
+    "state_component",
+    "state",
+    "gene_protein_representative",
+)
+
+
+def _drop_dead_tables(cur: psycopg2.extensions.cursor, schema: str) -> None:
+    schema_id = sql.Identifier(schema)
+    for table in _DEAD_TABLES:
+        cur.execute(
+            sql.SQL("DROP TABLE IF EXISTS {}.{} CASCADE").format(schema_id, sql.Identifier(table))
+        )
+
+
 def _drop_obsolete_canonicalization_tables(
     cur: psycopg2.extensions.cursor,
     schema: str,
 ) -> None:
+    _drop_dead_tables(cur, schema)
     cur.execute(
         """
         SELECT EXISTS (
@@ -3727,36 +3603,6 @@ def _ensure_resolution_indexes(
             "entity_ontology_relation_subject_idx",
             "entity_ontology_relation",
             ("subject_entity_id",),
-        ),
-        (
-            "resolver_protein_lookup_key_tax_idx",
-            "resolver_protein_identifier_lookup",
-            ("key_identifier_type_id", "key_value", "taxonomy_id"),
-        ),
-        (
-            "resolver_protein_lookup_key_idx",
-            "resolver_protein_identifier_lookup",
-            ("key_identifier_type_id", "key_value"),
-        ),
-        (
-            "resolver_protein_ambiguous_key_tax_idx",
-            "resolver_protein_identifier_lookup_ambiguous",
-            ("key_identifier_type_id", "key_value", "taxonomy_id"),
-        ),
-        (
-            "resolver_chemical_lookup_key_idx",
-            "resolver_chemical_identifier_lookup",
-            ("key_identifier_type_id", "key_value"),
-        ),
-        (
-            "resolver_chemical_ambiguous_key_idx",
-            "resolver_chemical_identifier_lookup_ambiguous",
-            ("key_identifier_type_id", "key_value"),
-        ),
-        (
-            "resolver_chemical_lookup_canonical_idx",
-            "resolver_chemical_identifier_lookup",
-            ("canonical_identifier_type_id", "canonical_identifier"),
         ),
         ("resources_build_status_idx", "resources", ("build_status",)),
     ]

@@ -19,7 +19,9 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("release_manifest", nargs="?", help="Pinned release JSON file or HTTPS URL")
     parser.add_argument(
-        "--data-root", help="Local directory or HTTPS base URL containing resources/"
+        "--data-root",
+        help="Local directory or HTTPS base URL containing resources/; with --finish, the "
+        "local directory holding releases/ and subsets/",
     )
     parser.add_argument("--database-url", default=os.environ.get("OMNIPATH_DATABASE_URL"))
     parser.add_argument(
@@ -34,7 +36,8 @@ def main(argv=None) -> int:
     operation.add_argument(
         "--finish",
         action="store_true",
-        help="Finish an unpublished base checkpoint from PostgreSQL alone",
+        help="Finish an unpublished base checkpoint: derivations and products; --data-root names "
+        "where the release's subsets are loaded from",
     )
     parser.add_argument(
         "--defer-constraints",
@@ -84,11 +87,7 @@ def main(argv=None) -> int:
                 value is not None
                 for value in (
                     args.release_manifest,
-                    args.data_root,
                     args.batch_size,
-                    args.duckdb_threads,
-                    args.memory_limit,
-                    args.temp_directory,
                 )
             )
             or args.validate_source_records
@@ -97,14 +96,21 @@ def main(argv=None) -> int:
             or args.retain_published_provenance
         ):
             parser.error(
-                "--finish accepts only database/schema selection; loading and source-audit options do not apply"
+                "--finish accepts database/schema selection, --data-root and the working options; "
+                "loading and source-audit options do not apply"
             )
     elif args.release_manifest is None or args.data_root is None:
         parser.error("Loading requires release_manifest and --data-root")
     try:
         if args.finish:
             result = finish_release(
-                args.database_url, schema=args.schema, products=tuple(args.products)
+                args.database_url,
+                schema=args.schema,
+                products=tuple(args.products),
+                subsets_root=args.data_root,
+                duckdb_threads=1 if args.duckdb_threads is None else args.duckdb_threads,
+                memory_limit="1GB" if args.memory_limit is None else args.memory_limit,
+                temp_directory=args.temp_directory,
             )
         else:
             if args.validate_source_records or args.batch_size is not None:

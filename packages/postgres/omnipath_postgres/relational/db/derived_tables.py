@@ -49,8 +49,6 @@ def rebuild_derived_tables(
     schema: str = "public",
     progress: bool = False,
     interactions: bool = True,
-    utils_db_url: str | None = None,
-    use_external_mappings: bool = False,
 ) -> DerivedTableStats:
     """Create and fully rebuild derived search/count tables.
 
@@ -157,13 +155,7 @@ def rebuild_derived_tables(
 
         _log(progress, "lipid_name_graph", "start")
         step_started = time.perf_counter()
-        lipid_nodes, lipid_edges = _populate_lipid_identity_graph(
-            cur,
-            schema,
-            (utils_db_url or os.environ.get("OMNIPATH_BUILD_UTILS_PG_URL"))
-            if use_external_mappings
-            else None,
-        )
+        lipid_nodes, lipid_edges = _populate_lipid_identity_graph(cur, schema)
         _log(
             progress,
             "lipid_name_graph",
@@ -515,20 +507,15 @@ _LIPID_LEVEL_RANK = {
 def _populate_lipid_identity_graph(
     cur: psycopg2.extensions.cursor,
     schema: str,
-    utils_db_url: str | None,
 ) -> tuple[int, int]:
-    """spec 011 T118/T119: ``lipid_name_node``/``lipid_name_edge`` -- the
-    generalization graph over every standardized lipid name the utils build
-    parsed (T113), read live from the utils Postgres. Generated, never
-    asserted by a resource (research R9): every non-species node gets an
-    ``is_a`` edge to its species node, synthesizing that species node first
-    when no resource happened to mention the bare species name on its own
-    (a species parent must always exist for the edge to attach to).
+    """``lipid_name_node``/``lipid_name_edge``: the generalization graph over the Goslin
+    names the release publishes (``goslin:<level>:<name>`` in ``entity_reference_context``),
+    parsed with the nomenclature grammar (:mod:`omnipath_postgres.relational.lipid_names`).
+    Generated, never asserted by a resource: every non-species node gets an ``is_a`` edge to
+    its species node, made first when no resource mentioned the bare species name.
 
-    Degrades to ``(0, 0)`` -- not an error -- when ``utils_db_url`` is unset
-    or the utils build has no ``lipid_name`` table (an older utils build, or
-    one without the ``lipid`` extra): matches every other optional-capability
-    degradation this cycle (R14).
+    Degrades to ``(0, 0)`` when the release publishes no such identity, holds no reference
+    context, or the grammar is not installed.
     """
 
     schema_id = sql.Identifier(schema)
@@ -538,102 +525,51 @@ def _populate_lipid_identity_graph(
             schema_id,
         )
     )
-    if not utils_db_url:
-        return 0, 0
-
-    try:
-        utils_conn = psycopg2.connect(utils_db_url)
-    except psycopg2.Error:
+    cur.execute("SELECT to_regclass(%s)", [f'"{schema}".entity_reference_context'])
+    if cur.fetchone()[0] is None:
         return 0, 0
     try:
-        with utils_conn.cursor() as utils_cur:
-            utils_cur.execute(
-                """
-                SELECT to_regclass('omnipath_utils.lipid_name') IS NOT NULL
-                """
-            )
-            if not utils_cur.fetchone()[0]:
-                return 0, 0
-            utils_cur.execute(
-                """
-                SELECT DISTINCT
-                  lipid_name, lipid_level, chains_listed, chains_possible,
-                  lipid_category, lipid_class, total_carbon, total_db,
-                  sum_formula, parser_version
-                FROM omnipath_utils.lipid_name
-                """
-            )
-            parsed_rows = utils_cur.fetchall()
-    finally:
-        utils_conn.close()
-
-    if not parsed_rows:
+        from omnipath_postgres.relational import lipid_names
+    except ImportError:  # pragma: no cover - the grammar is an install-time dependency
         return 0, 0
-
-    # key = (lipid_name, lipid_level, chains_listed, chains_possible),
-    # matching lipid_name_node's own PK exactly.
-    nodes: dict[tuple[str, str, int, int], tuple] = {}
-    for (
-        name,
-        level,
-        listed,
-        possible,
-        category,
-        lipid_class,
-        carbon,
-        db,
-        formula,
-        version,
-    ) in parsed_rows:
-        listed = listed or 0
-        possible = possible or 0
-        nodes[(name, level, listed, possible)] = (
-            name,
-            level,
-            possible,
-            listed,
-            category,
-            lipid_class,
-            carbon,
-            db,
-            formula,
-            version,
+    cur.execute(
+        sql.SQL(
+            "SELECT DISTINCT reference_entity_key FROM {}.entity_reference_context "
+            "WHERE reference_entity_key LIKE 'goslin:%%'"
+        ).format(schema_id)
+    )
+    parsed = [
+        node
+        for (key,) in cur.fetchall()
+        if (node := lipid_names.parse_identity(key)) is not None
+    ]
+    if not parsed:
+        return 0, 0
+    node_map, edge_map = lipid_names.lipid_graph(parsed)
+    nodes = {
+        key: (
+            node["lipid_name"],
+            node["lipid_level"],
+            node["chains_possible"],
+            node["chains_listed"],
+            node["lipid_category"],
+            node["lipid_class"],
+            node["total_carbon"],
+            node["total_db"],
+            node["sum_formula"],
+            node["parser_version"],
         )
-
-    # Every non-species node's parent is its own species: same class, same
-    # totals, chains_listed=0 -- computed from the parse's own fields, not
-    # asserted, so the parent always exists even if no resource ever wrote
-    # the bare species name on its own (T118).
-    edges: dict[tuple, tuple] = {}
-    for key, row in list(nodes.items()):
-        name, level, listed, possible, category, lipid_class, carbon, db, _, _ = row
-        if level == "species" or listed == 0:
-            continue
-        if not lipid_class or carbon is None or db is None:
-            continue
-        parent_name = f"{lipid_class} {carbon}:{db}"
-        parent_key = (parent_name, "species", 0, possible)
-        if parent_key not in nodes:
-            nodes[parent_key] = (
-                parent_name,
-                "species",
-                possible,
-                0,
-                category,
-                lipid_class,
-                carbon,
-                db,
-                None,
-                row[9],
-            )
-        if parent_key == key:
-            continue  # a species-total rendering that round-tripped to itself
-        edges[(key, parent_key)] = (
-            *key,
-            *parent_key,
-            "is_a",
-            "species_generalization",
+        for key, node in node_map.items()
+    }
+    edges = {
+        (edge["child"], edge["parent"]): (
+            *edge["child"],
+            *edge["parent"],
+            edge["relation"],
+            edge["derivation"],
         )
+        for edge in edge_map.values()
+    }
 
     # T119: no parent exceeding the hub threshold. A real violation would be
     # a bug (a placeholder-style collapse), not a legitimate lipid hierarchy
@@ -848,7 +784,7 @@ def _populate_entity_ontology_terms(
                 BOOL_OR(
                   (
                     (et.name = 'ontology_class' AND lower(ds.name) IN
-                      ('go','hpo','mondo','chemont','psi_mi','omnipath_ontology','brenda','bto','cl','uberon','apo',
+                      ('go','hpo','mondo','chemont','psimi','omnipathontology','brenda','bto','cl','uberon','apo',
                        'doid','pato','eco','mp','wbphenotype','oncotree'))
                     OR (et.name = 'pathway' AND lower(ds.name) = 'kegg'
                       AND cit.name IN ('kegg_pathway','kegg_pathway_category'))

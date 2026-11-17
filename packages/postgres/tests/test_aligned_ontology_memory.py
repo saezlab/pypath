@@ -13,7 +13,6 @@ from copy import deepcopy
 import hashlib
 import importlib
 import json
-from pathlib import Path
 from types import SimpleNamespace
 import uuid
 
@@ -467,108 +466,6 @@ def test_real_publisher_ontology_kind_projects_edges_and_reports_unknown_scope(
         assert plan.counts["entity_ontology_relation"] == 8
         assert plan.compatibility["unknown_ontology_scope_statements"] == 4
         assert plan.counts["ontology_terms"] == 0
-
-
-def _closure_rows(connection, schema, script):
-    closure = script.split("-- The direct assignments,", 1)[0]
-    with connection.cursor() as cursor:
-        cursor.execute(
-            sql.SQL("SET LOCAL search_path={},pg_catalog").format(sql.Identifier(schema))
-        )
-        cursor.execute(closure, {"hierarchy_source_id": 9006})
-        cursor.execute("SELECT node::text,ancestor::text,depth FROM metsigdb_chemont_ancestor")
-        result = Counter(cursor.fetchall())
-        cursor.execute("DROP TABLE metsigdb_chemont_ancestor,metsigdb_chemont_edge")
-    return result
-
-
-def test_real_publisher_copied_ontology_edges_feed_exact_frozen_main_closure(
-    tmp_path, postgres_dsn
-):
-    resource, entities, facts = _writer_fixture(tmp_path / "chemont", "chemont", "chemont")
-    unknown, _unknown_entities, _unknown_facts = _writer_fixture(
-        tmp_path / "unknown", "unknown-ontology", "unknown_ontology"
-    )
-    keys = {item["identifier"].rsplit(":", 1)[1]: item["entity_key"] for item in entities}
-    original = read_legacy(
-        "metsigdb/sql/extract_classyfire.sql",
-        "b1cf3eebb7e7d221a7c2ca8b68860e665be226847365600e8fe1f243ea0f4fd9",
-    )
-    from omnipath_subsets import metsigdb
-
-    adapted_script = (Path(metsigdb.__file__).parent / "sql/extract_classyfire.sql").read_text()
-    schemas = ("ontology_oracle_" + uuid.uuid4().hex, "ontology_copy_" + uuid.uuid4().hex)
-    with closing(psycopg2.connect(postgres_dsn)) as postgres, duckdb.connect() as duck:
-        # Minimal isolated main-contract tables suffice for the exact frozen
-        # hierarchy section. This uses conftest's temporary local cluster only.
-        try:
-            with postgres.cursor() as cursor:
-                for schema in schemas:
-                    cursor.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema)))
-                    cursor.execute(
-                        sql.SQL("""CREATE TABLE {}.vocab_relation_predicate
-                        (relation_predicate_id BIGINT PRIMARY KEY,name TEXT NOT NULL)""").format(
-                            sql.Identifier(schema)
-                        )
-                    )
-                    cursor.execute(
-                        sql.SQL("""CREATE TABLE {}.entity_ontology_relation
-                        (source_id BIGINT,subject_entity_id UUID,predicate_id BIGINT,
-                         object_entity_id UUID,ontology_id TEXT)""").format(sql.Identifier(schema))
-                    )
-                cursor.executemany(
-                    sql.SQL("INSERT INTO {}.vocab_relation_predicate VALUES(%s,%s)")
-                    .format(sql.Identifier(schemas[0]))
-                    .as_string(postgres),
-                    [(1, "is_a"), (2, "part_of"), (3, "related_to")],
-                )
-                old_predicates = {"subclass_of": 1, "part_of": 2, "related_to": 3}
-                cursor.executemany(
-                    sql.SQL("INSERT INTO {}.entity_ontology_relation VALUES(%s,%s,%s,%s,%s)")
-                    .format(sql.Identifier(schemas[0]))
-                    .as_string(postgres),
-                    [
-                        (
-                            9006,
-                            str(_entity_id(keys[subject])),
-                            old_predicates[predicate],
-                            str(_entity_id(keys[obj])),
-                            "chemont",
-                        )
-                        for subject, predicate, obj in facts
-                    ],
-                )
-            plan = aligned_projection.prepare_aligned_release(
-                duck,
-                (resource, unknown),
-                dimension_rows={"data_source": ((9006, "chemont"), (9008, "unknown-ontology"))},
-            )
-            with postgres.cursor() as cursor:
-                cursor.executemany(
-                    sql.SQL("INSERT INTO {}.vocab_relation_predicate VALUES(%s,%s)")
-                    .format(sql.Identifier(schemas[1]))
-                    .as_string(postgres),
-                    plan.dimensions["vocab_relation_predicate"],
-                )
-            query = next(item for item in plan.queries if item.table == "entity_ontology_relation")
-            spool = tmp_path / "copy"
-            spool.mkdir()
-            assert aligned_loader._copy(postgres, schemas[1], query, duck, spool).rows == 8
-            expected = _closure_rows(postgres, schemas[0], original)
-            actual = _closure_rows(postgres, schemas[1], adapted_script)
-            assert (
-                actual
-                == expected
-                == Counter(
-                    [
-                        (str(_entity_id(keys["a"])), str(_entity_id(keys["b"])), 1),
-                        (str(_entity_id(keys["b"])), str(_entity_id(keys["c"])), 1),
-                        (str(_entity_id(keys["a"])), str(_entity_id(keys["c"])), 2),
-                    ]
-                )
-            )
-        finally:
-            postgres.rollback()
 
 
 def _serving_fixture(root):

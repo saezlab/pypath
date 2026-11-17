@@ -79,8 +79,8 @@ ONTOLOGY_SCOPES = (
     ("oncotree", "oncotree", "oncotree"),
     ("chebi", "chebi", "chebi"),
     ("chemont", "chemont", "chemont"),
-    ("psi_mi", "mi", "psi-mi"),
-    ("omnipath_ontology", "om", "omnipath"),
+    ("psimi", "mi", "psi-mi"),
+    ("omnipathontology", "om", "omnipath"),
     ("reactome", "reactome", "reactome_pathways"),
     ("kegg", "kegg_pathway", "kegg_pathways"),
     ("brenda", "ec", "enzyme_classification"),
@@ -189,6 +189,20 @@ def _resources(
     return tuple(sorted(resources, key=lambda resource: resource.source))
 
 
+# The UUID of a payload, as every id of the loaded schema is made. The subsets are loaded
+# with the same function, so their entity ids are the ids of the entity rows.
+AP_UUID_MACRO = """CREATE OR REPLACE MACRO ap_uuid(value) AS (
+        (substr(md5(value),1,8)||'-'||substr(md5(value),9,4)||'-'||
+         substr(md5(value),13,4)||'-'||substr(md5(value),17,4)||'-'||
+         substr(md5(value),21,12))::UUID)"""
+
+
+def entity_id_sql(entity_key: str) -> str:
+    """The id the loaded schema gives the entity whose published key is ``entity_key`` (an
+    SQL expression); needs the ``ap_uuid`` macro."""
+    return _uuid(_key("'published-entity'", entity_key))
+
+
 def _uuid(payload: str) -> str:
     return f"ap_uuid({payload})"
 
@@ -217,10 +231,7 @@ def _create_inputs(con: Any, resources: tuple[ResourceSelection, ...]) -> None:
     Child rows carry their owner's key (entity_key / relation_key) instead of the
     resource-local entity_id / relation_id, and an ``item`` struct of their fields.
     """
-    con.execute("""CREATE OR REPLACE MACRO ap_uuid(value) AS (
-        (substr(md5(value),1,8)||'-'||substr(md5(value),9,4)||'-'||
-         substr(md5(value),13,4)||'-'||substr(md5(value),17,4)||'-'||
-         substr(md5(value),21,12))::UUID)""")
+    con.execute(AP_UUID_MACRO)
     quantity = quantity_sql()
 
     def stage(table: str, select: Callable[[Callable[[str], str]], str]) -> None:
@@ -362,7 +373,7 @@ def _ontology_cv_eligible(alias: str) -> str:
     # that lookup gate; identifiers and canonical identities stay unchanged.
     return f"""(
         ({alias}.entity_type='ontology_class' AND lower({alias}.resource) IN
-            ('go','hpo','mondo','chemont','psi_mi','omnipath_ontology','brenda','bto','cl','uberon','apo',
+            ('go','hpo','mondo','chemont','psimi','omnipathontology','brenda','bto','cl','uberon','apo',
              'doid','pato','eco','mp','wbphenotype','oncotree'))
         OR ({alias}.entity_type='pathway' AND lower({alias}.resource)='kegg'
             AND {alias}.namespace IN ('kegg_pathway','kegg_pathway_category'))

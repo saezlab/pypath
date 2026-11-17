@@ -356,15 +356,6 @@ def _delete_source_evidence_rows(
         "relation_evidence",
         "entity_evidence_annotation",
         "entity_evidence_resolution",
-        # evidence_state (the molecular state each record asserted) is
-        # source-partitioned like the rows above; it must be deleted here too,
-        # or a reload of the same source leaves the old per-source rows behind
-        # and the re-staged rows collide on the evidence_state_source_<id>
-        # primary key at derive time. Delete it before entity_evidence (it
-        # references entity_evidence). `state` / `state_component` are
-        # content-hashed and shared across sources, so they are intentionally
-        # not source-scoped here.
-        "evidence_state",
         "entity_identifier",
         "entity_evidence_identifier",
         "entity_evidence",

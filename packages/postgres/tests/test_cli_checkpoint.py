@@ -9,12 +9,8 @@ from omnipath_postgres import cli
     "extra",
     [
         ["manifest.json"],
-        ["--data-root", "data"],
         ["--validate-source-records"],
         ["--batch-size", "1"],
-        ["--duckdb-threads", "1"],
-        ["--memory-limit", "1GB"],
-        ["--temp-directory", "tmp"],
         ["--checkpoint-base"],
         ["--defer-constraints"],
     ],
@@ -81,4 +77,38 @@ def test_finish_accepts_the_exclusion_metabolites_product(monkeypatch, capsys):
         == 0
     )
     assert tuple(calls[0]["products"]) == ("exclusion_metabolites",)
+    capsys.readouterr()
+
+
+def test_finish_forwards_the_data_root_that_holds_the_subsets(monkeypatch, capsys):
+    from omnipath_postgres.loader import LoadResult
+
+    calls = []
+
+    def finish(database_url, **kwargs):
+        calls.append(kwargs)
+        return LoadResult("test", "release", "hash", {}, {}, {}, (), {})
+
+    monkeypatch.setattr(cli, "finish_release", finish)
+    assert (
+        cli.main(
+            [
+                "--finish",
+                "--database-url",
+                "unused",
+                "--data-root",
+                "data",
+                "--duckdb-threads",
+                "2",
+                "--memory-limit",
+                "2GB",
+                "--temp-directory",
+                "tmp",
+            ]
+        )
+        == 0
+    )
+    assert calls[0]["subsets_root"] == "data"
+    assert (calls[0]["duckdb_threads"], calls[0]["memory_limit"]) == (2, "2GB")
+    assert calls[0]["temp_directory"] == "tmp"
     capsys.readouterr()

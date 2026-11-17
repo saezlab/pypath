@@ -48,26 +48,24 @@ classes:
 default: other
 
 # predicate name (verbatim vocab_relation_predicate.name) -> interaction class
-# slug. The build's predicates are coarse RO/BFO-style terms; only
-# causal-regulation and transport map to a specific class today. Membership,
+# slug. The predicates are Biolink's: that is what the build stores. A rule keyed
+# on a name the build never stores matches nothing, and the class it was meant
+# for stays empty (`transports`, `OM:1257` and `miRNA maturation` were such keys:
+# the old vocabulary's names).
+#
+# Only the predicates that say the class by themselves are listed. Membership,
 # participation, generic association and the structural ontology predicates
-# (is_a, part_of, ...) fall to `other` by default.
+# (subclass_of, part_of, ...) fall to `other` by default. The classes that a
+# predicate cannot tell (`tf_target`, `allosteric`, `orthosteric`,
+# `ligand_receptor`, `transport`) are told by qualifiers or by the resource, and
+# are not assigned here.
 predicates:
   affects: signaling
   enabled_by: signaling
   catalyzes: signaling
-  controls: signaling
   regulates: signaling
-  negatively_regulates: signaling
-  positively_regulates: signaling
-  transports: transport
-  # pre-miRNA → mature-miRNA processing. The build stores this predicate as the
-  # bare accession, because its controlled-vocabulary term is an
-  # (accession, label) pair and the loader writes the first element. Keyed on
-  # the label alone the rule matched nothing, and miRBase's whole contribution
-  # — 53,316 relations, every one of them a maturation event — was served as
-  # `other`. The label forms stay listed, so a loader that writes them keeps
-  # working.
-  OM:1257: maturation
-  miRNA maturation: maturation
-  miRNA_maturation: maturation
+  # miRBase: each mature miRNA derives_from its precursor, the only relations of
+  # the build that carry this predicate. Keyed on the old vocabulary's name the
+  # rule matched nothing, and miRBase's whole contribution (52,949 relations on
+  # the last release, every one a maturation event) was served as `other`.
+  derives_from: maturation

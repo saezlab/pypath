@@ -1,7 +1,6 @@
 """Main's InChI exclusion is a namespace policy, never a value-length filter."""
 
 import ast
-from collections import Counter
 from contextlib import closing
 from copy import deepcopy
 import hashlib
@@ -9,12 +8,9 @@ from types import SimpleNamespace
 
 import duckdb
 import psycopg2
-from psycopg2 import sql
 import pytest
 
-from omnipath_postgres import loader as aligned_loader, projection as aligned_projection
-from omnipath_subsets.metsigdb import build as metsigdb_build
-from omnipath_subsets.metsigdb.mapping import PROJECTION_IDENTIFIERS
+from omnipath_postgres import projection as aligned_projection
 import test_main_parity_contract as reference_contract
 from published_fixture import QUANTITY, annotation, entity, fixture_rows, write_fixture
 
@@ -238,76 +234,3 @@ def test_generic_identifiers_match_frozen_main_policy_without_length_or_content_
             assert all(row["identifier_id"] is None for row in excluded)
         else:
             assert "parquet_identifier_occurrence" not in plan.counts
-
-
-def test_smiles_mapping_reaches_actual_main_metsigdb_publication(
-    tmp_path,
-    paired_schemas,
-    port,
-):
-    connection, (_main, adapted) = paired_schemas
-    selected, _entities = _fixture(tmp_path)
-    assert dict(PROJECTION_IDENTIFIERS)["smiles"] == MAIN_TYPES["smiles"]
-    with duckdb.connect() as duck:
-        plan = aligned_projection.prepare_aligned_release(
-            duck, selected, dimension_rows=aligned_loader._read_dimensions(connection, adapted)
-        )
-        aligned_loader._write_dimensions(connection, adapted, plan.dimensions)
-        for _, source in plan.sources:
-            port.schema.ensure_source_partitions(connection, schema=adapted, source=source)
-        with connection.cursor() as cursor:
-            for statement in aligned_projection.companion_ddl(adapted):
-                # paired_schemas already creates annotation_quantity.
-                cursor.execute(statement.replace("CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1))
-        for query in plan.queries:
-            aligned_loader._copy(connection, adapted, query, duck, tmp_path)
-        with connection.cursor() as cursor:
-            port.derive._populate_entity_identifier_lookup(cursor, adapted)
-            cursor.execute(sql.SQL("SET search_path = {},public").format(sql.Identifier(adapted)))
-            cursor.execute(
-                "CREATE TEMP TABLE metsigdb_stage (metabolite_entity_id uuid,set_entity_id uuid)"
-            )
-            cursor.execute(
-                "INSERT INTO metsigdb_stage SELECT chemical.entity_id,pathway.entity_id FROM "
-                "entity chemical CROSS JOIN entity pathway WHERE chemical.canonical_identifier='15377' "
-                "AND pathway.canonical_identifier='source-set-42'"
-            )
-            source_id = next(
-                identifier for identifier, source in plan.sources if source == "reactome"
-            )
-            expected = None
-            for old_main, text in (
-                (
-                    True,
-                    (
-                        reference_contract.MAIN
-                        / "omnipath_build/metsigdb/sql/publish_membership.sql"
-                    ).read_text(),
-                ),
-                (False, metsigdb_build._sql_text("publish_membership.sql")),
-            ):
-                # Frozen main has the original matched flag. Published inputs
-                # use truthful status 5, with the approved chemical eligibility
-                # adaptation; give the oracle its original status vocabulary.
-                cursor.execute(
-                    "UPDATE entity_evidence_resolution SET status_id=%s", [1 if old_main else 5]
-                )
-                cursor.execute(text, {"source_id": source_id})
-                cursor.execute("SELECT * FROM metsigdb_projection")
-                actual = Counter(tuple(row) for row in cursor.fetchall())
-                assert len(actual) == 1
-                cursor.execute("SELECT * FROM metsigdb_set_attrs")
-                attrs = Counter(tuple(row) for row in cursor.fetchall())
-                if expected is None:
-                    expected = (actual, attrs)
-                else:
-                    assert (actual, attrs) == expected
-                cursor.execute("SELECT smiles,inchikey,hmdb,chebi FROM metsigdb_projection")
-                assert cursor.fetchall() == [
-                    (SMILES_LONG, "AAAAAAAAAAAAAA-BBBBBBBBBB-C", "HMDB0000001", "15377")
-                ]
-                cursor.execute("SELECT set_label,organism FROM metsigdb_set_attrs")
-                assert cursor.fetchall() == [("Published pathway", 9606)]
-            cursor.execute("SELECT DISTINCT status_id FROM entity_evidence_resolution")
-            assert cursor.fetchall() == [(5,)]
-        connection.commit()

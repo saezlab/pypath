@@ -203,7 +203,7 @@ def run_main_derivations(conn, *, schema="public", progress=False, published_met
     run(
         "derived_tables",
         lambda: rebuild_derived_tables(
-            conn, schema=schema, progress=progress, interactions=False, use_external_mappings=False
+            conn, schema=schema, progress=progress, interactions=False
         ),
     )
     run(
@@ -242,7 +242,6 @@ def run_main_derivations(conn, *, schema="public", progress=False, published_met
             schema=schema,
             derive_cost=_interaction_derive_cost(interaction),
             deferral_cost=_interaction_deferral_cost(interaction),
-            utils_db_url=None,
         ),
     )
     results["compatibility_limitations"] = _availability(conn, schema)

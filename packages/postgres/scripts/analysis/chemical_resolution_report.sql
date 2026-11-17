@@ -186,12 +186,7 @@ SELECT count(*) FILTER (WHERE canonical_identifier LIKE 'InChIKey=%')           
   FROM entity
  WHERE entity_type_id = :chem_type_id AND canonical_identifier_type_id = :inchikey_tid;
 
-\echo '== 11. dead resolver tables (expect 0 until the build writes them) =='
-SELECT 'resolver_chemical_identifier_lookup' AS relation, count(*) FROM resolver_chemical_identifier_lookup
-UNION ALL
-SELECT 'resolver_chemical_identifier_lookup_ambiguous', count(*) FROM resolver_chemical_identifier_lookup_ambiguous;
-
-\echo '== 12. per-resource coverage, from the standing table (spec 011 T126-T128) =='
+\echo '== 11. per-resource coverage, from the standing table (spec 011 T126-T128) =='
 SELECT ds.name AS source, vit.name AS namespace, crc.role,
        crc.mentions, crc.entities, crc.reached_structure, crc.reached_name,
        crc.unresolved, crc.conflicted

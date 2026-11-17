@@ -152,6 +152,39 @@ def port():
     return types.SimpleNamespace(schema=schema, derive=derived_tables, indexes=indexes)
 
 
+# Tables of main's layout that the loader deliberately does not create: the resolver lookup
+# copies of the translation database and the gene-anchored molecular state model, which nothing
+# fills or reads. `gene_output` stays as a view without the columns they fed.
+REMOVED_FROM_MAIN = frozenset(
+    {
+        "resolver_chemical_identifier_lookup",
+        "resolver_chemical_identifier_lookup_ambiguous",
+        "resolver_protein_identifier_lookup",
+        "resolver_protein_identifier_lookup_ambiguous",
+        "gene_protein_representative",
+        "state",
+        "state_component",
+        "evidence_state",
+        "evidence_state_default",
+        "gene_output",
+    }
+)
+
+
+def _creates_removed_table(text):
+    found = re.search(r"CREATE TABLE IF NOT EXISTS \{\d*\}\.(\w+)", text)
+    return bool(found and found.group(1) in REMOVED_FROM_MAIN)
+
+
+def _without_removed(value):
+    """A main contract constant without the entries of the removed tables."""
+    return tuple(
+        item
+        for item in value
+        if (item[0] if isinstance(item, tuple) else item) not in REMOVED_FROM_MAIN
+    )
+
+
 @pytest.mark.parametrize(
     "name",
     [
@@ -161,7 +194,7 @@ def port():
     ],
 )
 def test_main_partition_and_primary_key_contracts_are_retained(oracle, port, name):
-    assert getattr(port.schema, name) == getattr(oracle.schema, name)
+    assert getattr(port.schema, name) == _without_removed(getattr(oracle.schema, name))
 
 
 @pytest.mark.parametrize(
@@ -222,7 +255,13 @@ def _ddl_literals(path):
 
 @pytest.mark.parametrize("relative", ["db/indexes.py", "db/schema.py"])
 def test_main_ddl_definitions_are_retained(oracle, port, relative):
-    original = _ddl_literals(MAIN / "omnipath_build" / relative)
+    original = Counter(
+        {
+            text: n
+            for text, n in _ddl_literals(MAIN / "omnipath_build" / relative).items()
+            if not _creates_removed_table(text)
+        }
+    )
     current = _ddl_literals(Path(port.schema.__file__).parent.parent / relative)
     # Additive provenance/quantity tables are permitted; losing a main object is not.
     missing = original - current
@@ -386,9 +425,8 @@ def test_executed_main_catalogue_matches(paired_schemas):
     conn, (main, adapted) = paired_schemas
     original, current = _catalogue(conn, main), _catalogue(conn, adapted)
     for kind in original:
-        assert not original[kind] - current[kind], (
-            f"Missing or changed main {kind}: {original[kind] - current[kind]}"
-        )
+        kept = Counter({row: n for row, n in original[kind].items() if row[0] not in REMOVED_FROM_MAIN})
+        assert not kept - current[kind], f"Missing or changed main {kind}: {kept - current[kind]}"
 
 
 ENTITY_IDS = {name: str(uuid.UUID(int=index)) for index, name in enumerate("abcdef", 1)}
@@ -1394,21 +1432,6 @@ def _ontology_rows(conn, schema, module, sql_root):
     with conn.cursor() as cur:
         module._populate_entity_identifier_lookup(cur, schema)
         module._populate_entity_ontology_terms(cur, schema)
-        # Execute the unchanged closure section of main's ClassyFire script.
-        # It is bounded here by four terms, not by rebuilding the product.
-        path = sql_root / "metsigdb/sql/extract_classyfire.sql"
-        if path.is_relative_to(LEGACY_ROOT):
-            script = read_frozen(path)
-        else:
-            from omnipath_subsets import metsigdb
-
-            script = (Path(metsigdb.__file__).parent / "sql/extract_classyfire.sql").read_text()
-        closure = script.split("-- The direct assignments,", 1)[0]
-        cur.execute(sql.SQL("SET LOCAL search_path = {},pg_catalog").format(sql.Identifier(schema)))
-        cur.execute(closure, {"hierarchy_source_id": 9006})
-        cur.execute("SELECT node::text,ancestor::text,depth FROM metsigdb_chemont_ancestor")
-        ancestors = cur.fetchall()
-        cur.execute("DROP TABLE metsigdb_chemont_ancestor,metsigdb_chemont_edge")
         cur.execute(
             sql.SQL(
                 "SELECT term_entity_id::text,term_id,ontology_prefix,label,definition,synonyms,synonyms_text,term_aliases,identifiers_text,ontology_id,sources,child_count FROM {}.entity_ontology_term"
@@ -1427,12 +1450,11 @@ def _ontology_rows(conn, schema, module, sql_root):
         for key, rows in {
             "ontology_terms": terms,
             "ontology_assertions": assertions,
-            "closure": ancestors,
         }.items()
     }
 
 
-def test_ontology_term_labels_source_scope_and_closure_match_main(binary_pair, oracle, port):
+def test_ontology_term_labels_and_source_scope_match_main(binary_pair, oracle, port):
     conn, (main, adapted) = binary_pair
     terms, genes = _ontology_substrate(
         conn, main, biolink=False, definition_term=oracle.derive.ONTOLOGY_DEFINITION_TERM
@@ -1444,11 +1466,6 @@ def test_ontology_term_labels_source_scope_and_closure_match_main(binary_pair, o
     expected = _ontology_rows(conn, main, oracle.derive, MAIN / "omnipath_build")
     current = _ontology_rows(conn, adapted, port.derive, Path(port.derive.__file__).parent.parent)
     _assert_scientific_parity(expected, current, {**terms, **genes})
-    closure = [json.loads(row) for row in current["closure"]]
-    assert [terms["a"], terms["c"], 1] in closure
-    assert all(row[1] != terms["d"] for row in closure), (
-        "Other source and non-is_a axioms must not enter this closure"
-    )
     rows = [json.loads(row) for row in current["ontology_terms"]]
     a = [r for r in rows if r[0] == terms["a"]]
     assert len(a) == 1 and a[0][3:5] == ["A label", "a definition"]

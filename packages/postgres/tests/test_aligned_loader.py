@@ -409,7 +409,7 @@ def test_current_clis_finish_without_parquets_skip_committed_then_explicitly_reb
     assert postgres_cli.main(["--finish", *args]) == 0
     second = json.loads(capsys.readouterr().out)
     assert second["phase_seconds"] == first["phase_seconds"]
-    assert subsets_cli.main(["build", *args]) == 0
+    assert subsets_cli.main(["build-postgres", *args]) == 0
     rebuilt = json.loads(capsys.readouterr().out)
     assert rebuilt["release"] == "2026.09" and rebuilt["products"] == {"cosmos": {"rows": 2}}
     with connection.cursor() as cursor:

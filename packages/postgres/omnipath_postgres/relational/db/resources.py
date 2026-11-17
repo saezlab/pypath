@@ -21,6 +21,7 @@ from psycopg2 import sql
 from psycopg2.extras import Json
 import psycopg2.extensions
 
+from omnipath_core.versioning import input_module_revision
 from omnipath_postgres.relational.cv_terms import CV_TERM_ENTITY_TYPE
 
 logger = logging.getLogger(__name__)
@@ -51,7 +52,6 @@ def emit_build_manifest(
     derive_cost: Mapping[str, Any] | Sequence[Mapping[str, Any]] | None = None,
     scope_cost: Mapping[str, Any] | Sequence[Mapping[str, Any]] | None = None,
     deferral_cost: Mapping[str, Any] | None = None,
-    utils_db_url: str | None = None,
 ) -> BuildManifestStats:
     """Write the single self-describing ``build_manifest`` row.
 
@@ -105,9 +105,7 @@ def emit_build_manifest(
             ).format(schema_id)
         )
         # Descriptive columns, every one of them deliberately outside the
-        # build_id content hash: `translation_tables` names the
-        # identifier-resolution relations the build consumed,
-        # `canonicalization_coverage` counts how many records resolved vs stayed
+        # build_id content hash: `canonicalization_coverage` counts how many records resolved vs stayed
         # unresolved (and why), `interactions_derive_cost` holds this
         # run's per-step seconds and rows, the interaction table named apart and
         # the per-scope materialisation cost, `interactions_deferral_cost` what
@@ -120,7 +118,6 @@ def emit_build_manifest(
             sql.SQL(
                 """
                 ALTER TABLE {}.build_manifest
-                  ADD COLUMN IF NOT EXISTS translation_tables jsonb,
                   ADD COLUMN IF NOT EXISTS canonicalization_coverage jsonb,
                   ADD COLUMN IF NOT EXISTS interactions_derive_cost jsonb,
                   ADD COLUMN IF NOT EXISTS interactions_deferral_cost jsonb,
@@ -130,30 +127,7 @@ def emit_build_manifest(
                 """
             ).format(schema_id)
         )
-        cur.execute(
-            sql.SQL(
-                """
-                SELECT
-                  resource_id,
-                  (entity_count + interaction_count + association_count
-                   + identifier_count + ontology_term_count) AS record_count,
-                  input_module_commit,
-                  input_module_dirty
-                FROM {}.resources
-                ORDER BY resource_id
-                """
-            ).format(schema_id)
-        )
-        resources = [
-            {
-                "name": name,
-                "record_count": int(record_count),
-                "version": None,
-                "input_module_commit": commit,
-                "input_module_dirty": bool(dirty),
-            }
-            for name, record_count, commit, dirty in cur.fetchall()
-        ]
+        resources = _manifest_resources(cur, schema)
         package_commits = {
             "omnipath_build": _package_commit("omnipath_build"),
             "omnipath_resources": _package_commit(inputs_package.split(".")[0]),
@@ -162,7 +136,6 @@ def emit_build_manifest(
         build_id = hashlib.sha256(
             json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest()[:12]
-        translation_tables = _translation_tables_used(cur, schema)
         coverage = _canonicalization_coverage(cur, schema)
         interactions_derive_cost = _interactions_derive_cost(derive_cost, scope_cost)
         # The sign-conflict measurement — how often a collapsed row hides
@@ -179,7 +152,7 @@ def emit_build_manifest(
             }
         interactions_deferral_cost = _interactions_deferral_cost(deferral_cost)
         network_presets = _network_preset_inventory(cur, schema)
-        capabilities = _build_capabilities(cur, schema, utils_db_url=utils_db_url)
+        capabilities = _build_capabilities(cur, schema)
         _populate_build_capability_table(cur, schema, capabilities)
         chemical_resolution_coverage = _chemical_resolution_coverage_manifest(
             cur,
@@ -191,10 +164,10 @@ def emit_build_manifest(
                 """
                 INSERT INTO {}.build_manifest
                   (build_id, package_commits, resources, partial_build,
-                   translation_tables, canonicalization_coverage,
+                   canonicalization_coverage,
                    interactions_derive_cost, interactions_deferral_cost,
                    network_presets, capabilities, chemical_resolution_coverage)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
             ).format(schema_id),
             [
@@ -202,7 +175,6 @@ def emit_build_manifest(
                 Json(package_commits),
                 Json(resources),
                 partial_build,
-                Json(translation_tables),
                 Json(coverage),
                 Json(interactions_derive_cost) if interactions_derive_cost is not None else None,
                 Json(interactions_deferral_cost)
@@ -223,30 +195,54 @@ def emit_build_manifest(
     )
 
 
-# The identifier-resolution relations the build reads to canonicalise evidence.
-# Kept here (rather than imported from the build pipeline) so the manifest layer
-# stays free of the pipeline's heavy imports.
-_TRANSLATION_TABLES = (
-    "resolver_gene",
-    "resolver_gene_protein_global",
-    "resolver_protein",
-    "resolver_chemical",
-)
-
-
-def _translation_tables_used(
+def _manifest_resources(
     cur: psycopg2.extensions.cursor,
     schema: str,
 ) -> list[dict[str, Any]]:
-    """Identifier-resolution relations consulted while canonicalising evidence.
+    """Each resource with its record count, the version the release pins and the commit of the
+    input modules it was built at.
 
-    These relations live in the separate identifier-resolution database the build
-    reads from, so only their names are recorded here; whether each was present
-    and usable at build time is reported by the build's resolver pre-flight (and
-    its warnings) in the build log.
+    The version and the commit are those of the loaded release (``parquet_resource``), which is
+    what the data was built from; a resource the release does not pin, or a build that did not
+    record a commit, keeps the checkout's commit (``resources``).
     """
-
-    return [{"name": name} for name in _TRANSLATION_TABLES]
+    schema_id = sql.Identifier(schema)
+    cur.execute(
+        sql.SQL(
+            """
+            SELECT
+              resource_id,
+              (entity_count + interaction_count + association_count
+               + identifier_count + ontology_term_count) AS record_count,
+              input_module_commit,
+              input_module_dirty
+            FROM {}.resources
+            ORDER BY resource_id
+            """
+        ).format(schema_id)
+    )
+    rows = cur.fetchall()
+    pinned: dict[str, tuple[str, dict]] = {}
+    cur.execute("SELECT to_regclass(%s)", [f'"{schema}".parquet_resource'])
+    if cur.fetchone()[0] is not None:
+        cur.execute(
+            sql.SQL("SELECT resource, version, manifest FROM {}.parquet_resource").format(schema_id)
+        )
+        pinned = {name: (version, manifest or {}) for name, version, manifest in cur.fetchall()}
+    found = []
+    for name, record_count, commit, dirty in rows:
+        version, manifest = pinned.get(name, (None, {}))
+        released, released_dirty = input_module_revision(manifest)
+        found.append(
+            {
+                "name": name,
+                "record_count": int(record_count),
+                "version": version,
+                "input_module_commit": released or commit,
+                "input_module_dirty": released_dirty if released else bool(dirty),
+            }
+        )
+    return found
 
 
 def _canonicalization_coverage(
@@ -375,8 +371,6 @@ def _chemical_resolution_coverage_manifest(
 def _build_capabilities(
     cur: psycopg2.extensions.cursor,
     schema: str,
-    *,
-    utils_db_url: str | None,
 ) -> list[dict[str, Any]]:
     """What the build could do this run, and why not when it could not
     (spec 011 data-model section 8, research R14).
@@ -384,14 +378,38 @@ def _build_capabilities(
     Absence never changes the identity of an entity that resolves. It
     only reduces coverage or switches off a feature -- and says so,
     rather than failing the build or quietly returning less.
+
+    Lipid naming and structure keys are read from what the pinned release's builds
+    recorded of their own environment, not from a service.
     """
 
+    dependencies = _release_dependencies(cur, schema)
     return [
         _detect_structure_substrate(cur, schema),
         _detect_in_database_structure_key(cur),
-        _detect_lipid_nomenclature(cur, schema),
-        _detect_structure_key_computation(utils_db_url),
+        _detect_lipid_nomenclature(dependencies),
+        _detect_structure_key_computation(dependencies),
     ]
+
+
+def _release_dependencies(
+    cur: psycopg2.extensions.cursor,
+    schema: str,
+) -> dict[str, set[str]] | None:
+    """The versions of each package that the pinned resources' builds recorded
+    (``provenance.dependencies`` of their build manifests); ``None`` when the schema holds
+    no release."""
+    cur.execute("SELECT to_regclass(%s)", [f'"{schema}".parquet_resource'])
+    if cur.fetchone()[0] is None:
+        return None
+    cur.execute(sql.SQL("SELECT manifest FROM {}.parquet_resource").format(sql.Identifier(schema)))
+    found: dict[str, set[str]] = {}
+    for (manifest,) in cur.fetchall():
+        provenance = (manifest or {}).get("provenance") or {}
+        for package, version in (provenance.get("dependencies") or {}).items():
+            if version:
+                found.setdefault(package, set()).add(str(version))
+    return found
 
 
 def _detect_structure_substrate(
@@ -450,109 +468,44 @@ def _detect_in_database_structure_key(
     }
 
 
-def _detect_lipid_nomenclature(
-    cur: psycopg2.extensions.cursor,
-    schema: str,
+def _detect_lipid_nomenclature(dependencies: dict[str, set[str]] | None) -> dict[str, Any]:
+    """The nomenclature grammar (pygoslin) that assigns lipid identity, which the pinned
+    release's builds ran with or without. Without it lipids keep a normalized raw name as
+    identity."""
+    return _detect_dependency(
+        "lipid_nomenclature",
+        "pygoslin",
+        dependencies,
+        "lipid identity was not assigned from the nomenclature grammar",
+    )
+
+
+def _detect_structure_key_computation(dependencies: dict[str, set[str]] | None) -> dict[str, Any]:
+    """The chemistry toolkit (RDKit) that computes a structure key -- InChIKey,
+    canonical SMILES -- from a raw structure, which the pinned release's builds ran with
+    or without. Identifier-to-identifier resolution is unaffected."""
+    return _detect_dependency(
+        "structure_key_computation",
+        "rdkit",
+        dependencies,
+        "no structure key was computed from a raw structure",
+    )
+
+
+def _detect_dependency(
+    capability: str,
+    package: str,
+    dependencies: dict[str, set[str]] | None,
+    consequence: str,
 ) -> dict[str, Any]:
-    """The nomenclature grammar (an omnipath-utils optional extra) that
-    assigns lipid identity. When absent, ``lipid_name_node`` and
-    ``lipid_name_edge`` exist (schema setup creates them) but stay empty,
-    and lipids fall back to a normalized raw name as identity.
-    """
-
-    from omnipath_postgres.relational.db.schema import _table_exists
-
-    provider = "the utils build, nomenclature extra"
-    if not _table_exists(cur, schema, "lipid_name_node"):
-        return {
-            "capability": "lipid_nomenclature",
-            "available": False,
-            "provider": provider,
-            "reason": "lipid_name_node does not exist",
-        }
-    cur.execute(sql.SQL("SELECT count(*) FROM {}.lipid_name_node").format(sql.Identifier(schema)))
-    populated = int(cur.fetchone()[0]) > 0
-    return {
-        "capability": "lipid_nomenclature",
-        "available": populated,
-        "provider": provider,
-        "reason": None
-        if populated
-        else (
-            "lipid_name_node is empty. The nomenclature grammar has not "
-            "assigned lipid identity for this build"
-        ),
-    }
-
-
-def _detect_structure_key_computation(
-    utils_db_url: str | None,
-) -> dict[str, Any]:
-    """The chemistry toolkit (an omnipath-utils optional extra) that
-    computes a structure key -- InChIKey, canonical SMILES -- from a raw
-    structure. Structure-to-anything translation routes report themselves
-    unavailable without it. Identifier-to-identifier translation is
-    unaffected.
-
-    The real signal (spec 011 T082) is the utils build's own record of
-    whether it ran with the toolkit importable
-    (``DatabaseBuilder.record_structure_key_capability``,
-    ``build_info`` row ``table_name='capability'``) -- this build never
-    imports rdkit itself, only reads what the *utils* build already
-    determined about its own environment.
-    """
-
-    provider = "the utils build, chemistry extra"
-    if not utils_db_url:
-        return {
-            "capability": "structure_key_computation",
-            "available": False,
-            "provider": provider,
-            "reason": "OMNIPATH_BUILD_UTILS_PG_URL is not set",
-        }
-
-    import psycopg2
-
-    try:
-        conn = psycopg2.connect(utils_db_url)
-        try:
-            with conn.cursor() as cur:
-                cur.execute(
-                    "SELECT status FROM omnipath_utils.build_info"
-                    " WHERE table_name = 'capability'"
-                    " AND source_type = 'structure_key_computation'"
-                    " ORDER BY built_at DESC LIMIT 1"
-                )
-                row = cur.fetchone()
-        finally:
-            conn.close()
-    except Exception as exc:  # noqa: BLE001 -- report unavailable, don't crash
-        return {
-            "capability": "structure_key_computation",
-            "available": False,
-            "provider": provider,
-            "reason": f"could not reach the utils database: {exc}",
-        }
-
-    if row is None:
-        return {
-            "capability": "structure_key_computation",
-            "available": False,
-            "provider": provider,
-            "reason": (
-                "the utils build has never run DatabaseBuilder.record_structure_key_capability"
-            ),
-        }
-
-    available = row[0] == "available"
-    return {
-        "capability": "structure_key_computation",
-        "available": available,
-        "provider": provider,
-        "reason": (
-            None if available else "the utils build ran without the chemistry extra installed"
-        ),
-    }
+    provider = f"the pinned release's builds ({package})"
+    if dependencies is None:
+        reason = "the schema holds no release (parquet_resource is missing)"
+    elif package in dependencies:
+        return {"capability": capability, "available": True, "provider": provider, "reason": None}
+    else:
+        reason = f"no pinned resource's build recorded {package}: {consequence}"
+    return {"capability": capability, "available": False, "provider": provider, "reason": reason}
 
 
 def _populate_build_capability_table(

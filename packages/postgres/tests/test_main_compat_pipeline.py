@@ -137,9 +137,10 @@ def test_shared_pipeline_keeps_main_order_without_online_resolution(monkeypatch)
             calls.append(name)
             if name == "derived_tables":
                 assert kwargs["interactions"] is False
-                assert kwargs["use_external_mappings"] is False
+                assert "use_external_mappings" not in kwargs
             if name == "build_manifest":
-                assert kwargs["utils_db_url"] is None
+                # What the manifest says of the build comes from the release, not a service.
+                assert "utils_db_url" not in kwargs
             if name == "interactions":
                 return pipeline.InteractionDeriveStats(step_seconds={"interaction_header": 1.5})
             if name == "build_manifest":
