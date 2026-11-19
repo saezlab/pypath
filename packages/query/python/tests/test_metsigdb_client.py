@@ -87,3 +87,30 @@ def test_a_local_installation_says_where_the_memberships_are(service):  # noqa: 
     with connect(service.data) as local:
         with pytest.raises(ClientError, match="API"):
             local.metsigdb()
+
+
+def test_the_exclusion_table_answers_as_the_route_does(api):
+    page = api.exclusion_metabolites(exclusion_class="cofactors", total=True)
+    assert page["total"] == page["count"] == 1
+    assert {row["entity"] for row in page["rows"]} == {metsigdb_key("atp")}
+    assert {row["exclusion_class"] for row in page["rows"]} == {"cofactors"}
+
+
+def test_the_exclusion_report_answers_with_its_detail_as_data(api):
+    page = api.exclusion_metabolite_report(kind="class_size", total=True)
+    assert page["total"] == len(page["rows"])
+    assert isinstance(page["rows"][0]["detail"], dict)
+
+
+def test_an_exclusion_filter_nobody_publishes_is_refused_before_a_request(api):
+    with pytest.raises(TypeError, match="hmdb"):
+        api.exclusion_metabolites(hmdb="HMDB0000538")
+    with pytest.raises(ValueError, match="xenon"):
+        api.exclusion_metabolites(exclusion_class="xenon")
+
+
+def test_a_local_installation_says_where_the_exclusion_table_is(service):  # noqa: F811
+    service.init(["alpha"])
+    with connect(service.data) as local:
+        with pytest.raises(ClientError, match="API"):
+            local.exclusion_metabolites()

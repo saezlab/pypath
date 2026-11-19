@@ -177,6 +177,9 @@ def create_app(
     from omnipath_api.routers.metsigdb import router as metsigdb_router
 
     app.include_router(metsigdb_router)
+    from omnipath_api.routers.exclusion_metabolites import router as exclusion_router
+
+    app.include_router(exclusion_router)
     from omnipath_api.routers.metsigdb import describe_openapi
 
     describe_openapi(app)

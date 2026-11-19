@@ -41,6 +41,12 @@ _METSIGDB_FILTERS = (
     *_METSIGDB_SET_FILTERS, "entity", "metabolite_structure_key", "exclude_metabolites",
     "fields", "group",
 )
+# The filters of GET /sets/exclusion-metabolites and of its report.
+_EXCLUSION_FILTERS = (
+    "exclusion_class", "assignment_source", "origin", "match_kind", "entity", "fields",
+    "limit", "offset", "total",
+)
+_EXCLUSION_REPORT_FILTERS = ("kind", "exclusion_class", "limit", "offset", "total")
 
 
 def _parameters(query: str) -> list[str]:
@@ -199,6 +205,29 @@ class ApiClient:
         and ``total``. The set filters of ``metsigdb``: ``resource``, ``set_type``,
         ``set_sub_type``, ``organism``, ``set``, ``limit``, ``offset`` and ``total``."""
         return self._sets("/sets/metsigdb/sets", _METSIGDB_SET_FILTERS, filters)
+
+    def exclusion_metabolites(self, **filters: Any) -> dict[str, Any]:
+        """The exclusion metabolite table, one page: ``count``, ``has_more``, ``rows`` and
+        ``total``. These are the metabolites mass spectrometry does not measure, each in a
+        class (``ions``, ``atoms``, ``small_molecules``, ``xenobiotics``, ``cofactors``,
+        ``cofactors_extended``) with the assignment that put it there; the table behind
+        ``exclude_metabolites`` of ``metsigdb``.
+
+        The filters are ``/sets/exclusion-metabolites``'s: ``exclusion_class``,
+        ``assignment_source``, ``origin`` (``curated`` or ``derived``), ``match_kind``
+        (``entity`` or ``structure_key``), ``entity`` (an entity key, InChIKey, or HMDB,
+        ChEBI, KEGG or PubChem identifier), ``fields`` (``"all"`` for every one), ``limit``,
+        ``offset`` and ``total``. A value may be a list. A name or value the API does not
+        publish is a ``ValueError``."""
+        return self._sets("/sets/exclusion-metabolites", _EXCLUSION_FILTERS, filters)
+
+    def exclusion_metabolite_report(self, **filters: Any) -> dict[str, Any]:
+        """What the exclusion build measured, one finding per row (``kind``, class, counts
+        and ``detail``): ``count``, ``has_more``, ``rows`` and ``total``. Filters: ``kind``,
+        ``exclusion_class``, ``limit``, ``offset`` and ``total``."""
+        return self._sets(
+            "/sets/exclusion-metabolites/report", _EXCLUSION_REPORT_FILTERS, filters
+        )
 
     def _sets(self, path: str, available: tuple[str, ...], filters: dict[str, Any]) -> dict[str, Any]:
         unknown = set(filters) - set(available)

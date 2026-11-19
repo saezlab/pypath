@@ -27,3 +27,22 @@ test_that("a local installation says where the memberships are", {
   expect_error(op_metsigdb(con, resource = "Reactome"), "answered by the API")
   expect_error(op_metsigdb_sets(con), "answered by the API")
 })
+
+test_that("the exclusion table's filters are named as the API publishes them", {
+  query <- .metsigdb_query(
+    list(exclusion_class = c("ions", "atoms"), entity = "C00002", total = TRUE, limit = 5),
+    .exclusion_filters
+  )
+  expect_equal(query$exclusion_class, "ions,atoms")
+  expect_equal(query$total, "true")
+  expect_error(.metsigdb_query(list(hmdb = "HMDB0000538"), .exclusion_filters), "Unknown filters.*hmdb")
+  expect_error(.metsigdb_query(list(entity = "C00002"), .exclusion_report_filters), "Unknown filters.*entity")
+})
+
+test_that("a local installation says where the exclusion table is", {
+  service <- local_service()
+  service$init("alpha")
+  con <- local_connection(service)
+  expect_error(op_exclusion_metabolites(con), "answered by the API")
+  expect_error(op_exclusion_metabolite_report(con), "answered by the API")
+})

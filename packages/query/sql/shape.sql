@@ -204,3 +204,29 @@ CREATE OR REPLACE MACRO op_metsigdb_fields(m, wanted) AS (
         struct_pack(key := 'build_id', value := to_json(m.build_id))
     ], lambda e: list_contains(wanted, e.key))))
 );
+
+-- One exclusion table row as the API answers it: only the fields named in ``wanted``, under
+-- their response names and in the contract's order. The metabolite is named `entity`, as in
+-- the MetSigDB rows.
+CREATE OR REPLACE MACRO op_exclusion_fields(m, wanted) AS (
+    to_json(map_from_entries(list_filter([
+        struct_pack(key := 'entity', value := to_json(m.entity_key)),
+        struct_pack(key := 'metabolite_label', value := to_json(m.label)),
+        struct_pack(key := 'metabolite_entity_type', value := to_json(m.entity_type)),
+        struct_pack(key := 'inchikey', value := to_json(m.inchikey)),
+        struct_pack(key := 'hmdb', value := to_json(m.hmdb)),
+        struct_pack(key := 'pubchem', value := to_json(m.pubchem)),
+        struct_pack(key := 'chebi', value := to_json(m.chebi)),
+        struct_pack(key := 'kegg', value := to_json(m.kegg)),
+        struct_pack(key := 'exclusion_class', value := to_json(m.exclusion_class)),
+        struct_pack(key := 'assignment_source', value := to_json(m.assignment_source)),
+        struct_pack(key := 'origin', value := to_json(m.origin)),
+        struct_pack(key := 'match_kind', value := to_json(m.match_kind)),
+        struct_pack(key := 'seed_namespace', value := to_json(m.seed_namespace)),
+        struct_pack(key := 'seed_identifier', value := to_json(m.seed_identifier)),
+        struct_pack(key := 'evidence', value := to_json(m.evidence)),
+        struct_pack(key := 'via_entity', value := to_json(m.via_entity_key)),
+        struct_pack(key := 'list_version', value := to_json(m.list_version)),
+        struct_pack(key := 'build_id', value := to_json(m.build_id))
+    ], lambda e: list_contains(wanted, e.key))))
+);

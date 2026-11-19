@@ -241,6 +241,13 @@ Commit before you build anything you intend to keep.
 The tables are Parquet. The loader creates `exclusion_metabolite_members` and the queries
 below in PostgreSQL. In the Parquet, `entity_key` names the entities.
 
+The API serves both tables. `/sets/exclusion-metabolites` returns the rows with each
+metabolite's label and identifiers (HMDB, ChEBI, KEGG, PubChem, InChIKey), filtered by class,
+source, origin, match kind or metabolite. `/sets/exclusion-metabolites/report` returns the
+report. The clients call them `exclusion_metabolites()` and `exclusion_metabolite_report()`
+in Python and `op_exclusion_metabolites()` and `op_exclusion_metabolite_report()` in R. The
+`exclude_metabolites` filter of `/sets/metsigdb` stays as it is and reads the same table.
+
 ## Validation scope
 
 ```sh

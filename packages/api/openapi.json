@@ -7489,6 +7489,308 @@
         ]
       }
     },
+    "/sets/exclusion-metabolites": {
+      "get": {
+        "description": "The exclusion metabolite table: metabolites that mass spectrometry does\nnot measure, each in a class, with the assignment that put it there.\n\nClasses are ``ions``, ``atoms``, ``small_molecules``, ``xenobiotics``, ``cofactors`` and\n``cofactors_extended`` (the cofactors ChEBI tags with the cofactor role, beyond the reviewed\n``cofactors``). A metabolite in one class through two sources has two rows. ``origin`` is\n``curated`` (a seed list) or ``derived`` (a ChEBI closure). ``match_kind`` is ``entity`` for\na listed metabolite and ``structure_key`` for a charge, tautomer or stereo variant that\nshares its structure key; ``via_entity`` names the listed one. Variants stay separate\nentities.\n\nEvery response is paged and the order is stable. ``fields=`` adds any of the other fields to\nthe default, ``fields=all`` returns every one. ``entity`` accepts an entity key, an InChIKey,\nor an HMDB, ChEBI, KEGG or PubChem identifier; a bare integer matches ChEBI or PubChem.\n\nThe same table filters ``/sets/metsigdb`` through ``exclude_metabolites``.",
+        "operationId": "rows_sets_exclusion_metabolites_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "exclusion_class",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Exclusion Class"
+            }
+          },
+          {
+            "in": "query",
+            "name": "assignment_source",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Assignment Source"
+            }
+          },
+          {
+            "in": "query",
+            "name": "origin",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Origin"
+            }
+          },
+          {
+            "in": "query",
+            "name": "match_kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Match Kind"
+            }
+          },
+          {
+            "in": "query",
+            "name": "entity",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Fields"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 1000,
+              "maximum": 100000,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "total",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Total",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Exclusion metabolite table",
+        "tags": [
+          "sets"
+        ]
+      }
+    },
+    "/sets/exclusion-metabolites/report": {
+      "get": {
+        "description": "What the exclusion build measured: the size of each class and where its\nmembers came from, how many seeds resolved, and where the curated and derived lists disagree.\nOne row per finding; ``detail`` is JSON.",
+        "operationId": "report_sets_exclusion_metabolites_report_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "in": "query",
+            "name": "exclusion_class",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Exclusion Class"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 1000,
+              "maximum": 100000,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "total",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Total",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Exclusion build report",
+        "tags": [
+          "sets"
+        ]
+      }
+    },
     "/sets/metsigdb": {
       "get": {
         "description": "Membership rows: one metabolite in one set of one resource.\n\nEvery response is paged. No filter combination returns the whole subset, and the row order\nis stable, so paging through a result neither repeats nor skips a membership.\n\n``has_more`` says whether another page follows. ``total`` is the size of the whole result\nand is computed only when the request asks for it.\n\n**Fields.** Thirteen by default. ``fields=`` adds any of the others by name, and\n``fields=all`` returns every one. An unknown name is refused rather than ignored.\n\n**Grouping.** ``group=true`` groups by resource and then by set. Under grouping ``limit``,\n``offset``, ``has_more`` and ``total`` count **sets**, not rows, so no set straddles a page.\nA set is never truncated: sets are added whole until the next would cross a 50,000-row\nceiling, and a set larger than the ceiling is returned complete and alone.\n\n**Exclusion.** ``exclude_metabolites`` leaves out metabolites that mass spectrometry does\nnot measure: ``none`` (the default), ``all``, or a list of ``ions``, ``atoms``,\n``small_molecules``, ``xenobiotics``, ``cofactors`` and ``cofactors_extended``. The last is\nthe cofactors that ChEBI tags with the cofactor role, beyond the reviewed ``cofactors``;\n``all`` includes it. The memberships stay in the subset; the request leaves them out. It\napplies before paging and counting, so ``total`` and ``has_more`` describe the filtered\nresult. Under grouping a set that loses every member is still returned, with an empty\n``members`` list, ``returned`` of zero and its published ``set_size``.\n\n**Identifiers.** ``entity`` accepts an entity key, an InChIKey, or an HMDB, ChEBI, KEGG or\nPubChem identifier, recognised from the value itself. A bare integer matches ChEBI **or**\nPubChem and returns the union, because both are bare integers. ``metabolite_structure_key``\nselects the metabolites that share a connectivity-level structure (the charge, stereo and\ntautomer variants of one molecule). SMILES is published and reachable through ``fields``,\nbut is not searchable.\n\nNothing is translated on the request path. Values are matched against the identifier columns\nthe subset publishes, and the subset publishes what each resource and the release's other\nresources state about the metabolite, so coverage depends on the resource.\n\n**Coverage** is not available: the served release has no MetSigDB subset.",

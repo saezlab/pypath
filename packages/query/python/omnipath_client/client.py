@@ -254,6 +254,16 @@ class Client:
 
     metsigdb_sets = metsigdb
 
+    def exclusion_metabolites(self, **filters: Any):
+        """Not available in local mode: the exclusion metabolite subset is built from a whole
+        release and served by the API (``connect(mode="api")``)."""
+        raise ClientError(
+            "The exclusion metabolite table is answered by the API: use connect(mode='api') "
+            "(the local installation holds resources, not the release's subsets)"
+        )
+
+    exclusion_metabolite_report = exclusion_metabolites
+
     def query(self, name: str, *, output: str = "table", **params: Any):
         """A query by name (``omnipath_client.steps.names()``): the same queries, with the
         same answers, as the API's; a relation for ``output="table"``, JSON text for

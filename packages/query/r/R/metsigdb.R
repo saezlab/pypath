@@ -10,6 +10,12 @@
   "fields", "group"
 )
 
+.exclusion_filters <- c(
+  "exclusion_class", "assignment_source", "origin", "match_kind", "entity", "fields",
+  "limit", "offset", "total"
+)
+.exclusion_report_filters <- c("kind", "exclusion_class", "limit", "offset", "total")
+
 # The filters as the API's query parameters: a list is one comma-separated value, a
 # logical `true` or `false`. The API validates the names and the values.
 .metsigdb_query <- function(filters, available) {
@@ -72,4 +78,38 @@ op_metsigdb <- function(con, ..., simplify = TRUE) {
 #' @export
 op_metsigdb_sets <- function(con, ..., simplify = TRUE) {
   .metsigdb_get(con, "/sets/metsigdb/sets", .metsigdb_set_filters, list(...), simplify)
+}
+
+#' The exclusion metabolite table
+#'
+#' The metabolites that mass spectrometry does not measure, each in a class (`ions`,
+#' `atoms`, `small_molecules`, `xenobiotics`, `cofactors`, `cofactors_extended`) with the
+#' assignment that put it there, from the hosted API (`/sets/exclusion-metabolites`). It is
+#' the table behind `exclude_metabolites` of [op_metsigdb()]. A metabolite in one class
+#' through two sources has two rows.
+#'
+#' @inheritParams op_metsigdb
+#' @param ... Filters: `exclusion_class`, `assignment_source`, `origin` (`"curated"` or
+#'   `"derived"`), `match_kind` (`"entity"` or `"structure_key"`), `entity` (an entity key,
+#'   InChIKey, or HMDB, ChEBI, KEGG or PubChem identifier), `fields` (`"all"` for every
+#'   one), `limit`, `offset` and `total`. A value may be a vector.
+#' @return A list: `count`, `has_more`, `total` and `rows`.
+#' @export
+op_exclusion_metabolites <- function(con, ..., simplify = TRUE) {
+  .metsigdb_get(con, "/sets/exclusion-metabolites", .exclusion_filters, list(...), simplify)
+}
+
+#' What the exclusion build measured
+#'
+#' One finding per row: the size of each class and where its members came from, how many
+#' seeds resolved, and where the curated and derived lists disagree. `detail` is JSON.
+#'
+#' @inheritParams op_metsigdb
+#' @param ... Filters: `kind`, `exclusion_class`, `limit`, `offset` and `total`.
+#' @return A list: `count`, `has_more`, `total` and `rows`.
+#' @export
+op_exclusion_metabolite_report <- function(con, ..., simplify = TRUE) {
+  .metsigdb_get(
+    con, "/sets/exclusion-metabolites/report", .exclusion_report_filters, list(...), simplify
+  )
 }
