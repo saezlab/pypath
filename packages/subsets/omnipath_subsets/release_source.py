@@ -25,11 +25,16 @@ Views (all over the pinned resources):
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import duckdb
 
 from omnipath_core.versioning import input_module_revision
+
+# A full release needs more than the default; the environment sets it for a build.
+MEMORY_ENVIRONMENT = "OMNIPATH_SUBSETS_MEMORY"
+DEFAULT_MEMORY_LIMIT = "4GB"
 
 # The entity types a chemical subset reads.
 CHEMICAL_ENTITY_TYPES = ("chemical_entity", "small_molecule")
@@ -70,14 +75,20 @@ def open_release(
     data_root: str | Path,
     release: str,
     *,
-    memory_limit: str = "4GB",
+    memory_limit: str | None = None,
     threads: int | None = None,
 ) -> duckdb.DuckDBPyConnection:
-    """A DuckDB connection with the release's views; close it when done."""
+    """A DuckDB connection with the release's views; close it when done.
+
+    The memory limit is ``memory_limit``, else ``OMNIPATH_SUBSETS_MEMORY``, else 4GB.
+    """
     root = Path(data_root).resolve()
     resources = pinned_resources(root, release)
     con = duckdb.connect()
-    con.execute("SET memory_limit = ?", [memory_limit])
+    con.execute(
+        "SET memory_limit = ?",
+        [memory_limit or os.environ.get(MEMORY_ENVIRONMENT) or DEFAULT_MEMORY_LIMIT],
+    )
     if threads is not None:
         con.execute("SET threads = ?", [int(threads)])
     con.execute(
