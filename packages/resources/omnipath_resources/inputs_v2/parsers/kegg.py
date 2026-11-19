@@ -874,7 +874,9 @@ def _parse_kgml_documents(
                         ('kegg_id',),
                     )
 
-            elif entry_type == 'map':
+            elif entry_type == 'map' and not graphics_name.startswith('TITLE:'):
+                # The map entry named TITLE:<title> is the diagram's own heading, a
+                # pathway pointing at itself, not a link to another pathway.
                 for name in names:
                     linked_id = _strip_kegg_object_prefix(name)
                     _append_unique_member(
