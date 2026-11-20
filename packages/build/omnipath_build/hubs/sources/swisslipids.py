@@ -9,6 +9,11 @@ from ..writer import HubParquetWriter
 URL = "https://swisslipids.org/api/file.php?cas=download_files&file=lipids.tsv"
 
 
+def _chebi_ids(record: dict[str, str]) -> dict[str, list[str]]:
+    """The CHEBI cell holds several ids on some rows, joined by ``|``."""
+    return {"chebi": [part.strip() for part in (record.get("CHEBI") or "").split("|")]}
+
+
 def emit(writer: HubParquetWriter) -> None:
     emit_from_records(
         writer,
@@ -28,4 +33,5 @@ def emit(writer: HubParquetWriter) -> None:
             "metanetx": "MetaNetX",
             "synonym": "Synonyms*",
         },
+        extra=_chebi_ids,
     )

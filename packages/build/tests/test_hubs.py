@@ -388,6 +388,38 @@ class TestHubRegistry(unittest.TestCase):
         )
 
 
+class TestSwissLipidsHub(unittest.TestCase):
+    def test_pipe_joined_chebi_cell_is_split(self):
+        from unittest import mock
+
+        from omnipath_build.hubs.sources import swisslipids
+
+        lines = [
+            "Lipid ID\tName\tCHEBI\tHMDB",
+            "SLM:000000784\tPA\t74546 | 82922\tHMDB0000636",
+            "SLM:000389154\tFA\t82731 | CHEBI:82731\t",
+            "SLM:000000001\tX\t15377\t",
+        ]
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "swisslipids.parquet"
+            writer = HubParquetWriter(path)
+            with mock.patch.object(swisslipids, "iter_url_lines", return_value=iter(lines)):
+                swisslipids.emit(writer)
+            writer.close()
+            rows = pq.read_table(path).to_pylist()
+        chebi = {(r["hub_id"], r["source_id"]) for r in rows if r["source_type"] == "chebi"}
+        self.assertEqual(
+            chebi,
+            {
+                ("SLM:000000784", "74546"),
+                ("SLM:000000784", "82922"),
+                ("SLM:000389154", "82731"),
+                ("SLM:000389154", "CHEBI:82731"),
+                ("SLM:000000001", "15377"),
+            },
+        )
+
+
 class TestEntrezHub(unittest.TestCase):
     def test_gene_info_adds_genes_without_an_ensembl_link(self):
         from omnipath_build.hubs.sources.entrez import emit as emit_entrez
