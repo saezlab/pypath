@@ -352,6 +352,13 @@ class LibraryMatcher:
                 if ident not in aliases.setdefault(ns, []):
                     aliases[ns].append(ident)
             label = node.label or assign_label(canonical_ns, canonical_id, aliases, policy)
+            lipid_status = None
+            if policy.library == CHEMICAL:
+                from ..observations import LIPID_NAMESPACES, lipid_name_status
+
+                # A lipid known only by its resource identifier has no structure either.
+                if canonical_ns in LIPID_NAMESPACES:
+                    lipid_status = lipid_name_status(aliases)
             return Match(
                 canonical_namespace=canonical_ns,
                 canonical_identifier=canonical_id,
@@ -360,6 +367,7 @@ class LibraryMatcher:
                 taxon=node.taxon or (str(getattr(obs, "taxon", None) or "").strip() or None),
                 node_id=node.node_id,
                 aliases=observed if self.defer_aliases else aliases,
+                lipid_name_status=lipid_status,
             )
 
         # A source-supplied full structure remains its identity even when the

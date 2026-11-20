@@ -68,3 +68,18 @@ def test_the_marker_reaches_the_evidence_annotations(matcher):
     assert {(a["term"], a["value"]) for a in annotations} == {
         ("omnipath:lipid_name_status", "unparsed")
     }
+
+
+def test_a_lipid_node_without_a_structure_is_marked(matcher):
+    from omnipath_resolver.canonical.match import Node
+    from omnipath_resolver.canonical.policy import get_policy
+
+    observed = {"swisslipids": ["SLM:000000999"], "name": ["garbled lipid"]}
+    node = Node("n1", "9606", "swisslipids", "SLM:000000999", None, ())
+    policy = get_policy("chemical_entity")
+    marked = matcher._build(None, policy, observed, node, "node")
+    assert marked.lipid_name_status == "unparsed"
+    parsed = matcher._build(None, policy, observed | {"name": ["PC 16:0/18:1"]}, node, "node")
+    assert parsed.lipid_name_status is None
+    structure = Node("n2", "9606", "inchikey", "AAAAAAAAAAAAAA-BBBBBBBBBB-N", None, ())
+    assert matcher._build(None, policy, observed, structure, "node").lipid_name_status is None
