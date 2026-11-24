@@ -335,3 +335,20 @@ def test_gene_group_details_combine_their_members_annotations(mixed_engine):
     values = {a.get("value") for a in group["entity"]["entityAttributes"]}
     members = {m["primaryIdentifier"] for m in group["members"]}
     assert {f"Detail {identifier}" for identifier in members} <= values
+
+
+def test_a_single_entity_group_lists_its_relationships_and_a_bad_cursor_is_rejected(mixed_engine):
+    engine, records = mixed_engine
+    key = records["native_gene"]["entity_key"]
+    with TestClient(create_app(queries=engine)) as client:
+        # Not a group: no member keys, the entity is its own member.
+        response = client.post(
+            "/entities/group-relationships", json={"strategy": "auto", "group_key": "entity:" + key}
+        )
+        assert response.status_code == 200
+        (row,) = response.json()["relationships"]
+        assert row["relation"]["relationPk"] == "outside" and row["groupOutgoing"] is True
+        for cursor in ("garbage", "", "[1, 2]", json.dumps([-1, 1, "bad"]), '{"a": 1}'):
+            bad = client.post("/entities/groups", json={"strategy": "auto", "cursor": cursor})
+            assert bad.status_code == 400, cursor
+            assert "Invalid group cursor" in bad.json()["detail"]
