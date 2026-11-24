@@ -9,8 +9,8 @@ spreading its small steps over threads that other queries need. In load tests on
 and 13 GB (the explorer's extended journey, 64 people): seven slots on a database of
 seven threads answered the slowest 5% of steps in 0.38 s at 145 ms CPU per request, on
 a database of one thread in 0.32 s at 84 ms; three slots on six threads took 1.07 s.
-13 GB and 32 GB answered alike. DuckDB gets most of the container's memory, the rest is
-for Python, Arrow and response buffers.
+13 GB and 32 GB answered alike. DuckDB gets half of the container's memory, the rest is
+for Python, Arrow, response buffers and DuckDB's own memory outside its limit.
 
 Each part can be set: OMNIPATH_QUERY_CONCURRENCY (slots), OMNIPATH_DUCKDB_THREADS (the
 database's threads) and OMNIPATH_DUCKDB_MEMORY_LIMIT (memory per slot). An empty setting
@@ -25,9 +25,15 @@ import re
 
 from omnipath_client.budget import cgroup_memory_limit, cpu_count
 
-# The share of the container's memory DuckDB may use (tested: the whole process peaked at
-# 9 GB of 13 GB with DuckDB allowed 12 GB).
-MEMORY_SHARE = 0.75
+# The share of the container's memory DuckDB may use. DuckDB keeps the database blocks it
+# reads until it reaches its limit, so under sustained load it holds all of it, and the
+# rest of the process needs room beside that: on 7 CPUs, with DuckDB at its limit (9.75 GB
+# of 13 GB), the other memory (Python, Arrow, response buffers, DuckDB's allocations
+# outside its limit) peaked at 2.8 GB with 64 clients on one kind of request (resolving
+# 5-20 identifiers) and at 4.5 GB in the programmatic mix at 64 clients after the
+# explorer journey, so 75% ran out of memory. At half (6.5 GB) the same run peaked at
+# 11 GB of 13 GB and answered as fast: the cache beyond that gained nothing.
+MEMORY_SHARE = 0.5
 # DuckDB's memory per slot without a container memory limit.
 FALLBACK_MEMORY = "1GB"
 

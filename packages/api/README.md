@@ -230,8 +230,10 @@ factory and close when the application lifespan ends.
 HTTP queries lease a database from one bounded pool, including inventory refresh,
 facets and export generation. The pool is sized from the process's cgroup limits
 (`queries/store/budget.py`): a query slot per CPU, one DuckDB thread for the database
-(DuckDB runs each query on the thread that calls it), and 75% of the memory limit for
-the DuckDB database the slots share (1 GB a slot without a limit).
+(DuckDB runs each query on the thread that calls it), and half of the memory limit for
+the DuckDB database the slots share (1 GB a slot without a limit): DuckDB fills its
+limit with the blocks it reads, and the rest of the process needs the other half under
+load.
 `OMNIPATH_QUERY_CONCURRENCY` (slots), `OMNIPATH_DUCKDB_THREADS` (the database's) and
 `OMNIPATH_DUCKDB_MEMORY_LIMIT` (per slot) override that, and
 `OMNIPATH_QUERY_WAIT_SECONDS` (30 seconds by default) bounds the wait for a slot.

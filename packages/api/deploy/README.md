@@ -83,8 +83,11 @@ The API pool bounds simultaneous queries and retained DuckDB connections.
 `API_CPUS` and `API_MEMORY_LIMIT` bound the container, and the API sizes its pool
 from them: a query slot per CPU, one DuckDB thread for the database the slots share
 (DuckDB runs each query on the thread that calls it, so the slots still use all
-CPUs), and 75% of the memory for that database (the rest is for Python, Arrow and
-response buffers). Seven CPUs and 13 GB give seven slots and about 9.75 GB. Set
+CPUs), and half of the memory for that database: DuckDB keeps the blocks it reads up
+to its limit, and the rest of the process (Python, Arrow, response buffers, DuckDB's
+memory outside its limit) took up to 4.5 GB of 13 GB at 64 clients, so 75% ran out of
+memory; at half, the process peaked at 11 GB and answered as fast. Seven CPUs and 13 GB
+give seven slots and 6.5 GB. Set
 `API_QUERY_CONCURRENCY`, `API_QUERY_THREADS` (the database's) and `API_QUERY_MEMORY`
 (per slot) only to override that. Load tests on 7 CPUs and 13 GB in November 2026, the
 explorer's journey at 64 people: three slots on a database of six threads answered
