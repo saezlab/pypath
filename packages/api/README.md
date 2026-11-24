@@ -228,18 +228,21 @@ factory and close when the application lifespan ends.
 ## Query resource budget
 
 HTTP queries lease a database from one bounded pool, including inventory refresh,
-facets and export generation. Defaults are two concurrent queries, two DuckDB
-threads and 1 GB per database. Configure `OMNIPATH_QUERY_CONCURRENCY`,
-`OMNIPATH_DUCKDB_THREADS`, `OMNIPATH_DUCKDB_MEMORY_LIMIT` and
-`OMNIPATH_QUERY_WAIT_SECONDS` (30 seconds by default). Requests that cannot
-obtain a slot return 503 with `Retry-After: 1`. Idle databases are reused; stale
-inventory generations close their databases without accumulating closed handles.
+facets and export generation. The pool is sized from the process's cgroup limits
+(`queries/store/budget.py`): a query slot per CPU, one DuckDB thread each, and 75% of
+the memory limit for the DuckDB database the slots share (1 GB a slot without a
+limit). `OMNIPATH_QUERY_CONCURRENCY` (slots), `OMNIPATH_DUCKDB_THREADS` and
+`OMNIPATH_DUCKDB_MEMORY_LIMIT` (per slot) override that, and
+`OMNIPATH_QUERY_WAIT_SECONDS` (30 seconds by default) bounds the wait for a slot.
+Requests that cannot obtain a slot return 503 with `Retry-After: 1`. Idle databases
+are reused; stale inventory generations close their databases without accumulating
+closed handles.
 
 These limits apply per API process. DuckDB memory limits do not cover all Python,
-Arrow or export buffers. Compose defaults to a 4 GB, four-CPU container as a
-backstop; change its `API_*` budget variables together for the workload. Direct
-Python callers should wrap concurrent operations in `queries.query_scope()`.
-Use representative concurrent searches, facets and exports when sizing a deployment.
+Arrow or export buffers. Compose defaults to a 4 GB, four-CPU container; set
+`API_CPUS` and `API_MEMORY_LIMIT` for the workload. Direct Python callers should
+wrap concurrent operations in `queries.query_scope()`. Use representative
+concurrent searches, facets and exports when sizing a deployment.
 
 ## Gene references and molecular evidence
 

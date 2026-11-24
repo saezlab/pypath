@@ -35,6 +35,7 @@ import duckdb
 from omnipath_api.queries.store.inventory import ReleaseStore
 from omnipath_api.queries.store.query_cache import QueryCache, StepCache
 from omnipath_api.queries.store.query_pool import QueryPool
+from omnipath_api.queries.store.budget import query_budget
 from omnipath_api.queries.store.connection import get_connection, sql_literal
 from omnipath_core.resource_metadata import resolve_resource_name
 from omnipath_core.schema import PUBLISHED_TABLES, SERVING_TABLES
@@ -62,19 +63,6 @@ _NUMERIC = re.compile(r"[0-9]+(?:\.[0-9]+)*")
 
 def _version_key(version: str) -> tuple[int, ...]:
     return tuple(map(int, version.split(".")))
-
-
-_SIZE = re.compile(r"\s*(\d+(?:\.\d+)?)\s*([KMGT]?)(i?)B?\s*", re.I)
-
-
-def _scaled(size: str, factor: int) -> str:
-    """A DuckDB memory size times ``factor`` (``3500MB`` times 3 is ``10500MB``)."""
-    match = _SIZE.fullmatch(size)
-    if match is None:
-        raise ValueError(f"Not a memory size: {size!r}")
-    number, unit, binary = match.groups()
-    unit = unit.upper()
-    return f"{float(number) * factor:g}{unit}{'i' if binary else ''}B"
 
 
 class ReleaseNotServed(LookupError):
@@ -180,15 +168,17 @@ class ReleaseQueries(
         data_root: str | Path = "data",
         *,
         public_data_url: str | None = None,
-        memory_limit: str = "1GB",
-        threads: int = 2,
+        memory_limit: str | None = None,
+        threads: int | None = None,
     ) -> None:
-        """``memory_limit`` and ``threads`` are per query (OMNIPATH_DUCKDB_MEMORY_LIMIT and
-        OMNIPATH_DUCKDB_THREADS override them): the one DuckDB database every query runs in
-        gets them times the number of concurrent queries (OMNIPATH_QUERY_CONCURRENCY).
-        OMNIPATH_DUCKDB_TEMP_DIRECTORY names a writable directory for spills."""
+        """The queries run in one DuckDB database, sized for the query slots by
+        ``store.budget``: by default a slot per CPU of the container, one thread each,
+        and most of its memory. ``memory_limit`` and ``threads`` are per slot
+        (OMNIPATH_DUCKDB_MEMORY_LIMIT and OMNIPATH_DUCKDB_THREADS override them, as
+        OMNIPATH_QUERY_CONCURRENCY the slots). OMNIPATH_DUCKDB_TEMP_DIRECTORY names a
+        writable directory for spills."""
         self.data_root = Path(data_root).resolve()
-        self._memory_limit, self._threads = memory_limit, threads
+        self._budget = query_budget(threads=threads, memory_limit=memory_limit)
         self._temp_directory = os.getenv("OMNIPATH_DUCKDB_TEMP_DIRECTORY") or str(
             Path(tempfile.gettempdir()) / "omnipath-duckdb"
         )
@@ -237,7 +227,7 @@ class ReleaseQueries(
         self._query_pool = QueryPool(
             self._open_query_connection,
             lambda: self._db_generation,
-            size=int(os.getenv("OMNIPATH_QUERY_CONCURRENCY", "2")),
+            size=self._budget.slots,
             timeout=float(os.getenv("OMNIPATH_QUERY_WAIT_SECONDS", "30")),
         )
         self._refresh_inventory_if_stale(force=True)
@@ -430,10 +420,7 @@ class ReleaseQueries(
         """The database the queries share, with the served releases attached: one buffer
         cache and one thread pool, sized for the concurrent queries. (A database per
         query kept three copies of the same blocks, each in a third of the memory.)"""
-        size = self._query_pool.size
-        memory = _scaled(os.getenv("OMNIPATH_DUCKDB_MEMORY_LIMIT", self._memory_limit), size)
-        threads = int(os.getenv("OMNIPATH_DUCKDB_THREADS", str(self._threads))) * size
-        database = get_connection(memory_limit=memory, threads=threads)
+        database = get_connection(memory_limit=self._budget.memory, threads=self._budget.threads)
         try:
             Path(self._temp_directory).mkdir(parents=True, exist_ok=True)
             database.execute("SET temp_directory = ?", [self._temp_directory])

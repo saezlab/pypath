@@ -10,10 +10,12 @@ services:
     environment:
       OMNIPATH_PUBLIC_DATA_URL: ${PUBLIC_DATA_URL:-http://localhost:8080}
       OMNIPATH_READ_ONLY: "true"
-      OMNIPATH_QUERY_CONCURRENCY: ${API_QUERY_CONCURRENCY:-2}
+      # Unset (empty): a query slot per CPU of the container, one DuckDB thread each,
+      # and 75% of its memory for DuckDB (omnipath_api/queries/store/budget.py).
+      OMNIPATH_QUERY_CONCURRENCY: ${API_QUERY_CONCURRENCY:-}
       OMNIPATH_QUERY_WAIT_SECONDS: ${API_QUERY_WAIT_SECONDS:-30}
-      OMNIPATH_DUCKDB_MEMORY_LIMIT: ${API_QUERY_MEMORY:-1GB}
-      OMNIPATH_DUCKDB_THREADS: ${API_QUERY_THREADS:-2}
+      OMNIPATH_DUCKDB_MEMORY_LIMIT: ${API_QUERY_MEMORY:-}
+      OMNIPATH_DUCKDB_THREADS: ${API_QUERY_THREADS:-}
       OMNIPATH_WARM_CACHE: ${API_WARM_CACHE:-true}
     mem_limit: ${API_MEMORY_LIMIT:-4g}
     cpus: ${API_CPUS:-4}

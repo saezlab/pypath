@@ -80,13 +80,18 @@ workflow; serving commands never invoke them.
 ## Query and database budgets
 
 The API pool bounds simultaneous queries and retained DuckDB connections.
-`API_QUERY_CONCURRENCY`, `API_QUERY_THREADS` and `API_QUERY_MEMORY` set its
-per-process query budget; `API_MEMORY_LIMIT` and `API_CPUS` bound the container.
-The default two databases each have a 1 GB DuckDB limit inside a 4 GB container.
-Additional Arrow/Python buffers need headroom. These are conservative starting
-values. `packages/web/scripts/explorer_load_test.py` measures how many explorer users a
+`API_CPUS` and `API_MEMORY_LIMIT` bound the container, and the API sizes its pool
+from them: a query slot per CPU with one DuckDB thread each, and 75% of the memory
+for the DuckDB database the slots share (the rest is for Python, Arrow and response
+buffers). Seven CPUs and 13 GB give seven slots and about 9.75 GB. Set
+`API_QUERY_CONCURRENCY`, `API_QUERY_THREADS` and `API_QUERY_MEMORY` (per slot) only
+to override that. Load tests on 7 CPUs and 13 GB in November 2026 found slots, not
+threads, the setting that matters: the explorer's queries are small, so at 64 people
+six slots of one thread answered the slowest 5% of steps in 0.31 s, three slots of
+two in 1.07 s, at the same CPU per request; 32 GB answered as 13 GB did.
+`packages/web/scripts/explorer_load_test.py` measures how many explorer users a
 deployment supports; `packages/api/docs/reports/nicesrv-explorer-capacity-20261009.md` has the
-results for nicesrv.
+October results for nicesrv, before the relation queries got cheaper.
 
 A development PostgreSQL instance is a separate explicit operation:
 copy `postgres-dev.env.example` to a private ignored `.env` file, choose a

@@ -112,9 +112,10 @@ def test_http_capacity_returns_retryable_status(tmp_path, monkeypatch):
         assert client.get("/api/resources").status_code == 200
 
 
-def test_concurrent_search_facets_and_export_match_sequential(tmp_path):
+def test_concurrent_search_facets_and_export_match_sequential(tmp_path, monkeypatch):
     from omnipath_core.fixtures import write_dataset
 
+    monkeypatch.setenv("OMNIPATH_QUERY_CONCURRENCY", "2")
     engine = served_queries(write_dataset(tmp_path))
     calls = (
         lambda: engine.search_entities_api(query="TP53", limit=10)["entities"],
