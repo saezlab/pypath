@@ -11,7 +11,7 @@ services:
       OMNIPATH_PUBLIC_DATA_URL: ${PUBLIC_DATA_URL:-http://localhost:8080}
       OMNIPATH_READ_ONLY: "true"
       # Unset (empty): a query slot per CPU of the container, one DuckDB thread for all,
-      # and 75% of its memory for DuckDB (omnipath_api/queries/store/budget.py).
+      # and half of its memory for DuckDB (omnipath_api/queries/store/budget.py).
       OMNIPATH_QUERY_CONCURRENCY: ${API_QUERY_CONCURRENCY:-}
       OMNIPATH_QUERY_WAIT_SECONDS: ${API_QUERY_WAIT_SECONDS:-30}
       OMNIPATH_DUCKDB_MEMORY_LIMIT: ${API_QUERY_MEMORY:-}
