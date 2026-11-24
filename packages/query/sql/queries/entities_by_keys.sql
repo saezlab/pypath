@@ -1,9 +1,11 @@
 -- query: entities_by_keys
 -- Entities by names, identifiers or keys (resolved as resolve_keys does) as entity
 -- summaries, in the resolved order; slim
--- leaves out identifiers and annotations.
+-- leaves out identifiers and annotations. matches adds, for each token given (in order,
+-- repeats kept), the keys of the entities it resolved to.
 -- param: tokens VARCHAR[] = NULL
 -- param: slim BOOLEAN = false
+-- param: matches BOOLEAN = false
 -- param: resources VARCHAR[] = NULL
 -- output: json response
 -- example: {"tokens": ["TP53"]}
@@ -42,5 +44,27 @@ SELECT position, op_summary(summary) AS summary FROM __merged WHERE {{slim}}
 UNION ALL
 SELECT position, summary FROM {{include:entity_summary listed}}
 
+-- step: token_matches AS table when {{matches}}
+-- each token and the entities read that it found: by a name, identifier or group key
+-- (as entity_keys keeps them), or as an entity key itself
+WITH found AS (
+    SELECT DISTINCT h.token, e.entity_key
+    FROM __key_hits h JOIN __key_hit_entities e USING (entity_n)
+    WHERE h.member OR h.namespace IS NULL OR h.namespace = lower(coalesce(e.namespace, ''))
+    UNION
+    SELECT c.token, m.entity_key FROM __key_classes c
+    JOIN __merged m ON m.entity_key = CASE WHEN c.kind = 'key' THEN c.token ELSE substr(c.token, 8) END
+    WHERE c.kind = 'key' OR (c.kind = 'group' AND starts_with(c.token, 'entity:'))
+)
+SELECT c.position, c.token,
+    coalesce(list(f.entity_key ORDER BY f.entity_key) FILTER (WHERE f.entity_key IS NOT NULL), []) AS entity_keys
+FROM __key_classes c LEFT JOIN found f USING (token)
+GROUP BY c.position, c.token
+
 -- step: response AS value
-SELECT to_json(struct_pack(entities := coalesce((SELECT list(summary ORDER BY position) FROM __summaries), [])))
+SELECT CASE WHEN {{matches}} THEN to_json(struct_pack(
+        entities := coalesce((SELECT list(summary ORDER BY position) FROM __summaries), []),
+        matches := coalesce((SELECT list(struct_pack(identifier := token, entityKeys := entity_keys) ORDER BY position)
+                             FROM __token_matches), [])))
+    ELSE to_json(struct_pack(entities := coalesce((SELECT list(summary ORDER BY position) FROM __summaries), [])))
+END

@@ -10,6 +10,10 @@ from typing import Any
 from omnipath_api.queries.filters import EntitySearchCursor, normalize_filters
 
 
+def _public_id(entity: dict[str, Any]) -> str:
+    return f"{entity['canonicalIdentifierType']}|{entity['canonicalIdentifier']}"
+
+
 class EntitiesQueries:
     """Entity search, details, evidence, groups and molecular context."""
 
@@ -149,36 +153,43 @@ class EntitiesQueries:
     def resolve_identifiers(
         self, identifiers: list[str], resources: list[str] | None = None
     ) -> dict[str, Any]:
+        """The entities of identifiers, names or keys, and for each identifier given the
+        public ids of the entities it resolved to. The query matches as entities_by_keys
+        resolves (exact, case-insensitive); only when nothing resolves do the first
+        identifiers fall back to search, each matching its own search results."""
         values = [str(v).strip() for v in identifiers if str(v).strip()]
         if not values:
             return {"matches": [], "entities": []}
-        found = self.get_entities_by_pks(values, resources).get("entities") or []
-        if not found:
-            for value in values[:20]:
-                extra = (
+        text = self.run_query(
+            "entities_by_keys", {"tokens": values, "slim": False, "matches": True}, resources
+        )
+        resolved = json.loads(text)
+        entities = resolved.get("entities") or []
+        if entities:
+            public_ids = {e["entityPk"]: _public_id(e) for e in entities}
+            matches = [
+                {
+                    "identifier": m["identifier"],
+                    # entities of the same canonical identifier share their public id
+                    "entityIds": list(dict.fromkeys(
+                        public_ids[k] for k in m["entityKeys"] if k in public_ids)),
+                }
+                for m in resolved.get("matches") or []
+            ]
+            return {"matches": matches, "entities": entities}
+        unique: dict[str, dict[str, Any]] = {}
+        matches = []
+        for position, value in enumerate(values):
+            hits = []
+            if position < 20:
+                hits = (
                     self.search_entities_api(query=value, limit=5, resources=resources).get(
                         "entities"
                     )
                     or []
                 )
-                found.extend(extra)
-        unique: dict[str, dict[str, Any]] = {}
-        for entity in found:
-            unique[entity["entityPk"]] = entity
-        entities = list(unique.values())
-        matches = []
-        for identifier in values:
-            needle = identifier.lower()
-            entity_ids = []
-            for entity in entities:
-                public_id = f"{entity['canonicalIdentifierType']}|{entity['canonicalIdentifier']}"
-                haystacks = [
-                    entity["entityPk"].lower(),
-                    entity["canonicalIdentifier"].lower(),
-                    public_id.lower(),
-                    str(entity.get("label") or "").lower(),
-                ]
-                if any(needle == h or needle in h for h in haystacks if h):
-                    entity_ids.append(public_id)
-            matches.append({"identifier": identifier, "entityIds": entity_ids})
-        return {"matches": matches, "entities": entities}
+            for entity in hits:
+                unique[entity["entityPk"]] = entity
+            matches.append(
+                {"identifier": value, "entityIds": list(dict.fromkeys(map(_public_id, hits)))})
+        return {"matches": matches, "entities": list(unique.values())}

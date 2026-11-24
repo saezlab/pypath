@@ -2,7 +2,8 @@
 -- (NULL: all): labels, identifiers, ns:id / ns|id CURIEs, reference keys, entity keys
 -- and group keys (gene:<reference>, connectivity:<block>, entity:<key>), by exact
 -- case-insensitive match. Gives the list entity_keys: the entity keys given, then the
--- groups' members, then the matches, sorted, without repeats.
+-- groups' members, then the matches, sorted, without repeats; and the tables key_classes
+-- (each token and its position) and key_hits (each entity found, with its token).
 
 -- step: key_classes AS table
 SELECT token, position,
@@ -40,23 +41,24 @@ SELECT kind, group_key, entity_n FROM entity_group WHERE group_key IN ({{key_gro
 SELECT DISTINCT token FROM __key_classes WHERE kind = 'other' ORDER BY token
 
 -- step: key_rows AS table
-SELECT entity_n FROM entity WHERE entity_key IN ({{key_others*}})
+SELECT entity_n, entity_key FROM entity WHERE entity_key IN ({{key_others*}})
 
 -- step: key_hits AS table
--- (entity, the namespace the entity must have or NULL for any, from a group)
-SELECT entity_n, NULL::VARCHAR AS namespace, false AS member FROM __key_rows
+-- (entity, the namespace the entity must have or NULL for any, from a group, the token
+-- that found it)
+SELECT entity_n, NULL::VARCHAR AS namespace, false AS member, entity_key AS token FROM __key_rows
 UNION ALL
-SELECT t.entity_n, NULL, false FROM __key_term_rows t
-WHERE t.term IN (SELECT lower(token) FROM __key_classes WHERE kind = 'other')
+SELECT t.entity_n, NULL, false, c.token FROM __key_term_rows t
+JOIN __key_classes c ON c.kind = 'other' AND t.term = lower(c.token)
 UNION ALL
-SELECT t.entity_n, c.curie_ns, false FROM __key_term_rows t
+SELECT t.entity_n, c.curie_ns, false, c.token FROM __key_term_rows t
 JOIN __key_classes c ON c.kind = 'other' AND c.curie_ns IS NOT NULL AND t.term = lower(c.curie_id)
 UNION ALL
-SELECT g.entity_n, NULL, false FROM __key_group_rows g
+SELECT g.entity_n, NULL, false, c.token FROM __key_group_rows g
 JOIN __key_classes c ON c.kind = 'other' AND c.curie_ns IS NOT NULL
     AND g.kind = 'reference' AND g.group_key = c.curie_ns || ':' || c.curie_id
 UNION ALL
-SELECT g.entity_n, NULL, true FROM __key_group_rows g
+SELECT g.entity_n, NULL, true, c.token FROM __key_group_rows g
 JOIN __key_classes c ON c.kind = 'group' AND NOT starts_with(c.token, 'entity:')
     AND g.kind = CASE WHEN starts_with(c.token, 'gene:') THEN 'reference' ELSE 'connectivity' END
     AND g.group_key = substr(c.token, strpos(c.token, ':') + 1)
