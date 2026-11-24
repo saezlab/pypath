@@ -56,7 +56,8 @@ the clients' API mode uses.
 - **`release` / `store`**: `ReleaseQueries`, the served databases, request scopes,
   query caches and configured DuckDB connections. `store/budget.py` sizes the query
   pool and the database its slots share from the container's CPUs and memory (a slot
-  per CPU, one thread each); `OMNIPATH_QUERY_CONCURRENCY`, `OMNIPATH_DUCKDB_THREADS` and
+  per CPU, one DuckDB thread for the database, each query on its caller's);
+  `OMNIPATH_QUERY_CONCURRENCY`, `OMNIPATH_DUCKDB_THREADS` and
   `OMNIPATH_DUCKDB_MEMORY_LIMIT` override it, `OMNIPATH_DUCKDB_TEMP_DIRECTORY` sets where
   queries spill.
 - **`services`**: the routes' requests as step-file parameters (entities, relations,

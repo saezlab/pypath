@@ -172,10 +172,10 @@ class ReleaseQueries(
         threads: int | None = None,
     ) -> None:
         """The queries run in one DuckDB database, sized for the query slots by
-        ``store.budget``: by default a slot per CPU of the container, one thread each,
-        and most of its memory. ``memory_limit`` and ``threads`` are per slot
-        (OMNIPATH_DUCKDB_MEMORY_LIMIT and OMNIPATH_DUCKDB_THREADS override them, as
-        OMNIPATH_QUERY_CONCURRENCY the slots). OMNIPATH_DUCKDB_TEMP_DIRECTORY names a
+        ``store.budget``: by default a slot per CPU of the container, one DuckDB thread
+        (each query runs on its caller's), and most of its memory. ``memory_limit`` is
+        per slot, ``threads`` the database's (OMNIPATH_DUCKDB_MEMORY_LIMIT and
+        OMNIPATH_DUCKDB_THREADS override them, as OMNIPATH_QUERY_CONCURRENCY the slots). OMNIPATH_DUCKDB_TEMP_DIRECTORY names a
         writable directory for spills."""
         self.data_root = Path(data_root).resolve()
         self._budget = query_budget(threads=threads, memory_limit=memory_limit)

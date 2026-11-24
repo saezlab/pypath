@@ -2,15 +2,18 @@
 threads and memory of the database they share, from the CPUs and memory its container
 gets.
 
-One query slot per CPU, with one thread each: the explorer's queries are small, so
-waiting for a slot costs more than a second thread per query gains. In load tests on
-7 CPUs and 13 GB (the explorer's extended journey, 64 people), six slots of one
-thread answered the slowest 5% of steps in 0.31 s, three slots of two in 1.07 s, at the
-same CPU per request; 13 GB and 32 GB answered alike. DuckDB gets most of the
-container's memory, the rest is for Python, Arrow and response buffers.
+One query slot per CPU, and one DuckDB thread for the whole database: DuckDB runs a
+query on the thread that calls it (plus the database's threads beyond the first, which
+all queries share), so seven slots still run seven queries on seven cores, each without
+spreading its small steps over threads that other queries need. In load tests on 7 CPUs
+and 13 GB (the explorer's extended journey, 64 people): seven slots on a database of
+seven threads answered the slowest 5% of steps in 0.38 s at 145 ms CPU per request, on
+a database of one thread in 0.32 s at 84 ms; three slots on six threads took 1.07 s.
+13 GB and 32 GB answered alike. DuckDB gets most of the container's memory, the rest is
+for Python, Arrow and response buffers.
 
-Each part can be set: OMNIPATH_QUERY_CONCURRENCY (slots), OMNIPATH_DUCKDB_THREADS
-(threads per slot) and OMNIPATH_DUCKDB_MEMORY_LIMIT (memory per slot). An empty setting
+Each part can be set: OMNIPATH_QUERY_CONCURRENCY (slots), OMNIPATH_DUCKDB_THREADS (the
+database's threads) and OMNIPATH_DUCKDB_MEMORY_LIMIT (memory per slot). An empty setting
 counts as unset."""
 
 from __future__ import annotations
@@ -49,20 +52,20 @@ def _setting(name: str) -> str | None:
 @dataclass(frozen=True)
 class QueryBudget:
     slots: int  # queries at once
-    threads: int  # DuckDB threads of the shared database (all slots)
+    threads: int  # DuckDB threads of the shared database (each query also runs on its caller's)
     memory: str  # DuckDB memory limit of the shared database (all slots)
 
 
 def query_budget(
     *, threads: int | None = None, memory_limit: str | None = None, cgroup: Path | None = None
 ) -> QueryBudget:
-    """The budget from the settings, else from the container. ``threads`` and
-    ``memory_limit`` (per slot) stand in for unset settings."""
+    """The budget from the settings, else from the container. ``threads`` (the
+    database's) and ``memory_limit`` (per slot) stand in for unset settings."""
     slots = int(_setting("OMNIPATH_QUERY_CONCURRENCY") or cpu_count(cgroup))
     if slots < 1:
         raise ValueError("OMNIPATH_QUERY_CONCURRENCY must be positive (query concurrency)")
-    per_slot_threads = int(_setting("OMNIPATH_DUCKDB_THREADS") or threads or 1)
-    if per_slot_threads < 1:
+    database_threads = int(_setting("OMNIPATH_DUCKDB_THREADS") or threads or 1)
+    if database_threads < 1:
         raise ValueError("OMNIPATH_DUCKDB_THREADS must be positive")
     per_slot_memory = _setting("OMNIPATH_DUCKDB_MEMORY_LIMIT") or memory_limit
     if per_slot_memory:
@@ -71,4 +74,4 @@ def query_budget(
         memory = f"{int(limit * MEMORY_SHARE / 2**20)}MiB"
     else:
         memory = scaled(FALLBACK_MEMORY, slots)
-    return QueryBudget(slots, per_slot_threads * slots, memory)
+    return QueryBudget(slots, database_threads, memory)

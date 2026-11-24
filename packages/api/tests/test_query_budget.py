@@ -15,11 +15,11 @@ def cgroup(tmp_path, monkeypatch):
     return tmp_path
 
 
-def test_a_slot_of_one_thread_per_container_cpu_and_most_of_its_memory(cgroup):
+def test_a_slot_per_container_cpu_one_database_thread_and_most_of_its_memory(cgroup):
     (cgroup / "cpu.max").write_text("700000 100000\n")
     (cgroup / "memory.max").write_text(f"{13 * 2**30}\n")
     b = query_budget(cgroup=cgroup)
-    assert (b.slots, b.threads) == (7, 7)
+    assert (b.slots, b.threads) == (7, 1)
     assert b.memory == f"{int(13 * 1024 * budget.MEMORY_SHARE)}MiB"
 
 
@@ -41,7 +41,7 @@ def test_cgroup_v1_limits(cgroup):
     assert cpu_count(cgroup) == 4
     assert cgroup_memory_limit(cgroup) is None  # v1's "no limit"
     b = query_budget(cgroup=cgroup)
-    assert (b.slots, b.threads, b.memory) == (4, 4, "4GB")  # 1 GB a slot without a limit
+    assert (b.slots, b.threads, b.memory) == (4, 1, "4GB")  # 1 GB a slot without a limit
 
 
 def test_settings_override_each_part_and_empty_ones_count_as_unset(cgroup, monkeypatch):
@@ -50,7 +50,7 @@ def test_settings_override_each_part_and_empty_ones_count_as_unset(cgroup, monke
     monkeypatch.setenv("OMNIPATH_QUERY_CONCURRENCY", "3")
     monkeypatch.setenv("OMNIPATH_DUCKDB_THREADS", "2")
     monkeypatch.setenv("OMNIPATH_DUCKDB_MEMORY_LIMIT", "3500MB")
-    assert query_budget(cgroup=cgroup) == budget.QueryBudget(3, 6, "10500MB")
+    assert query_budget(cgroup=cgroup) == budget.QueryBudget(3, 2, "10500MB")
     for name in SETTINGS:
         monkeypatch.setenv(name, " ")  # as compose passes an unset variable
     assert query_budget(cgroup=cgroup).slots == 7

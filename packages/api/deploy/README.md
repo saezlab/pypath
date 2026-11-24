@@ -81,14 +81,16 @@ workflow; serving commands never invoke them.
 
 The API pool bounds simultaneous queries and retained DuckDB connections.
 `API_CPUS` and `API_MEMORY_LIMIT` bound the container, and the API sizes its pool
-from them: a query slot per CPU with one DuckDB thread each, and 75% of the memory
-for the DuckDB database the slots share (the rest is for Python, Arrow and response
-buffers). Seven CPUs and 13 GB give seven slots and about 9.75 GB. Set
-`API_QUERY_CONCURRENCY`, `API_QUERY_THREADS` and `API_QUERY_MEMORY` (per slot) only
-to override that. Load tests on 7 CPUs and 13 GB in November 2026 found slots, not
-threads, the setting that matters: the explorer's queries are small, so at 64 people
-six slots of one thread answered the slowest 5% of steps in 0.31 s, three slots of
-two in 1.07 s, at the same CPU per request; 32 GB answered as 13 GB did.
+from them: a query slot per CPU, one DuckDB thread for the database the slots share
+(DuckDB runs each query on the thread that calls it, so the slots still use all
+CPUs), and 75% of the memory for that database (the rest is for Python, Arrow and
+response buffers). Seven CPUs and 13 GB give seven slots and about 9.75 GB. Set
+`API_QUERY_CONCURRENCY`, `API_QUERY_THREADS` (the database's) and `API_QUERY_MEMORY`
+(per slot) only to override that. Load tests on 7 CPUs and 13 GB in November 2026, the
+explorer's journey at 64 people: three slots on a database of six threads answered
+the slowest 5% of steps in 1.07 s; seven slots on seven threads in 0.38 s at 145 ms
+CPU per request; seven slots on one thread in 0.32 s at 84 ms, because the small
+queries no longer spread over threads the others need. 32 GB answered as 13 GB did.
 `packages/web/scripts/explorer_load_test.py` measures how many explorer users a
 deployment supports; `packages/api/docs/reports/nicesrv-explorer-capacity-20261009.md` has the
 October results for nicesrv, before the relation queries got cheaper.
