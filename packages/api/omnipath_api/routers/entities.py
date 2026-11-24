@@ -161,7 +161,9 @@ def group_relationships(request: Request, payload: GroupRelationshipsRequest):
             resources=payload.resources,
             include_member_keys=True,
         )["groups"]
-        keys = groups[0]["entity"]["groupMemberKeys"] if groups else []
+        # a single entity is no group: it has no member keys, it is its own member
+        entity = groups[0]["entity"] if groups else {}
+        keys = entity.get("groupMemberKeys") or ([entity["entityPk"]] if entity else [])
     elif not keys:
         raise HTTPException(status_code=422, detail="Provide a group or member keys")
     result = _call(

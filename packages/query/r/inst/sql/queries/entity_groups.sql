@@ -63,12 +63,13 @@ SELECT CASE
 END
 
 -- step: cursor_ok AS value
--- a page cursor: [relations, member count, group key] of the last group shown
+-- a page cursor: [relations, member count, group key] of the last group shown (text that is
+-- not JSON is invalid too, not an error of the cast)
 SELECT CASE WHEN {{cursor}} IS NULL OR {{group_key}} IS NOT NULL THEN false
-    WHEN coalesce(try(json_array_length({{cursor}}::JSON)) = 3
-        AND json_type({{cursor}}::JSON, '$[0]') IN ('UBIGINT', 'BIGINT') AND ({{cursor}}::JSON->>'$[0]')::BIGINT >= 0
-        AND json_type({{cursor}}::JSON, '$[1]') IN ('UBIGINT', 'BIGINT') AND ({{cursor}}::JSON->>'$[1]')::BIGINT >= 1
-        AND json_type({{cursor}}::JSON, '$[2]') = 'VARCHAR', false)
+    WHEN coalesce(try(json_array_length(TRY_CAST({{cursor}} AS JSON))) = 3
+        AND json_type(TRY_CAST({{cursor}} AS JSON), '$[0]') IN ('UBIGINT', 'BIGINT') AND (TRY_CAST({{cursor}} AS JSON)->>'$[0]')::BIGINT >= 0
+        AND json_type(TRY_CAST({{cursor}} AS JSON), '$[1]') IN ('UBIGINT', 'BIGINT') AND (TRY_CAST({{cursor}} AS JSON)->>'$[1]')::BIGINT >= 1
+        AND json_type(TRY_CAST({{cursor}} AS JSON), '$[2]') = 'VARCHAR', false)
     THEN true
     ELSE error('invalid: Invalid group cursor') END
 
