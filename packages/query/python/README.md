@@ -108,7 +108,17 @@ is empty or damaged.
 These are **native DuckDB tables** built from the downloaded Parquet files: the same
 database the hosted API serves a release from (`omnipath_client.database`), written
 by the same code. There are no per-resource tables or schemas; the per-resource
-Parquet files stay as the downloads. A full release (173 resources) takes about 22 minutes at 3 threads and 5 GB, and 18 GB.
+Parquet files stay as the downloads. A full release (173 resources) takes about 22
+minutes at 3 threads and 5 GB, and 18 GB of disk.
+
+The build's memory need grows with its threads, so its defaults suit any machine: at
+most 3 threads (fewer on fewer CPUs, or a container's CPU quota), and 60% of the
+available memory (the container's limit, if lower), never below 2 GB. Set
+`init(memory_limit="6GB", threads=2)` or `omnipath-client init --memory-limit 6GB
+--threads 2` to choose; a build that runs out of memory stops with a message saying
+so. A selection of resources needs far less than a full release; with under about 5 GB
+available, install a selection, or give the build the memory with more disk for the
+overflow (`.duckdb-tmp` in the data directory).
 Any change to the installed resources writes the database anew; the Parquet files
 stay. Entities and relations are numbered when the database is built, `entity_n` and
 `relation_n`, in key order; the child tables refer to them. Indexes cover `entity`

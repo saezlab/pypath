@@ -37,6 +37,17 @@ def main(argv: list[str] | None = None) -> None:
     install.add_argument(
         "--evidence", action="store_true", help="also download raw evidence payloads"
     )
+    install.add_argument(
+        "--memory-limit",
+        help="DuckDB memory limit of the database build, e.g. 6GB (default: 60%% of the "
+        "available memory, at least 2GB; a full release needs about 5GB)",
+    )
+    install.add_argument(
+        "--threads",
+        type=int,
+        help="DuckDB threads of the database build (default: the CPUs, at most 3; the "
+        "build's memory need grows with them)",
+    )
     common(install)
     listing = commands.add_parser(
         "list", help="list the resources of a release, their tags, sizes and what is installed"
@@ -52,6 +63,8 @@ def main(argv: list[str] | None = None) -> None:
             data_dir=args.data_dir,
             include_evidence=args.evidence,
             api_url=args.api_url,
+            memory_limit=args.memory_limit,
+            threads=args.threads,
             progress=lambda message: print(message, flush=True),
         )
         return
