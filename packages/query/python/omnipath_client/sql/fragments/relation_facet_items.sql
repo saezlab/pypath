@@ -91,7 +91,7 @@ WITH combinations AS (
         THEN array_to_string(list_sort([subject_type, object_type]), '|') END, NULL, relation_count
     FROM c WHERE g_rest AND g_type AND g_part_fallback AND g_source AND g_taxon AND g_sign AND g_q1 AND g_q2 AND g_q3
     UNION ALL
-    SELECT 'source', unnest(list_distinct(sources)), NULL, relation_count
+    SELECT 'source', unnest(list_distinct(op_scoped_sources(sources, {{resources}}))), NULL, relation_count
     FROM c WHERE g_rest AND g_type AND g_part AND g_taxon AND g_sign AND g_q1 AND g_q2 AND g_q3
     UNION ALL
     SELECT 'taxonomy_id', taxon, NULL, relation_count

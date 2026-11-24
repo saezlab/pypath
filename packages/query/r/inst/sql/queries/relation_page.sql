@@ -50,13 +50,15 @@ WITH annotations AS (
     SELECT unnest({{page_ids}}::INTEGER[]) AS relation_n, generate_subscripts({{page_ids}}::INTEGER[], 1) AS position
 ), stored AS (
     SELECT o.position AS position_, a.annotations AS annotations_, e.evidence AS evidence_,
-        r.* EXCLUDE (relation_n, subject_n, object_n, page_rank, evidence_count),
+        r.* EXCLUDE (relation_n, subject_n, object_n, page_rank, evidence_count)
+            REPLACE (op_scoped_sources(r.sources, {{resources}}) AS sources),
         s.entity_key AS subject_entity_key, s.label AS subject_label,
         b.entity_key AS object_entity_key, b.label AS object_label,
-        CASE WHEN {{forms}} THEN len(coalesce(e.evidence, [])) ELSE r.evidence_count END AS evidence_count
+        CASE WHEN {{forms}} THEN len(coalesce(e.evidence, [])) ELSE coalesce(c.n, r.evidence_count) END AS evidence_count
     FROM __endpoint_relations r JOIN ordered o USING (relation_n)
     JOIN __endpoint_rows s ON s.entity_n = r.subject_n JOIN __endpoint_rows b ON b.entity_n = r.object_n
     LEFT JOIN annotations a USING (relation_n) LEFT JOIN __page_evidence e USING (relation_n)
+    LEFT JOIN {{include:relation_scope_counts page_ids}} c USING (relation_n)
 ), records AS (
     -- each row's own columns (the helper fields dropped)
     SELECT position_ AS position, annotations_ AS annotations, evidence_ AS evidence,

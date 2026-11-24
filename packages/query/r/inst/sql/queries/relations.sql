@@ -39,6 +39,10 @@ SELECT true
 
 -- steps: relation_candidates
 
+-- step: fold_ids AS list when NOT op_unset({{resources}}) AND coalesce({{min_evidence_count}}, 0) > 1 AND {{keyed}}
+-- (the relation_folds fragment's, of the candidates)
+SELECT DISTINCT relation_n FROM __candidate_rows WHERE NOT list_has_all({{resources}}, resources) ORDER BY relation_n
+
 -- step: selection AS table
 -- the relations to return, by key: the filters read the candidates' filter columns, so
 -- that only the returned relations' rows are read below (not every candidate's), and
@@ -63,6 +67,7 @@ WHERE entity_n IN (SELECT subject_n FROM __selected UNION SELECT object_n FROM _
 
 -- step: annotation_rows AS table
 SELECT * FROM relation_annotation WHERE relation_n IN (SELECT relation_n FROM __selection)
+    AND op_annotation_in_scope(source, {{resources}})
 
 -- step: evidence AS table
 -- (each relation's evidence in its order: sorted by the order key, which is much faster
@@ -101,12 +106,13 @@ WITH annotations AS (
             source := source, dataset := dataset, scope := scope)))), x -> x.value) AS annotations
     FROM __annotation_rows GROUP BY ALL
 ), nested AS (
-    SELECT s.* EXCLUDE (evidence_count),
+    SELECT s.* EXCLUDE (evidence_count) REPLACE (op_scoped_sources(s.sources, {{resources}}) AS sources),
         sb.entity_key AS subject_entity_key, sb.label AS subject_label,
         ob.entity_key AS object_entity_key, ob.label AS object_label,
         coalesce(a.annotations, []) AS annotations,
         coalesce(e.evidence, []) AS evidence,
-        CASE WHEN {{forms}} THEN len(coalesce(e.evidence, [])) ELSE s.evidence_count END AS evidence_count
+        -- under a resource selection the evidence is the selected resources' records
+        CASE WHEN {{forms}} OR NOT op_unset({{resources}}) THEN len(coalesce(e.evidence, [])) ELSE s.evidence_count END AS evidence_count
     FROM __selected s
     JOIN __endpoints sb ON sb.entity_n = s.subject_n JOIN __endpoints ob ON ob.entity_n = s.object_n
     LEFT JOIN annotations a USING (relation_n) LEFT JOIN __evidence e USING (relation_n)

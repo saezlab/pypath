@@ -39,6 +39,8 @@ SELECT NOT {{fast}}
 
 -- steps: relation_range
 
+-- steps: relation_folds
+
 -- step: counts AS table
 SELECT category, predicate, sign, count(*) AS n FROM (
     SELECT r.category, r.predicate, r.sign FROM __range_selected r

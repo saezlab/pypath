@@ -4,6 +4,18 @@
 -- True when a list filter is not given: NULL or empty, as the API's "if values:".
 CREATE OR REPLACE MACRO op_unset(x) AS (x IS NULL OR len(x) = 0);
 
+-- A relation's sources among the selected resources (all of them when none are
+-- selected): a source is a resource, so the selection leaves the sources it names.
+CREATE OR REPLACE MACRO op_scoped_sources(sources_, scope_) AS (
+    CASE WHEN op_unset(scope_) THEN sources_ ELSE list_filter(sources_, lambda x: list_contains(scope_, x)) END
+);
+
+-- A relation annotation of the selected resources or of the resolver (its endpoint mapping
+-- status, the same whoever states the relation): the annotations a selection leaves.
+CREATE OR REPLACE MACRO op_annotation_in_scope(source_, scope_) AS (
+    op_unset(scope_) OR list_contains(scope_, source_) OR source_ = 'resolver'
+);
+
 -- One endpoint's molecular form matches every given identity constraint.
 CREATE OR REPLACE MACRO op_form_ok(form, proteins, transcripts, isoforms) AS (
     (op_unset(proteins) OR list_contains(proteins, form.protein_entity_key))

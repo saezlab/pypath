@@ -1,5 +1,7 @@
 -- The relation filters other than the endpoints, as a condition on the relation (or
--- endpoint table) row {{input}}; needs the relation_candidates steps.
+-- endpoint table) row {{input}}; needs the relation_candidates and relation_folds steps
+-- (the evidence count filter: the merged count, but not for the relations the selected
+-- resources state fewer records of, see relation_fold_low).
 (NOT {{forms}} OR {{input}}.relation_n IN ({{form_ids*}}))
     AND (op_unset({{relation_categories}}) OR list_contains({{relation_categories}}, {{input}}.category))
     AND (op_unset({{predicate_names}}) OR list_contains({{predicate_names}}, {{input}}.predicate))
@@ -11,7 +13,8 @@
         OR list_has_any({{input}}.causal_mechanism_qualifier, {{causal_mechanism_qualifier}}))
     AND ({{is_directed}} IS NULL OR {{input}}.is_directed = {{is_directed}})
     AND (op_unset({{sign_values}}) OR list_contains({{sign_values}}, {{input}}.sign))
-    AND (coalesce({{min_evidence_count}}, 0) <= 1 OR {{input}}.evidence_count >= {{min_evidence_count}})
+    AND (coalesce({{min_evidence_count}}, 0) <= 1 OR ({{input}}.evidence_count >= {{min_evidence_count}}
+        AND {{input}}.relation_n NOT IN ({{include:relation_fold_low fold_ids}})))
     AND (op_unset({{type_names}})
         OR (op_unset({{partner_names}})
             AND (list_contains({{type_names}}, {{input}}.subject_type) OR list_contains({{type_names}}, {{input}}.object_type)))
