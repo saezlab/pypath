@@ -47,8 +47,11 @@ SELECT CASE
     WHEN {{fast}} THEN (SELECT count(*) FROM __fast_order)
     WHEN {{keyed}} THEN (SELECT count(*) FROM __general_order)
     WHEN {{#page_ids}} = {{limit}} OR {{offset}} > 0 THEN (
+        -- only without endpoint filters: DuckDB runs this subquery even when the
+        -- CASE takes an earlier branch, so it must not scan unless it is the answer
         SELECT count(*) FROM relation r
-        WHERE (op_unset({{scope}}) OR list_has_any(r.resources, {{scope}}))
+        WHERE NOT {{fast}} AND NOT {{keyed}}
+            AND (op_unset({{scope}}) OR list_has_any(r.resources, {{scope}}))
             AND {{include:relation_conditions r}})
     ELSE {{offset}} + {{#page_ids}}
 END

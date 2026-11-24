@@ -39,9 +39,12 @@ SELECT true
 
 -- steps: relation_candidates
 
+-- step: candidate_relations AS table
+SELECT * FROM relation WHERE relation_n IN ({{candidate_ids*}})
+
 -- step: selected AS table
 SELECT r.* FROM (
-    SELECT * FROM __candidate_rows
+    SELECT * FROM __candidate_relations
     UNION ALL BY NAME
     SELECT * FROM relation WHERE NOT {{keyed}} AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
 ) r

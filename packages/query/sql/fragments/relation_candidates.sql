@@ -66,11 +66,12 @@ SELECT DISTINCT n FROM (SELECT unnest({{entity_n_list}}::INTEGER[]) AS n
     UNION ALL SELECT unnest({{scope_n_list}}::INTEGER[])) ORDER BY n
 
 -- step: selection_endpoints AS table when {{read_candidates}}
-SELECT entity_n, side, relation_n FROM relation_endpoint
+-- whole endpoint rows: they carry the filter, facet and page-order columns
+SELECT * FROM relation_endpoint
 WHERE entity_n IN ({{selection_ns+}}) AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
 
 -- step: selection_references AS table when {{read_candidates}} AND NOT op_unset({{reference_entity_keys}})
-SELECT relation_n FROM relation_reference
+SELECT * FROM relation_reference
 WHERE reference_key IN ({{reference_entity_keys+}}) AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
 
 -- step: candidate_ids AS list when {{read_candidates}}
@@ -97,7 +98,12 @@ WHERE (op_unset({{entities}}) OR relation_n IN (SELECT relation_n FROM by_entity
 ORDER BY relation_n
 
 -- step: candidate_rows AS table when {{read_candidates}}
-SELECT * FROM relation WHERE relation_n IN ({{candidate_ids*}})
+-- one row per candidate with the relation's filter, facet and page-order columns, from
+-- the endpoint and reference rows already read (they copy those columns); a query that
+-- needs whole relation rows reads them itself
+SELECT DISTINCT ON (relation_n) * EXCLUDE (entity_n, side, reference_key) FROM (
+    SELECT * FROM __selection_endpoints UNION ALL BY NAME SELECT * FROM __selection_references)
+WHERE relation_n IN ({{candidate_ids*}})
 
 -- step: candidate_evidence AS table when {{forms}} AND {{keyed}} AND {{read_candidates}}
 SELECT * FROM relation_evidence WHERE relation_n IN ({{candidate_ids*}})
