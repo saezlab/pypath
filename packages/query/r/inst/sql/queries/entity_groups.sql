@@ -160,13 +160,23 @@ SELECT p.group_key, k.entity_key FROM __page_groups p JOIN __keys k
 -- step: member_keys AS list
 SELECT DISTINCT entity_key FROM __members ORDER BY entity_key
 
--- step: member_merged AS table
--- the members a resource read has
+-- step: member_full AS table when {{include_details}}
+-- the members a resource read has, with every column: with details, the cards are built from them
 SELECT * FROM entity
 WHERE entity_key IN ({{member_keys*}}) AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
 
+-- step: member_merged AS table
+-- the same members' summaries and the columns the cards are ranked by: a page of groups
+-- reads these seven of the entity's columns (and not the others)
+SELECT entity_n, entity_key, relation_count, entity_type, taxon, label, summary FROM __member_full
+WHERE {{include_details}}
+UNION ALL
+SELECT entity_n, entity_key, relation_count, entity_type, taxon, label, summary FROM entity
+WHERE NOT {{include_details}} AND entity_key IN ({{member_keys*}})
+    AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
+
 -- step: list_ids AS list when {{include_details}}
-SELECT entity_n FROM __member_merged ORDER BY entity_n
+SELECT entity_n FROM __member_full ORDER BY entity_n
 
 -- step: identifier_rows AS table
 SELECT * FROM entity_identifier WHERE entity_n IN ({{list_ids+}})
@@ -176,7 +186,7 @@ SELECT * FROM entity_annotation WHERE entity_n IN ({{list_ids*}})
 
 -- step: member_summaries AS table
 -- the stored summaries, or with details built with the identifier and annotation lists
-WITH placed AS (SELECT *, 0 AS position FROM __member_merged WHERE {{include_details}}),
+WITH placed AS (SELECT *, 0 AS position FROM __member_full WHERE {{include_details}}),
 listed AS (SELECT * FROM {{include:merged_rows placed}}),
 summaries AS (
     SELECT op_summary(summary) AS summary FROM __member_merged WHERE NOT {{include_details}}
@@ -192,7 +202,7 @@ FROM summaries s JOIN __member_merged m ON m.entity_key = s.summary.entityPk
 WITH chosen AS (
     SELECT p.group_key, m.* REPLACE ((SELECT min(entity_key) FROM __members WHERE group_key = p.group_key) AS entity_key),
         m.entity_key AS member_key
-    FROM __page_groups p JOIN __members mb USING (group_key) JOIN __member_merged m USING (entity_key)
+    FROM __page_groups p JOIN __members mb USING (group_key) JOIN __member_full m USING (entity_key)
     WHERE p.connectivity IS NOT NULL
 ), member_identifiers AS (
     SELECT entity_n, list(struct_pack(ns := ns, id := id, is_canonical := is_canonical, source := source)
@@ -220,14 +230,23 @@ JOIN (SELECT DISTINCT entity_key, card_group FROM nested) g ON g.entity_key = s.
 
 -- step: groups AS table
 WITH member_list AS (
-    SELECT mb.group_key, ms.*, row_number() OVER (PARTITION BY mb.group_key ORDER BY ms.entity_key) AS n
-    FROM __members mb JOIN __member_summaries ms USING (entity_key)
+    -- the position by the keys, then the summaries joined: the window sorts no summaries
+    SELECT mb.group_key, ms.*, mb.n
+    FROM (SELECT group_key, entity_key, row_number() OVER (PARTITION BY group_key ORDER BY entity_key) AS n
+          FROM __members) mb
+    JOIN __member_summaries ms USING (entity_key)
 ), visible AS (
-    SELECT *, row_number() OVER (PARTITION BY group_key ORDER BY entity_key) AS v
+    -- the members after the member cursor, by position (their summaries: shown)
+    SELECT group_key, entity_key, n, row_number() OVER (PARTITION BY group_key ORDER BY entity_key) AS v
     FROM member_list WHERE entity_key > coalesce({{member_cursor}}, '')
+), shown_rows AS (
+    -- the members shown of a group, not of a single entity (its card is the entity)
+    SELECT v.group_key, v.entity_key, v.v, m.summary
+    FROM visible v JOIN member_list m USING (group_key, n)
+    WHERE v.v <= {{member_limit}} AND v.group_key IN (SELECT group_key FROM __page_groups
+        WHERE connectivity IS NOT NULL OR reference_entity_key IS NOT NULL)
 ), stats AS (
     SELECT group_key,
-        list(summary ORDER BY entity_key) AS summaries,
         sum(coalesce(relation_count, 0))::BIGINT AS relations,
         count(*) AS member_count,
         count(DISTINCT coalesce(taxon, chr(1))) AS taxa,
@@ -263,20 +282,24 @@ WITH member_list AS (
         GROUP BY group_key, a::VARCHAR)
     GROUP BY group_key
 )
-SELECT p.*, st.summaries, st.relations AS member_relations, st.member_count AS shown_members, st.taxa,
+SELECT p.*, st.relations AS member_relations, st.member_count AS shown_members, st.taxa,
     coalesce(gs.sources, []) AS sources, st.best_named, st.best_label, st.member_types, st.first_gene, st.first_key,
     coalesce(u.identifiers, []) AS identifiers, a.attributes,
-    (SELECT list(summary ORDER BY v) FROM visible WHERE visible.group_key = p.group_key AND v <= {{member_limit}}) AS shown,
+    (SELECT list(summary ORDER BY v) FROM shown_rows WHERE shown_rows.group_key = p.group_key) AS shown,
     (SELECT max(entity_key) FROM visible WHERE visible.group_key = p.group_key AND v = {{member_limit}}) AS member_cursor_at,
     (SELECT count(*) FROM visible WHERE visible.group_key = p.group_key) AS visible_count,
-    (SELECT list(entity_key ORDER BY v) FROM visible WHERE visible.group_key = p.group_key AND v <= {{member_limit}}) AS shown_keys,
-    (SELECT list(entity_key ORDER BY entity_key) FROM member_list WHERE member_list.group_key = p.group_key) AS all_keys,
-    coalesce(cb.summary, (SELECT summary FROM __member_summaries WHERE entity_key = st.first_key)) AS chemical_base,
-    (SELECT summary FROM __member_summaries WHERE entity_key = coalesce(st.first_gene, st.first_key)) AS gene_base
+    (SELECT list(entity_key ORDER BY v) FROM shown_rows WHERE shown_rows.group_key = p.group_key) AS shown_keys,
+    CASE WHEN {{include_member_keys}} THEN
+        (SELECT list(entity_key ORDER BY entity_key) FROM member_list WHERE member_list.group_key = p.group_key) END AS all_keys,
+    -- the entity of the card: a structure group's merged members with details, else the
+    -- first member (a gene group's first gene member)
+    CASE WHEN p.connectivity IS NOT NULL THEN coalesce(cb.summary, bs.summary) ELSE bs.summary END AS base
 FROM __page_groups p
 LEFT JOIN stats st USING (group_key) LEFT JOIN group_sources gs USING (group_key)
 LEFT JOIN unions u USING (group_key) LEFT JOIN attributes a USING (group_key)
 LEFT JOIN __chemical_bases cb USING (group_key)
+LEFT JOIN __member_summaries bs ON bs.entity_key = CASE WHEN p.reference_entity_key IS NOT NULL
+    THEN coalesce(st.first_gene, st.first_key) ELSE st.first_key END
 
 -- step: response AS value
 WITH cards AS (
@@ -284,23 +307,23 @@ WITH cards AS (
         connectivity IS NOT NULL OR reference_entity_key IS NOT NULL AS is_group,
         CASE WHEN visible_count > {{member_limit}} THEN member_cursor_at END AS next_member_cursor,
         CASE
-        WHEN connectivity IS NOT NULL THEN op_json_patch(op_json_patch(op_json_patch(to_json(chemical_base), to_json(struct_pack(
+        WHEN connectivity IS NOT NULL THEN op_json_patch(op_json_patch(op_json_patch(to_json(base), to_json(struct_pack(
             identifiers := identifiers, identifiersTotal := len(identifiers), sources := sources,
-            displayName := coalesce(best_named.l, best_label.name, chemical_base.displayName),
+            displayName := coalesce(best_named.l, best_label.name, base.displayName),
             canonicalIdentifier := connectivity, canonicalIdentifierType := 'connectivity',
             primaryNamespace := 'connectivity', primaryIdentifier := connectivity,
             groupStrategy := 'chemical_connectivity', ontologyHierarchy := NULL::JSON))),
             CASE WHEN {{include_details}} THEN to_json(struct_pack(entityAttributes := CASE WHEN len(coalesce(attributes, [])) > 0 THEN attributes END)) ELSE '{}'::JSON END),
             CASE WHEN taxa > 1 THEN to_json(struct_pack(taxonomyId := NULL::VARCHAR, taxonomyName := NULL::VARCHAR, taxon := NULL::VARCHAR)) ELSE '{}'::JSON END)
-        WHEN reference_entity_key IS NOT NULL THEN op_json_patch(to_json(gene_base), to_json(struct_pack(
-            displayName := CASE WHEN first_gene IS NOT NULL THEN gene_base.displayName
-                ELSE coalesce(best_named.l, best_label.name, gene_base.displayName) END,
+        WHEN reference_entity_key IS NOT NULL THEN op_json_patch(to_json(base), to_json(struct_pack(
+            displayName := CASE WHEN first_gene IS NOT NULL THEN base.displayName
+                ELSE coalesce(best_named.l, best_label.name, base.displayName) END,
             entityAttributes := CASE WHEN len(coalesce(attributes, [])) > 0 THEN attributes END,
             identifiers := identifiers, identifiersTotal := len(identifiers), sources := sources,
             referenceEntityKey := reference_entity_key, entityType := 'gene', memberEntityTypes := member_types,
             canonicalIdentifier := split_part(reference_entity_key, ':', 2), canonicalIdentifierType := 'entrez',
             groupStrategy := 'gene_reference')))
-        ELSE to_json(summaries[1])
+        ELSE to_json(base)
         END AS card,
         shown_keys, all_keys, shown_members, member_relations
     FROM __groups
