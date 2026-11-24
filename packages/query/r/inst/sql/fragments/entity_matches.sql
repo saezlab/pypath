@@ -1,8 +1,8 @@
 -- Steps: what a search matches in its first phase with matches (all, key, prefix,
 -- contains: the phases value), in the resources {{match_scope}}, passing the entity
 -- filters (type_names, taxonomy_ids, reference_entity_keys and the entity key list
--- match_keys, NULL for none): the value match_phase and, for prefixes, the matching
--- entities (__match_prefix). The entity_match_rows fragment reads every matching entity
+-- match_keys, NULL for none): the value match_phase and, for prefixes, the numbers of
+-- the matching entities (__match_prefix). The entity_match_rows fragment reads every matching entity
 -- (all hits, not a page) without copying them.
 
 -- step: match_hits AS table when list_contains({{phases}}, 'prefix')
@@ -19,8 +19,9 @@ FROM (
 GROUP BY entity_n
 
 -- step: match_prefix AS table when list_contains({{phases}}, 'prefix')
-SELECT e.entity_n, e.entity_key, e.namespace, e.label, e.entity_type, e.taxon, e.resources,
-    e.relation_count, e.chemical, e.structure_group, e.gene_group
+-- the matching entities' numbers only: the entity_match_rows fragment reads the columns
+-- a query needs of them (a facet count three of them, not all)
+SELECT e.entity_n
 FROM entity e JOIN __match_hits h USING (entity_n)
 WHERE (h.any_namespace OR list_contains(h.namespaces, lower(coalesce(e.namespace, ''))))
     AND op_entity_ok(e, {{match_scope}}, {{type_names}}, {{taxonomy_ids}}, {{reference_entity_keys}}, {{match_keys}})

@@ -86,6 +86,10 @@ SELECT CASE WHEN op_unset({{entity_ids}}) THEN NULL ELSE coalesce({{entity_keys}
 -- step: match_scope AS value
 SELECT {{selected}}
 
+-- step: phases AS value
+-- no search again without a source filter: the counts above are then these entities'
+SELECT CASE WHEN op_unset({{sources}}) THEN ['none'] ELSE {{phases}} END
+
 -- steps: entity_matches
 
 -- step: filtered_source_counts AS table when NOT op_unset({{sources}})
