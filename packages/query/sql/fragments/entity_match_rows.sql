@@ -1,6 +1,9 @@
 -- The entities the entity_matches steps found (their phase's), as a subquery: the
 -- prefix matches, or the entities of the other phases read in place.
-SELECT * FROM __match_prefix WHERE {{match_phase}} = 'prefix'
+SELECT entity_n, entity_key, namespace, label, entity_type, taxon, resources, relation_count,
+    chemical, structure_group, gene_group
+FROM entity
+WHERE {{match_phase}} = 'prefix' AND entity_n IN (SELECT entity_n FROM __match_prefix)
 UNION ALL BY NAME
 SELECT entity_n, entity_key, namespace, label, entity_type, taxon, resources, relation_count,
     chemical, structure_group, gene_group
