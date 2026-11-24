@@ -102,7 +102,7 @@ def connectivity_groups(request: Request, payload: EntityGroupsRequest):
     conflicting references remain separate singleton results. Explicit gene
     reference and chemical connectivity strategies remain available.
     """
-    return _call(request, "search_entity_groups", **_dump(payload))
+    return EngineJSONResponse(_call(request, "search_entity_groups", **_dump(payload)))
 
 
 @router.get("/entities/filter-options", response_model=EntityFilterOptions, tags=["entities"])
@@ -175,7 +175,7 @@ def group_relationships(request: Request, payload: GroupRelationshipsRequest):
     member_set = set(keys)
     for row in result["relationships"]:
         row["groupOutgoing"] = row["relation"]["subjectEntityPk"] in member_set
-    return result
+    return EngineJSONResponse(result)
 
 
 @router.get("/entities/{entity_id}/molecular-context", tags=["entities"])
@@ -198,7 +198,7 @@ def molecular_context(
     )
     if result is None:
         raise HTTPException(status_code=404, detail="Entity not found")
-    return result
+    return EngineJSONResponse(result)
 
 
 @router.get("/entities/{entity_id}/relationships", tags=["entities"])
@@ -212,7 +212,7 @@ def entity_relationships(
     # Only an empty page can be an unknown entity's.
     if not page["relationshipsTotal"] and not _call(request, "get_entity_core", entity_id):
         raise HTTPException(status_code=404, detail="Entity not found")
-    return page
+    return EngineJSONResponse(page)
 
 
 @router.get("/entities/{entity_id}/evidence", tags=["entities"])
@@ -226,7 +226,7 @@ def entity_evidence(
     result = _call(request, "get_entity_evidence", entity_id, limit=limit, offset=offset)
     if result is None:
         raise HTTPException(status_code=404, detail="Entity not found")
-    return result
+    return EngineJSONResponse(result)
 
 
 @router.get("/entities/{entity_id}", response_model=EntityDetailsResponse, tags=["entities"])

@@ -15,7 +15,7 @@ from omnipath_api.models import (
     ScopedRelationFacetsRequest,
 )
 from fastapi import APIRouter
-from omnipath_api.routers.common import _call, _dump, _timed, _parse_json_param
+from omnipath_api.routers.common import EngineJSONResponse, _call, _dump, _timed, _parse_json_param
 
 router = APIRouter()
 
@@ -110,4 +110,4 @@ def get_relation(request: Request, relation_pk: str) -> dict[str, Any]:
     result = _call(request, "get_relation_by_pk", relation_pk)
     if not result:
         raise HTTPException(status_code=404, detail="Relation not found")
-    return result
+    return EngineJSONResponse(result)

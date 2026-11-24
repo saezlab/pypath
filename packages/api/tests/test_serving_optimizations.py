@@ -188,3 +188,12 @@ def test_scoped_pages_totals_details_and_shared_scope_cache(engine):
     page = engine.search_relations_api(filters, limit=6)
     page["rows"].clear()
     assert len(engine.search_relations_api(filters, limit=6)["rows"]) == 6
+
+
+def test_cache_counts_json_text_by_its_length():
+    import json
+
+    cache = QueryCache(max_entries=4, max_bytes=1000)
+    text = json.dumps({"k": "\u00e9" * 20})
+    assert cache.get("t", lambda: text) == text
+    assert cache.bytes == len(text.encode())

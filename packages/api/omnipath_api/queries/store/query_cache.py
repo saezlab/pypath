@@ -47,7 +47,11 @@ class QueryCache:
             return deepcopy(future.result())
         try:
             value = compute()
-            size = len(json.dumps(value, default=str).encode())
+            # JSON text (the step queries' answers) counts as it is, not escaped again
+            size = (
+                len(value.encode()) if isinstance(value, str)
+                else len(json.dumps(value, default=str).encode())
+            )
             with self.lock:
                 if size <= self.max_bytes:
                     self.entries[key] = (deepcopy(value), size)
