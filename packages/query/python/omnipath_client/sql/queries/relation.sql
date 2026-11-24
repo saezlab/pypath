@@ -20,7 +20,10 @@ SELECT *, 1 AS position FROM relation WHERE relation_n IN ({{first_id*}})
 -- steps: endpoint_rows
 
 -- step: items AS table
-WITH relations AS (SELECT *, op_qualifier_annotations(r) AS annotations FROM __endpoint_relations r)
+WITH relations AS (
+    SELECT r.* REPLACE (coalesce(c.n, r.evidence_count) AS evidence_count,
+        op_scoped_sources(r.sources, {{resources}}) AS sources), op_qualifier_annotations(r) AS annotations
+    FROM __endpoint_relations r LEFT JOIN {{include:relation_scope_counts first_id}} c USING (relation_n))
 SELECT * FROM {{include:relation_items relations}}
 
 -- step: response AS value

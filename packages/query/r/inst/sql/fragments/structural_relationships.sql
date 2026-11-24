@@ -30,7 +30,7 @@ SELECT relation_n FROM __rel_page ORDER BY relation_n
 SELECT * FROM relation WHERE relation_n IN ({{rel_ids*}})
 
 -- step: rel_annotation_rows AS table
-SELECT * FROM relation_annotation WHERE relation_n IN ({{rel_ids+}})
+SELECT * FROM relation_annotation WHERE relation_n IN ({{rel_ids+}}) AND op_annotation_in_scope(source, {{resources}})
 
 -- steps: endpoint_rows
 
@@ -42,8 +42,11 @@ WITH annotations AS (
         source := source, dataset := dataset, scope := scope) ORDER BY ordinal) AS annotations
     FROM __rel_annotation_rows GROUP BY ALL
 ), relations AS (
-    SELECT r.*, p.position, coalesce(a.annotations, []) AS annotations
+    SELECT r.* REPLACE (coalesce(c.n, r.evidence_count) AS evidence_count,
+            op_scoped_sources(r.sources, {{resources}}) AS sources),
+        p.position, coalesce(a.annotations, []) AS annotations
     FROM __endpoint_relations r JOIN __rel_page p USING (relation_n) LEFT JOIN annotations a USING (relation_n)
+    LEFT JOIN {{include:relation_scope_counts rel_ids}} c USING (relation_n)
 ), items AS (
     SELECT * FROM {{include:relation_items relations}}
 )

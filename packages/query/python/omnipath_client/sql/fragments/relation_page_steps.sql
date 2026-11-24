@@ -17,6 +17,8 @@ SELECT NOT {{fast}}
 
 -- steps: relation_range
 
+-- steps: relation_folds
+
 -- step: include_details AS value
 -- the page's annotations and evidence: under molecular form filters, or when asked
 SELECT {{forms}} OR {{details}}
@@ -61,6 +63,7 @@ SELECT * FROM relation WHERE relation_n IN ({{page_ids*}})
 
 -- step: page_annotation_rows AS table when {{include_details}}
 SELECT * FROM relation_annotation WHERE relation_n IN ({{page_ids+}})
+    AND op_annotation_in_scope(source, {{resources}})
 
 -- step: page_evidence_rows AS table when {{include_details}}
 SELECT * FROM relation_evidence WHERE relation_n IN ({{page_ids*}}) AND (op_unset({{resources}}) OR list_contains({{resources}}, resource))
@@ -80,11 +83,13 @@ WITH annotations AS (
 ), ordered AS (
     SELECT unnest({{page_ids}}::INTEGER[]) AS relation_n, generate_subscripts({{page_ids}}::INTEGER[], 1) AS position
 ), relations AS (
-    SELECT r.* REPLACE (CASE WHEN {{forms}} THEN coalesce(e.n, 0) ELSE r.evidence_count END AS evidence_count),
+    SELECT r.* REPLACE (CASE WHEN {{forms}} THEN coalesce(e.n, 0) ELSE coalesce(c.n, r.evidence_count) END AS evidence_count,
+            op_scoped_sources(r.sources, {{resources}}) AS sources),
         o.position,
         CASE WHEN {{include_details}} THEN coalesce(a.annotations, []) ELSE op_qualifier_annotations(r) END AS annotations
     FROM __endpoint_relations r JOIN ordered o USING (relation_n)
     LEFT JOIN annotations a USING (relation_n) LEFT JOIN evidence e USING (relation_n)
+    LEFT JOIN {{include:relation_scope_counts page_ids}} c USING (relation_n)
 )
 SELECT * FROM {{include:relation_items relations}}
 
