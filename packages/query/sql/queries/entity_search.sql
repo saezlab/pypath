@@ -2,7 +2,8 @@
 -- Entities matching a name or identifier, ranked as in the
 -- explorer: an empty query lists every entity, an entity key finds that entity, other
 -- text finds prefix matches of labels and identifiers (and a ns:id CURIE that
--- identifier, or the entity it is the reference of), else labels containing it. Prefix
+-- identifier, or the entity it is the reference of), else labels containing it (read from
+-- entity_label, shortest first). Prefix
 -- matches rank exact labels, exact identifiers, label prefixes, identifier prefixes,
 -- then shorter terms, then entities with more relations.
 -- param: query VARCHAR = ""
@@ -150,24 +151,47 @@ SELECT CASE
     ELSE {{phases}}[1]
 END
 
--- step: scan_page AS table when {{phase}} <> 'prefix'
-SELECT entity_key, row_number() OVER (ORDER BY
-        CASE WHEN {{phase}} = 'contains' THEN length(coalesce(label, '')) END,
-        CASE WHEN {{phase}} = 'contains' THEN relation_count END DESC,
-        CASE WHEN {{phase}} = 'contains' THEN coalesce(label, '') END,
-        entity_key) AS position
+-- step: scan_page AS table when {{phase}} IN ('all', 'key')
+SELECT entity_key, row_number() OVER (ORDER BY entity_key) AS position
 FROM entity
 WHERE op_entity_ok(entity, {{scope}}, {{type_names}}, {{taxonomy_ids}}, {{reference_entity_keys}}, {{keys_filter}})
-    AND CASE {{phase}}
-        WHEN 'key' THEN entity_key = {{q}}
-        WHEN 'contains' THEN contains(lower(label), {{ql}})
-        ELSE true END
+    AND CASE {{phase}} WHEN 'key' THEN entity_key = {{q}} ELSE true END
+QUALIFY position <= {{count_}}
+
+-- repeat: contains_limit = greatest(4 * {{count_}}, 64) next {{contains_limit}} * 16 until contains_done max 12
+
+-- step: contains_hits AS table when {{phase}} = 'contains'
+-- the labels containing the text, shortest first (entity_label is stored in that order,
+-- so the scan stops once it has them); the entity filters are applied to these only
+SELECT entity_n, rank_n FROM entity_label WHERE contains(term, {{ql}}) ORDER BY rank_n LIMIT {{contains_limit}}
+
+-- step: contains_ok AS table
+-- only what the filters read (a join reads every row group of the columns it names)
+SELECT e.entity_key, h.rank_n
+FROM __contains_hits h JOIN (
+    SELECT entity_n, entity_key, namespace, resources, entity_type, taxon, reference_entity_key, relation_count
+    FROM entity) e USING (entity_n)
+WHERE op_entity_ok(e, {{scope}}, {{type_names}}, {{taxonomy_ids}}, {{reference_entity_keys}}, {{keys_filter}})
+
+-- step: contains_done AS value
+-- every label read, or enough of the shortest ones pass the filters
+SELECT {{phase}} <> 'contains'
+    OR (SELECT count(*) FROM __contains_hits) < {{contains_limit}}
+    OR (SELECT count(*) FROM __contains_ok) >= {{count_}}
+
+-- end
+
+-- step: contains_page AS table when {{phase}} = 'contains'
+SELECT entity_key, row_number() OVER (ORDER BY rank_n) AS position
+FROM __contains_ok
 QUALIFY position <= {{count_}}
 
 -- step: page AS table
 SELECT entity_key, position FROM __prefix_page WHERE {{phase}} = 'prefix'
 UNION ALL
 SELECT entity_key, position FROM __scan_page
+UNION ALL
+SELECT entity_key, position FROM __contains_page
 
 -- step: page_keys AS list
 SELECT entity_key FROM __page ORDER BY entity_key

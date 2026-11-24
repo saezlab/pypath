@@ -181,6 +181,7 @@ The database has these tables:
 | `relation_reference` | the same under the ends' reference keys | `relation_n` |
 | `entity_group` | gene, reference or connectivity group of an entity | `entity_n` |
 | `entity_term` | lowercase label or identifier of an entity, sorted | `entity_n` |
+| `entity_label` | lowercase label of an entity, in the order a substring search ranks them | `entity_n` |
 | `ontology_edge`, `term_entity` | ontology edges between terms, and the entities and relations annotated with a term | |
 | `relation_facet` | each distinct combination of the relation filter columns, with its relation count | |
 

@@ -116,6 +116,7 @@ BUILD = [
     ("relation", "relation_n", False),
     ("relation_endpoint", "entity_n, page_rank, side", False),
     ("relation_reference", "reference_key, page_rank, side", False),
+    ("entity_label", "rank_n", False),
     ("entity_term", "term, entity_n, kind", False),
     ("entity_group", "group_key, kind, entity_n", False),
     ("ontology_edge", "child_key, parent_key", False),
@@ -164,8 +165,8 @@ INDEXES = [
     ["relation_evidence_n", "relation_evidence", "relation_n"],
 ]
 # Changes when the tables, derived tables or indexes a database holds change. 10: op_taxonomy;
-# 11: merged entities; 12: merged entities and relations only, numbered.
-DATABASE_FORMAT = 12
+# 11: merged entities; 12: merged entities and relations only, numbered; 13: entity_label.
+DATABASE_FORMAT = 13
 
 
 def biolink_names() -> list[list[str]]:
