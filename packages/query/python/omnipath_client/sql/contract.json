@@ -107,7 +107,7 @@
   "entity_term",
   "entity_group"
  ],
- "database_format": 12,
+ "database_format": 13,
  "derived_tables": {
   "endpoint_stubs": {
    "select": "-- The relation ends that no resource has an entity row for, one row per resource stating\n-- them: what the relation itself says of the end (type, label, reference key, taxon,\n-- from the resource's first such relation), so that every end is an entity.\nWITH ends AS (\n    SELECT subject_entity_key AS entity_key, subject_type AS entity_type, subject_label AS label,\n        subject_reference_entity_key AS reference_entity_key, taxon, _resource, _resource_version, relation_id\n    FROM work.relation\n    UNION ALL\n    SELECT object_entity_key, object_type, object_label, object_reference_entity_key, taxon,\n        _resource, _resource_version, relation_id\n    FROM work.relation\n)\nSELECT entity_key, _resource, any_value(_resource_version) AS _resource_version,\n    arg_min(struct_pack(entity_type := entity_type, label := label, reference_entity_key := reference_entity_key,\n        taxon := taxon), relation_id) AS stub\nFROM ends\nWHERE entity_key IS NOT NULL AND entity_key NOT IN (SELECT entity_key FROM work.entity WHERE entity_key IS NOT NULL)\nGROUP BY entity_key, _resource\n",
@@ -187,6 +187,10 @@
   "relation_reference": {
    "select": "-- Each relation under the reference keys its copies give its ends (a gene's Entrez key,\n-- for instance), sorted by key and then page order, with its filter and facet columns.\n-- A key two copies give is listed twice: the readers take each relation once.\nWITH refs AS (\n    SELECT c.relation_n, x.side, x.k AS reference_key\n    FROM work.relation r JOIN work.relation_copies c USING (_rid),\n        LATERAL (VALUES ('subject', r.subject_reference_entity_key), ('object', r.object_reference_entity_key)) AS x(side, k)\n    WHERE x.k IS NOT NULL\n)\nSELECT refs.reference_key, refs.side, rel.relation_n, rel.page_rank, category, predicate, subject_type, object_type, taxon, sign, is_directed, sources, resources, evidence_count, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier\nFROM refs JOIN omnipath.relation rel USING (relation_n)\n",
    "order": "reference_key, page_rank, side"
+  },
+  "entity_label": {
+   "select": "-- The lowercase label of each entity that has one, in the order a substring search ranks\n-- them (shorter labels, more relations, then the label and key): rank_n numbers that\n-- order and the table is stored in it, so that a search for the entities whose label\n-- contains some text stops at the first it needs, and reads one narrow column instead of\n-- lowering every label.\nSELECT row_number() OVER (ORDER BY length(label), relation_count DESC, label, entity_key)::INTEGER AS rank_n,\n    entity_n, lower(label) AS term\nFROM omnipath.entity\nWHERE label IS NOT NULL\n",
+   "order": "rank_n"
   },
   "entity_term": {
    "select": "-- The lowercase labels and identifiers of every copy, sorted by term: a prefix is one\n-- range of entity numbers.\nSELECT DISTINCT t.term, t.kind, c.entity_n\nFROM work.entity_term t JOIN work.entity_copies c USING (_eid)\n",
