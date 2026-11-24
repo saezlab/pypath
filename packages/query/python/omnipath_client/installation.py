@@ -27,6 +27,7 @@ from .contracts import (
     validate_resource,
 )
 from .contracts import validate_url as _url
+from .budget import build_defaults
 from .database import DATABASE, in_sync, synchronize, taxonomy_file
 from .errors import ClientError
 from .serving import write_serving_tables
@@ -296,7 +297,8 @@ def init(
     include_evidence: bool = False,
     api_url: str | None = None,
     timeout: float = 30,
-    memory_limit: str = "2GB",
+    memory_limit: str | None = None,
+    threads: int | None = None,
     http_client: httpx.Client | None = None,
     progress: Callable[[str], None] | None = None,
 ) -> Path:
@@ -313,6 +315,11 @@ def init(
     database the hosted API serves a release from, with native tables copied from the
     downloaded files (about twice their size in addition). Any change to the installed
     resources writes it anew. Returns the data directory.
+
+    The database build's DuckDB settings default to the machine's: at most 3 threads
+    (the build's memory need grows with them) and 60% of the available memory (the
+    container's limit, if lower), at least 2 GB; a full release needs about 5 GB at 3
+    threads. ``memory_limit`` (e.g. ``"6GB"``) and ``threads`` override them.
     """
     if not isinstance(release, str) or not release.strip():
         raise ValueError("release must not be empty")
@@ -320,6 +327,7 @@ def init(
     root = data_directory(data_dir)
     say = progress or (lambda _message: None)
     http = http_client or httpx.Client(timeout=timeout, follow_redirects=True)
+    memory_limit, threads = build_defaults(memory_limit, threads)
     db = duckdb.connect()
     try:
         db.execute("SET memory_limit = ?", [memory_limit])
@@ -374,7 +382,7 @@ def init(
                 _write_installation(root, installation)
                 if not in_sync(root, installation):
                     say("Writing the database")
-                    synchronize(root, installation, memory_limit)
+                    synchronize(root, installation, memory_limit, threads)
         say(f"{len(installed)} resources installed in {root}")
         say(f"Database: {root / DATABASE}")
     finally:

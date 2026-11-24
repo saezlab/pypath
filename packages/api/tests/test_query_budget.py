@@ -1,7 +1,8 @@
 import pytest
 
 from omnipath_api.queries.store import budget
-from omnipath_api.queries.store.budget import available_cpus, memory_limit_bytes, query_budget
+from omnipath_api.queries.store.budget import query_budget
+from omnipath_client.budget import cgroup_memory_limit, cpu_count
 
 SETTINGS = ("OMNIPATH_QUERY_CONCURRENCY", "OMNIPATH_DUCKDB_THREADS", "OMNIPATH_DUCKDB_MEMORY_LIMIT")
 
@@ -24,11 +25,11 @@ def test_a_slot_of_one_thread_per_container_cpu_and_most_of_its_memory(cgroup):
 
 def test_a_fractional_quota_rounds_up_and_no_limit_means_the_affinity(cgroup):
     (cgroup / "cpu.max").write_text("150000 100000\n")
-    assert available_cpus(cgroup) == 2
+    assert cpu_count(cgroup) == 2
     (cgroup / "cpu.max").write_text("max 100000\n")
-    assert available_cpus(cgroup) == 64
+    assert cpu_count(cgroup) == 64
     (cgroup / "cpu.max").unlink()
-    assert available_cpus(cgroup) == 64
+    assert cpu_count(cgroup) == 64
 
 
 def test_cgroup_v1_limits(cgroup):
@@ -37,8 +38,8 @@ def test_cgroup_v1_limits(cgroup):
     (cgroup / "cpu" / "cpu.cfs_period_us").write_text("100000\n")
     (cgroup / "memory").mkdir()
     (cgroup / "memory" / "memory.limit_in_bytes").write_text(f"{2**63 - 4096}\n")
-    assert available_cpus(cgroup) == 4
-    assert memory_limit_bytes(cgroup) is None  # v1's "no limit"
+    assert cpu_count(cgroup) == 4
+    assert cgroup_memory_limit(cgroup) is None  # v1's "no limit"
     b = query_budget(cgroup=cgroup)
     assert (b.slots, b.threads, b.memory) == (4, 4, "4GB")  # 1 GB a slot without a limit
 

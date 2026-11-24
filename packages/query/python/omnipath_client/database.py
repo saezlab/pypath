@@ -34,7 +34,9 @@ from typing import Any
 import duckdb
 
 from . import steps
+from .budget import build_defaults, out_of_memory_hint
 from .contracts import CONTRACT, SERVING, TABLES, Installation, ResourceRecord
+from .errors import ClientError
 
 DATABASE = "omnipath.duckdb"
 DATABASE_FORMAT: int = CONTRACT["database_format"]
@@ -418,8 +420,16 @@ def in_sync(root: Path, installation: Installation) -> bool:
     )
 
 
-def synchronize(root: Path, installation: Installation, memory_limit: str = "2GB") -> None:
+def synchronize(
+    root: Path,
+    installation: Installation,
+    memory_limit: str | None = None,
+    threads: int | None = None,
+) -> None:
     """Bring the database in line with the installation; nothing when it already is.
+    Without ``memory_limit`` and ``threads``, the build uses the machine's defaults
+    (``budget.build_defaults``). Running out of memory raises a ``ClientError`` saying
+    what to change.
 
     Changed resources or taxon names (the merged entities' summaries name taxa) mean a
     new database, written completely. When only the query layer differs, it alone is
@@ -431,6 +441,7 @@ def synchronize(root: Path, installation: Installation, memory_limit: str = "2GB
         if info[0] != QUERY_LAYER:
             _layer_only(root)
         return
+    memory_limit, threads = build_defaults(memory_limit, threads)
     temporary = root / ".duckdb-tmp"
     try:
         write_database(
@@ -444,8 +455,11 @@ def synchronize(root: Path, installation: Installation, memory_limit: str = "2GB
             },
             taxonomy=taxonomy_file(root, taxonomy) if taxonomy else None,
             memory_limit=memory_limit,
+            threads=threads,
             temp_directory=temporary,
         )
+    except duckdb.OutOfMemoryException as exc:
+        raise ClientError(out_of_memory_hint(memory_limit, threads)) from exc
     finally:
         if temporary.is_dir() and not any(temporary.iterdir()):
             temporary.rmdir()

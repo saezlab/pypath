@@ -77,7 +77,7 @@ class Client:
         self,
         data_dir: str | Path | None = None,
         *,
-        memory_limit: str = "2GB",
+        memory_limit: str | None = None,
         threads: int | None = None,
     ) -> None:
         self.data_dir = data_directory(data_dir)
@@ -97,7 +97,7 @@ class Client:
             # A moved directory, an interrupted init() or another client version: the
             # database (or only its query layer) is written again at once.
             try:
-                synchronize(self.data_dir, installation, memory_limit)
+                synchronize(self.data_dir, installation, memory_limit, threads)
             except (OSError, duckdb.Error) as exc:
                 raise ClientError(
                     f"The database in {self.data_dir} is out of date; run init() again"
@@ -107,7 +107,7 @@ class Client:
         self._parameters: dict[str, list[str]] = {}
         connection = duckdb.connect(str(self.path), read_only=True)
         try:
-            connection.execute("SET memory_limit = ?", [memory_limit])
+            connection.execute("SET memory_limit = ?", [memory_limit or "2GB"])
             if threads is not None:
                 connection.execute("SET threads = ?", [threads])
             apply_settings(connection)
@@ -293,7 +293,7 @@ def connect(
     mode: str | None = None,
     api_url: str | None = None,
     release: str = "latest",
-    memory_limit: str = "2GB",
+    memory_limit: str | None = None,
     threads: int | None = None,
     timeout: float = 120,
     http_client: Any = None,
@@ -314,7 +314,7 @@ def connect(
         if data_dir is not None:
             raise ValueError("API mode reads no data directory; use mode='local'")
         return ApiClient(
-            api_url, release=release, timeout=timeout, memory_limit=memory_limit,
+            api_url, release=release, timeout=timeout, memory_limit=memory_limit or "2GB",
             threads=threads, http_client=http_client,
         )
     if mode != "local":
