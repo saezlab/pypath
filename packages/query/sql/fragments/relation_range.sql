@@ -3,16 +3,34 @@
 -- entities at the ends the gene mode names, or the reference keys at either end, in
 -- the resources read. Needs the relation_candidates steps.
 
--- step: range_entity_rows AS table when {{fast}} AND op_unset({{reference_entity_keys}})
+-- step: range_entity_rows AS table when {{fast}} AND op_unset({{reference_entity_keys}}) AND {{gene_mode}} <> 'both'
 -- one entity at a time
 SELECT * EXCLUDE (entity_n) FROM relation_endpoint WHERE entity_n IN ({{entity_n_list+}})
+
+-- step: range_both_ends AS table when {{fast}} AND op_unset({{reference_entity_keys}}) AND {{gene_mode}} = 'both'
+-- relations with both ends among the entities: found from the ends alone (side and
+-- relation), as the whole rows of every relation of the entities are mostly read in vain
+SELECT relation_n, side FROM relation_endpoint WHERE entity_n IN ({{entity_n_list+}})
+
+-- step: range_both_ids AS list when {{fast}} AND op_unset({{reference_entity_keys}}) AND {{gene_mode}} = 'both'
+SELECT relation_n FROM __range_both_ends GROUP BY relation_n
+HAVING bool_or(side = 'subject') AND bool_or(side = 'object') ORDER BY relation_n
+
+-- step: range_both_rows AS table when {{fast}} AND op_unset({{reference_entity_keys}}) AND {{gene_mode}} = 'both'
+-- those relations' columns of the endpoint table, as a row for each end
+SELECT e.side, r.relation_n, r.page_rank, r.category, r.predicate, r.subject_type, r.object_type, r.taxon,
+    r.sign, r.is_directed, r.sources, r.resources, r.evidence_count, r.object_aspect_qualifier,
+    r.object_direction_qualifier, r.causal_mechanism_qualifier
+FROM relation r, (VALUES ('subject'), ('object')) AS e(side)
+WHERE r.relation_n IN ({{range_both_ids*}})
 
 -- step: range_reference_rows AS table when {{fast}} AND NOT op_unset({{reference_entity_keys}})
 SELECT * EXCLUDE (reference_key) FROM relation_reference WHERE reference_key IN ({{reference_entity_keys+}})
 
 -- step: range_selected AS table when {{fast}}
 -- a relation with both ends among the keys is one relation
-WITH rows_ AS (SELECT * FROM __range_entity_rows UNION ALL BY NAME SELECT * FROM __range_reference_rows),
+WITH rows_ AS (SELECT * FROM __range_entity_rows UNION ALL BY NAME SELECT * FROM __range_reference_rows
+    UNION ALL BY NAME SELECT * FROM __range_both_rows),
 mode AS (SELECT CASE WHEN op_unset({{reference_entity_keys}}) THEN {{gene_mode}} ELSE 'any' END AS m),
 sides AS (
     SELECT relation_n FROM rows_, mode GROUP BY relation_n
