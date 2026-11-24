@@ -122,6 +122,7 @@ BUILD = [
     ("ontology_edge", "child_key, parent_key", False),
     ("term_entity", "term_n, entity_n, relation_n", False),
     ("relation_facet", "category, predicate", False),
+    ("relation_resource", "resource, relation_n", False),
 ]
 
 
@@ -155,7 +156,8 @@ def work_tables() -> list[str]:
 
 # ART indexes: rows by a list of numbers or keys written into the SQL as a literal list
 # (DuckDB uses an index only then): search pages, relation endpoints and groups read
-# dozens to hundreds of entities at a time, relation pages their relations and evidence.
+# dozens to hundreds of entities at a time, relation pages their relations and evidence, the
+# ontology queries a term's children (the edges are sorted by child).
 INDEXES = [
     ["entity_n", "entity", "entity_n"],
     ["entity_key", "entity", "entity_key"],
@@ -163,9 +165,11 @@ INDEXES = [
     ["entity_annotation_n", "entity_annotation", "entity_n"],
     ["relation_n", "relation", "relation_n"],
     ["relation_evidence_n", "relation_evidence", "relation_n"],
+    ["ontology_edge_parent", "ontology_edge", "parent_key"],
 ]
 # Changes when the tables, derived tables or indexes a database holds change. 10: op_taxonomy;
-# 11: merged entities; 12: merged entities and relations only, numbered; 13: entity_label.
+# 11: merged entities; 12: merged entities and relations only, numbered; 13: entity_label, an index
+# on the ontology edges' parents and the table relation_resource.
 DATABASE_FORMAT = 13
 
 

@@ -41,6 +41,8 @@ SELECT NOT {{fast}}
 
 -- steps: relation_folds
 
+-- steps: relation_scope_order
+
 -- step: counts AS table
 SELECT category, predicate, sign, count(*) AS n FROM (
     SELECT r.category, r.predicate, r.sign FROM __range_selected r
@@ -49,9 +51,11 @@ SELECT category, predicate, sign, count(*) AS n FROM (
     SELECT r.category, r.predicate, r.sign FROM __candidate_rows r
     WHERE NOT {{fast}} AND {{keyed}} AND {{include:relation_conditions r}}
     UNION ALL
+    SELECT r.category, r.predicate, r.sign FROM __scope_order r
+    WHERE NOT {{keyed}} AND NOT op_unset({{scope}})
+    UNION ALL
     SELECT r.category, r.predicate, r.sign FROM relation r
-    WHERE NOT {{keyed}} AND (op_unset({{scope}}) OR list_has_any(r.resources, {{scope}}))
-        AND {{include:relation_conditions r}})
+    WHERE NOT {{keyed}} AND op_unset({{scope}}) AND {{include:relation_conditions r}})
 GROUP BY ALL
 
 -- step: response AS value

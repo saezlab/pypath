@@ -114,7 +114,7 @@ test_that("SQL on native tables, the derived tables and a database written anew"
   expect_equal(tables$one$n, 2)
   expect_equal(tables$terms$n, 1)
   expect_equal(op_sql(con, "SELECT table_type FROM information_schema.tables WHERE table_name = 'entity' AND table_schema = 'main'")$table_type, "BASE TABLE")
-  expect_equal(sort(op_sql(con, "SELECT index_name FROM duckdb_indexes()")$index_name), c("entity_annotation_n", "entity_evidence_n", "entity_key", "entity_n", "relation_evidence_n", "relation_n"))
+  expect_equal(sort(op_sql(con, "SELECT index_name FROM duckdb_indexes()")$index_name), c("entity_annotation_n", "entity_evidence_n", "entity_key", "entity_n", "ontology_edge_parent", "relation_evidence_n", "relation_n"))
   expect_error(op_sql(con, "CREATE TABLE mine AS SELECT 1"))
   op_disconnect(con)
   # A new version and a new resource: the database is written anew.

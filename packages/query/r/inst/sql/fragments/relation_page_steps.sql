@@ -29,6 +29,8 @@ SELECT r.relation_n, r.page_rank FROM __range_selected r WHERE {{include:relatio
 -- step: general_order AS table when NOT {{fast}} AND {{keyed}}
 SELECT r.relation_n, r.page_rank FROM __candidate_rows r WHERE {{include:relation_conditions r}}
 
+-- steps: relation_scope_order
+
 -- step: page_ids AS list
 -- the page: of the ordered selection, or straight from the relations without endpoint
 -- filters
@@ -37,9 +39,10 @@ SELECT relation_n FROM (
     UNION ALL
     SELECT relation_n, page_rank FROM __general_order WHERE NOT {{fast}} AND {{keyed}}
     UNION ALL
+    SELECT relation_n, page_rank FROM __scope_order WHERE NOT {{keyed}} AND NOT op_unset({{scope}})
+    UNION ALL
     SELECT r.relation_n, r.page_rank FROM relation r
-    WHERE NOT {{keyed}} AND (op_unset({{scope}}) OR list_has_any(r.resources, {{scope}}))
-        AND {{include:relation_conditions r}}
+    WHERE NOT {{keyed}} AND op_unset({{scope}}) AND {{include:relation_conditions r}}
 )
 ORDER BY page_rank
 LIMIT {{limit}} OFFSET {{offset}}
@@ -48,13 +51,13 @@ LIMIT {{limit}} OFFSET {{offset}}
 SELECT CASE
     WHEN {{fast}} THEN (SELECT count(*) FROM __fast_order)
     WHEN {{keyed}} THEN (SELECT count(*) FROM __general_order)
+    WHEN NOT op_unset({{scope}}) THEN (SELECT count(*) FROM __scope_order)
     WHEN {{#page_ids}} = {{limit}} OR {{offset}} > 0 THEN (
         -- only without endpoint filters: DuckDB runs this subquery even when the
         -- CASE takes an earlier branch, so it must not scan unless it is the answer
         SELECT count(*) FROM relation r
         WHERE NOT {{fast}} AND NOT {{keyed}}
-            AND (op_unset({{scope}}) OR list_has_any(r.resources, {{scope}}))
-            AND {{include:relation_conditions r}})
+            AND op_unset({{scope}}) AND {{include:relation_conditions r}})
     ELSE {{offset}} + {{#page_ids}}
 END
 

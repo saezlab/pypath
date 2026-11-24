@@ -211,6 +211,10 @@
   "relation_facet": {
    "select": "-- Each combination of the relation filter columns (and resources), with the largest\n-- evidence count and the number of its relations: which filter options a selection\n-- leaves, without reading the relations.\nSELECT category, predicate, subject_type, object_type, taxon, sign, is_directed, sources, object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier, resources, max(evidence_count) AS evidence_count, count(*) AS relation_count\nFROM omnipath.relation GROUP BY ALL\n",
    "order": "category, predicate"
+  },
+  "relation_resource": {
+   "select": "-- The resources that state each relation, one row per relation and resource, sorted by\n-- resource: the relations of a resource are one range of rows (the relation table's\n-- list of resources is read in every row).\nSELECT unnest(resources) AS resource, relation_n FROM omnipath.relation\n",
+   "order": "resource, relation_n"
   }
  },
  "indexes": [
@@ -243,6 +247,11 @@
    "relation_evidence_n",
    "relation_evidence",
    "relation_n"
+  ],
+  [
+   "ontology_edge_parent",
+   "ontology_edge",
+   "parent_key"
   ]
  ],
  "macro_files": [

@@ -60,6 +60,7 @@ def test_release_database_holds_merged_numbered_tables(tmp_path):
         assert db.execute("SELECT bool_or(has_evidence) FROM resources").fetchone() == (False,)
         assert {r[0] for r in db.execute("SELECT index_name FROM duckdb_indexes()").fetchall()} == {
             "entity_n", "entity_key", "entity_evidence_n", "entity_annotation_n", "relation_n", "relation_evidence_n",
+            "ontology_edge_parent",
         }
         # The scratch database's tables took no space in the database.
         assert db.execute("SELECT free_blocks FROM pragma_database_size()").fetchone() == (0,)

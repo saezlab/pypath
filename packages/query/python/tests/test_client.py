@@ -301,7 +301,7 @@ def test_sql_on_native_tables(service, monkeypatch):
             # The database format's indexes.
             assert sorted(r[0] for r in db.sql("SELECT index_name FROM duckdb_indexes()").fetchall()) == [
                 "entity_annotation_n", "entity_evidence_n", "entity_key", "entity_n",
-                "relation_evidence_n", "relation_n",
+                "ontology_edge_parent", "relation_evidence_n", "relation_n",
             ]
     # A new version and a new resource: the database is written anew.
     service.publish("alpha", "2.0")

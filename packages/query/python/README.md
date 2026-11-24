@@ -184,6 +184,7 @@ The database has these tables:
 | `entity_label` | lowercase label of an entity, in the order a substring search ranks them | `entity_n` |
 | `ontology_edge`, `term_entity` | ontology edges between terms, and the entities and relations annotated with a term | |
 | `relation_facet` | each distinct combination of the relation filter columns, with its relation count | |
+| `relation_resource` | each relation under each resource that states it, sorted by resource | `resource` |
 
 `entity_n` and `relation_n` number the rows of `entity` and `relation`; the
 64-character `entity_key` and `relation_key` identify the same entity or relation across

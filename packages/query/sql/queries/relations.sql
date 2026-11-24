@@ -53,7 +53,8 @@ SELECT relation_n FROM (
     WHERE {{keyed}} AND {{include:relation_conditions r}}
     UNION ALL
     SELECT r.relation_n FROM relation r
-    WHERE NOT {{keyed}} AND (op_unset({{scope}}) OR list_has_any(r.resources, {{scope}}))
+    WHERE NOT {{keyed}} AND (op_unset({{scope}})
+        OR r.relation_n IN (SELECT relation_n FROM relation_resource WHERE resource IN ({{scope*}})))
         AND {{include:relation_conditions r}})
 ORDER BY relation_n
 LIMIT {{max_relations}}
