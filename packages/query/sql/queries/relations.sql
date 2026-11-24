@@ -39,43 +39,46 @@ SELECT true
 
 -- steps: relation_candidates
 
--- step: candidate_relations AS table
-SELECT * FROM relation WHERE relation_n IN ({{candidate_ids*}})
-
--- step: selected AS table
-SELECT r.* FROM (
-    SELECT * FROM __candidate_relations
-    UNION ALL BY NAME
-    SELECT * FROM relation WHERE NOT {{keyed}} AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
-) r
-WHERE {{include:relation_conditions r}}
-ORDER BY r.relation_n
+-- step: selection AS table
+-- the relations to return, by key: the filters read the candidates' filter columns, so
+-- that only the returned relations' rows are read below (not every candidate's), and
+-- the steps below read their tables by joining this one (a literal list of this many
+-- keys is read much more slowly)
+SELECT relation_n FROM (
+    SELECT r.relation_n FROM __candidate_rows r
+    WHERE {{keyed}} AND {{include:relation_conditions r}}
+    UNION ALL
+    SELECT r.relation_n FROM relation r
+    WHERE NOT {{keyed}} AND (op_unset({{scope}}) OR list_has_any(r.resources, {{scope}}))
+        AND {{include:relation_conditions r}})
+ORDER BY relation_n
 LIMIT {{max_relations}}
 
--- step: selected_ids AS list
-SELECT relation_n FROM __selected ORDER BY relation_n
-
--- step: endpoint_ns AS list
-SELECT DISTINCT n FROM (SELECT subject_n AS n FROM __selected UNION ALL SELECT object_n FROM __selected) ORDER BY n
+-- step: selected AS table
+SELECT r.* FROM relation r JOIN __selection USING (relation_n)
 
 -- step: endpoints AS table
-SELECT entity_n, entity_key, label FROM entity WHERE entity_n IN ({{endpoint_ns*}})
+SELECT entity_n, entity_key, label FROM entity
+WHERE entity_n IN (SELECT subject_n FROM __selected UNION SELECT object_n FROM __selected)
 
 -- step: annotation_rows AS table
-SELECT * FROM relation_annotation WHERE relation_n IN ({{selected_ids*}})
-
--- step: evidence_rows AS table
-SELECT * FROM relation_evidence WHERE relation_n IN ({{selected_ids*}}) AND (op_unset({{resources}}) OR list_contains({{resources}}, resource))
+SELECT * FROM relation_annotation WHERE relation_n IN (SELECT relation_n FROM __selection)
 
 -- step: evidence AS table
-SELECT relation_n, list(struct_pack(
-    source := source, dataset := dataset, row_id := row_id,
-    upstream_id := upstream_id, annotations := annotations,
-    subject_molecular_form := subject_molecular_form,
-    object_molecular_form := object_molecular_form) ORDER BY resource, resource_version, relation_id, ordinal) AS evidence
-FROM __evidence_rows ev
-WHERE NOT {{forms}} OR op_evidence_ok(ev, {{protein_entity_keys}}, {{transcript_entity_keys}},
-    {{isoform_identifiers}}, {{molecular_endpoint_mode}})
+-- (each relation's evidence in its order: sorted by the order key, which is much faster
+-- than an ORDER BY inside the aggregate)
+SELECT relation_n, list_transform(list_sort(list(struct_pack(
+    key := struct_pack(resource := resource, resource_version := resource_version,
+        relation_id := relation_id, ordinal := ordinal),
+    value := struct_pack(source := source, dataset := dataset, row_id := row_id,
+        upstream_id := upstream_id, annotations := annotations,
+        subject_molecular_form := subject_molecular_form,
+        object_molecular_form := object_molecular_form)))), x -> x.value) AS evidence
+FROM relation_evidence ev
+WHERE relation_n IN (SELECT relation_n FROM __selection)
+    AND (op_unset({{resources}}) OR list_contains({{resources}}, resource))
+    AND (NOT {{forms}} OR op_evidence_ok(ev, {{protein_entity_keys}}, {{transcript_entity_keys}},
+        {{isoform_identifiers}}, {{molecular_endpoint_mode}}))
 GROUP BY ALL
 
 -- step: product_keys AS list
@@ -91,10 +94,11 @@ WHERE entity_key IN ({{product_keys*}}) AND (op_unset({{scope}}) OR list_has_any
 
 -- step: rows AS table
 WITH annotations AS (
-    SELECT relation_n, list(struct_pack(term := term, value := value,
-        quantity := op_quantity(quantity_has_numeric_value, quantity_has_unit, quantity_has_unit_prefix,
-            quantity_has_binary_relation, quantity_source_field, quantity_comparator),
-        source := source, dataset := dataset, scope := scope) ORDER BY ordinal) AS annotations
+    SELECT relation_n, list_transform(list_sort(list(struct_pack(key := ordinal,
+        value := struct_pack(term := term, value := value,
+            quantity := op_quantity(quantity_has_numeric_value, quantity_has_unit, quantity_has_unit_prefix,
+                quantity_has_binary_relation, quantity_source_field, quantity_comparator),
+            source := source, dataset := dataset, scope := scope)))), x -> x.value) AS annotations
     FROM __annotation_rows GROUP BY ALL
 ), nested AS (
     SELECT s.* EXCLUDE (evidence_count),
