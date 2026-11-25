@@ -1,31 +1,30 @@
-# nicesrv serving deployment — 8 October 2026
+# nicesrv serving deployment
 
-The API, explorer and HTTPS file service follow branch `parquet-migration`:
+The API, explorer and HTTPS file service follow branch `monorepo` of saezlab/pypath:
 `deploy.sh` checks out the branch head, builds images tagged with its short
-commit and restarts the stack. The deployed commit is recorded in
-`source-commit.txt`.
+commit (`serving-mono-<commit>`) and restarts the stack. The deployed commit is
+recorded in `source-commit.txt`.
 
 - Explorer: https://omnipath-metabo-dev.schaul.click/explore
 - Files: https://data.omnipath-metabo-dev.schaul.click
 - Deployment root: `/root/projects/omnipath-releases/20261007-serving-tables`
   (`deploy.sh`, `serving.env`, `source-commit.txt` and one log per deploy).
-- Source checkout used by `deploy.sh`: `/root/projects/omnipath-migration/wt-normalized`
-  (detached at `origin/parquet-migration`).
-- Artifact root: `/root/data/release-20261007-native` (release `2026.10.9`, all 46
+- Source checkout used by `deploy.sh`: `/root/projects/omnipath-monorepo`
+  (detached at `origin/monorepo`).
+- Artifact root: `/root/data/release-20261007-native` (release `2026.10.25.1`, 173
   resources), mounted read-only at `/data`.
 - Project: `omnipath-serving-20261007-full`; loopback API/web/files ports:
   `8295` / `8292` / `8290`.
-- Maintained checkout for builds and loads: `/root/projects/omnipath-migration/omnipath-build`.
 
 ## Deploy, inspect or restart
 
 ```sh
 ssh -T -o BatchMode=yes -o ForwardAgent=no -o ConnectTimeout=15 nicesrv
 deployment_root=/root/projects/omnipath-releases/20261007-serving-tables
-# Deploy the current head of parquet-migration (push first).
+# Deploy the current head of monorepo (push first).
 "$deployment_root/deploy.sh"
 # Inspect the running stack.
-cd /root/projects/omnipath-migration/wt-normalized
+cd /root/projects/omnipath-monorepo
 make serving-status COMPOSE_ENV="$deployment_root/serving.env" \
   COMPOSE_FILES='-f packages/api/deploy/compose.serving.yaml -f packages/api/deploy/compose.traefik.yaml'
 make serving-logs COMPOSE_ENV="$deployment_root/serving.env" \
@@ -40,27 +39,46 @@ build or PostgreSQL load. Changing the served data means changing `DATA_DIR` in
 
 Set in `serving.env`:
 
-- Container: 13 GB RAM and 7 CPUs, leaving 1 CPU and about 2.6 GB of the host's
-  8 CPUs and 16 GB for the other apps.
-- Query pool: three concurrent DuckDB queries, each with two threads and 3,500 MB.
+- Container: 13 GB RAM and 7 CPUs (`API_MEMORY_LIMIT`, `API_CPUS`), leaving 1 CPU and
+  about 3 GB of the host's 8 CPUs and 16 GB for the other apps.
+- Query pool: sized by the API from those limits (no `API_QUERY_*` settings): seven
+  query slots, one DuckDB thread for the shared database (each query runs on its
+  caller's thread), and half the memory, 6.5 GB, for DuckDB.
 - Capacity wait: up to 30 seconds, then HTTP 503 with a retry hint.
 - Cache warming at startup (`API_WARM_CACHE=true`): examples and relation filter
   counts are prepared before the first request.
 
 `GET /api/status` reports the query slots in use and waiting, recent response
-times and coarse host load; the explorer header shows it.
+times and coarse host load; the explorer header shows it. Its `memory` counts the
+container's file cache too, so it sits near 1 under load without any pressure.
 
-These limits were chosen by load testing on 9 October 2026
-(`packages/api/docs/reports/nicesrv-explorer-capacity-20261009.md`). They serve about 105
-explorer interactions a minute with the slowest 5% under about 5 s, or roughly
-30–55 people using the explorer at the same time. The previous limits (6 GB,
-4 CPUs, two queries of 2,500 MB) are kept on nicesrv as
-`serving.env.bak-before-capacity-20261009`. Rerun the test after changing them:
+Measured on 25 November 2026 (commit 7d5361785, database format 13) with
+`packages/web/scripts/api_load_test.py` run on the host, cold answer cache, levels of
+1, 8, 32 and 64 clients without think time:
+
+| Workload | Requests/s (8–64 clients) | p95 at 8 / 64 clients | API CPU per request |
+|---|---|---|---|
+| Entity details | 39–40 | 0.38 / 2.4 s | 125 ms |
+| First relations page | 23–25 | 0.43 / 3.3 s | 190 ms |
+| Mix (entity, relations, resolve, search, relationships) | 23–27 | 0.89 / 3.8 s | 185–225 ms |
+
+No errors at any level. Throughput levels off at 8 clients; more clients only wait.
+This is about half of what the same code and database do in the same container
+limits on a host with plenty of RAM (51 mixed requests/s at about 100 ms CPU):
+the 18.5 GB database does not fit in nicesrv's page cache, so under load the host
+reads 140–300 MB/s from disk and swaps. More host memory is the lever, not more
+query slots. The settings before this deploy (format 12, six pinned slots of
+1,750 MB) are kept as `serving.env.bak-before-mono-7d53617`. Rerun after changing limits:
 
 ```sh
-uv run python packages/web/scripts/explorer_load_test.py --users 8,12,16,24,32 \
-  --abort-step-p95 15 --out load.json
+python3 packages/web/scripts/api_load_test.py sample 2026.10.25.1.duckdb params.json
+python3 packages/web/scripts/api_load_test.py run --port 8295 --params params.json \
+  --cgroup /sys/fs/cgroup/system.slice/docker-<api container id>.scope \
+  --workload mix --clients 1,8,32,64 --processes 2 --out mix.jsonl
 ```
+
+`packages/web/scripts/explorer_load_test.py` replays explorer sessions instead; the
+October results are in `packages/api/docs/reports/nicesrv-explorer-capacity-20261009.md`.
 
 ## Release databases
 
@@ -70,23 +88,31 @@ newest release that has one. A request for an older release whose database was
 pruned answers 410; its files stay downloadable. The API mounts the artifact root
 read-only, so the database is written on the host:
 
+The database format must match the deployed code: a deploy that changes the format
+needs the database rebuilt first. Build it with the new API image into a scratch
+root whose `releases`, `resources` and `references` link to the artifact root, then
+hard-link it into `serving/` right before `make serving-up`:
+
 ```sh
-cd /root/projects/omnipath-migration/omnipath-build
-# Publish a release, then write its database and keep the newest three.
-make publish-release RELEASE_MANIFEST=release.json DATA_ROOT=/root/data/release-20261007-native
-# Or, for a release that is already published:
-make release-db RELEASE=2026.10.25.1 DATA_ROOT=/root/data/release-20261007-native
+S=/root/data/scratch/<build>; D=/root/data/release-20261007-native
+mkdir -p $S/root/serving; for x in releases resources references; do ln -s $D/$x $S/root/$x; done
+docker run --rm --user 0 --cpus 3 --cpu-shares 256 --memory 8g -v $D:$D:ro -v $S:$S \
+  --entrypoint python omnipath-api:serving-mono-<commit> -c \
+  "from omnipath_api.release_database import build_served_database as b; b('$S/root', '2026.10.25.1', keep=None)"
 ```
 
-- **Time and size:** a full release (173 resources, 2026.10.25.1) takes about 22 minutes
+- **Time and size:** a full release (173 resources, 2026.10.25.1) takes about 25 minutes
   at 3 threads and 5 GB (the defaults; less memory runs out in the merges), and the
-  database is about 18 GB.
+  format-13 database is 18.5 GB. Format 13 was built this way on 25 November 2026
+  (`/root/data/scratch/format13-20261125`); the format-12 database is kept as a hard
+  link in `/root/data/scratch/format12-backup-20261125/` for rollback with the
+  `serving-mono-01b7dee` images.
 - **Disk:** the command refuses to start without the last database's size plus 20 GiB
   free. Three kept databases need about 60 GB.
 - **Pickup:** the running API sees a new database as soon as it is in place: no restart
   and no deploy.
-- **Query memory:** with the database's indexes, a query needs about 3.5 GB
-  (`API_QUERY_MEMORY=3500MB`). DuckDB spills to the container's `/tmp`, or to
+- **Query memory:** all slots share one DuckDB database with half the container's
+  memory. DuckDB spills to the container's `/tmp`, or to
   `OMNIPATH_DUCKDB_TEMP_DIRECTORY`.
 
 ## Rollback
