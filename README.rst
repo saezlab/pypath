@@ -2,6 +2,10 @@
 *pypath:* A Python module for molecular signaling prior knowledge processing
 ============================================================================
 
+**OmniPath is an approved** `de.NBI <https://www.denbi.de/>`_ **service.**
+Your feedback matters! Please help us improve by taking our
+`short user survey <https://www.surveymonkey.de/r/denbi-service?sc=hd-hub&tool=omnipath>`_.
+
 |Demo|
 
 OmniPath
