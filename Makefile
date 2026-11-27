@@ -51,6 +51,7 @@ RESOURCES_TESTS = $(RESOURCES)/test/test_chembl_molecular_queries.py \
 	$(RESOURCES)/test/test_input_source_context.py \
 	$(RESOURCES)/test/test_inputs_v2_chemical_migration.py \
 	$(RESOURCES)/test/test_inputs_v2_hmdb_status.py \
+	$(RESOURCES)/test/test_inputs_v2_chebi_roles.py \
 	$(RESOURCES)/test/test_inputs_v2_communication_migration.py \
 	$(RESOURCES)/test/test_inputs_v2_ontology_migration.py \
 	$(RESOURCES)/test/test_inputs_v2_pathway_migration.py \
