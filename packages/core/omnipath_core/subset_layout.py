@@ -29,6 +29,7 @@ SUBSETS_DIR = "subsets"
 DEPENDS_ON = {
     "exclusion_metabolites": (),
     "metsigdb": ("exclusion_metabolites",),
+    "metabolite_class": (),
 }
 PRODUCTS = tuple(DEPENDS_ON)
 
@@ -38,6 +39,7 @@ PRODUCTS = tuple(DEPENDS_ON)
 ROW_CONTRACTS = {
     "exclusion_metabolites": 1,
     "metsigdb": 2,
+    "metabolite_class": 1,
 }
 
 

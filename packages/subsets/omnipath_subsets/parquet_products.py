@@ -12,9 +12,14 @@ def _writers() -> dict[str, Callable]:
     # Imported on use: the writers read DuckDB and Parquet, which a PostgreSQL-only run never needs.
     from omnipath_subsets.exclusion_metabolites import write_exclusion_metabolites
 
+    from omnipath_subsets.metabolite_class import write_metabolite_class
     from omnipath_subsets.metsigdb.parquet_build import write_metsigdb
 
-    return {"exclusion_metabolites": write_exclusion_metabolites, "metsigdb": write_metsigdb}
+    return {
+        "exclusion_metabolites": write_exclusion_metabolites,
+        "metsigdb": write_metsigdb,
+        "metabolite_class": write_metabolite_class,
+    }
 
 
 def build_release_subsets(
