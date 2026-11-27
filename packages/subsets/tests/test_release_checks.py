@@ -12,6 +12,7 @@ import duckdb
 import pytest
 
 from omnipath_subsets import checks
+from omnipath_core.subset_layout import PRODUCTS
 from omnipath_subsets.parquet_products import build_release_subsets
 from omnipath_subsets.release_source import open_release
 import metsigdb_fixture as fixture
@@ -69,10 +70,9 @@ def errors(findings):
 def test_a_healthy_release_has_no_error(built):
     root, version = built
     found = checks.check_release(root, version)
-    assert set(found) == {"exclusion_metabolites", "metsigdb"}
+    assert set(found) == set(PRODUCTS)
     assert {name: errors(items) for name, items in found.items()} == {
-        "exclusion_metabolites": set(),
-        "metsigdb": set(),
+        name: set() for name in PRODUCTS
     }
 
 

@@ -86,7 +86,7 @@ def test_the_check_command_passes_a_healthy_release_and_lists_nothing_broken(tmp
     capsys.readouterr()
     assert cli.main(["check", "--release", version, "--data-root", str(tmp_path)]) == 0
     found = json.loads(capsys.readouterr().out)
-    assert set(found) == {"exclusion_metabolites", "metsigdb"}
+    assert set(found) == set(layout.PRODUCTS)
     assert not [f for items in found.values() for f in items if f["level"] == "error"]
 
 
