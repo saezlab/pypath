@@ -42,9 +42,14 @@ def _sql(name: str) -> str:
 
 def _claim(con: duckdb.DuckDBPyConnection, source: Source) -> int:
     """Record the claims of one source; returns the molecules it claims."""
+    text = _sql(_CLAIMS[source.signal])
+    if source.signal == "network":
+        text = text.replace(
+            "{resources}", ", ".join("'" + name.replace("'", "''") + "'" for name in source.resources)
+        )
     run_script(
         con,
-        _sql(_CLAIMS[source.signal]),
+        text,
         {
             "metabolite_class": source.metabolite_class,
             "priority": source.priority,
@@ -52,7 +57,6 @@ def _claim(con: duckdb.DuckDBPyConnection, source: Source) -> int:
             "resource": source.resource,
             "root": source.chebi_role_root,
             "predicates": list(source.predicates),
-            "resources": list(source.resources),
         },
     )
     claimed = con.execute(
