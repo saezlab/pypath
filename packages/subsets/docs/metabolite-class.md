@@ -204,6 +204,29 @@ once.
 chemical is on the list with an accepted badge. The variants of a listed
 metabolite share its badge.
 
+## Tests
+
+The tests sit in `packages/subsets/tests/`, next to the tests of
+`exclusion_metabolites`. They build the subset over a small release of about
+ten entities, written straight to Parquet. The release holds cortisol and its
+stereoisomer, a charged form, a ChEMBL compound, a native fallback, a lipid, two
+reaction molecules and a receptor. The tests need no database.
+
+Each rule on this page has one test, and the name of the test states the rule.
+For example, a test shows that the stereoisomer of cortisol gets the badge
+`hmdb` through its group. Another shows that a misspelt badge gives an empty
+result.
+
+One more test compares the finished tables with frozen rows in `golden/`. A
+change to the subset that alters its output fails that test. Review the
+difference first. When the change is deliberate, rewrite the frozen rows:
+
+```sh
+UPDATE_GOLDEN=1 pytest packages/subsets/tests/
+```
+
+A new signal comes with a test of its own. Change this page in the same commit.
+
 ## What to keep in mind
 
 - The bucket `hmdb` includes HMDB's predicted and expected entries, not only
