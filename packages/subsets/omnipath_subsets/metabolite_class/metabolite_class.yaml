@@ -1,0 +1,28 @@
+# Which signal decides that a molecule counts as a metabolite.
+#
+# A molecule takes the class of the first source that claims it, by `priority`. A
+# connectivity group (the first 14 characters of the InChIKey) then takes the best class
+# of its members, by `precedence`, and every member of the group gets it. The default class
+# has no rows: a molecule that no source claims is in it.
+#
+# A source is one of three signals:
+#   resource:        the chemicals of that release resource
+#   chebi_role_root: the chemicals that ChEBI gives that role, or a role below it
+#   predicates:      the chemicals that relations of `resources` state with a predicate
+
+classes:
+  - {name: hmdb,              precedence: 1}
+  - {name: chebi_role,        precedence: 2}
+  - {name: metabolic_network, precedence: 3}
+  - {name: none,              precedence: 4}
+
+default: none
+
+sources:
+  # Stage one, the whole of it.
+  - {resource: hmdb, priority: 1, class: hmdb}
+
+  # Stage two. Each signal is one row here and no further code path.
+  # - {chebi_role_root: 'CHEBI:25212', priority: 2, class: chebi_role}
+  # - {predicates: [has_input, has_output], priority: 3, class: metabolic_network,
+  #    resources: [kegg, rhea, recon3d, metatlas]}
