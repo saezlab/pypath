@@ -128,6 +128,82 @@ adding `AND m.match_kind = 'entity'`.
 **Drop entities without an InChIKey** if your subset joins other tables on the
 InChIKey, by adding `AND m.inchikey IS NOT NULL`.
 
+## How the gate decides
+
+Think of a network dataset as a guest list. The release holds millions of
+candidate pairs: a chemical and the molecule it acts on, usually a protein. The
+gate is a doorman with a checklist. A pair gets in only when every check passes.
+The first "no" turns it away.
+
+| # | Question | Gate key | Turns away, for example |
+|---|---|---|---|
+| 1 | Is one side a chemical? | `entity_types` | A protein–protein pair |
+| 2 | Is the other side a molecule, such as a protein or gene? | `partner_types` | A chemical linked to an organism or an ontology term |
+| 3 | Is the link an interaction (`interacts_with`, `affects`, `associated_with`)? | `predicates` | "This chemical has the role antibacterial", a label and not an interaction |
+| 4 | Is the chemical a metabolite? | `metabolite_classes` | A drug candidate from a screening catalog |
+
+Checks 1 to 3 are the existing gate of the MetaLinksDB view. Check 4 reads this
+subset.
+
+**How check 4 decides.** The doorman holds a list, the table
+`metabolite_class`. Each metabolite on it carries a badge, its bucket, which
+names the source that vouched for it. The dataset names the badges it accepts,
+for example `["hmdb"]`. A pair gets in when its chemical is on the list with an
+accepted badge. A protein never carries a badge, so the check reads the chemical
+side only.
+
+### Four example pairs
+
+These cases follow the trial run on the 2026.11.19 release.
+
+**Cortisol and its receptor NR3C1.** Checks 1 to 3 pass. Cortisol is on the
+list with the badge `hmdb`. The pair gets in.
+
+**A stereoisomer of cortisol and the same receptor.** KEGG records cortisol
+with a different stereo notation, so the release holds a separate entity. HMDB
+does not list that entity. Its InChIKey starts with the same 14 characters as
+the cortisol of HMDB, so the subset gives it the badge `hmdb`. Its row has
+`match_kind = structure_key`, and `via_entity_key` names the cortisol of HMDB.
+The pair gets in.
+
+Without the groups, a notation difference would turn this pair away. On the
+trial run, the groups add some 279,000 pairs to the gate `["hmdb"]`.
+
+**A screening compound of ChEMBL and a kinase.** Checks 1 to 3 pass. No source
+vouches for the compound as a metabolite, so it is not on the list. The doorman
+turns the pair away. Most pairs of ChEMBL and BindingDB end here. The gate
+`["hmdb"]` keeps 2.5 per cent of the ChEMBL relations and 1.9 per cent of the
+BindingDB relations.
+
+**A role of cortisol from Guide to Pharmacology.** The link says that cortisol
+has an antibacterial role. Check 3 fails, because a role is a label. The doorman
+turns the pair away before check 4.
+
+### What the accepted badges give
+
+The badge names the first source that vouched, in the order HMDB, ChEBI,
+reactions.
+
+| The dataset accepts | It gets | Pairs on the trial run |
+|---|---|---|
+| `["hmdb"]` | Every molecule that HMDB lists, with its stereo and charge variants | 1,349,547 |
+| `["hmdb", "chebi_role", "metabolic_network"]` | Every metabolite that any source vouches for | 1,419,750 |
+| `["metabolic_network"]` | The metabolites that reactions know and HMDB and ChEBI do not | 38,491 |
+
+The third row does not hold every molecule of a reaction. A molecule that HMDB
+also lists carries the badge `hmdb`.
+
+### A misspelt badge admits nobody
+
+A dataset that asks for a badge that does not exist, for example `["hmbd"]`,
+gets an empty result. The other choice is to admit every pair, and then a typo
+switches the filter off without a sign. An empty result shows the mistake at
+once.
+
+**In one line:** the gate keeps a pair when the link is an interaction and the
+chemical is on the list with an accepted badge. The variants of a listed
+metabolite share its badge.
+
 ## What to keep in mind
 
 - The bucket `hmdb` includes HMDB's predicted and expected entries, not only
