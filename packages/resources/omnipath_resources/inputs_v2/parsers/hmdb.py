@@ -104,6 +104,9 @@ def _raw(
             #'pubmed_ids': ';'.join(pubmed_ids) if pubmed_ids else '',
             'accession': get_from_path(elem, 'accession'),
             'name': get_from_path(elem, 'name'),
+            # HMDB's evidence that the metabolite occurs in humans: quantified,
+            # detected, expected or predicted. A direct child only.
+            'status': _child_text(elem, xmlns, 'status'),
             'traditional_iupac': get_from_path(elem, 'traditional_iupac'),
             'iupac_name': get_from_path(elem, 'iupac_name'),
             'synonyms': get_from_path(elem, 'synonyms', 'synonym'),
