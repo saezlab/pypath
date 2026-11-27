@@ -94,6 +94,9 @@ SELECT NULL::VARCHAR[]
 -- step: partner_types AS value
 SELECT NULL::VARCHAR[]
 
+-- step: metabolite_classes AS value
+SELECT NULL::VARCHAR[]
+
 -- step: is_directed AS value
 SELECT NULL::BOOLEAN
 

@@ -2,8 +2,9 @@
 -- category, n, label, position), most relations first. The scope (endpoint filters, molecular
 -- forms, direction and a single sign) selects the relations, as combinations of their
 -- facet columns; each filter group counts its values under the other groups' filters,
--- not its own, so its other values stay listed. Without an endpoint or form scope the
--- release's relation_facet table holds the combinations.
+-- not its own, so its other values stay listed. A metabolite_classes filter is part of
+-- the scope. Without an endpoint, form or metabolite class scope the release's
+-- relation_facet table holds the combinations.
 
 -- step: selection_sources AS value
 SELECT NULL::VARCHAR[]
@@ -27,17 +28,27 @@ WITH combinations AS (
         SELECT category, predicate, subject_type, object_type, taxon, sign, is_directed, sources,
             object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier,
             resources, evidence_count
-        FROM __range_selected WHERE {{fast}}
+        FROM __range_selected WHERE {{fast}} AND {{include:metabolite_class_kept __range_selected}}
         UNION ALL BY NAME
         SELECT category, predicate, subject_type, object_type, taxon, sign, is_directed, sources,
             object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier,
             resources, evidence_count
         FROM __candidate_rows WHERE NOT {{fast}} AND {{keyed}} AND (NOT {{forms}} OR relation_n IN ({{form_ids*}}))
+            AND {{include:metabolite_class_kept __candidate_rows}}
         UNION ALL BY NAME
         SELECT category, predicate, subject_type, object_type, taxon, sign, is_directed, sources,
             object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier,
             resources, evidence_count
         FROM relation WHERE NOT {{keyed}} AND {{forms}} AND relation_n IN ({{form_ids*}})
+            AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
+            AND {{include:metabolite_class_kept relation}}
+        UNION ALL BY NAME
+        -- a metabolite_classes filter without endpoint or form scope: its relations
+        SELECT category, predicate, subject_type, object_type, taxon, sign, is_directed, sources,
+            object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier,
+            resources, evidence_count
+        FROM relation WHERE NOT ({{keyed}} OR {{forms}}) AND NOT op_unset({{metabolite_classes}})
+            AND relation_n IN (SELECT relation_n FROM __metabolite_class_relations)
             AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
     )
     SELECT category, predicate, subject_type, object_type, taxon, sign, is_directed, sources,
@@ -51,7 +62,8 @@ WITH combinations AS (
         object_aspect_qualifier, object_direction_qualifier, causal_mechanism_qualifier, resources,
         evidence_count, relation_count
     FROM relation_facet
-    WHERE NOT ({{keyed}} OR {{forms}}) AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
+    WHERE NOT ({{keyed}} OR {{forms}}) AND op_unset({{metabolite_classes}})
+        AND (op_unset({{scope}}) OR list_has_any(resources, {{scope}}))
         AND ({{is_directed}} IS NULL OR is_directed = {{is_directed}}) AND ({{sign}} IS NULL OR sign = {{sign}})
 ), c AS (
     -- each combination with whether each filter group's filters keep it

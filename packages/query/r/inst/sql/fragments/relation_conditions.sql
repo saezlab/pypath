@@ -23,3 +23,4 @@
               OR (list_contains({{type_names}}, {{input}}.object_type) AND list_contains({{partner_names}}, {{input}}.subject_type)))))
     AND (op_unset({{taxonomy_ids}}) OR list_contains({{taxonomy_ids}}, {{input}}.taxon))
     AND (op_unset({{sources}}) OR list_has_any({{input}}.sources, {{sources}}))
+    AND {{include:metabolite_class_kept {{input}}}}
