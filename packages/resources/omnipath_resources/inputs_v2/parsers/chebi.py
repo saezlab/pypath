@@ -10,9 +10,9 @@ from typing import Any
 _DATA_CACHE: dict[str, list[dict[str, Any]]] = {}
 
 _CHEMICAL_ENTITY_ROOT = 'CHEBI:24431'
+_ROLE_ROOT = 'CHEBI:50906'
 _EXCLUDED_ROOTS = {
-    'CHEBI:50906',  # role
-    'CHEBI:33232',  # application
+    'CHEBI:33232',  # application, a branch of role
 }
 
 _TRUE_VALUES = {'1', 'true', 'yes'}
@@ -270,11 +270,13 @@ def _build_records(terms: dict[str, dict[str, Any]]) -> dict[str, list[dict[str,
         for term_id in terms
     }
 
+    role_term_ids = _role_terms(terms, parent_map, ancestor_map)
+
     included_terms = {
         term_id
         for term_id, term in terms.items()
         if _is_included_chemical_term(term_id, term, ancestor_map)
-    }
+    } | role_term_ids
 
     child_map: dict[str, set[str]] = defaultdict(set)
     for child_id, parents in parent_map.items():
@@ -284,9 +286,10 @@ def _build_records(terms: dict[str, dict[str, Any]]) -> dict[str, list[dict[str,
             if parent_id in included_terms:
                 child_map[parent_id].add(child_id)
 
+    # A role is not a structure: it never becomes a structured molecule.
     structured_terms = {
         term_id
-        for term_id in included_terms
+        for term_id in included_terms - role_term_ids
         if _has_structure(terms[term_id])
     }
 
@@ -331,7 +334,7 @@ def _build_records(terms: dict[str, dict[str, Any]]) -> dict[str, list[dict[str,
     for term_id in sorted(molecule_term_ids):
         term = terms[term_id]
         xrefs = _extract_identifier_xrefs(term.get('xrefs', []))
-        properties = term.get('properties', {})
+        properties = {} if term_id in role_term_ids else term.get('properties', {})
         molecules.append(
             {
                 'chebi_id': term_id,
@@ -396,6 +399,39 @@ def _is_included_chemical_term(term_id: str, term: dict[str, Any], ancestor_map:
         return False
 
     return True
+
+
+def _role_terms(
+    terms: dict[str, dict[str, Any]],
+    parent_map: dict[str, list[str]],
+    ancestor_map: dict[str, set[str]],
+) -> set[str]:
+    """
+    Role terms that reach the role root by an `is_a` path outside application.
+
+    A role with a second parent below application stays a role. Its parent
+    below application is not a record, so its `is_a` keeps only the role side.
+    """
+
+    role_parent_map = {
+        term_id: [parent for parent in parents if parent not in _EXCLUDED_ROOTS]
+        for term_id, parents in parent_map.items()
+        if term_id not in _EXCLUDED_ROOTS
+    }
+
+    return {
+        term_id
+        for term_id in role_parent_map
+        if (
+            (term_id == _ROLE_ROOT or _ROLE_ROOT in ancestor_map[term_id]) and
+            not terms[term_id].get('is_obsolete') and
+            terms[term_id].get('name') and
+            (
+                term_id == _ROLE_ROOT or
+                _ROLE_ROOT in _ancestor_closure(term_id, role_parent_map)
+            )
+        )
+    }
 
 
 def _has_structure(term: dict[str, Any]) -> bool:
