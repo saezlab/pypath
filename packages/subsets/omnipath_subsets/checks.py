@@ -7,8 +7,8 @@ were built from (every member is a chemical entity of it, the stamp is its diges
 
 A finding is an ``error`` (the table breaks its contract) or a ``warning`` (a gap worth
 knowing, such as sets a resource leaves unnamed). ``check_release`` reads the verified
-subsets of a release; ``check_metsigdb`` and ``check_exclusion`` take table files, which is
-what a test of a broken table needs.
+subsets of a release; ``check_metsigdb``, ``check_exclusion`` and ``check_metabolite_class``
+take table files, which is what a test of a broken table needs.
 """
 
 from __future__ import annotations
@@ -21,6 +21,7 @@ import duckdb
 from omnipath_core.subset_layout import PRODUCTS, read_subset
 from omnipath_subsets.exclusion_metabolites.resolve import CHEMICAL_ENTITY_TYPES
 from omnipath_subsets.exclusion_metabolites.seeds import CLASSES
+from omnipath_subsets.metabolite_class.rules import read_rules
 from omnipath_subsets.metsigdb.mapping import KEGG_OVERVIEW_MAP_NUMBERS, RESOURCES
 from omnipath_subsets.release_source import open_release
 
@@ -294,6 +295,68 @@ def check_exclusion(
     return t.findings
 
 
+def check_metabolite_class(
+    members: str | Path,
+    report: str | Path,
+    *,
+    release: duckdb.DuckDBPyConnection | None = None,
+    build_id: str | None = None,
+    classes: tuple[str, ...] | None = None,
+) -> list[Finding]:
+    """The metabolite class tables against their contract, and against the release if given.
+
+    ``classes`` is the vocabulary of the rule file the build used, the packaged one by default.
+    """
+    classes = classes or read_rules().claimable
+    t = _Table(Path(members), "m")
+    t.con.execute(f"CREATE VIEW r AS SELECT * FROM read_parquet({_literal(Path(report))})")
+    t.expect_none(
+        "classes",
+        "a molecule has no class, or one outside the rule file",
+        "SELECT DISTINCT metabolite_class FROM m "
+        f"WHERE metabolite_class IS NULL OR NOT list_contains({_quoted_list(classes)}, "
+        "metabolite_class)",
+    )
+    t.expect_none(
+        "no_duplicates",
+        "a molecule has more than one row",
+        "SELECT entity_key, count(*) FROM m GROUP BY 1 HAVING count(*) > 1",
+    )
+    t.expect_none(
+        "structure_key_members",
+        "a structure-key row does not name an entity row of its class",
+        "SELECT v.entity_key, v.metabolite_class FROM m v "
+        "LEFT JOIN m w ON w.entity_key = v.via_entity_key "
+        "WHERE v.match_kind = 'structure_key' AND (w.entity_key IS NULL "
+        "OR w.match_kind <> 'entity' OR w.metabolite_class <> v.metabolite_class)",
+    )
+    t.expect_none(
+        "entity_support",
+        "an entity row names no resource that asserts it",
+        "SELECT entity_key FROM m WHERE match_kind = 'entity' AND len(supported_by) = 0",
+    )
+    t.expect_none(
+        "report_classes",
+        "the report's size of a class is missing or is not the class's number of molecules",
+        f"SELECT c.cls, r.n, s.n FROM unnest({_quoted_list(classes)}) AS c(cls) "
+        "LEFT JOIN (SELECT metabolite_class, n FROM r WHERE kind = 'class_size') r "
+        "ON r.metabolite_class = c.cls "
+        "LEFT JOIN (SELECT metabolite_class, count(*) AS n FROM m GROUP BY 1) s "
+        "ON s.metabolite_class = c.cls "
+        "WHERE r.n IS NULL OR r.n IS DISTINCT FROM coalesce(s.n, 0)",
+    )
+    if build_id is not None:
+        t.expect_none(
+            "build_stamp",
+            "rows are stamped with another release",
+            "SELECT DISTINCT build_id FROM (SELECT build_id FROM m UNION ALL "
+            f"SELECT build_id FROM r) WHERE build_id IS DISTINCT FROM {_literal(build_id)}",
+        )
+    if release is not None:
+        _entities(t, release, "m", "entity_key")
+    return t.findings
+
+
 def check_release(
     data_root: str | Path,
     release: str,
@@ -314,6 +377,13 @@ def check_release(
             if product == "metsigdb":
                 results[product] = check_metsigdb(
                     subset.directory / "metsigdb_membership.parquet",
+                    release=connection,
+                    build_id=build_id,
+                )
+            elif product == "metabolite_class":
+                results[product] = check_metabolite_class(
+                    subset.directory / "metabolite_class.parquet",
+                    subset.directory / "metabolite_class_report.parquet",
                     release=connection,
                     build_id=build_id,
                 )
