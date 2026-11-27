@@ -13,6 +13,7 @@
 -- param: interaction_types VARCHAR[] = NULL
 -- param: entity_types VARCHAR[] = NULL
 -- param: partner_types VARCHAR[] = NULL
+-- param: metabolite_classes VARCHAR[] = NULL
 -- param: is_directed BOOLEAN = NULL
 -- param: sign INTEGER = NULL
 -- param: signs INTEGER[] = NULL

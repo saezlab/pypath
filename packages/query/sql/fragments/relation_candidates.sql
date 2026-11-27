@@ -4,8 +4,10 @@
 -- scope keys, the candidate relations of the endpoint filters (__candidate_rows) and,
 -- under form filters, the relations with matching evidence (form_ids), unless the
 -- including query's value read_candidates is false. The including query's value
--- selection_sources (a source filter, or NULL) narrows the resources read. The relation_conditions fragment
--- applies the other filters.
+-- selection_sources (a source filter, or NULL) narrows the resources read. Under a
+-- metabolite_classes filter, __metabolite_class_relations holds the relations with an end
+-- in the buckets named (the release's metabolite_class subset). The relation_conditions
+-- fragment applies the other filters.
 
 -- step: predicate_names AS value
 SELECT (SELECT list(name) FROM op_biolink('predicate', {{predicates}}))
@@ -118,3 +120,27 @@ SELECT DISTINCT relation_n FROM (
 WHERE op_evidence_ok(ev, {{protein_entity_keys}}, {{transcript_entity_keys}},
     {{isoform_identifiers}}, {{molecular_endpoint_mode}})
 ORDER BY relation_n
+
+-- step: metabolite_class_source AS value
+-- the rows the metabolite_classes filter reads, as SQL for query(): the release's
+-- metabolite_class subset, or no rows while the filter is unset, so that a release
+-- without the subset answers as before; the filter on such a release is an error
+SELECT CASE
+    WHEN op_unset({{metabolite_classes}})
+        THEN 'SELECT NULL::VARCHAR AS entity_key, NULL::VARCHAR AS metabolite_class WHERE false'
+    WHEN {{include:metabolite_class_present x}}
+        THEN 'SELECT entity_key, metabolite_class FROM metabolite_class'
+    ELSE error('invalid: this release has no metabolite_class subset, so metabolite_classes cannot filter it')
+END
+
+-- step: metabolite_class_ns AS table when NOT op_unset({{metabolite_classes}})
+-- the entities in the buckets named: an unknown bucket names none, and admits no relation
+SELECT DISTINCT e.entity_n FROM query({{metabolite_class_source}}) m
+JOIN entity e ON e.entity_key = m.entity_key
+WHERE list_contains({{metabolite_classes}}, m.metabolite_class)
+
+-- step: metabolite_class_relations AS table when NOT op_unset({{metabolite_classes}})
+-- the relations with an end among them (a protein has no row, so this tests the
+-- chemical end), read from the endpoint table by entity number
+SELECT DISTINCT relation_n FROM relation_endpoint
+WHERE entity_n IN (SELECT entity_n FROM __metabolite_class_ns)
