@@ -183,6 +183,12 @@ def test_the_inchikey_is_the_entity_identifier_and_hmdb_the_lowest_seven_digit_a
     assert table['pyruvate']['hmdb'] is None
 
 
+def test_the_hmdb_accession_is_the_record_s_own_and_not_a_lower_one_the_resolver_added(table):
+
+    # The HMDB record of cortisol also carries HMDB0000001 from another record.
+    assert table['cortisol']['hmdb'] == 'HMDB0000063'
+
+
 # The report.
 
 

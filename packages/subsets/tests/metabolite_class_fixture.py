@@ -45,6 +45,21 @@ def _molecule(key, inchikey, label, identifiers = ()):
     )
 
 
+def _hmdb_record(entity, own):
+    """
+    The entity as HMDB states it: ``own`` is the record's accession, and the other HMDB
+    accessions are the ones the resolver attached from other records.
+    """
+
+    for item in entity['identifiers']:
+
+        if item['ns'] == 'hmdb':
+
+            item['source'] = 'hmdb' if item['id'] == own else 'resolver'
+
+    return entity
+
+
 def _term(key, namespace, identifier, label, entity_type = CHEMICAL):
     """
     An entity without a structure key.
@@ -93,7 +108,15 @@ def resources() -> dict:
     return {
         'hmdb': (
             [
-                _molecule('cortisol', CORTISOL_KEY, 'Cortisol', cortisol_ids),
+                _hmdb_record(
+                    _molecule(
+                        'cortisol',
+                        CORTISOL_KEY,
+                        'Cortisol',
+                        [*cortisol_ids, ('hmdb', 'HMDB0000001')],
+                    ),
+                    own = 'HMDB0000063',
+                ),
                 _molecule(
                     'lactate',
                     LACTATE_KEY,

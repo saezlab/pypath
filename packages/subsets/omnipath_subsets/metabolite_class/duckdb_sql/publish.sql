@@ -10,13 +10,17 @@ SELECT e.resource, e.entity_id, e.entity_key, e.namespace, e.identifier, e.label
 FROM resource_entity e
 WHERE e.entity_key IN (SELECT entity_key FROM mc_assigned);
 
+-- `own` marks an HMDB accession that the HMDB resource states for its own record. The
+-- resolver attaches the accessions of other records of the same molecule as well, so
+-- the lowest accession can name another record.
 CREATE TEMP TABLE mc_ident AS
-SELECT e.entity_key, i.ns, i.id
+SELECT e.entity_key, i.ns, i.id,
+       (i.resource = 'hmdb' AND i.ns = 'hmdb' AND i.source = 'hmdb') AS own
 FROM resource_identifier i
 JOIN mc_entity e ON e.resource = i.resource AND e.entity_id = i.entity_id
 WHERE i.ns IN ('inchikey', 'hmdb')
 UNION
-SELECT entity_key, namespace, identifier
+SELECT entity_key, namespace, identifier, false
 FROM mc_entity
 WHERE namespace IN ('inchikey', 'hmdb');
 
@@ -35,9 +39,15 @@ WITH named AS (
 keyed AS (
   SELECT entity_key,
          min(id) FILTER (WHERE ns = 'inchikey') AS inchikey,
-         min(CASE WHEN regexp_full_match(id, 'HMDB[0-9]{1,7}')
-                  THEN 'HMDB' || lpad(substr(id, 5), 7, '0') END)
-           FILTER (WHERE ns = 'hmdb') AS hmdb
+         -- The record's own accession, else the lowest; in the seven-digit form.
+         coalesce(
+           min(CASE WHEN regexp_full_match(id, 'HMDB[0-9]{1,7}')
+                    THEN 'HMDB' || lpad(substr(id, 5), 7, '0') END)
+             FILTER (WHERE ns = 'hmdb' AND own),
+           min(CASE WHEN regexp_full_match(id, 'HMDB[0-9]{1,7}')
+                    THEN 'HMDB' || lpad(substr(id, 5), 7, '0') END)
+             FILTER (WHERE ns = 'hmdb')
+         ) AS hmdb
   FROM mc_ident
   GROUP BY entity_key
 ),

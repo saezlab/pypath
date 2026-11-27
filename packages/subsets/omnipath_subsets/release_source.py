@@ -101,7 +101,7 @@ def open_release(
     )
     con.execute(
         "CREATE VIEW resource_identifier AS "
-        + _scan(_files(root, resources, "entity_identifier"), "entity_id, ns, id")
+        + _scan(_files(root, resources, "entity_identifier"), "entity_id, ns, id, source")
     )
     con.execute(
         "CREATE VIEW release_relation AS "

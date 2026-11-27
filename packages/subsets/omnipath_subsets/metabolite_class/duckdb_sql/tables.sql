@@ -7,7 +7,8 @@ CREATE TABLE metabolite_class (
   label            VARCHAR,
   -- The entity identifier when it is an InChIKey, else the lowest InChIKey it carries.
   inchikey         VARCHAR,
-  -- The lowest HMDB accession it carries, in the seven-digit form.
+  -- The HMDB accession of the molecule's own HMDB record, else the lowest it carries; in
+  -- the seven-digit form.
   hmdb             VARCHAR,
   -- The best class of the connectivity group, or of the molecule when it has no group.
   metabolite_class VARCHAR NOT NULL,
