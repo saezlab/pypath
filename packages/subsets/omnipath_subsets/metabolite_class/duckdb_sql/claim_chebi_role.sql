@@ -31,7 +31,7 @@ walk (entity_key, depth) AS (
 SELECT DISTINCT r.subject_entity_key, $metabolite_class, $priority, 'chebi'
 FROM release_relation r
 JOIN (SELECT DISTINCT entity_key FROM walk) role ON role.entity_key = r.object_entity_key
-JOIN release_entity c ON c.entity_key = r.subject_entity_key
+JOIN resource_entity c ON c.resource = 'chebi' AND c.entity_key = r.subject_entity_key
 WHERE r.resource = 'chebi'
   AND r.statement_kind IN ('ontology', 'ontology_axiom')
   AND r.predicate = 'has_chemical_role'

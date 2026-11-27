@@ -3,21 +3,33 @@
 -- The HMDB name comes first because HMDB uses the common name (`Cortisol`). The release
 -- label is the one of the first resource in name order, which for many molecules is
 -- ChEBI's systematic name.
+-- The rows of the published molecules only, from each resource: the merged views of the
+-- release would aggregate every entity and identifier first.
+CREATE TEMP TABLE mc_entity AS
+SELECT e.resource, e.entity_id, e.entity_key, e.namespace, e.identifier, e.label
+FROM resource_entity e
+WHERE e.entity_key IN (SELECT entity_key FROM mc_assigned);
+
 CREATE TEMP TABLE mc_ident AS
-SELECT i.entity_key, i.ns, i.id
-FROM release_identifier i
+SELECT e.entity_key, i.ns, i.id
+FROM resource_identifier i
+JOIN mc_entity e ON e.resource = i.resource AND e.entity_id = i.entity_id
 WHERE i.ns IN ('inchikey', 'hmdb')
-  AND i.entity_key IN (SELECT entity_key FROM mc_assigned);
+UNION
+SELECT entity_key, namespace, identifier
+FROM mc_entity
+WHERE namespace IN ('inchikey', 'hmdb');
 
 INSERT INTO metabolite_class
 WITH named AS (
   SELECT entity_key,
          min(label) FILTER (WHERE resource = 'hmdb') AS hmdb_label,
-         min(label) FILTER (WHERE resource = 'chebi') AS chebi_label
-  FROM resource_entity
-  WHERE resource IN ('hmdb', 'chebi')
-    AND label IS NOT NULL
-    AND entity_key IN (SELECT entity_key FROM mc_assigned)
+         min(label) FILTER (WHERE resource = 'chebi') AS chebi_label,
+         -- The release label: the first resource in name order that has one.
+         arg_min(label, resource) FILTER (WHERE label IS NOT NULL) AS release_label,
+         arg_min(namespace, resource) FILTER (WHERE namespace IS NOT NULL) AS namespace,
+         arg_min(identifier, resource) FILTER (WHERE identifier IS NOT NULL) AS identifier
+  FROM mc_entity
   GROUP BY entity_key
 ),
 keyed AS (
@@ -35,8 +47,8 @@ support AS (
   GROUP BY entity_key
 )
 SELECT a.entity_key,
-       coalesce(n.hmdb_label, n.chebi_label, e.label),
-       CASE WHEN e.namespace = 'inchikey' THEN e.identifier ELSE k.inchikey END,
+       coalesce(n.hmdb_label, n.chebi_label, n.release_label),
+       CASE WHEN n.namespace = 'inchikey' THEN n.identifier ELSE k.inchikey END,
        k.hmdb,
        a.metabolite_class,
        a.match_kind,
@@ -44,7 +56,6 @@ SELECT a.entity_key,
        coalesce(s.supported_by, []::VARCHAR[]),
        $build_id
 FROM mc_assigned a
-JOIN release_entity e USING (entity_key)
 LEFT JOIN named n USING (entity_key)
 LEFT JOIN keyed k USING (entity_key)
 LEFT JOIN support s USING (entity_key);
