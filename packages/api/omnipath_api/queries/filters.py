@@ -49,6 +49,9 @@ class SearchFilters(BaseModel):
     # With interaction_types: the type at the other end of a relation, so that
     # interaction_types=[protein] and partner_types=[chemical] is protein-chemical.
     partner_types: list[str] = Field(default_factory=list)
+    # Relations with an end in these buckets of the release's metabolite_class subset
+    # (hmdb, chebi_role, metabolic_network); an unknown bucket keeps none.
+    metabolite_classes: list[str] = Field(default_factory=list)
     annotation_term_ids: list[str] = Field(default_factory=list)
     gene_mode: Literal["any", "both", "source", "source_only", "target", "target_only"] = "any"
     scope_endpoint_mode: Literal[
@@ -74,6 +77,7 @@ class SearchFilters(BaseModel):
             "relation_categories": ("categories",),
             "interaction_types": ("interactionTypes",),
             "partner_types": ("partnerTypes",),
+            "metabolite_classes": ("metaboliteClasses",),
             "annotation_term_ids": ("annotationTermIds",),
         }
         for canonical, legacy in aliases.items():

@@ -20,7 +20,7 @@ def relation_params(filters):
         "reference_entity_keys", "sources", "predicates", "relation_categories", "taxonomy_ids",
         "interaction_types", "entity_types", "partner_types", "signs", "object_aspect_qualifier",
         "object_direction_qualifier", "causal_mechanism_qualifier", "protein_entity_keys",
-        "transcript_entity_keys", "isoform_identifiers", "scope_entity_ids",
+        "transcript_entity_keys", "isoform_identifiers", "scope_entity_ids", "metabolite_classes",
     )
     params = {name: (list(f.get(name) or []) or None) for name in lists}
     tokens = list(f.get("entity_ids") or []) + list(f.get("entity_pks") or [])

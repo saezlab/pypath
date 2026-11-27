@@ -355,6 +355,7 @@ class ScopedRelationFacetsRequest(APIModel):
     causal_mechanism_qualifier: list[str] = Field(default_factory=list)
     interactionTypes: list[str] = Field(default_factory=list)
     partnerTypes: list[str] = Field(default_factory=list)
+    metaboliteClasses: list[str] = Field(default_factory=list)
     sources: list[str] = Field(default_factory=list)
     taxonomyIds: list[str] = Field(default_factory=list)
     filters: SearchFilters | None = None
