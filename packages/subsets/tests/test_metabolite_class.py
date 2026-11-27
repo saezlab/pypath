@@ -256,18 +256,22 @@ def test_the_report_counts_the_claimed_molecules_without_a_structure_key(built):
 # The rule file.
 
 
-def test_the_packaged_rule_file_claims_hmdb_alone_and_a_commented_signal_adds_nothing(tmp_path):
+def test_the_packaged_rule_file_claims_hmdb_and_the_chebi_role_and_a_commented_signal_adds_nothing(
+    tmp_path,
+):
 
     root = tmp_path / 'data'
     version = write_release(root)
     layout.build_product(root, version, 'metabolite_class', write_metabolite_class)
     table = by_entity(layout.subset_directory(root, version, 'metabolite_class'))
 
-    assert {row['metabolite_class'] for row in table.values()} == {'hmdb'}
-    assert {'menthol', 'pyruvate', 'fallback'}.isdisjoint(table)
+    assert {row['metabolite_class'] for row in table.values()} == {'hmdb', 'chebi_role'}
+    assert table['menthol']['metabolite_class'] == 'chebi_role'
+    # The reaction signal is still commented: its molecules have no row.
+    assert {'pyruvate', 'fallback'}.isdisjoint(table)
     # Without the reaction signal the charged lactate is an unclaimed variant.
     assert table['lactate_ion']['supported_by'] == []
-    assert [s.signal for s in read_rules().sources] == ['resource']
+    assert [s.signal for s in read_rules().sources] == ['resource', 'chebi_role']
 
 
 BROKEN = {

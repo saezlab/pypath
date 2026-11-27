@@ -19,10 +19,12 @@ classes:
 default: none
 
 sources:
-  # Stage one, the whole of it.
+  # Stage one.
   - {resource: hmdb, priority: 1, class: hmdb}
 
   # Stage two. Each signal is one row here and no further code path.
-  # - {chebi_role_root: 'CHEBI:25212', priority: 2, class: chebi_role}
+  # The ChEBI metabolite role and every role below it, of any organism: on release
+  # 2026.11.27 the walk reaches 60 roles (see docs/reports/metabolite-class-chebi-role-20261127.md).
+  - {chebi_role_root: 'CHEBI:25212', priority: 2, class: chebi_role}
   # - {predicates: [has_input, has_output], priority: 3, class: metabolic_network,
   #    resources: [kegg, rhea, recon3d, metatlas]}
