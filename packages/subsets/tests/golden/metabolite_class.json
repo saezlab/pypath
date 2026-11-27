@@ -1,0 +1,179 @@
+{
+ "metabolite_class": [
+  {
+   "entity_key": "cortisol",
+   "hmdb": "HMDB0000063",
+   "inchikey": "JYGXADMDTFJGBT-VWUMJDOOSA-N",
+   "label": "Cortisol",
+   "match_kind": "entity",
+   "metabolite_class": "hmdb",
+   "supported_by": [
+    "chebi",
+    "hmdb"
+   ],
+   "via_entity_key": null
+  },
+  {
+   "entity_key": "cortisol_17s",
+   "hmdb": null,
+   "inchikey": "JYGXADMDTFJGBT-CZFMHFDVSA-N",
+   "label": "Cortisol (17S)",
+   "match_kind": "structure_key",
+   "metabolite_class": "hmdb",
+   "supported_by": [],
+   "via_entity_key": "cortisol"
+  },
+  {
+   "entity_key": "fallback",
+   "hmdb": null,
+   "inchikey": null,
+   "label": "unresolved metabolite",
+   "match_kind": "entity",
+   "metabolite_class": "metabolic_network",
+   "supported_by": [
+    "metatlas"
+   ],
+   "via_entity_key": null
+  },
+  {
+   "entity_key": "lactate",
+   "hmdb": "HMDB0000190",
+   "inchikey": "JVTAAEKCZFNVCJ-UHFFFAOYSA-N",
+   "label": "L-Lactic acid",
+   "match_kind": "entity",
+   "metabolite_class": "hmdb",
+   "supported_by": [
+    "hmdb"
+   ],
+   "via_entity_key": null
+  },
+  {
+   "entity_key": "lactate_ion",
+   "hmdb": null,
+   "inchikey": "JVTAAEKCZFNVCJ-UHFFFAOYSA-M",
+   "label": "(S)-lactate",
+   "match_kind": "structure_key",
+   "metabolite_class": "hmdb",
+   "supported_by": [
+    "rhea"
+   ],
+   "via_entity_key": "lactate"
+  },
+  {
+   "entity_key": "lipid",
+   "hmdb": null,
+   "inchikey": null,
+   "label": "PC(34:1)",
+   "match_kind": "entity",
+   "metabolite_class": "hmdb",
+   "supported_by": [
+    "hmdb"
+   ],
+   "via_entity_key": null
+  },
+  {
+   "entity_key": "menthol",
+   "hmdb": null,
+   "inchikey": "NOOLISFMXDJSKH-UHFFFAOYSA-N",
+   "label": "menthol",
+   "match_kind": "entity",
+   "metabolite_class": "chebi_role",
+   "supported_by": [
+    "chebi"
+   ],
+   "via_entity_key": null
+  },
+  {
+   "entity_key": "pyruvate",
+   "hmdb": null,
+   "inchikey": "LCTONWCANYUPML-UHFFFAOYSA-N",
+   "label": "pyruvate",
+   "match_kind": "entity",
+   "metabolite_class": "metabolic_network",
+   "supported_by": [
+    "rhea"
+   ],
+   "via_entity_key": null
+  }
+ ],
+ "metabolite_class_report": [
+  {
+   "detail": null,
+   "kind": "class_size",
+   "metabolite_class": "chebi_role",
+   "n": 1
+  },
+  {
+   "detail": null,
+   "kind": "class_size",
+   "metabolite_class": "hmdb",
+   "n": 5
+  },
+  {
+   "detail": null,
+   "kind": "class_size",
+   "metabolite_class": "metabolic_network",
+   "n": 2
+  },
+  {
+   "detail": "{\"labels\":[],\"truncated\":false}",
+   "kind": "no_key",
+   "metabolite_class": "chebi_role",
+   "n": 0
+  },
+  {
+   "detail": "{\"labels\":[\"PC(34:1)\"],\"truncated\":false}",
+   "kind": "no_key",
+   "metabolite_class": "hmdb",
+   "n": 1
+  },
+  {
+   "detail": "{\"labels\":[\"unresolved metabolite\"],\"truncated\":false}",
+   "kind": "no_key",
+   "metabolite_class": "metabolic_network",
+   "n": 1
+  },
+  {
+   "detail": "{\"classes\":[\"chebi_role\",\"hmdb\"]}",
+   "kind": "overlap",
+   "metabolite_class": null,
+   "n": 1
+  },
+  {
+   "detail": "{\"classes\":[\"chebi_role\"]}",
+   "kind": "overlap",
+   "metabolite_class": null,
+   "n": 1
+  },
+  {
+   "detail": "{\"classes\":[\"hmdb\"]}",
+   "kind": "overlap",
+   "metabolite_class": null,
+   "n": 2
+  },
+  {
+   "detail": "{\"classes\":[\"metabolic_network\"]}",
+   "kind": "overlap",
+   "metabolite_class": null,
+   "n": 3
+  },
+  {
+   "detail": "{\"keys\":[],\"truncated\":false}",
+   "kind": "shared_key",
+   "metabolite_class": "chebi_role",
+   "n": 0
+  },
+  {
+   "detail": "{\"keys\":[{\"key\":\"JVTAAEKCZFNVCJ\",\"via\":\"lactate\",\"labels\":[\"(S)-lactate\"]},{\"key\":\"JYGXADMDTFJGBT\",\"via\":\"cortisol\",\"labels\":[\"Cortisol (17S)\"]}],\"truncated\":false}",
+   "kind": "shared_key",
+   "metabolite_class": "hmdb",
+   "n": 2
+  },
+  {
+   "detail": "{\"keys\":[],\"truncated\":false}",
+   "kind": "shared_key",
+   "metabolite_class": "metabolic_network",
+   "n": 0
+  }
+ ]
+}
