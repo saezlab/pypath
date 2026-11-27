@@ -16,9 +16,9 @@ def _writers() -> dict[str, Callable]:
     from omnipath_subsets.metsigdb.parquet_build import write_metsigdb
 
     return {
-        "exclusion_metabolites": write_exclusion_metabolites,
-        "metsigdb": write_metsigdb,
-        "metabolite_class": write_metabolite_class,
+        'exclusion_metabolites': write_exclusion_metabolites,
+        'metsigdb': write_metsigdb,
+        'metabolite_class': write_metabolite_class,
     }
 
 

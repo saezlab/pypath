@@ -303,57 +303,73 @@ def check_metabolite_class(
     build_id: str | None = None,
     classes: tuple[str, ...] | None = None,
 ) -> list[Finding]:
-    """The metabolite class tables against their contract, and against the release if given.
-
-    ``classes`` is the vocabulary of the rule file the build used, the packaged one by default.
     """
+    The metabolite class tables against their contract, and against the release if given.
+
+    Args:
+        members: The ``metabolite_class`` Parquet file.
+        report: The ``metabolite_class_report`` Parquet file.
+        release: A connection with the release views, to check the entities against.
+        build_id: The release digest every row must carry.
+        classes: The classes of the rule file the build used; the packaged ones by default.
+
+    Returns:
+        The findings; empty when the tables hold.
+    """
+
     classes = classes or read_rules().claimable
-    t = _Table(Path(members), "m")
-    t.con.execute(f"CREATE VIEW r AS SELECT * FROM read_parquet({_literal(Path(report))})")
+    t = _Table(Path(members), 'm')
+    t.con.execute(f'CREATE VIEW r AS SELECT * FROM read_parquet({_literal(Path(report))})')
+
     t.expect_none(
-        "classes",
-        "a molecule has no class, or one outside the rule file",
-        "SELECT DISTINCT metabolite_class FROM m "
-        f"WHERE metabolite_class IS NULL OR NOT list_contains({_quoted_list(classes)}, "
-        "metabolite_class)",
+        'classes',
+        'a molecule has no class, or one outside the rule file',
+        'SELECT DISTINCT metabolite_class FROM m '
+        f'WHERE metabolite_class IS NULL OR NOT list_contains({_quoted_list(classes)}, '
+        'metabolite_class)',
     )
     t.expect_none(
-        "no_duplicates",
-        "a molecule has more than one row",
-        "SELECT entity_key, count(*) FROM m GROUP BY 1 HAVING count(*) > 1",
+        'no_duplicates',
+        'a molecule has more than one row',
+        'SELECT entity_key, count(*) FROM m GROUP BY 1 HAVING count(*) > 1',
     )
     t.expect_none(
-        "structure_key_members",
-        "a structure-key row does not name an entity row of its class",
-        "SELECT v.entity_key, v.metabolite_class FROM m v "
-        "LEFT JOIN m w ON w.entity_key = v.via_entity_key "
+        'structure_key_members',
+        'a structure-key row does not name an entity row of its class',
+        'SELECT v.entity_key, v.metabolite_class FROM m v '
+        'LEFT JOIN m w ON w.entity_key = v.via_entity_key '
         "WHERE v.match_kind = 'structure_key' AND (w.entity_key IS NULL "
         "OR w.match_kind <> 'entity' OR w.metabolite_class <> v.metabolite_class)",
     )
     t.expect_none(
-        "entity_support",
-        "an entity row names no resource that asserts it",
+        'entity_support',
+        'an entity row names no resource that asserts it',
         "SELECT entity_key FROM m WHERE match_kind = 'entity' AND len(supported_by) = 0",
     )
     t.expect_none(
-        "report_classes",
+        'report_classes',
         "the report's size of a class is missing or is not the class's number of molecules",
-        f"SELECT c.cls, r.n, s.n FROM unnest({_quoted_list(classes)}) AS c(cls) "
+        f'SELECT c.cls, r.n, s.n FROM unnest({_quoted_list(classes)}) AS c(cls) '
         "LEFT JOIN (SELECT metabolite_class, n FROM r WHERE kind = 'class_size') r "
-        "ON r.metabolite_class = c.cls "
-        "LEFT JOIN (SELECT metabolite_class, count(*) AS n FROM m GROUP BY 1) s "
-        "ON s.metabolite_class = c.cls "
-        "WHERE r.n IS NULL OR r.n IS DISTINCT FROM coalesce(s.n, 0)",
+        'ON r.metabolite_class = c.cls '
+        'LEFT JOIN (SELECT metabolite_class, count(*) AS n FROM m GROUP BY 1) s '
+        'ON s.metabolite_class = c.cls '
+        'WHERE r.n IS NULL OR r.n IS DISTINCT FROM coalesce(s.n, 0)',
     )
+
     if build_id is not None:
+
         t.expect_none(
-            "build_stamp",
-            "rows are stamped with another release",
-            "SELECT DISTINCT build_id FROM (SELECT build_id FROM m UNION ALL "
-            f"SELECT build_id FROM r) WHERE build_id IS DISTINCT FROM {_literal(build_id)}",
+            'build_stamp',
+            'rows are stamped with another release',
+            'SELECT DISTINCT build_id FROM (SELECT build_id FROM m UNION ALL '
+            f'SELECT build_id FROM r) WHERE build_id IS DISTINCT FROM {_literal(build_id)}',
         )
+
     if release is not None:
-        _entities(t, release, "m", "entity_key")
+
+        _entities(t, release, 'm', 'entity_key')
+
     return t.findings
 
 
@@ -380,12 +396,12 @@ def check_release(
                     release=connection,
                     build_id=build_id,
                 )
-            elif product == "metabolite_class":
+            elif product == 'metabolite_class':
                 results[product] = check_metabolite_class(
-                    subset.directory / "metabolite_class.parquet",
-                    subset.directory / "metabolite_class_report.parquet",
-                    release=connection,
-                    build_id=build_id,
+                    subset.directory / 'metabolite_class.parquet',
+                    subset.directory / 'metabolite_class_report.parquet',
+                    release = connection,
+                    build_id = build_id,
                 )
             else:
                 results[product] = check_exclusion(

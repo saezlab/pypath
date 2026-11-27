@@ -1,4 +1,5 @@
-"""Metabolite classes: whether a chemical of the release counts as a metabolite.
+"""
+Metabolite classes: whether a chemical of the release counts as a metabolite.
 
 One table, ``metabolite_class``, built from the published release as Parquet: one row for
 each chemical that a source of the rule file claims, and for each member of its
@@ -13,4 +14,4 @@ from __future__ import annotations
 from omnipath_subsets.metabolite_class.parquet_build import write_metabolite_class
 from omnipath_subsets.metabolite_class.rules import RuleError, read_rules
 
-__all__ = ["RuleError", "read_rules", "write_metabolite_class"]
+__all__ = ['RuleError', 'read_rules', 'write_metabolite_class']
