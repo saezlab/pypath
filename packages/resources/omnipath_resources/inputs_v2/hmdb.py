@@ -139,6 +139,9 @@ LOCATIONS = {
     'biospecimen_locations': ('hmdb_biospecimen', BIOSPECIMEN_TERMS),
 }
 DISEASE_NAMESPACE = 'hmdb_disease'
+# HMDB's own field, so a source attribute: Biolink has no slot for it. RaMP
+# repeats the values HMDB writes: quantified, detected, expected, predicted.
+STATUS = 'hmdb:status'
 _PREFIX_NAMESPACE = {'GO': Namespace.GO, 'UBERON': Namespace.UBERON, 'CL': Namespace.CL}
 
 
@@ -146,6 +149,11 @@ def _names(row: dict, field: str) -> list[str]:
     """The parser's list of names; a single name is a list of one."""
     value = row.get(field) or []
     return [value] if isinstance(value, str) else list(value)
+
+
+def _status(row: dict) -> str | None:
+    """HMDB's status of the metabolite, lowercase; None where HMDB gives none."""
+    return ' '.join((row.get('status') or '').split()).lower() or None
 
 
 def _location_associations(field: str) -> list[AssociationBuilder]:
@@ -227,6 +235,7 @@ metabolites_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=slots.description, value=f('description')),
+        CV(term=STATUS, value=_status),
         CV(
             term=slots.publications,
             value=f(
