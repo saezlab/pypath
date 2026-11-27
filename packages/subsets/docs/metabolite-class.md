@@ -1,9 +1,9 @@
 # Metabolite classes
 
-> **Status: planned.** This page describes the subset as designed in the plan
+> **Status: stage one.** The subset fills the bucket `hmdb`. Buckets 2 and 3 are
+> in the code and switch on after the audit of stage two of the plan
 > `saezverse/projects/omnipath/plans/2026-11-metabolite-classification-logic.md`.
-> The code does not exist yet. The figures come from a trial run on the
-> 2026.11.19 release.
+> The code is in `packages/subsets/omnipath_subsets/metabolite_class/`.
 
 The subset `metabolite_class` answers one question: does this molecule count as
 a metabolite? A network dataset uses the answer to keep the relations of
@@ -20,8 +20,8 @@ first one that says yes.
 | Order | Bucket | The molecule is in the bucket when… |
 |---|---|---|
 | 1 | `hmdb` | the Human Metabolome Database (HMDB) has a record of it |
-| 2 | `chebi_role` | ChEBI says it has the role "metabolite", or a narrower role such as "human metabolite" (planned) |
-| 3 | `metabolic_network` | a reaction in KEGG, Rhea, Recon3D or Human-GEM uses it or makes it (planned) |
+| 2 | `chebi_role` | ChEBI says it has the role "metabolite", or a narrower role such as "human metabolite" (stage two) |
+| 3 | `metabolic_network` | a reaction in KEGG, Rhea, Recon3D or Human-GEM uses it or makes it (stage two) |
 | — | `none` | nothing says yes |
 
 A molecule gets one bucket, the first that applies. A later source never
@@ -72,8 +72,11 @@ is in `none`.
 | `match_kind` | `entity` or `structure_key`, as above |
 | `via_entity_key` | For a `structure_key` row, the group member that set the bucket |
 | `supported_by` | The resources that say yes to the molecule itself, for example `[hmdb, chebi, rhea]` |
+| `build_id` | The digest of the release manifest the build read |
 
 **`metabolite_class_report`**: the figures of each build.
+
+Each report row has a `kind`, a bucket, a count `n` and the details as JSON text.
 
 - `class_size`: the number of molecules in each bucket.
 - `overlap`: how many molecules each combination of sources claims.
@@ -81,13 +84,18 @@ is in `none`.
 - `no_key`: the molecules a source claimed that have no InChIKey, so the
   subset cannot add variants for them.
 
-On the 2026.11.19 trial run:
+On the 2026.11.19 release, with all three signals switched on:
 
 | Bucket | Molecules | Added through a group | Without an InChIKey |
 |---|---|---|---|
 | `hmdb` | 272,030 | 54,114 | 21 |
-| `chebi_role` | 11,767 | 2,698 | 930 |
-| `metabolic_network` | 15,991 | 3,078 | 5,882 |
+| `chebi_role` | 4,608 | 768 | 257 |
+| `metabolic_network` | 18,494 | 3,957 | 6,073 |
+
+Stage one fills `hmdb` alone, with the same 272,030 molecules: the other signals
+do not change which molecules HMDB or its groups claim. The ChEBI role reaches
+few molecules until stage two repairs the ChEBI parser, which leaves out the
+role tree today. The build of the release takes some ten seconds.
 
 ## Using it in your subset
 
@@ -108,14 +116,18 @@ JOIN metabolite_class m ON m.entity_key = r.chemical_entity_key
 WHERE m.metabolite_class IN ('hmdb');
 ```
 
-**In a network view,** name the buckets in the gate. The query macros apply the
-filter to the chemical end of each relation:
+**In the query layer,** every relation query takes the filter
+`metabolite_classes`: `relation_page`, `relations`, `relation_counts`,
+`relation_facets` and `relation_filter_options`. A relation passes when one of
+its ends is in a named bucket:
 
 ```python
-"metabolite_classes": ["hmdb"],
+client.relations("NR3C1", metabolite_classes=["hmdb"])
 ```
 
-An unknown bucket name gives an empty result, not the whole network.
+The API takes the same filter as `metaboliteClasses`. An unknown bucket name
+gives an empty result, not the whole network. A release built without this
+subset refuses the filter with an error, and answers as before without it.
 
 **Choose the buckets on purpose.** A bucket is the first source that says yes.
 So `metabolic_network` does not mean every molecule in a reaction: a molecule
@@ -154,7 +166,7 @@ side only.
 
 ### Four example pairs
 
-These cases follow the trial run on the 2026.11.19 release.
+These cases follow a build on the 2026.11.19 release.
 
 **Cortisol and its receptor NR3C1.** Checks 1 to 3 pass. Cortisol is on the
 list with the badge `hmdb`. The pair gets in.
@@ -167,7 +179,7 @@ the cortisol of HMDB, so the subset gives it the badge `hmdb`. Its row has
 The pair gets in.
 
 Without the groups, a notation difference would turn this pair away. On the
-trial run, the groups add some 279,000 pairs to the gate `["hmdb"]`.
+2026.11.19 release, the groups add some 279,000 pairs to the gate `["hmdb"]`.
 
 **A screening compound of ChEMBL and a kinase.** Checks 1 to 3 pass. No source
 vouches for the compound as a metabolite, so it is not on the list. The doorman
@@ -184,11 +196,15 @@ turns the pair away before check 4.
 The badge names the first source that vouched, in the order HMDB, ChEBI,
 reactions.
 
-| The dataset accepts | It gets | Pairs on the trial run |
+| The dataset accepts | It gets | Pairs |
 |---|---|---|
 | `["hmdb"]` | Every molecule that HMDB lists, with its stereo and charge variants | 1,349,547 |
 | `["hmdb", "chebi_role", "metabolic_network"]` | Every metabolite that any source vouches for | 1,419,750 |
 | `["metabolic_network"]` | The metabolites that reactions know and HMDB and ChEBI do not | 38,491 |
+
+The pairs are MetaLinksDB-shaped relations of the 2026.11.19 release. The figure
+for `["hmdb"]` holds for stage one. The other two come from a trial that read
+45 ChEBI roles by name, and stage two measures them again.
 
 The third row does not hold every molecule of a reaction. A molecule that HMDB
 also lists carries the badge `hmdb`.
@@ -206,23 +222,26 @@ metabolite share its badge.
 
 ## Tests
 
-The tests sit in `packages/subsets/tests/`, next to the tests of
-`exclusion_metabolites`. They build the subset over a small release of about
-ten entities, written straight to Parquet. The release holds cortisol and its
+The tests of the subset are `packages/subsets/tests/test_metabolite_class.py`,
+next to the tests of `exclusion_metabolites`. They build the subset over the
+small release of `metabolite_class_fixture.py`, written straight to Parquet. The release holds cortisol and its
 stereoisomer, a charged form, a ChEMBL compound, a native fallback, a lipid, two
 reaction molecules and a receptor. The tests need no database.
 
 Each rule on this page has one test, and the name of the test states the rule.
 For example, a test shows that the stereoisomer of cortisol gets the badge
-`hmdb` through its group. Another shows that a misspelt badge gives an empty
-result.
+`hmdb` through its group. The tests of the filter are
+`packages/query/python/tests/test_metabolite_classes.py` and
+`packages/api/tests/test_metabolite_classes_filter.py`. One of them shows that a
+misspelt badge gives an empty result.
 
-One more test compares the finished tables with frozen rows in `golden/`. A
+One more test compares the finished tables with the frozen rows of
+`golden/metabolite_class.json`. A
 change to the subset that alters its output fails that test. Review the
 difference first. When the change is deliberate, rewrite the frozen rows:
 
 ```sh
-UPDATE_GOLDEN=1 pytest packages/subsets/tests/
+UPDATE_GOLDEN=1 uv run pytest packages/subsets/tests/test_metabolite_class.py
 ```
 
 A new signal comes with a test of its own. Change this page in the same commit.
